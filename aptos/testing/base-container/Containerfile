@@ -1,0 +1,41 @@
+FROM ubuntu:22.04
+WORKDIR /root
+RUN apt-get update
+RUN apt-get install -y wget unzip build-essential curl python3 pkg-config libssl-dev ssh git clang
+
+# Node
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+RUN echo 'export PATH=$PATH:/root/bin' >> /root/.bashrc
+RUN /bin/bash -ic 'nvm install 18'
+RUN echo 'nvm use 18' >> /root/.bashrc
+
+# SSL
+RUN wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+RUN dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+
+# Rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# Aptos
+RUN wget https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v0.3.9/aptos-cli-0.3.9-Ubuntu-x86_64.zip
+RUN mkdir /root/bin
+RUN unzip aptos-cli-0.3.9-Ubuntu-x86_64.zip -d /root/bin
+
+EXPOSE 8080
+EXPOSE 8081
+EXPOSE 9091
+
+RUN echo 'export CARGO_NET_GIT_FETCH_WITH_CLI=true' >> /root/.bashrc
+RUN echo 'export CARGO_TARGET_DIR=/root/aptos/podman/build' >> /root/.bashrc
+RUN echo 'export CARGO_HOME=/root/aptos/podman/build/.cargo' >> /root/.bashrc
+
+# Our test setup
+RUN /bin/bash -ic 'npm i -g yarn'
+RUN /bin/bash -ic 'yarn set version berry'
+COPY ./build/create-resource-account-and-publish /root/bin/create-resource-account-and-publish
+COPY ./build/setup-aux /root/bin/setup-aux
+COPY ./_setup.sh /root/_setup.sh
+COPY ./_test.sh /root/test.sh
+COPY ./_example_amm.sh /root/example_amm.sh
+COPY ./_example_clob.sh /root/example_clob.sh
+CMD /bin/bash -itc "/root/_setup.sh && /bin/bash"

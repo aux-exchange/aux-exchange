@@ -1,0 +1,13 @@
+[package]
+name = 'redeploy'
+version = '1.0.0'
+
+[addresses]
+aux = '_'
+deployer = '_'
+
+[dependencies.deployer]
+local = "../deployer"
+
+[dependencies.aux]
+local = "../aux"

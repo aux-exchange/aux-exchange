@@ -1,0 +1,43 @@
+type Balance {
+  coinInfo: CoinInfo!
+  balance: Float!
+  availableBalance: Float!
+}
+
+type Deposit {
+  coinType: String!
+  owner: Address!
+  amount: Float!
+}
+
+type Withdrawal {
+  coinType: String!
+  owner: Address!
+  amount: Float!
+}
+
+type Transfer {
+  coinType: String!
+  from: Address!
+  to: Address!
+  amount: Float!
+}
+
+input DepositInput {
+  coinType: String!
+  sender: Address!
+  amount: Float!
+}
+
+input WithdrawInput {
+  coinType: String!
+  sender: Address!
+  amount: Float!
+}
+
+input TransferInput {
+  coinType: String!
+  from: Address!
+  to: Address!
+  amount: Float!
+}

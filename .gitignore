@@ -1,0 +1,16 @@
+.aptos
+node_modules/
+build/
+.DS_Store
+.gitconfig
+target
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.yalc
+yalc.lock
+.vscode

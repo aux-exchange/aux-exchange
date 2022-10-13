@@ -1,0 +1,2 @@
+FROM aux.exchange/aux
+CMD /bin/bash -ic /root/_setup.sh && /bin/bash -ic /root/test.sh

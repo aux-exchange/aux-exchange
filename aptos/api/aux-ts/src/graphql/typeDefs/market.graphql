@@ -1,0 +1,134 @@
+type Market {
+  name: String!
+  baseCoinInfo: CoinInfo!
+  quoteCoinInfo: CoinInfo!
+  lotSize: Float!
+  tickSize: Float!
+  orderbook: Orderbook!
+  openOrders(owner: Address!): [Order!]!
+  orderHistory(owner: Address!): [Order!]!
+  tradeHistory(owner: Address!): [Trade!]!
+  high24h: Float
+  low24h: Float
+  volume24h: Float
+  bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
+}
+
+type Orderbook {
+  bids: [Level!]!
+  asks: [Level!]!
+}
+
+type Level {
+  price: Float!
+  quantity: Float!
+}
+
+enum Side {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  LIMIT
+  FILL_OR_KILL
+  IMMEDIATE_OR_CANCEL
+  POST_ONLY
+  PASSIVE_JOIN
+}
+
+enum STPActionType {
+  CANCEL_PASSIVE
+  CANCEL_AGGRESSIVE
+  CANCEL_BOTH
+}
+
+enum OrderStatus {
+  OPEN
+  FILLED
+  CANCELED
+}
+
+enum Resolution {
+  SECONDS_15
+  MINUTES_1
+  MINUTES_5
+  MINUTES_15
+  HOURS_1
+  HOURS_4
+  DAYS_1
+  WEEKS_1
+}
+
+type Order {
+  baseCoinType: String!
+  quoteCoinType: String!
+  orderId: ID!
+  owner: Address!
+  orderType: OrderType!
+  orderStatus: OrderStatus!
+  side: Side!
+  quantity: Float!
+  price: Float!
+  auxBurned: Float!
+  time: String!
+}
+
+type Trade {
+  baseCoinType: String!
+  quoteCoinType: String!
+  orderId: ID!
+  owner: Address!
+  side: Side!
+  quantity: Float!
+  price: Float!
+  value: Float!
+  auxBurned: Float!
+  time: String!
+}
+
+type Bar {
+  time: String!
+  ohlcv: Ohlcv
+}
+
+type Ohlcv {
+  open: Float!
+  high: Float!
+  low: Float!
+  close: Float!
+  volume: Float!
+}
+
+type ClobSubscription {
+  orderbook(marketInput: MarketInput!): Orderbook!
+  trades(marketInput: MarketInput!): Trade!
+}
+
+input MarketInput {
+  baseCoinType: String!
+  quoteCoinType: String!
+}
+
+input CreateMarketInput {
+  marketInput: MarketInput!
+  baseLotSize: Int!
+  quoteLotSize: Int!
+}
+
+input PlaceOrderInput {
+  marketInput: MarketInput!
+  sender: Address!
+  side: Side!
+  limitPrice: Float!
+  quantity: Float!
+  auxToBurn: Float!
+  clientOrderId: Int!
+  orderType: OrderType!
+}
+
+input CancelOrderInput {
+  marketInput: MarketInput!
+  sender: Address!
+  orderId: ID!
+}

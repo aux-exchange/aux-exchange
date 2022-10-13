@@ -1,0 +1,73 @@
+input PoolInput {
+  coinTypeX: String!
+  coinTypeY: String!
+}
+
+type Pool {
+  coinInfoX: CoinInfo!
+  coinInfoY: CoinInfo!
+  coinInfoLP: CoinInfo!
+  amountX: Float!
+  amountY: Float!
+  amountLP: Float!
+  feePercent: Float!
+  swaps: [Swap!]!
+  addLiquiditys: [AddLiquidity!]!
+  removeLiquiditys: [RemoveLiquidity!]!
+  position(owner: Address!): Position
+  priceIn(coinTypeIn: String!, amount: Float!): Float
+  priceOut(coinTypeOut: String!, amount: Float!): Float
+}
+
+type Position {
+  coinInfoX: CoinInfo!
+  coinInfoY: CoinInfo!
+  coinInfoLP: CoinInfo!
+  amountX: Float!
+  amountY: Float!
+  amountLP: Float!
+  share: Float!
+}
+
+input CreatePoolInput {
+  poolInput: PoolInput!
+  feePercent: Float!
+}
+
+input AddLiquidityInput {
+  poolInput: PoolInput!
+  amountX: Float!
+  amountY: Float!
+}
+
+input RemoveLiquidityInput {
+  poolInput: PoolInput!
+  amountLP: Float!
+}
+
+input SwapInput {
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountIn: Float!
+  minAmountOut: Float!
+}
+
+type Swap {
+  coinInfoIn: CoinInfo!
+  coinInfoOut: CoinInfo!
+  amountIn: Float!
+  amountOut: Float!
+}
+
+type AddLiquidity {
+  amountAddedX: Float!
+  amountAddedY: Float!
+  amountMintedLP: Float!
+}
+
+type RemoveLiquidity {
+  amountRemovedX: Float!
+  amountRemovedY: Float!
+  amountBurnedLP: Float!
+}

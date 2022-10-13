@@ -1,0 +1,11 @@
+type Account {
+  address: Address!
+  balances: [Balance!]!
+  deposits: [Deposit!]!
+  withdrawals: [Withdrawal!]!
+  transfers: [Transfer!]!
+  poolPositions(poolInputs: [PoolInput!]): [Position!]!
+  openOrders(marketInputs: [MarketInput!]): [Order!]!
+  orderHistory(marketInputs: [MarketInput!]): [Order!]!
+  tradeHistory(marketInputs: [MarketInput!]): [Trade!]!
+}

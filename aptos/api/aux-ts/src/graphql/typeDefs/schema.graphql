@@ -1,0 +1,44 @@
+type Query {
+  address: Address!
+  pool(poolInput: PoolInput!): Pool
+  pools(poolInputs: [PoolInput!]): [Pool!]!
+  poolCoins: [CoinInfo!]!
+  market(marketInput: MarketInput!): Market
+  markets(marketInputs: [MarketInput!]): [Market!]!
+  marketCoins: [CoinInfo!]!
+  account(owner: Address!): Account
+}
+
+type Mutation {
+  createPool(createPoolInput: CreatePoolInput!): EntryFunctionPayload!
+  swap(swapInput: SwapInput!): EntryFunctionPayload!
+  addLiquidity(addLiquidityInput: AddLiquidityInput!): EntryFunctionPayload!
+  removeLiquidity(removeLiquidityInput: RemoveLiquidityInput!): EntryFunctionPayload!
+
+  createMarket(createMarketInput: CreateMarketInput!): EntryFunctionPayload!
+  placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!
+  cancelOrder(cancelOrderInput: CancelOrderInput!): EntryFunctionPayload!
+
+  deposit(depositInput: DepositInput!): EntryFunctionPayload!
+  withdraw(withdrawInput: WithdrawInput!): EntryFunctionPayload!
+  transfer(transferInput: TransferInput!): EntryFunctionPayload!
+}
+
+type Subscription {
+  swap(poolInputs: [PoolInput!]): Swap
+  addLiquidity(poolInputs: [PoolInput!]): AddLiquidity
+  removeLiquidity(poolInputs: [PoolInput!]): RemoveLiquidity
+  orderbook(marketInputs: [MarketInput!]): Orderbook
+  trade(marketInputs: [MarketInput!]): Trade
+  lastTradePrice(marketInputs: [MarketInput!]): Float!
+}
+
+type CoinInfo {
+  coinType: String!
+  decimals: Float!
+  name: String!
+  symbol: String!
+}
+
+scalar EntryFunctionPayload
+scalar Address
