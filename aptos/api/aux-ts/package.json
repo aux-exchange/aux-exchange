@@ -10,8 +10,6 @@
   "scripts": {
     "test": "mocha --allow-uncaught --use-strict",
     "build": "tsc",
-    "publish:local": "tsc && yarn dlx yalc publish --push",
-    "push": "tsc && yarn dlx yalc push",
     "sim:live": "ts-node scripts/sim/live.ts",
     "sim:replay": "ts-node scripts/sim/replay.ts",
     "metadata": "ts-node scripts/metadata.ts",

@@ -1,2 +1,11 @@
-build
-.yarn
+# zero-installs https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# script output
+/scripts/sim/txes
