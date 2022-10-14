@@ -755,13 +755,34 @@ module aux::clob_market {
         bids: vector<L2Quote>,
         asks: vector<L2Quote>,
     }
+
     struct L2Quote has store, drop {
         price: u64,
         quantity: u128,
     }
 
+    // we don't want to add drop to type Order
+    // so we create a copy of Order here for the event.
+    struct OpenOrderEventInfo has store, drop {
+        id: u128,
+        client_order_id: u128,
+        price: u64,
+        quantity: u64,
+        aux_au_to_burn_per_lot: u64,
+        is_bid: bool,
+        owner_id: address,
+        timeout_timestamp: u64,
+        order_type: u64,
+        timestamp: u64,
+    }
+
+    struct OpenOrdersEvent has store, drop {
+        open_orders: vector<OpenOrderEventInfo>,
+    }
+
     struct MarketDataStore<phantom B, phantom Q> has key {
         l2_events: event::EventHandle<L2Event>,
+        open_orders_events: event::EventHandle<OpenOrdersEvent>,
     }
 
     public entry fun load_market_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore {
@@ -769,6 +790,7 @@ module aux::clob_market {
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, MarketDataStore<B, Q> {
                 l2_events: account::new_event_handle<L2Event>(sender),
+                open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
             });
         };
 
@@ -811,50 +833,60 @@ module aux::clob_market {
         );
     }
 
-    public entry fun load_open_orders_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore {
+    public entry fun load_open_orders_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore, OpenOrderAccount {
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, MarketDataStore<B, Q> {
                 l2_events: account::new_event_handle<L2Event>(sender),
+                open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
             });
         };
 
-        let l2_event = L2Event {
-            bids: vector::empty(),
-            asks: vector::empty(),
+        let open_order_address = onchain_signer::get_signer_address(signer::address_of(sender));
+        let open_order_account = borrow_global<OpenOrderAccount<B, Q>>(open_order_address);
+        let n_orders = critbit::size(&open_order_account.open_orders);
+        let idx = 0;
+        let open_orders_events = OpenOrdersEvent {
+            open_orders: vector::empty(),
         };
 
         let market = borrow_global<Market<B, Q>>(@aux);
-
-        if (critbit::size(&market.bids) > 0) {
-            let side = &market.bids;
-            let idx = critbit::get_max_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-                vector::push_back(&mut l2_event.bids, L2Quote {
-                    price: level.price,
-                    quantity: level.total_quantity,
-                });
-                idx = critbit::next_in_reverse_order(side, idx);
-            }
+        while (idx < n_orders) {
+            let (order_id, order_info) = critbit::borrow_at_index(&open_order_account.open_orders, idx);
+            let side = if (order_info.is_bid) { &market.bids } else { &market.asks };
+            let level_idx = critbit::find(side, (order_info.price as u128));
+            assert!(
+                level_idx != CRITBIT_NULL_INDEX,
+                E_ORDER_NOT_FOUND
+            );
+            let (_, level) = critbit::borrow_at_index(side, level_idx);
+            let order_idx = critbit_v::find(&level.orders, order_id);
+            assert!(
+                order_idx != CRITBIT_NULL_INDEX,
+                E_ORDER_NOT_FOUND
+            );
+            let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+            vector::push_back(
+                &mut open_orders_events.open_orders,
+                OpenOrderEventInfo {
+                    id: order.id,
+                    client_order_id: order.client_order_id,
+                    price: order.price,
+                    quantity: order.quantity,
+                    aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
+                    is_bid: order.is_bid,
+                    owner_id: order.owner_id,
+                    timeout_timestamp: order.timeout_timestamp,
+                    order_type: order.order_type,
+                    timestamp: order.timestamp,
+                }
+            );
+            idx = idx + 1;
         };
 
-        if (critbit::size(&market.asks) > 0) {
-            let side = &market.asks;
-            let idx = critbit::get_min_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-                vector::push_back(&mut l2_event.asks, L2Quote {
-                    price: level.price,
-                    quantity: level.total_quantity,
-                });
-                idx = critbit::next_in_order(side, idx);
-            }
-        };
-
-        event::emit_event<L2Event>(
-            &mut borrow_global_mut<MarketDataStore<B, Q>>(signer::address_of(sender)).l2_events,
-            l2_event
+        event::emit_event<OpenOrdersEvent>(
+            &mut borrow_global_mut<MarketDataStore<B, Q>>(signer::address_of(sender)).open_orders_events,
+            open_orders_events,
         );
     }
 
@@ -2056,6 +2088,7 @@ module aux::clob_market {
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 230000, 10, 0, 1003, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
 
         load_market_into_event<BaseCoin, QuoteCoin>(alice);
+        load_open_orders_into_event<BaseCoin, QuoteCoin>(alice);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
