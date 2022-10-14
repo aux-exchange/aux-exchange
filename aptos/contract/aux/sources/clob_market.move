@@ -340,6 +340,8 @@ module aux::clob_market {
         let quote_decimals = coin::decimals<Q>();
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
         assert!((lot_size as u128) * (tick_size as u128) / exp(10, (base_decimals as u128)) > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) % exp(10, (base_decimals as u128)) == 0, E_INVALID_TICK_OR_LOT_SIZE);
 
         assert!(!market_exists<B, Q>(), E_MARKET_ALREADY_EXISTS);
 
@@ -952,6 +954,8 @@ module aux::clob_market {
         let base_decimals = coin::decimals<B>();
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
         assert!((lot_size as u128) * (tick_size as u128) / exp(10, (base_decimals as u128)) > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) % exp(10, (base_decimals as u128)) == 0, E_INVALID_TICK_OR_LOT_SIZE);
 
         assert!(
             market_exists<B,Q>(),
