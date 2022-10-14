@@ -7,6 +7,7 @@ import {
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import fs from "fs";
+import path from 'path'
 import { useServer } from "graphql-ws/lib/use/ws";
 import http from "http";
 import https from "https";
@@ -52,11 +53,13 @@ async function startApolloServer() {
   // Create an Express app and HTTP server; we will attach both the WebSocket
   // server and the ApolloServer to this HTTP server.
   const app = express();
-  app.use(express.static("dist"));
+  
+  app.use(express.static(path.join(__dirname, 'client')));
 
   let server;
   if (process.env["AUX_GRAPHQL_LOCAL"]) {
     server = http.createServer(app);
+
   } else {
     app.all("*", ensureSecure);
     const privateKey = fs.readFileSync(

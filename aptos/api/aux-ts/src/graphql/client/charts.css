@@ -1,0 +1,5 @@
+.theme-dark:root {
+	--tv-color-platform-background: rgba(15, 23, 42, 0.8);
+	--tv-color-pane-background: rgba(15, 23, 42, 0.8);
+	--tv-color-pane-background-secondary: rgba(15, 23, 42, 0.8);
+}
