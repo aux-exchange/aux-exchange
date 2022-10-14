@@ -1,3 +1,54 @@
+/// # Central-Limit Order Book accounting implementation
+///
+/// This module provides a CLOB-based matching engine.
+///
+/// ## Ticks/Lots
+///
+/// Order prices and quantities are quantized, where the step size for price is
+/// a **tick** and the step size for quantity is a **lot**.
+///
+/// The sizes of these steps are defined as:
+///
+/// `lot_size`: units of base coin atomic units
+/// `tick_size`: units of quote coin atomic units
+///
+/// E.g.,
+///
+/// base coin: `APT`, `decimals = 8`, `lot_size = 1_000 APT au == 1e-5 APT`
+/// quote coin: `USDC`, `decimals = 6`, `tick_size = 10_000 USDC au == 1e-2 USDC`
+///
+/// Inputs to `new_order()` are:
+/// `qty`: units of base coin atomic units
+/// `price`: units of quote coin atomic units
+///
+/// These inputs are quantized to:
+/// `price_ticks` = `price / tick_size`
+/// `qty_lots = qty / lot_size`
+///
+/// The total quote quantity of an order (in units of quote AU) is:
+///
+/// ```
+/// quote_qty_au = (qty * price) / 1 e base_decimals
+/// =>
+/// quote_qty_au = qty_lots * lot_size * price_ticks * tick_size / 1 e base_decimals
+/// ```
+///
+/// Therefore, the minimum quote quantity is:
+///
+/// ```
+/// min_quote_qty_au = 1 * lot_size * 1 * tick_size / 1 e base_decimals
+/// ```
+///
+/// This is also the step size of quote quantity.
+///
+/// The minimum quote quantity must be non-zero, therefore the following invariant must hold:
+///
+/// ```
+/// min_quote_qty_au > 0
+/// =>
+/// lot_size * tick_size / 1 e base_decimals > 0
+/// ```
+/// 
 module aux::clob_market {
     friend aux::router;
 
