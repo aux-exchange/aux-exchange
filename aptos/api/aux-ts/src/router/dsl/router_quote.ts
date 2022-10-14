@@ -2,13 +2,15 @@ import { HexString, Types } from "aptos";
 import type { SwapEvent } from "../../amm/core/events";
 import type { TransactionResult } from "../..//transaction";
 import { AtomicUnits, AU } from "../..//units";
-import type { AuxClient } from "../../client";
+import type { AuxClient, CoinInfo } from "../../client";
 import type { OrderFillEvent } from "../../clob/core/events";
 import type { RouterEvent } from "../core/mutation";
 
 export interface RouterQuote {
   type: "ExactIn" | "ExactOut";
   sender: HexString;
+  coinIn: Types.MoveStructTag;
+  coinOut: Types.MoveStructTag;
   amount: AtomicUnits;
   expirationTimestampSecs: string;
   timestamp: string;
@@ -52,6 +54,8 @@ export async function getRouterQuote(
   let quote: RouterQuote = {
     type,
     sender: new HexString(tx.sender),
+    coinIn,
+    coinOut,
     amount: AU(0),
     expirationTimestampSecs: tx.expiration_timestamp_secs,
     timestamp: tx.timestamp,
@@ -148,9 +152,13 @@ async function orderFillEventToRoute(
   let amountOut: AtomicUnits;
   let initPriceNum: number;
   let initPriceDenom: number;
+  let baseCoinInfo: CoinInfo;
+  let quoteCoinInfo: CoinInfo;
   if (fillEvent.isBid) {
     // Buying base with quote
-    let baseDecimals = (await auxClient.getCoinInfo(coinOut)).decimals;
+    baseCoinInfo = await auxClient.getCoinInfo(coinOut);
+    quoteCoinInfo = await auxClient.getCoinInfo(coinIn);
+    const baseDecimals = baseCoinInfo.decimals;
     amountIn = AU(
       (fillEvent.price.toNumber() * fillEvent.baseQuantity.toNumber()) /
         Math.pow(10, baseDecimals) +
@@ -162,7 +170,9 @@ async function orderFillEventToRoute(
     initPriceDenom = Math.pow(10, baseDecimals);
   } else {
     // Selling base for quote
-    let baseDecimals = (await auxClient.getCoinInfo(coinIn)).decimals;
+    baseCoinInfo = await auxClient.getCoinInfo(coinIn);
+    quoteCoinInfo = await auxClient.getCoinInfo(coinIn);
+    const baseDecimals = baseCoinInfo.decimals;
     amountIn = fillEvent.baseQuantity;
     amountOut = AU(
       (fillEvent.price.toNumber() * fillEvent.baseQuantity.toNumber()) /
@@ -181,7 +191,7 @@ async function orderFillEventToRoute(
     amountOut,
     feeAmount: fillEvent.fee,
     rebateAmount: fillEvent.rebate,
-    feeOrRebateCurrency: fillEvent.feeCurrency,
+    feeOrRebateCurrency: quoteCoinInfo.coinType,
     initPriceNum,
     initPriceDenom,
     priceImpactPct: 0, // priceImpact is always 0 for a single fill, since it never includes multiple price levels

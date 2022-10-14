@@ -3809,8 +3809,13 @@ __metadata:
   linkType: hard
 
 "typescript@patch:typescript@^4.8.3#~builtin<compat/typescript>":
+<<<<<<< HEAD
   version: 4.8.4
   resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=701156"
+=======
+  version: 4.8.3
+  resolution: "typescript@patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=701156"
+>>>>>>> 1481428 (localnet-router-swap running)
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

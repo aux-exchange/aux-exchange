@@ -39,7 +39,7 @@ export default class Router {
       coinTypeOut: Types.MoveStructTag;
     },
     transactionOptions?: TransactionOptions
-  ): Promise<TransactionResult<RouterEvent[] | undefined>> {
+  ): Promise<TransactionResult<RouterEvent[]>> {
     return swapExactCoinForCoin(
       this.client,
       {
@@ -71,7 +71,7 @@ export default class Router {
       coinTypeOut: Types.MoveStructTag;
     },
     transactionOptions?: TransactionOptions
-  ): Promise<TransactionResult<RouterEvent[] | undefined>> {
+  ): Promise<TransactionResult<RouterEvent[]>> {
     const sender = this.sender;
     if (sender === undefined) {
       throw new Error("Router swap must have sender");

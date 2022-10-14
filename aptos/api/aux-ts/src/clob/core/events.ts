@@ -15,7 +15,6 @@ export interface RawOrderFillEvent {
     price: Types.U128;
     fee: Types.U128;
     rebate: Types.U128;
-    fee_currency: Types.MoveStructTag;
     remaining_qty: Types.U128;
     timestamp: Types.U64;
     client_order_id: Types.U128;
@@ -163,7 +162,7 @@ export function parseRawOrderFillEvent(raw: RawOrderFillEvent): OrderFillEvent {
     price: new AtomicUnits(raw.data.price),
     fee: new AtomicUnits(raw.data.fee),
     rebate: new AtomicUnits(raw.data.rebate),
-    feeCurrency: raw.data.fee_currency,
+    feeCurrency: "undefined", // TODO
     remainingQuantity: new AtomicUnits(raw.data.remaining_qty),
     timestamp: new BN(raw.data.timestamp),
     clientOrderId: new BN(raw.data.client_order_id),
