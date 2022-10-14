@@ -841,6 +841,9 @@ module aux::amm {
                     y_reserve,
                     pool.fee_bps
                 );
+                if (limit_amount_in == 0) {
+                    return (0, 0)
+                };
                 let limit_amount_out = get_amount_out(
                     limit_amount_in, 
                     x_reserve,
@@ -897,6 +900,9 @@ module aux::amm {
                     x_reserve,
                     pool.fee_bps
                 );
+                if (limit_amount_in == 0) {
+                    return (0, 0)
+                };
                 let limit_amount_out = get_amount_out(limit_amount_in, y_reserve, x_reserve, pool.fee_bps);
                 if (limit_amount_out == 0) {
                     return (0, 0)
