@@ -1,4 +1,4 @@
-# Aux Exchange
+# AUX (Autonomous Universal eXchange)
 
 ## Aptos Quickstart with podman
 
