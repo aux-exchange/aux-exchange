@@ -57,6 +57,7 @@ async function startApolloServer() {
   let server;
   if (process.env["AUX_GRAPHQL_LOCAL"]) {
     server = http.createServer(app);
+    http.createServer(app).listen(3000);
   } else {
     app.all("*", ensureSecure);
     const privateKey = fs.readFileSync(
