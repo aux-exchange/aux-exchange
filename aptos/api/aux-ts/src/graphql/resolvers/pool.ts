@@ -1,3 +1,4 @@
+import { AptosAccount } from "aptos";
 import * as aux from "../../";
 import { DU } from "../../";
 import { auxClient } from "../connection";
@@ -7,22 +8,31 @@ import type {
   PoolPositionArgs,
   PoolPriceInArgs,
   PoolPriceOutArgs,
-  Position
+  Position,
+  Swap,
 } from "../types";
 
 export const pool = {
-  async swaps(parent: Pool) {
+  async swapHistory(parent: Pool): Promise<Swap[]> {
     const swaps = await aux.amm.core.query.swapEvents(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
     });
     return swaps.map((swap) => ({
       ...swap,
+      coinInfoIn:
+        swap.inCoinType === parent.coinInfoX.coinType
+          ? parent.coinInfoX
+          : parent.coinInfoY,
+      coinInfoOut:
+        swap.outCoinType === parent.coinInfoY.coinType
+          ? parent.coinInfoY
+          : parent.coinInfoX,
       amountIn: swap.in.toNumber(),
       amountOut: swap.out.toNumber(),
     }));
   },
-  async addLiquiditys(parent: Pool) {
+  async addLiquidityHistory(parent: Pool) {
     const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
       auxClient,
       {
@@ -37,7 +47,7 @@ export const pool = {
       amountMintedLP: addLiquidity.lpMinted.toNumber(),
     }));
   },
-  async removeLiquiditys(parent: Pool) {
+  async removeLiquidityHistory(parent: Pool) {
     const removeLiquiditys = await aux.amm.core.query.removeLiquidityEvents(
       auxClient,
       {
@@ -73,38 +83,55 @@ export const pool = {
     parent: Pool,
     { coinTypeIn, amount }: PoolPriceInArgs
   ): Promise<Maybe<number>> {
-    const coinInfoOut =
+    console.log(parent.amountX, parent.amountY);
+    // console.log(parent.amountY)
+    const ratio =
       coinTypeIn === parent.coinInfoX.coinType
-        ? parent.coinInfoY
-        : parent.coinInfoX;
-    const router = new aux.Router({ client: auxClient });
-    const quote = await router.getQuoteExactCoinForCoin({
-      exactAmountIn: DU(amount),
-      coinTypeIn,
-      coinTypeOut: coinInfoOut.coinType,
-    });
-    return (
-      quote.payload?.amount.toDecimalUnits(coinInfoOut.decimals).toNumber() ??
-      null
-    );
+        ? parent.amountY / parent.amountX
+        : parent.amountX / parent.amountY;
+    // console.log(ratio, amount)
+    return amount * ratio;
+    // const coinInfoOut =
+    //   coinTypeIn === parent.coinInfoX.coinType
+    //     ? parent.coinInfoY
+    //     : parent.coinInfoX;
+    // const router = new aux.Router({ client: auxClient });
+    // router.sender = new AptosAccount();
+    // const quote = await router.getQuoteExactCoinForCoin({
+    //   exactAmountIn: DU(amount),
+    //   coinTypeIn,
+    //   coinTypeOut: coinInfoOut.coinType,
+    // });
+    // return (
+    //   quote.payload?.amount.toDecimalUnits(coinInfoOut.decimals).toNumber() ??
+    //   null
+    // );
   },
   async priceOut(
     parent: Pool,
     { coinTypeOut, amount }: PoolPriceOutArgs
   ): Promise<Maybe<number>> {
-    const coinInfoIn =
+    DU;
+    AptosAccount;
+    const ratio =
       coinTypeOut === parent.coinInfoY.coinType
-        ? parent.coinInfoX
-        : parent.coinInfoY;
-    const router = new aux.Router({ client: auxClient });
-    const quote = await router.getQuoteCoinForExactCoin({
-      exactAmountOut: DU(amount),
-      coinTypeIn: coinInfoIn.coinType,
-      coinTypeOut,
-    });
-    return (
-      quote.payload?.amount.toDecimalUnits(coinInfoIn.decimals).toNumber() ??
-      null
-    );
-  }
+        ? parent.amountY / parent.amountX
+        : parent.amountX / parent.amountY;
+    // console.log(ratio, amount)
+    return amount * ratio;
+    // const coinInfoIn =
+    //   coinTypeOut === parent.coinInfoY.coinType
+    //     ? parent.coinInfoX
+    //     : parent.coinInfoY;
+    // const router = new aux.Router({ client: auxClient });
+    // const quote = await router.getQuoteCoinForExactCoin({
+    //   exactAmountOut: DU(amount),
+    //   coinTypeIn: coinInfoIn.coinType,
+    //   coinTypeOut,
+    // });
+    // return (
+    //   quote.payload?.amount.toDecimalUnits(coinInfoIn.decimals).toNumber() ??
+    //   null
+    // );
+  },
 };

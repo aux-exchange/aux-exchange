@@ -1,0 +1,93 @@
+query Query(
+  $owner: Address!
+  $btc: String!
+  $eth: String!
+  $usdc: String!
+  $btcUsdcPool: PoolInput!
+  $ethUsdcPool: PoolInput!
+) {
+  address
+  btcUsdcPool: pool(poolInput: $btcUsdcPool) {
+    ...poolFields
+    btcPriceIn: priceIn(coinTypeIn: $btc, amount: 1)
+    usdcPriceIn: priceIn(coinTypeIn: $usdc, amount: 19000)
+    btcPriceOut: priceOut(coinTypeOut: $btc, amount: 1)
+    usdcPriceOut: priceOut(coinTypeOut: $usdc, amount: 19000)
+  }
+  ethUsdcPool: pool(poolInput: $ethUsdcPool) {
+    ...poolFields
+    ethPriceIn: priceIn(coinTypeIn: $eth, amount: 1)
+    usdcPriceIn: priceIn(coinTypeIn: $usdc, amount: 1700)
+    ethPriceOut: priceOut(coinTypeOut: $eth, amount: 1)
+    usdcPriceOut: priceOut(coinTypeOut: $usdc, amount: 1700)
+  }
+  allPools: pools {
+    ...poolFields
+  }
+  ethBtcPools: pools(poolInputs: [$btcUsdcPool, $ethUsdcPool]) {
+    ...poolFields
+  }
+  poolCoins {
+    coinType
+    decimals
+    name
+    symbol
+  }
+}
+
+fragment poolFields on Pool {
+  coinInfoX {
+    coinType
+    decimals
+    name
+    symbol
+  }
+  coinInfoY {
+    coinType
+    decimals
+    name
+    symbol
+  }
+  coinInfoLP {
+    coinType
+    decimals
+    name
+    symbol
+  }
+  amountX
+  amountY
+  amountLP
+  feePercent
+  swapHistory {
+    coinInfoIn {
+      coinType
+      decimals
+      name
+      symbol
+    }
+    coinInfoOut {
+      coinType
+      decimals
+      name
+      symbol
+    }
+    amountIn
+    amountOut
+  }
+  addLiquidityHistory {
+    amountAddedX
+    amountAddedY
+    amountMintedLP
+  }
+  removeLiquidityHistory {
+    amountRemovedX
+    amountRemovedY
+    amountBurnedLP
+  }
+  position(owner: $owner) {
+    amountX
+    amountY
+    amountLP
+    share
+  }
+}

@@ -36,7 +36,7 @@ export enum Network {
 }
 
 export const DEVNET_MODULE_ADDRESS =
-  "0x3708205471b0e2d1bfe137b998cd4c4112910bb72b5d562c534e0d49ecfcb229";
+  "0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70";
 
 /**
  * For localnet deployments, this returns the Aux module address deployed by

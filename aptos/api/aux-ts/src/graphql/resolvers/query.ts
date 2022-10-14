@@ -51,7 +51,7 @@ export const query = {
         amountX: pool!.amountX.toNumber(),
         amountY: pool!.amountY.toNumber(),
         amountLP: pool!.amountLP.toNumber(),
-        feePct: pool!.feePct,
+        feePercent: pool!.feePct,
       }));
   },
   async poolCoins(parent: any) {

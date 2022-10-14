@@ -1,3 +1,4 @@
+import { parseTypeArgs } from "../../client";
 import * as aux from "../../";
 import { AU } from "../../";
 import AuxAccount from "../../account";
@@ -25,12 +26,16 @@ export const account = {
     const account = new AuxAccount(auxClient, parent.address);
     const balances = await account.balances();
 
+    console.log(balances.balances);
     return await Promise.all(
-      balances.balances.map(async (e) => ({
-        coinInfo: await auxClient.getCoinInfo(e.key.name),
-        availableBalance: e.value.available_balance.toNumber(),
-        balance: e.value.balance.toNumber(),
-      }))
+      balances.balances.map(async (e) => {
+        const [coinType] = parseTypeArgs(e.key.name)
+        return {
+          coinInfo: await auxClient.getCoinInfo(coinType!),
+          availableBalance: e.value.available_balance.toNumber(),
+          balance: e.value.balance.toNumber(),
+        };
+      })
     );
   },
   async deposits(parent: Account): Promise<Deposit[]> {
@@ -41,7 +46,9 @@ export const account = {
       // @ts-ignore
       coinType: deposit.data.coinType,
       // @ts-ignore
-      owner: deposit.data.owner,
+      from: deposit.data.depositor,
+      // @ts-ignore
+      to: deposit.data.to,
       // @ts-ignore
       amount: deposit.data.amount.toNumber(),
     }));
@@ -49,12 +56,12 @@ export const account = {
   async withdrawals(parent: Account): Promise<Withdrawal[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const withdrawals = await account.withdrawals();
-    console.log(withdrawals);
+    // @ts-ignore
     return withdrawals.map((withdrawal) => ({
       // @ts-ignore
       coinType: withdrawal.data.coinType,
       // @ts-ignore
-      owner: withdrawal.data.owner,
+      from: withdrawal.data.owner,
       // @ts-ignore
       amount: withdrawal.data.amount.toNumber(),
     }));
@@ -99,37 +106,42 @@ export const account = {
     parent: Account,
     args: AccountOpenOrdersArgs
   ): Promise<Order[]> {
-    const marketInputs =
-      args.marketInputs ?? (await aux.Market.index(auxClient));
-    const account = new aux.Account(auxClient, parent.address);
-    const orderss = await Promise.all(
-      marketInputs.map(async (marketInput) => {
-        const market = await aux.Market.read(auxClient, marketInput);
-        const orders = await account.openOrders(marketInput);
-        return orders.map((order) => {
-          return {
-            baseCoinType: market.baseCoinInfo.coinType,
-            quoteCoinType: market.quoteCoinInfo.coinType,
-            orderId: order.id.toString(),
-            owner: order.ownerId.hex(),
-            orderType: OrderType.Limit,
-            orderStatus: OrderStatus.Open,
-            side: order.side === "bid" ? Side.Buy : Side.Sell,
-            auxBurned: order.auxBurned
-              .toDecimalUnits(6) // FIXME
-              .toNumber(),
-            time: order.time.toString(),
-            price: AU(order.price)
-              .toDecimalUnits(market.quoteCoinInfo.decimals)
-              .toNumber(),
-            quantity: AU(order.quantity)
-              .toDecimalUnits(market.baseCoinInfo.decimals)
-              .toNumber(),
-          };
-        });
-      })
-    );
-    return orderss.flat();
+    AU;
+    return this.orderHistory(parent, {
+      marketInputs: args.marketInputs ?? null,
+    });
+    // const marketInputs =
+    //   args.marketInputs ?? (await aux.Market.index(auxClient));
+    // const account = new aux.Account(auxClient, parent.address);
+    // const orders = this.orderHistory(parent, {})
+    // const orderss = await Promise.all(
+    //   marketInputs.map(async (marketInput) => {
+    //     const market = await aux.Market.read(auxClient, marketInput);
+    //     const orders = await account.openOrders(marketInput);
+    //     return orders.map((order) => {
+    //       return {
+    //         baseCoinType: market.baseCoinInfo.coinType,
+    //         quoteCoinType: market.quoteCoinInfo.coinType,
+    //         orderId: order.id.toString(),
+    //         owner: order.ownerId.toString(),
+    //         orderType: OrderType.Limit,
+    //         orderStatus: OrderStatus.Open,
+    //         side: order.side === "bid" ? Side.Buy : Side.Sell,
+    //         auxBurned: order.auxBurned
+    //           .toDecimalUnits(6) // FIXME
+    //           .toNumber(),
+    //         time: order.time.toString(),
+    //         price: AU(order.price)
+    //           .toDecimalUnits(market.quoteCoinInfo.decimals)
+    //           .toNumber(),
+    //         quantity: AU(order.quantity)
+    //           .toDecimalUnits(market.baseCoinInfo.decimals)
+    //           .toNumber(),
+    //       };
+    //     });
+    //   })
+    // );
+    // return orderss.flat();
   },
   async orderHistory(
     parent: Account,
@@ -147,7 +159,7 @@ export const account = {
             baseCoinType: market.baseCoinInfo.coinType,
             quoteCoinType: market.quoteCoinInfo.coinType,
             orderId: order.orderId.toString(),
-            owner: order,
+            owner: order.owner.toString(),
             orderType: OrderType.Limit,
             orderStatus: OrderStatus.Open,
             side: order.isBid ? Side.Buy : Side.Sell,
@@ -189,7 +201,7 @@ export const account = {
             baseCoinType: market.baseCoinInfo.coinType,
             quoteCoinType: market.quoteCoinInfo.coinType,
             orderId: fill.orderId.toString(),
-            owner: fill.owner,
+            owner: fill.owner.toString(),
             market: `${market.baseCoinInfo.symbol}-${market.quoteCoinInfo.symbol}`,
             side: fill.isBid ? Side.Buy : Side.Sell,
             quantity,

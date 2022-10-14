@@ -1,0 +1,106 @@
+query Query(
+  $btcUsdcMarket: MarketInput!
+  $ethUsdcMarket: MarketInput!
+) {
+  address
+  btcUsdcMarket: market(marketInput: $btcUsdcMarket) {
+    ...marketFields
+  }
+  ethUsdcMarket: market(marketInput: $ethUsdcMarket) {
+    ...marketFields
+  }
+  btcEthMarkets: markets(marketInputs: [$btcUsdcMarket, $ethUsdcMarket]) {
+    ...marketFields
+  }
+  allMarkets: markets {
+    ...marketFields
+  }
+  marketCoins {
+    coinType
+    decimals
+    name
+    symbol
+  }
+}
+
+fragment marketFields on Market {
+  name
+  baseCoinInfo {
+    coinType
+    decimals
+    name
+    symbol
+  }
+  quoteCoinInfo {
+    coinType
+    decimals
+    name
+    symbol
+  }
+  lotSize
+  tickSize
+  orderbook {
+    bids {
+      price
+      quantity
+    }
+    asks {
+      price
+      quantity
+    }
+  }
+  allOpenOrders: openOrders {
+    baseCoinType
+    quoteCoinType
+    orderId
+    owner
+    orderType
+    orderStatus
+    side
+    quantity
+    price
+    auxBurned
+    time
+  }
+  allOrderHistory: orderHistory {
+    baseCoinType
+    quoteCoinType
+    orderId
+    owner
+    orderType
+    orderStatus
+    side
+    quantity
+    price
+    auxBurned
+    time
+  }
+  allTradeHistory: tradeHistory {
+    baseCoinType
+    quoteCoinType
+    orderId
+    owner
+    side
+    quantity
+    price
+    value
+    auxBurned
+    time
+  }
+  high24h
+  low24h
+  volume24h
+}
+
+fragment barFields on Market {
+  bars15s: bars(resolution: SECONDS_15) {
+    time
+    ohlcv {
+      open
+      high
+      low
+      close
+      volume
+    }
+  }
+}
