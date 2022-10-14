@@ -54,7 +54,7 @@ async function startApolloServer() {
   // server and the ApolloServer to this HTTP server.
   const app = express();
   
-  app.use(express.static(path.join(__dirname, 'dist')));
+  app.use(express.static(path.join(__dirname, 'client')));
 
   let server;
   if (process.env["AUX_GRAPHQL_LOCAL"]) {
