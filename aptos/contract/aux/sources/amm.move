@@ -841,6 +841,9 @@ module aux::amm {
                     y_reserve,
                     pool.fee_bps
                 );
+                if (limit_amount_in == 0) {
+                    return (0, 0)
+                };
                 let limit_amount_out = get_amount_out(
                     limit_amount_in, 
                     x_reserve,
@@ -897,6 +900,9 @@ module aux::amm {
                     x_reserve,
                     pool.fee_bps
                 );
+                if (limit_amount_in == 0) {
+                    return (0, 0)
+                };
                 let limit_amount_out = get_amount_out(limit_amount_in, y_reserve, x_reserve, pool.fee_bps);
                 if (limit_amount_out == 0) {
                     return (0, 0)
@@ -2174,6 +2180,35 @@ module aux::amm {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_swap_exact_coin_for_coin_limit_bad_price(sender: &signer, aptos_framework: &signer) acquires Pool {
+        // X in Y out
+
+        // initially: y / x == 4
+        // limit so it doesn't fall below 3
+        let input = SwapHelperInput {
+            fee_bps: 0,
+            exact_in: true,
+            x_in_y_out: true,
+            init_x: 10000,
+            init_y: 40000,
+            au_in: 10000,
+            au_out: 0,
+            use_limit: true,
+            limit_num: 4,
+            limit_denom: 1, 
+            expected_au_in: 0,
+            expected_au_out: 0
+        };
+        test_swap_helper<AuxCoin, AuxTestCoin, AuxCoin, AuxTestCoin>(sender, aptos_framework, &input);
+
+        // Y in X out
+        input.x_in_y_out = false;
+        input.init_x = 40000;
+        input.init_y = 10000;
+        test_swap_helper<AuxTestCoin, AuxCoin, AuxCoin, AuxTestCoin>(sender, aptos_framework, &input);
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     fun test_swap_exact_coin_for_coin_limit_binding_price_no_fee_2(sender: &signer, aptos_framework: &signer) acquires Pool {
 
         // initially: y / x == 1
@@ -2320,6 +2355,35 @@ module aux::amm {
             limit_denom: 3, // in/out denominator 
             expected_au_in: 1547,
             expected_au_out: 5358
+        };
+        test_swap_helper<AuxCoin, AuxTestCoin, AuxCoin, AuxTestCoin>(sender, aptos_framework, &input);
+
+        // Y in X out
+        input.x_in_y_out = false;
+        input.init_x = 40000;
+        input.init_y = 10000;
+        test_swap_helper<AuxTestCoin, AuxCoin, AuxCoin, AuxTestCoin>(sender, aptos_framework, &input);
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_swap_coin_for_exact_coin_limit_bad_price(sender: &signer, aptos_framework: &signer) acquires Pool {
+        // X in Y out
+
+        // initially: y / x == 1/4
+        // limit so it doesn't rise above 1/4 (expected output is (0, 0))
+        let input = SwapHelperInput {
+            fee_bps: 0,
+            exact_in: false,
+            x_in_y_out: true,
+            init_x: 10000,
+            init_y: 40000,
+            au_in: 2000,
+            au_out: 10000,
+            use_limit: true,
+            limit_num: 1,   // in/out numerator
+            limit_denom: 4, // in/out denominator 
+            expected_au_in: 0,
+            expected_au_out: 0
         };
         test_swap_helper<AuxCoin, AuxTestCoin, AuxCoin, AuxTestCoin>(sender, aptos_framework, &input);
 
