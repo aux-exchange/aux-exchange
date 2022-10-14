@@ -53,7 +53,7 @@ export async function swapCoinForExactCoin(
 /* HELPERS */
 /***********/
 
-function swapExactCoinForCoinPayload(
+export function swapExactCoinForCoinPayload(
   auxClient: AuxClient,
   swapInput: SwapExactCoinForCoinInput
 ): Types.EntryFunctionPayload {
@@ -64,7 +64,7 @@ function swapExactCoinForCoinPayload(
   };
 }
 
-function swapCoinForExactCoinPayload(
+export function swapCoinForExactCoinPayload(
   auxClient: AuxClient,
   swapInput: SwapCoinForExactCoinInput
 ): Types.EntryFunctionPayload {
@@ -75,7 +75,7 @@ function swapCoinForExactCoinPayload(
   };
 }
 
-function parseRouterEvents(
+export function parseRouterEvents(
   auxClient: AuxClient,
   tx: Types.UserTransaction
 ): TransactionResult<Array<RouterEvent>> {

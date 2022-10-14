@@ -250,6 +250,7 @@ export function parseRawSwapEvent(
   auxClient: AuxClient,
   event: RawSwapEvent
 ): SwapEvent {
+  // console.log(event);
   if (event.type == `${auxClient.moduleAddress}::amm::SwapEvent`) {
     return {
       type: "SwapEvent",

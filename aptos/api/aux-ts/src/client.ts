@@ -35,7 +35,7 @@ export enum Network {
   Localnet,
 }
 
-export const MODULE_ADDRESS =
+export const DEVNET_MODULE_ADDRESS =
   "0x3708205471b0e2d1bfe137b998cd4c4112910bb72b5d562c534e0d49ecfcb229";
 
 /**
@@ -159,7 +159,7 @@ export class AuxClient {
       aptosClient: new AptosClient(validatorAddress),
       faucetClient: new FaucetClient(validatorAddress, faucetAddress),
       moduleAddress:
-        moduleAddress === undefined ? MODULE_ADDRESS : moduleAddress,
+        moduleAddress === undefined ? DEVNET_MODULE_ADDRESS : moduleAddress,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
       transactionOptions,
     });
@@ -194,7 +194,7 @@ export class AuxClient {
       faucetClient:
         faucet === undefined ? undefined : new FaucetClient(node, faucet),
       moduleAddress:
-        moduleAddress === undefined ? MODULE_ADDRESS : moduleAddress,
+        moduleAddress === undefined ? DEVNET_MODULE_ADDRESS : moduleAddress,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
       transactionOptions,
     });

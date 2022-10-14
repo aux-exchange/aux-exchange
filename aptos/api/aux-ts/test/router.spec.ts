@@ -236,6 +236,7 @@ describe("Router Core tests", function () {
     );
     assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
     console.log("swapUsdcForBtc", txResult.tx.hash);
+    // console.dir(txResult.payload, { depth: null });
     const finalBtc = Number(
       await coinClient.checkBalance(sender, {
         coinType: btcCoinType,
@@ -311,6 +312,7 @@ describe("Router Core tests", function () {
       { maxGasAmount: AU(30_000) }
     );
     assert.ok(txResult.tx.success, `${txResult.tx.vm_status}`);
+    // console.dir(txResult.payload, { depth: null });
     await pool.update();
     const finalBtc = Number(
       await coinClient.checkBalance(sender, {
@@ -346,7 +348,7 @@ describe("Router Core tests", function () {
   });
 });
 
-describe("Router DSL tests", function () {
+describe.only("Router DSL tests", function () {
   this.timeout(30000);
   const aux: AptosAccount = sender;
 
@@ -577,7 +579,7 @@ describe("Router DSL tests", function () {
         quote.routes[1]!.amountIn.toNumber(),
       quote.amount.toNumber()
     );
-    console.log(quote);
+    console.dir(quote.routes, { depth: null });
     quoteUsdcIn = quote.amount.toDecimalUnits(usdcCoinInfo.decimals);
     assert.ok(quoteUsdcIn.toNumber() <= 17_000);
   });
