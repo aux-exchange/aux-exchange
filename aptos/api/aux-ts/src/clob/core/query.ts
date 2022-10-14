@@ -226,7 +226,7 @@ export async function market(
     payload,
     transactionOptions: { simulate: true },
   });
-  AU;
+
   const l2 = txResult.events[0];
   const bids: L2Quote[] = (l2?.data.bids ?? []).map((bid: any) => ({
     price: AU(bid.price).toDecimalUnits(quoteCoinInfo.decimals),
@@ -236,14 +236,6 @@ export async function market(
     price: AU(ask.price).toDecimalUnits(quoteCoinInfo.decimals),
     quantity: AU(ask.quantity).toDecimalUnits(baseCoinInfo.decimals),
   }));
-
-  // const bidEvents = await auxClient.aptosClient.getEventsByEventHandle(
-  //   auxClient.moduleAddress,
-  //   `${auxClient.moduleAddress}::clob_market::MarketDataStore<${baseCoinType}, ${quoteCoinType}>`,
-  //   "placed_events"
-  // );
-  // console.log(bidEvents);
-  // const asks = await
 
   return {
     type,

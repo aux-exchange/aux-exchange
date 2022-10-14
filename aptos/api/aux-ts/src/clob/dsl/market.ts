@@ -394,6 +394,7 @@ export default class Market implements core.query.Market {
       bids: Market.l2(market, market.bids),
       asks: Market.l2(market, market.asks),
     };
+    this.l2 = market.l2;
   }
 
   /**

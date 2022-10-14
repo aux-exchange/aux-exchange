@@ -248,7 +248,9 @@ module aux::clob_market {
 
         // MarketInfo
         base_decimals: u8,
+        base_exp: u128,
         quote_decimals: u8,
+        quote_exp: u128,
         lot_size: u64,
         tick_size: u64,
 
@@ -338,10 +340,12 @@ module aux::clob_market {
 
         let base_decimals = coin::decimals<B>();
         let quote_decimals = coin::decimals<Q>();
+        let base_exp = exp(10, (base_decimals as u128));
+        let quote_exp = exp(10, (quote_decimals as u128));
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) / exp(10, (base_decimals as u128)) > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
         // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) % exp(10, (base_decimals as u128)) == 0, E_INVALID_TICK_OR_LOT_SIZE);
+        assert!((lot_size as u128) * (tick_size as u128) % base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
 
         assert!(!market_exists<B, Q>(), E_MARKET_ALREADY_EXISTS);
 
@@ -355,6 +359,8 @@ module aux::clob_market {
         move_to(&clob_signer, Market<B, Q> {
             base_decimals,
             quote_decimals,
+            base_exp,
+            quote_exp,
             lot_size,
             tick_size,
             bids: critbit::new(),
@@ -636,7 +642,7 @@ module aux::clob_market {
             timeout_timestamp <= timestamp
             // If the order is a fok order and cannot be fully filled, the order won't touch market and immediately "cancelled" like a no-op
             || (order_type == FILL_OR_KILL
-                && estimate_fill(market, is_bid, limit_price, quantity) < quantity)
+                && estimate_fill(market, is_bid, limit_price, quantity, timestamp) < quantity)
             // If the order is passive join, it will use ticks_to_slide and market to determine join price, and if join_price is not worse than limit_price, place the order, otherwise cancel
             || (order_type == PASSIVE_JOIN
                 && order_price_worse_than_limit(market, &mut order, ticks_to_slide, direction_aggressive))
@@ -951,12 +957,6 @@ module aux::clob_market {
             );
         };
 
-        let base_decimals = coin::decimals<B>();
-        // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) / exp(10, (base_decimals as u128)) > 0, E_INVALID_TICK_OR_LOT_SIZE);
-        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) % exp(10, (base_decimals as u128)) == 0, E_INVALID_TICK_OR_LOT_SIZE);
-
         assert!(
             market_exists<B,Q>(),
             E_MARKET_DOES_NOT_EXIST
@@ -964,6 +964,11 @@ module aux::clob_market {
         let timestamp = timestamp::now_microseconds();
 
         let market = borrow_global_mut<Market<B, Q>>(@aux);
+
+        // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) / market.base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) % market.base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
 
         assert!(
             tick_size != market.tick_size || lot_size != market.lot_size,
@@ -1246,9 +1251,9 @@ module aux::clob_market {
         order_id
     }
 
-    fun estimate_fill<B, Q>(market: &Market<B, Q>, is_bid: bool, price: u64, quantity: u64): u64 {
+    fun estimate_fill<B, Q>(market: &Market<B, Q>, is_bid: bool, price: u64, quantity: u64, timestamp: u64): u64 {
         let filled: u64 = 0;
-        let side = if (is_bid) { &market.asks } else {&market.bids};
+        let side = if (is_bid) { &market.asks } else { &market.bids };
         if (critbit::size(side) == 0) {
             return filled
         };
@@ -1257,15 +1262,22 @@ module aux::clob_market {
 
         while(idx != CRITBIT_NULL_INDEX) {
             let (_, level) = critbit::borrow_at_index(side, idx);
-            let level_quantity = (level.total_quantity as u64);
             let can_fill = (is_bid && level.price <= price) || (!is_bid && level.price >= price);
             if (can_fill) {
-                let remaining = quantity - filled;
-                if (remaining < level_quantity) {
-                    filled = quantity;
-                    break
-                } else {
-                    filled = filled + level_quantity;
+                // now walk the book.
+                // since some orders have already expired, we need to check the orders one by one.
+                let n_orders = critbit_v::size(&level.orders);
+                while (n_orders > 0) {
+                    n_orders = n_orders - 1;
+                    let (_, order) = critbit_v::borrow_at_index(&level.orders, n_orders);
+                    if (order.timeout_timestamp >= timestamp) {
+                        let remaining = quantity - filled;
+                        if (remaining < order.quantity) {
+                            return quantity
+                        } else {
+                            filled = filled + order.quantity;
+                        };
+                    };
                 };
                 idx = if (is_bid) {
                     critbit::next_in_order(side, idx)
