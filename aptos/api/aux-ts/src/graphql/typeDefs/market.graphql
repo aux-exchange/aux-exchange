@@ -5,9 +5,9 @@ type Market {
   lotSize: Float!
   tickSize: Float!
   orderbook: Orderbook!
-  openOrders(owner: Address!): [Order!]!
-  orderHistory(owner: Address!): [Order!]!
-  tradeHistory(owner: Address!): [Trade!]!
+  openOrders(owner: Address): [Order!]!
+  orderHistory(owner: Address): [Order!]!
+  tradeHistory(owner: Address): [Trade!]!
   high24h: Float
   low24h: Float
   volume24h: Float

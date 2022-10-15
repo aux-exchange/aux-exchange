@@ -11,9 +11,9 @@ type Pool {
   amountY: Float!
   amountLP: Float!
   feePercent: Float!
-  swaps: [Swap!]!
-  addLiquiditys: [AddLiquidity!]!
-  removeLiquiditys: [RemoveLiquidity!]!
+  swapHistory(owner: Address, first: Int, offset: Int): [Swap!]!
+  addLiquidityHistory(owner: Address, first: Int, offset: Int): [AddLiquidity!]!
+  removeLiquidityHistory(owner: Address, first: Int, offset: Int): [RemoveLiquidity!]!
   position(owner: Address!): Position
   priceIn(coinTypeIn: String!, amount: Float!): Float
   priceOut(coinTypeOut: String!, amount: Float!): Float

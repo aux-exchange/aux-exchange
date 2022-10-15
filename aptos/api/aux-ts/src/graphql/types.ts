@@ -66,17 +66,17 @@ export type Market = {
 
 
 export type MarketOpenOrdersArgs = {
-  owner: Scalars['Address'];
+  owner?: InputMaybe<Scalars['Address']>;
 };
 
 
 export type MarketOrderHistoryArgs = {
-  owner: Scalars['Address'];
+  owner?: InputMaybe<Scalars['Address']>;
 };
 
 
 export type MarketTradeHistoryArgs = {
-  owner: Scalars['Address'];
+  owner?: InputMaybe<Scalars['Address']>;
 };
 
 
@@ -477,14 +477,15 @@ export type Balance = {
 export type Deposit = {
   __typename?: 'Deposit';
   coinType: Scalars['String'];
-  owner: Scalars['Address'];
+  from: Scalars['Address'];
+  to: Scalars['Address'];
   amount: Scalars['Float'];
 };
 
 export type Withdrawal = {
   __typename?: 'Withdrawal';
   coinType: Scalars['String'];
-  owner: Scalars['Address'];
+  from: Scalars['Address'];
   amount: Scalars['Float'];
 };
 
@@ -498,13 +499,14 @@ export type Transfer = {
 
 export type DepositInput = {
   coinType: Scalars['String'];
-  sender: Scalars['Address'];
+  from: Scalars['Address'];
+  to: Scalars['Address'];
   amount: Scalars['Float'];
 };
 
 export type WithdrawInput = {
   coinType: Scalars['String'];
-  sender: Scalars['Address'];
+  from: Scalars['Address'];
   amount: Scalars['Float'];
 };
 

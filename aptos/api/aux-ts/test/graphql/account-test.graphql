@@ -1,0 +1,108 @@
+query Query($owner: Address!, $btcUsdcMarket: MarketInput!) {
+  account(owner: $owner) {
+    address
+    balances {
+      coinInfo {
+        coinType
+        decimals
+        name
+        symbol
+      }
+      balance
+      availableBalance
+    }
+    deposits {
+      coinType
+      from
+      to
+      amount
+    }
+    withdrawals {
+      coinType
+      from
+      amount
+    }
+    transfers {
+      coinType
+      from
+      to
+      amount
+    }
+    poolPositions {
+      amountX
+      amountY
+      amountLP
+      share
+    }
+    allOpenOrders: openOrders {
+      baseCoinType
+      quoteCoinType
+      orderId
+      owner
+      orderType
+      orderStatus
+      side
+      quantity
+      price
+      auxBurned
+      time
+    }
+    allOrderHistory: orderHistory {
+      baseCoinType
+      quoteCoinType
+      orderId
+      owner
+      orderType
+      orderStatus
+      side
+      quantity
+      price
+      auxBurned
+      time
+    }
+    allTradeHistory: tradeHistory {
+      baseCoinType
+      quoteCoinType
+      orderId
+      owner
+      side
+      quantity
+      price
+      value
+      auxBurned
+      time
+    }
+    openOrders(marketInputs: [$btcUsdcMarket]) {
+      ...orderFields
+    }
+    orderHistory(marketInputs: [$btcUsdcMarket]) {
+      ...orderFields
+    }
+    tradeHistory(marketInputs: [$btcUsdcMarket]) {
+      baseCoinType
+      quoteCoinType
+      orderId
+      owner
+      side
+      quantity
+      price
+      value
+      auxBurned
+      time
+    }
+  }
+}
+
+fragment orderFields on Order {
+  baseCoinType
+  quoteCoinType
+  orderId
+  owner
+  orderType
+  orderStatus
+  side
+  quantity
+  price
+  auxBurned
+  time
+}
