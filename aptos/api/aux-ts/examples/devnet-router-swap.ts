@@ -50,7 +50,7 @@ async function main() {
   // swap BTC for USDC
 
   // get and process quote
-  const quoteResult = await btcToUsdc.getQuoteCoinForExactCoin({
+  const quoteResult = await btcToUsdc.quoteCoinForExactCoin({
     coinTypeIn: btcCoin,
     coinTypeOut: usdcCoin,
     exactAmountOut: DU(10),

@@ -1,28 +1,39 @@
-import { AptosAccount, CoinClient, Types } from "aptos";
-import { assert } from "console";
+import {
+  AptosAccount,
+  CoinClient,
+  HexString,
+  TxnBuilderTypes,
+  Types,
+} from "aptos";
 import type { TransactionResult } from "../..//transaction";
 import { AnyUnits, AU } from "../..//units";
 import type { AuxClient, TransactionOptions } from "../../client";
 import {
+  parseRouterEvents,
   RouterEvent,
   swapCoinForExactCoin,
   swapExactCoinForCoin,
+  swapExactCoinForCoinPayload,
 } from "../core/mutation";
 import { getRouterQuote, RouterQuote } from "./router_quote";
 
 export default class Router {
   client: AuxClient;
   sender: AptosAccount | undefined;
+  pubkey: TxnBuilderTypes.Ed25519PublicKey | undefined;
 
   constructor({
     client,
     sender,
+    pubkey,
   }: {
     client: AuxClient;
     sender?: AptosAccount;
+    pubkey?: TxnBuilderTypes.Ed25519PublicKey;
   }) {
     this.client = client;
     this.sender = sender;
+    this.pubkey = pubkey;
   }
 
   // TODO: combine swap and quote interfaces and take a "quote" bool flag
@@ -93,46 +104,52 @@ export default class Router {
     );
   }
 
-  async getQuoteExactCoinForCoin({
+  async quoteExactCoinForCoin({
+    pubkey,
     exactAmountIn,
     coinTypeIn,
     coinTypeOut,
   }: {
+    pubkey: Types.Address;
     exactAmountIn: AnyUnits;
     coinTypeIn: Types.MoveStructTag;
     coinTypeOut: Types.MoveStructTag;
   }): Promise<TransactionResult<RouterQuote | undefined>> {
-    const sender = this.sender;
-    if (sender === undefined) {
-      throw new Error("Router swap must have sender");
-    }
-    assert(sender !== undefined);
-    const result = swapExactCoinForCoin(
-      this.client,
-      {
-        sender,
-        coinTypeIn,
-        coinTypeOut,
-        exactAmountAuIn: (
-          await this.client.toAtomicUnits(coinTypeIn, exactAmountIn)
-        ).toU64(),
-        minAmountAuOut: AU(0).toU64(),
-      },
-      { simulate: true }
+    const accountFrom = new TxnBuilderTypes.Ed25519PublicKey(
+      new HexString(pubkey).toUint8Array()
     );
-    return result.then((r) => {
-      return getRouterQuote(
-        this.client,
-        "ExactIn",
-        r,
-        true,
-        coinTypeIn,
-        coinTypeOut
-      );
-    });
+    const tx = await this.client.aptosClient.simulateTransaction(
+      accountFrom,
+      await this.client.aptosClient.generateTransaction(
+        new HexString(pubkey),
+        // @ts-ignore
+        swapExactCoinForCoinPayload(this.client, {
+          coinTypeIn,
+          coinTypeOut,
+          exactAmountAuIn: (
+            await this.client.toAtomicUnits(coinTypeIn, exactAmountIn)
+          ).toU64(),
+          minAmountAuOut: "0",
+        })
+      ),
+      {
+        estimateGasUnitPrice: true,
+        estimateMaxGasAmount: true,
+        estimatePrioritizedGasUnitPrice: true,
+      }
+    );
+    const result = parseRouterEvents(this.client, tx[0]!);
+    return getRouterQuote(
+      this.client,
+      "ExactIn",
+      result,
+      true,
+      coinTypeIn,
+      coinTypeOut
+    );
   }
 
-  async getQuoteCoinForExactCoin({
+  async quoteCoinForExactCoin({
     exactAmountOut,
     coinTypeIn,
     coinTypeOut,

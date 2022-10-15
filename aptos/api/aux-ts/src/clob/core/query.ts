@@ -215,7 +215,7 @@ export async function market(
   const tickSize = new AtomicUnits(rawMarket.data.tick_size);
   const sender = new AptosAccount();
   // FIXME hack
-  // await auxClient.faucetClient?.fundAccount(sender.address(), 100000000);
+  await auxClient.faucetClient?.fundAccount(sender.address(), 100000000);
   const payload = {
     function: `${auxClient.moduleAddress}::clob_market::load_market_into_event`,
     type_arguments: [baseCoinType, quoteCoinType],

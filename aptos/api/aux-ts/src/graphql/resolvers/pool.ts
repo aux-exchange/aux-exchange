@@ -97,7 +97,7 @@ export const pool = {
     //     : parent.coinInfoX;
     // const router = new aux.Router({ client: auxClient });
     // router.sender = new AptosAccount();
-    // const quote = await router.getQuoteExactCoinForCoin({
+    // const quote = await router.quoteExactCoinForCoin({
     //   exactAmountIn: DU(amount),
     //   coinTypeIn,
     //   coinTypeOut: coinInfoOut.coinType,
@@ -124,7 +124,7 @@ export const pool = {
     //     ? parent.coinInfoX
     //     : parent.coinInfoY;
     // const router = new aux.Router({ client: auxClient });
-    // const quote = await router.getQuoteCoinForExactCoin({
+    // const quote = await router.quoteCoinForExactCoin({
     //   exactAmountOut: DU(amount),
     //   coinTypeIn: coinInfoIn.coinType,
     //   coinTypeOut,

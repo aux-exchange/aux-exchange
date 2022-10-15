@@ -348,10 +348,11 @@ describe("Router Core tests", function () {
   });
 });
 
-describe("Router DSL tests", function () {
+describe.only("Router DSL tests", function () {
   this.timeout(30000);
   const aux: AptosAccount = sender;
 
+  console.log(auxClient.moduleAddress);
   let vault: Vault;
   let market: Market;
   let pool: Pool;
@@ -489,6 +490,7 @@ describe("Router DSL tests", function () {
   });
 
   it("createMarket", async function () {
+    console.log(aux);
     market = await Market.create(auxClient, {
       sender: aux,
       baseCoinType: btcCoinType,
@@ -544,6 +546,7 @@ describe("Router DSL tests", function () {
 
   it("quoteExactUsdcForBtc", async function () {
     const txResult = await router.getQuoteExactCoinForCoin({
+      pubkey: bob.pubKey.toString(),
       exactAmountIn: DU(17_000),
       coinTypeIn: usdcCoinType,
       coinTypeOut: btcCoinType,
@@ -671,6 +674,7 @@ describe("Router DSL tests", function () {
 
   it("quoteExactBtcForUsdc", async function () {
     const txResult = await router.getQuoteExactCoinForCoin({
+      pubkey: sender.address().toString(),
       exactAmountIn: DU(0.75),
       coinTypeIn: btcCoinType,
       coinTypeOut: usdcCoinType,

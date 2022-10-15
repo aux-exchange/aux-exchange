@@ -261,7 +261,7 @@ async function main() {
 
   // get and process quote
   const exactAmount = DU(0.749);
-  const quoteResult = await router.getQuoteCoinForExactCoin({
+  const quoteResult = await router.quoteCoinForExactCoin({
     coinTypeIn: usdcCoinType,
     coinTypeOut: btcCoinType,
     exactAmountOut: exactAmount,
@@ -303,7 +303,7 @@ async function main() {
   }
 
   // Swap exactly 0.749 BTC for USDC. All wille execute via AMM since CLOB is empty.
-  const quoteResult2 = await router.getQuoteExactCoinForCoin({
+  const quoteResult2 = await router.quoteExactCoinForCoin({
     coinTypeIn: btcCoinType,
     coinTypeOut: usdcCoinType,
     exactAmountIn: exactAmount,

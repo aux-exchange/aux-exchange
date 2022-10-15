@@ -55,7 +55,7 @@ export async function swapCoinForExactCoin(
 
 export function swapExactCoinForCoinPayload(
   auxClient: AuxClient,
-  swapInput: SwapExactCoinForCoinInput
+  swapInput: SwapExactCoinForCoinInput,
 ): Types.EntryFunctionPayload {
   return {
     function: `${auxClient.moduleAddress}::router::swap_exact_coin_for_coin`,
