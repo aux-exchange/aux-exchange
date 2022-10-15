@@ -150,7 +150,7 @@ module aux::router {
 
                 // if there are no bids, or the remaining quantity is < 1 lot, execute the rest through the pool
                 if (clob_market::n_bid_levels<CoinIn, CoinOut>() == 0 || au_in - total_input_spent_au < lot_size) {
-                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin<CoinIn, CoinOut>(
+                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -168,7 +168,7 @@ module aux::router {
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
                 let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
                 let (numerator, denominator) = simplify(best_bid_less_fee, base_unit_au);
-                let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin<CoinIn, CoinOut>(
+                let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
                     &mut coin_out,
@@ -213,7 +213,7 @@ module aux::router {
                 // if there are no asks, execute the rest through the pool
                 if (clob_market::n_ask_levels<CoinOut, CoinIn>() == 0) {
 
-                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin(
+                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -235,7 +235,7 @@ module aux::router {
                 // if we can't purchase at least one lot, execute the rest through the pool
                 let base_au_for_level = (((au_in - total_input_spent_au) as u128) * base_unit_au / best_ask_plus_fee as u64) ;  // how many au of base can we buy at the best ask with our remaining quote?
                 if (base_au_for_level < lot_size) {
-                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin(
+                    let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -252,7 +252,7 @@ module aux::router {
                 };
 
                 let (numerator, denominator) = simplify(base_unit_au, best_ask_plus_fee);
-                let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin(
+                let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -288,7 +288,7 @@ module aux::router {
             assert!(total_input_spent_au == au_in, INTERNAL_ERROR);
             assert!(total_output_received_au >= min_au_out, INVALID_MIN_OUT);
         } else if (pool_exists) {
-            let (coin_received, coin_spent) = amm::swap_exact_coin_for_coin(
+            let (coin_received, coin_spent) = amm::swap_exact_coin_for_coin_mut(
                 sender_addr,
                 &mut coin_in,
                 &mut coin_out,
@@ -350,7 +350,7 @@ module aux::router {
 
                 // if there are no bids, execute the rest through the pool
                 if (clob_market::n_bid_levels<CoinIn, CoinOut>() == 0) {
-                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -370,7 +370,7 @@ module aux::router {
                 let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
                 let base_au_for_level = (((au_out - total_output_received_au) as u128) * base_unit_au / best_bid_less_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                 if (base_au_for_level < lot_size) {
-                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -387,7 +387,7 @@ module aux::router {
                 };
 
                 let (numerator, denominator) = simplify(base_unit_au, best_bid_less_fee);
-                let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+                let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
                     &mut coin_out,
@@ -433,7 +433,7 @@ module aux::router {
 
                 // if there are no asks, or the remaining quantity is < 1 lot, execute the rest through the pool
                 if (clob_market::n_ask_levels<CoinOut, CoinIn>() == 0 || au_out - total_output_received_au < lot_size) {
-                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+                    let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -452,7 +452,7 @@ module aux::router {
                 let best_ask_price_au = clob_market::best_ask_au<CoinOut, CoinIn>();
                 let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
                 let (numerator, denominator) = simplify(best_ask_plus_fee, base_unit_au);
-                let (y_received_au, x_spent_au) = amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+                let (y_received_au, x_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
                     &mut coin_out,
@@ -485,7 +485,7 @@ module aux::router {
             assert!(total_output_received_au == au_out, INVALID_MIN_OUT);
 
         } else if (pool_exists) {
-            amm::swap_coin_for_exact_coin<CoinIn, CoinOut>(
+            amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                 sender_addr,
                 &mut coin_in,
                 &mut coin_out,
