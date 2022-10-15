@@ -1945,110 +1945,6 @@ function MarketList({
     }, `${item.name}-${index2}`))
   });
 }
-const CoinsDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "Coins"
-    },
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "marketCoins"
-        },
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "coinType"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "decimals"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "name"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "symbol"
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-const SwapDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "Swap"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "swapInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "SwapInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "swap"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "swapInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "swapInput"
-            }
-          }
-        }]
-      }]
-    }
-  }]
-};
 const LastTradePriceDocument = {
   "kind": "Document",
   "definitions": [{
@@ -2115,6 +2011,59 @@ function useLastTradePrice(marketInputs) {
   });
   return ltp;
 }
+const PoolCoinsDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "PoolCoins"
+    },
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "poolCoins"
+        },
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinType"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "decimals"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "name"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "symbol"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function usePoolCoins() {
+  const poolCoins = useQuery(PoolCoinsDocument);
+  return poolCoins;
+}
 const CoinXYParamCtx = react.exports.createContext(null);
 const CoinXYParamCtxProvider = ({
   children
@@ -2124,8 +2073,8 @@ const CoinXYParamCtxProvider = ({
     params,
     setParams
   } = gn();
-  const coinsQuery = useQuery(CoinsDocument);
-  const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.marketCoins) != null ? _b : [];
+  const coinsQuery = usePoolCoins();
+  const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
   const defaultCoinX = (_c = coins.find(({
     coinType
   }) => coinType.toLowerCase().match("btc"))) == null ? void 0 : _c.coinType;
@@ -3497,6 +3446,61 @@ function AddLiquidityContainer({}) {
     secondCoinAu
   });
 }
+const SwapDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Swap"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "swapInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "SwapInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "swap"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "swapInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "swapInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
 const RemoveLiquidityDocument = {
   "kind": "Document",
   "definitions": [{
@@ -4005,12 +4009,6 @@ const PortfolioDocument = {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
                   "value": "amount"
                 }
               }]
@@ -4028,12 +4026,6 @@ const PortfolioDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
                 }
               }, {
                 "kind": "Field",
