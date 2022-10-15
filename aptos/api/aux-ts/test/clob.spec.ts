@@ -116,7 +116,6 @@ describe("CLOB DSL tests", function () {
       // looks like we should subtract maker rebates 1bps
       quantize(0.004 - 0.002 * 1.0005, quoteCoinInfo.decimals)
     );
-    0;
     const auxAccount = new AuxAccount(auxClient, alice.address().toString());
 
     await auxAccount.openOrders({
@@ -159,19 +158,9 @@ describe("CLOB DSL tests", function () {
 
   it("market book parsing", async () => {
     await market.update();
-    assert.equal(market.bids.length, 1);
-    const bid = market.bids[0]!;
-    assert.equal(
-      bid.price.toDecimalUnits(market.quoteCoinInfo.decimals).toString(),
-      "0.001"
-    );
-    assert.equal(bid.orders.length, 1);
-    const order = bid.orders[0]!;
-    assert.equal(
-      order.ownerId.toShortString(),
-      alice.address().toShortString()
-    );
-    assert.equal(order.quantity.toString(), "1000000");
+    const bid = market.l2.bids[0]!;
+    assert.equal(bid.price.toString(), "0.001");
+    assert.equal(bid.quantity.toNumber(), 1);
   });
 
   it("cancelOrder", async function () {

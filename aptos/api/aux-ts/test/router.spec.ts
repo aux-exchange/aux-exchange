@@ -348,7 +348,7 @@ describe("Router Core tests", function () {
   });
 });
 
-describe.only("Router DSL tests", function () {
+describe("Router DSL tests", function () {
   this.timeout(30000);
   const aux: AptosAccount = sender;
 

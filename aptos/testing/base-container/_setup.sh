@@ -8,4 +8,4 @@ cd /root
 setup-aux -f -w /root/aux-exchange/aptos/contract
 
 cd /root/aux-exchange/aptos/api/aux-ts
-yarn publish:local
+yarn --immutable
