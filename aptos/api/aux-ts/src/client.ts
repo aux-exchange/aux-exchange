@@ -286,6 +286,7 @@ export class AuxClient {
         {
           estimateGasUnitPrice: true,
           estimateMaxGasAmount: true,
+          estimatePrioritizedGasUnitPrice: true
         }
       );
       if (simTxn.length != 1) {
