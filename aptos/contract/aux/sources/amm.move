@@ -168,14 +168,14 @@ module aux::amm {
     }
 
     /// Swap exact amount of input coin for variable amount of output coin
-    public entry fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
+    public entry fun swap_exact_coin_for_coin_<CoinIn, CoinOut>(
         sender: &signer,
         au_in: u64,
         min_au_out: u64,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
-        coin_swap_exact_coin_for_coin(
+        swap_exact_coin_for_coin(
             sender,
             &mut in,
             &mut out,
@@ -192,14 +192,14 @@ module aux::amm {
 
     /// Swaps at most max_in_au of CoinIn for exactly exact_out_au of CoinOut.
     /// Fails if this cannot be done.
-    public entry fun swap_coin_for_exact_coin<CoinIn, CoinOut>(
+    public entry fun swap_coin_for_exact_coin_<CoinIn, CoinOut>(
         sender: &signer,
         max_in_au: u64,
         exact_out_au: u64,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
-        coin_swap_coin_for_exact_coin(
+        swap_coin_for_exact_coin(
             sender,
             &mut in,
             &mut out,
@@ -230,7 +230,7 @@ module aux::amm {
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
-        coin_swap_exact_coin_for_coin(
+        swap_exact_coin_for_coin(
             sender,
             &mut in,
             &mut out,
@@ -258,7 +258,7 @@ module aux::amm {
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
-        coin_swap_coin_for_exact_coin(
+        swap_coin_for_exact_coin(
             sender,
             &mut in,
             &mut out,
@@ -677,7 +677,7 @@ module aux::amm {
     /// CoinIn spent). Debits from user_in and merges to user_out.
     /// 
     /// See comments for swap_exact_coin_for_coin.
-    public fun coin_swap_exact_coin_for_coin<CoinIn, CoinOut>(
+    public fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
         sender: &signer,
         user_in: &mut coin::Coin<CoinIn>,
         user_out: &mut coin::Coin<CoinOut>,
@@ -814,7 +814,7 @@ module aux::amm {
     /// CoinIn spent). Debits from user_in and credits to user_out.
     /// 
     /// See comments for swap_coin_for_exact_coin. 
-    public fun coin_swap_coin_for_exact_coin<CoinIn, CoinOut>(
+    public fun swap_coin_for_exact_coin<CoinIn, CoinOut>(
         sender: &signer,
         user_in: &mut coin::Coin<CoinIn>,
         user_out: &mut coin::Coin<CoinOut>,
@@ -1643,7 +1643,7 @@ module aux::amm {
         };
         let au_out = au_out<AuxCoin, AuxTestCoin>(2);
         assert!(au_out == 7, ETEST_FAILED);
-        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 2, 7);
+        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 2, 7);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8998, coin::balance<AuxCoin>(sender_addr));
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6007, ETEST_FAILED);
         {
@@ -1658,7 +1658,7 @@ module aux::amm {
         // We get less X out for the same amount of Y, due to rounding errors working in favor of the pool
         let au_out = au_out<AuxTestCoin, AuxCoin>(7);
         assert!(au_out == 1, ETEST_FAILED);
-        swap_exact_coin_for_coin<AuxTestCoin, AuxCoin>(sender, 7, 1);
+        swap_exact_coin_for_coin_<AuxTestCoin, AuxCoin>(sender, 7, 1);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6000, ETEST_FAILED);
         {
@@ -1725,7 +1725,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // ratio 1, 10 => 2, 5
-        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 1, 3);
+        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 1, 3);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6003, ETEST_FAILED);
         {
@@ -1937,7 +1937,7 @@ module aux::amm {
         let out = coin::zero();
 
         let (actual_au_out, actual_au_in) = if (input.exact_in) {
-            coin_swap_exact_coin_for_coin<CoinIn, CoinOut>(
+            swap_exact_coin_for_coin<CoinIn, CoinOut>(
                 sender, 
                 &mut in,
                 &mut out,
@@ -1948,7 +1948,7 @@ module aux::amm {
                 input.limit_denom
             )
         } else {
-            coin_swap_coin_for_exact_coin<CoinIn, CoinOut>(
+            swap_coin_for_exact_coin<CoinIn, CoinOut>(
                 sender, 
                 &mut in,
                 &mut out,
@@ -2564,7 +2564,7 @@ module aux::amm {
         let in = coin::withdraw<AuxCoin>(sender, 150000);
         let out = coin::zero();
         while (i < 100) {
-            let (y, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
+            let (y, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
                 sender,
                 &mut in,
                 &mut out,
@@ -2587,7 +2587,7 @@ module aux::amm {
         add_exact_liquidity<AuxCoin, AuxTestCoin>(sender, 1000, 4000);
         let in = coin::withdraw<AuxCoin>(sender, 150000);
         let out = coin::zero();
-        let (y_received_2, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
+        let (y_received_2, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
             sender,
             &mut in,
             &mut out,
@@ -2599,7 +2599,7 @@ module aux::amm {
         );
         coin::deposit(signer::address_of(sender), in);
         coin::deposit(signer::address_of(sender), out);
-        // let (y_received_2, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, x_spent, 0, false, 0, 0);
+        // let (y_received_2, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, x_spent, 0, false, 0, 0);
 
         assert!(y_received_1 <= y_received_2, 1);
     }
