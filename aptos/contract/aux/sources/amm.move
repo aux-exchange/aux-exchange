@@ -176,7 +176,7 @@ module aux::amm {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
         swap_exact_coin_for_coin(
-            sender,
+            signer::address_of(sender),
             &mut in,
             &mut out,
             au_in,
@@ -200,7 +200,7 @@ module aux::amm {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
         swap_coin_for_exact_coin(
-            sender,
+            signer::address_of(sender),
             &mut in,
             &mut out,
             max_in_au,
@@ -231,7 +231,7 @@ module aux::amm {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
         swap_exact_coin_for_coin(
-            sender,
+            signer::address_of(sender),
             &mut in,
             &mut out,
             au_in,
@@ -259,7 +259,7 @@ module aux::amm {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
         swap_coin_for_exact_coin(
-            sender,
+            signer::address_of(sender),
             &mut in,
             &mut out,
             max_in_au,
@@ -678,9 +678,9 @@ module aux::amm {
     /// 
     /// See comments for swap_exact_coin_for_coin.
     public fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
-        sender: &signer,
-        user_in: &mut coin::Coin<CoinIn>,
-        user_out: &mut coin::Coin<CoinOut>,
+        sender_addr: address,
+        coin_in: &mut coin::Coin<CoinIn>,
+        coin_out: &mut coin::Coin<CoinOut>,
         au_in: u64,
         min_au_out: u64,
         use_limit_price: bool,
@@ -717,10 +717,10 @@ module aux::amm {
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
 
             // transfer tokens
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.x_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.y_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve + au_in) as u128) * ((y_reserve - au_out) as u128);
@@ -729,7 +729,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -770,10 +770,10 @@ module aux::amm {
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
             
             // transfer tokens
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.y_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.x_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((y_reserve + au_in) as u128) * ((x_reserve - au_out) as u128);
@@ -782,7 +782,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -811,13 +811,13 @@ module aux::amm {
     }
 
     /// Performs a swap and returns (atomic units CoinOut received, atomic units
-    /// CoinIn spent). Debits from user_in and credits to user_out.
+    /// CoinIn spent). Debits from coin_in and credits to coin_out.
     /// 
     /// See comments for swap_coin_for_exact_coin. 
     public fun swap_coin_for_exact_coin<CoinIn, CoinOut>(
-        sender: &signer,
-        user_in: &mut coin::Coin<CoinIn>,
-        user_out: &mut coin::Coin<CoinOut>,
+        sender_addr: address,
+        coin_in: &mut coin::Coin<CoinIn>,
+        coin_out: &mut coin::Coin<CoinOut>,
         max_au_in: u64,
         au_out: u64,
         use_limit_price: bool,
@@ -860,10 +860,10 @@ module aux::amm {
             let au_in = get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.x_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.y_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve + au_in) as u128) * ((y_reserve - au_out) as u128);
@@ -872,7 +872,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -915,10 +915,10 @@ module aux::amm {
             let au_in = get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.y_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.x_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((y_reserve + au_in) as u128) * ((x_reserve - au_out) as u128);
@@ -927,7 +927,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -1938,7 +1938,7 @@ module aux::amm {
 
         let (actual_au_out, actual_au_in) = if (input.exact_in) {
             swap_exact_coin_for_coin<CoinIn, CoinOut>(
-                sender, 
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
                 input.au_in, 
@@ -1949,7 +1949,7 @@ module aux::amm {
             )
         } else {
             swap_coin_for_exact_coin<CoinIn, CoinOut>(
-                sender, 
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
                 input.au_in, 
@@ -2565,7 +2565,7 @@ module aux::amm {
         let out = coin::zero();
         while (i < 100) {
             let (y, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
-                sender,
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
                 100,
@@ -2588,7 +2588,7 @@ module aux::amm {
         let in = coin::withdraw<AuxCoin>(sender, 150000);
         let out = coin::zero();
         let (y_received_2, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
-            sender,
+            signer::address_of(sender),
             &mut in,
             &mut out,
             x_spent,
@@ -2599,7 +2599,6 @@ module aux::amm {
         );
         coin::deposit(signer::address_of(sender), in);
         coin::deposit(signer::address_of(sender), out);
-        // let (y_received_2, _) = swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, x_spent, 0, false, 0, 0);
 
         assert!(y_received_1 <= y_received_2, 1);
     }
