@@ -58,3 +58,12 @@ if you have been interacting with the local validator in other ways.
 
 See `aptos/api/aux-ts/examples` for examples of interacting
 with the AMM and CLOB.
+
+## Addresses
+
+network | contract | address 
+---- | ---- | ----
+devnet | deployer | [`0xb8c8f08a30d60df6da709326ea61d4d55ddb0168d8893eba0f41ba4c860be2a0`](https://explorer.aptoslabs.com/account/0xb8c8f08a30d60df6da709326ea61d4d55ddb0168d8893eba0f41ba4c860be2a0?network=devnet)
+devnet | aux | [`0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70`](https://explorer.aptoslabs.com/account/0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70?network=devnet)
+testnet | deployer | [`0x22ce10dcffe2503ab09950b4d7db74f9771347c582ca3a3fed7828b6f2d3e081`](https://explorer.aptoslabs.com/account/0x22ce10dcffe2503ab09950b4d7db74f9771347c582ca3a3fed7828b6f2d3e081?network=testnet)
+testnet | aux | [`0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27`](https://explorer.aptoslabs.com/account/0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27?network=testnet)
