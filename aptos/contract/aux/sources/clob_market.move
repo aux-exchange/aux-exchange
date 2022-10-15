@@ -48,7 +48,7 @@
 /// =>
 /// lot_size * tick_size / 1 e base_decimals > 0
 /// ```
-/// 
+///
 module aux::clob_market {
     friend aux::router;
 
@@ -1133,15 +1133,34 @@ module aux::clob_market {
 
         return (order, true)
     }
-    /********************/
-    /* FRIEND FUNCTIONS */
-    /********************/
 
+    public fun place_market_order<B, Q>(
+        sender_addr: address,
+        base_coin: coin::Coin<B>,
+        quote_coin: coin::Coin<Q>,
+        is_bid: bool,
+        order_type: u64,
+        limit_price: u64,
+        quantity: u64,
+        client_order_id: u128,
+    ): (coin::Coin<B>, coin::Coin<Q>)  acquires Market, OpenOrderAccount {
+        place_market_order_mut(
+            sender_addr,
+            &mut base_coin,
+            &mut quote_coin,
+            is_bid,
+            order_type,
+            limit_price,
+            quantity,
+            client_order_id
+        );
+        (base_coin, quote_coin)
+    }
 
     /// Place a market order (IOC or FOK) on behalf of the router.
     /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
     /// Emits events on order placement and fills.
-    public(friend) fun place_order_for_router<B, Q>(
+    public fun place_market_order_mut<B, Q>(
         sender_addr: address,
         base_coin: &mut coin::Coin<B>,
         quote_coin: &mut coin::Coin<Q>,

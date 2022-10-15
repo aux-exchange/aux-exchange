@@ -183,7 +183,7 @@ module aux::router {
                 total_output_received_au = total_output_received_au + y_received_au;
 
                 if (total_input_spent_au < au_in) {
-                    let (base_spent_au, quote_received_au) = clob_market::place_order_for_router<CoinIn, CoinOut>(
+                    let (base_spent_au, quote_received_au) = clob_market::place_market_order_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -269,7 +269,7 @@ module aux::router {
                 if (total_input_spent_au < au_in) {
                     // remaining input coin is max_quote_qty
                     let base_au_for_level = (((au_in - total_input_spent_au) as u128) * base_unit_au / best_ask_plus_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
-                    let (base_received_au, quote_spent_au) = clob_market::place_order_for_router<CoinOut, CoinIn>(
+                    let (base_received_au, quote_spent_au) = clob_market::place_market_order_mut<CoinOut, CoinIn>(
                         sender_addr,
                         &mut coin_out,
                         &mut coin_in,
@@ -301,7 +301,7 @@ module aux::router {
             assert!((coin_spent as u64) == au_in, INTERNAL_ERROR);
             assert!((coin_received as u64) >= min_au_out, INVALID_MIN_OUT);
         } else if (market_exists_base_in_quote_out) {
-            let (base_spent_au, quote_received_au) = clob_market::place_order_for_router<CoinIn, CoinOut>(
+            let (base_spent_au, quote_received_au) = clob_market::place_market_order_mut<CoinIn, CoinOut>(
                 sender_addr,
                 &mut coin_in,
                 &mut coin_out,
@@ -404,7 +404,7 @@ module aux::router {
 
                 if (total_output_received_au < au_out && total_input_spent_au < max_au_in) {
                     let base_au_for_level = (((au_out - total_output_received_au) as u128) * base_unit_au / best_bid_less_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
-                    let (base_spent_au, quote_received_au) = clob_market::place_order_for_router<CoinIn, CoinOut>(
+                    let (base_spent_au, quote_received_au) = clob_market::place_market_order_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
                         &mut coin_out,
@@ -467,7 +467,7 @@ module aux::router {
 
                 if (total_output_received_au < au_out && total_input_spent_au < max_au_in) {
                     // remaining input coin is max_quote_qty
-                    let (base_received_au, quote_spent_au) = clob_market::place_order_for_router<CoinOut, CoinIn>(
+                    let (base_received_au, quote_spent_au) = clob_market::place_market_order_mut<CoinOut, CoinIn>(
                         sender_addr,
                         &mut coin_out,
                         &mut coin_in,
@@ -497,7 +497,7 @@ module aux::router {
             );
         } else if (market_exists_quote_in_base_out) {
             // BUY
-            let (base_received_au, quote_spent_au) = clob_market::place_order_for_router<CoinOut, CoinIn>(
+            let (base_received_au, quote_spent_au) = clob_market::place_market_order_mut<CoinOut, CoinIn>(
                 sender_addr,
                 &mut coin_out,
                 &mut coin_in,
