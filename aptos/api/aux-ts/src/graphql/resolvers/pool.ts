@@ -83,7 +83,6 @@ export const pool = {
     parent: Pool,
     { coinTypeIn, amount }: PoolPriceInArgs
   ): Promise<Maybe<number>> {
-    console.log(parent.amountX, parent.amountY);
     // console.log(parent.amountY)
     const ratio =
       coinTypeIn === parent.coinInfoX.coinType

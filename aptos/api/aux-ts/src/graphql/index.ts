@@ -134,6 +134,6 @@ async function startApolloServer() {
   }
 }
 
-publishAmmEvents;
-publishClobEvents;
+publishAmmEvents();
+publishClobEvents();
 startApolloServer().then(() => {});
