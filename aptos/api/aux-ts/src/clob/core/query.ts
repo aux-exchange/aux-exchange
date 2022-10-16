@@ -1,4 +1,4 @@
-import { AptosAccount, HexString, Types } from "aptos";
+import { HexString, Types } from "aptos";
 import BN from "bn.js";
 import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
@@ -213,18 +213,13 @@ export async function market(
   const rawMarket = resource as any as RawMarket;
 
   const tickSize = new AtomicUnits(rawMarket.data.tick_size);
-  const sender = new AptosAccount();
-  // FIXME hack
-  await auxClient.faucetClient?.fundAccount(sender.address(), 100000000);
   const payload = {
     function: `${auxClient.moduleAddress}::clob_market::load_market_into_event`,
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
-  const txResult = await auxClient.generateSignSubmitWaitForTransaction({
-    sender,
+  const txResult = await auxClient.dataSimulate({
     payload,
-    transactionOptions: { simulate: true },
   });
 
   const l2 = txResult.events[0];

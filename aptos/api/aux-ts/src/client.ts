@@ -6,7 +6,9 @@ import {
   MaybeHexString,
   Types,
   WaitForTransactionError,
+  TxnBuilderTypes,
 } from "aptos";
+import {} from "aptos";
 import type BN from "bn.js";
 import * as fs from "fs";
 import * as SHA3 from "js-sha3";
@@ -31,12 +33,54 @@ const ENV_APTOS_LOCAL = "APTOS_LOCAL";
 const ENV_APTOS_PROFILE = "APTOS_PROFILE";
 
 export enum Network {
-  Devnet,
-  Localnet,
+  Testnet = "testnet",
+  Devnet = "devnet",
+  Localnet = "localnet",
 }
 
-export const DEVNET_MODULE_ADDRESS =
-  "0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70";
+interface NetworkConfig {
+  moduleAddress?: string;
+  fullnode: string;
+  faucet?: string;
+  dataFeedAddress?: Types.Address;
+  dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey;
+}
+
+function mustEd25519PublicKey(
+  hexString: string
+): TxnBuilderTypes.Ed25519PublicKey {
+  return new TxnBuilderTypes.Ed25519PublicKey(
+    new HexString(hexString).toUint8Array()
+  );
+}
+
+const networkConfigs: Record<Network, NetworkConfig> = {
+  localnet: {
+    fullnode: "http://127.0.0.1:8080",
+    faucet: "http://127.0.0.1:8081",
+  },
+  testnet: {
+    fullnode: "https://fullnode.testnet.aptoslabs.com/v1",
+    moduleAddress:
+      "0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27",
+    dataFeedPublicKey: mustEd25519PublicKey(
+      "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
+    ),
+    dataFeedAddress:
+      "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8",
+  },
+  devnet: {
+    fullnode: "https://fullnode.devnet.aptoslabs.com/v1",
+    faucet: "https://faucet.devnet.aptoslabs.com",
+    moduleAddress:
+      "0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70",
+    dataFeedPublicKey: mustEd25519PublicKey(
+      "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
+    ),
+    dataFeedAddress:
+      "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f",
+  },
+};
 
 /**
  * For localnet deployments, this returns the Aux module address deployed by
@@ -93,6 +137,9 @@ export class AuxClient {
   transactionOptions: TransactionOptions | undefined;
   forceSimulate: boolean;
 
+  dataFeedAddress: Types.Address | undefined;
+  dataFeedPublicKey: TxnBuilderTypes.Ed25519PublicKey | undefined;
+
   // Internal state.
 
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
@@ -104,18 +151,24 @@ export class AuxClient {
     moduleAddress,
     forceSimulate,
     transactionOptions,
+    dataFeedAddress,
+    dataFeedPublicKey,
   }: {
     aptosClient: AptosClient;
     faucetClient?: FaucetClient | undefined;
     moduleAddress: Types.Address;
     forceSimulate: boolean;
     transactionOptions?: TransactionOptions | undefined;
+    dataFeedAddress?: Types.Address | undefined;
+    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
   }) {
     this.aptosClient = aptosClient;
     this.faucetClient = faucetClient;
     this.moduleAddress = moduleAddress;
     this.forceSimulate = forceSimulate;
     this.transactionOptions = transactionOptions;
+    this.dataFeedAddress = dataFeedAddress;
+    this.dataFeedPublicKey = dataFeedPublicKey;
 
     this.coinInfo = new Map();
     this.vaults = new Map();
@@ -128,6 +181,8 @@ export class AuxClient {
     moduleAddress,
     forceSimulate,
     transactionOptions,
+    dataFeedAddress,
+    dataFeedPublicKey,
   }: {
     network: Network;
     validatorAddress?: string;
@@ -135,36 +190,30 @@ export class AuxClient {
     moduleAddress?: string;
     forceSimulate?: boolean;
     transactionOptions?: TransactionOptions | undefined;
+    dataFeedAddress?: Types.Address;
+    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey;
   }): AuxClient {
-    switch (network) {
-      case Network.Devnet:
-        validatorAddress =
-          validatorAddress === undefined
-            ? "https://fullnode.devnet.aptoslabs.com/v1"
-            : validatorAddress;
-        faucetAddress =
-          faucetAddress === undefined
-            ? "https://faucet.devnet.aptoslabs.com"
-            : faucetAddress;
-        break;
-      case Network.Localnet:
-        validatorAddress =
-          validatorAddress === undefined
-            ? "http://0.0.0.0:8080"
-            : validatorAddress;
-        faucetAddress =
-          faucetAddress === undefined ? "http://0.0.0.0:8081" : faucetAddress;
-    }
+    let defaultConfig = networkConfigs[network];
+    validatorAddress = validatorAddress ?? defaultConfig.fullnode;
+    faucetAddress = faucetAddress ?? defaultConfig.faucet;
     return new AuxClient({
       aptosClient: new AptosClient(validatorAddress),
-      faucetClient: new FaucetClient(validatorAddress, faucetAddress),
-      moduleAddress:
-        moduleAddress === undefined ? DEVNET_MODULE_ADDRESS : moduleAddress,
+      faucetClient:
+        faucetAddress !== undefined
+          ? new FaucetClient(validatorAddress, faucetAddress)
+          : undefined,
+      moduleAddress: moduleAddress ?? defaultConfig.moduleAddress!,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
+      dataFeedAddress: dataFeedAddress ?? defaultConfig.dataFeedAddress,
+      dataFeedPublicKey: dataFeedPublicKey ?? defaultConfig.dataFeedPublicKey,
       transactionOptions,
     });
   }
 
+  /**
+   * Create client from environment variables.
+   * See getAptosProfileNameFromEnvironment for more details on which profile will be used.
+   */
   static createFromEnv({
     validatorAddress,
     faucetAddress,
@@ -194,9 +243,11 @@ export class AuxClient {
       faucetClient:
         faucet === undefined ? undefined : new FaucetClient(node, faucet),
       moduleAddress:
-        moduleAddress === undefined ? DEVNET_MODULE_ADDRESS : moduleAddress,
+        moduleAddress ?? networkConfigs[Network.Devnet].moduleAddress!,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
       transactionOptions,
+      dataFeedAddress: profile?.account,
+      dataFeedPublicKey: mustEd25519PublicKey(profile?.public_key!),
     });
   }
 
@@ -245,6 +296,53 @@ export class AuxClient {
   /**
    * Sends the payload as the sender and returns the transaction result.
    */
+  async dataSimulate({
+    payload,
+    transactionOptions,
+  }: {
+    payload: Types.EntryFunctionPayload;
+    transactionOptions?: TransactionOptions | undefined;
+  }): Promise<Types.UserTransaction> {
+    transactionOptions =
+      transactionOptions === undefined
+        ? this.transactionOptions
+        : transactionOptions;
+
+    const options = Object.fromEntries(
+      Object.entries({
+        sequence_number: transactionOptions?.sequenceNumber?.toString(),
+        max_gas_amount: transactionOptions?.maxGasAmount?.toString(),
+        gas_unit_price: transactionOptions?.gasUnitPrice?.toString(),
+        expiration_timestamp_secs:
+          transactionOptions?.expirationTimestampSecs?.toString(),
+        timeoutSecs: transactionOptions?.timeoutSecs?.toNumber(),
+        checkSuccess: transactionOptions?.checkSuccess,
+      }).filter(([_, v]) => v !== undefined)
+    );
+
+    const rawTxn = await this.aptosClient.generateTransaction(
+      this.dataFeedAddress!,
+      payload,
+      options
+    );
+
+    const simTxn = await this.aptosClient.simulateTransaction(
+      this.dataFeedPublicKey!,
+      rawTxn,
+      {
+        estimateGasUnitPrice: true,
+        estimateMaxGasAmount: true,
+        estimatePrioritizedGasUnitPrice: true,
+      }
+    );
+    if (simTxn.length != 1) {
+      throw new AuxClientError("simulated transaction length > 1");
+    }
+    return simTxn[0]!;
+  }
+  /**
+   * Sends the payload as the sender and returns the transaction result.
+   */
   async generateSignSubmitWaitForTransaction({
     sender,
     payload,
@@ -286,7 +384,7 @@ export class AuxClient {
         {
           estimateGasUnitPrice: true,
           estimateMaxGasAmount: true,
-          estimatePrioritizedGasUnitPrice: true
+          estimatePrioritizedGasUnitPrice: true,
         }
       );
       if (simTxn.length != 1) {
@@ -684,11 +782,23 @@ export function getAuxAuthorityAndAddressFromEnvironment(): [
   return [moduleAuthority, moduleAddress];
 }
 
+/**
+ *
+ * Check if APTOS_LOCAL is set non-empty string.
+ * Note, this will return true even if APTOS_LOCAL=false
+ */
 export function isAptosLocalFromEnvironment(): boolean {
   const value = process.env[ENV_APTOS_LOCAL];
   return value !== undefined && value !== "";
 }
 
+/**
+ * returns the desired profile name for aptos based on environment variables.
+ * First, the environment variable APTOS_PROFILE is checked, and if it is set to non empty value, that profile will be read.
+ * Then, if will check if APTOS_LOCAL is set, and if it is set, use localnet profile.
+ * Lastly, use default.
+ * @returns profile name
+ */
 export function getAptosProfileNameFromEnvironment(): string {
   const value = process.env[ENV_APTOS_PROFILE];
   if (value !== undefined && value !== "") {
