@@ -6,7 +6,7 @@ import { AuxClient, FakeCoin, NATIVE_APTOS_COIN } from "../../src/client";
 import { OrderType } from "../../src/clob/core/mutation";
 import { AU, DU } from "../../src/units";
 
-const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
+const auxClient = AuxClient.createFromEnv({});
 
 const privateKeyHexs: string[] = [
   "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49", // mnemoic: observe stairs visual bracket sick clog sport erode domain concert ecology strike, address: 0x767b7442b8547fa5cf50989b9b761760ca6687b83d1c23d3589a5ac8acb50639
@@ -37,17 +37,15 @@ interface Trader {
   account: AptosAccount;
 }
 
-async function setupTraders(n: number): Promise<Trader[]> {
-  await auxClient.airdropNativeCoin({
-    account: moduleAuthority.address(),
-    quantity: AU(1_000_000_000_000_000),
-  });
-
+async function setupTraders(
+  n: number,
+  alreadyDone: boolean
+): Promise<Trader[]> {
   const vault = new Vault(auxClient);
 
   let trader: Trader[] = [];
   for (const privateKeyHex of privateKeyHexs.slice(0, n)) {
-    trader.push(await setupTrader(vault, privateKeyHex));
+    trader.push(await setupTrader(vault, privateKeyHex, alreadyDone));
   }
 
   vault.transfer(
@@ -61,14 +59,17 @@ async function setupTraders(n: number): Promise<Trader[]> {
 
 async function setupTrader(
   vault: Vault,
-  privateKeyHex?: string
+  privateKeyHex?: string,
+  alreadyDone?: boolean
 ): Promise<Trader> {
   const trader = privateKeyHex
     ? AptosAccount.fromAptosAccountObject({ privateKeyHex })
     : new AptosAccount();
+  if (alreadyDone) {
+    return { ready: true, account: trader };
+  }
   await auxClient.faucetClient!.fundAccount(trader.address(), 1_000_000_000);
   await vault.createAuxAccount(trader);
-  await auxClient.registerAuxCoin(moduleAuthority);
 
   console.log(`setting up ${trader.address().toString()}`);
   for (const coin of [
@@ -174,7 +175,7 @@ async function replay(
 }
 
 async function main() {
-  let traders = await setupTraders(5);
+  let traders = await setupTraders(5, false);
   await replay(
     traders,
     "scripts/sim/replay.json",
