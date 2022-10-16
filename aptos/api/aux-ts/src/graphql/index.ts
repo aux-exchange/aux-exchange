@@ -120,7 +120,7 @@ async function startApolloServer() {
   apolloServer.applyMiddleware({ app });
 
   // Catch-all so React can handle routing
-  app.get("*", (_, res) => res.redirect("/"));
+  app.get("*", (_, res) => res.sendFile(__dirname + '/client/index.html'));
 
   // Now that our HTTP server is fully set up, we can listen to it.
   if (process.env["AUX_GRAPHQL_LOCAL"]) {
