@@ -2800,7 +2800,13 @@ const PoolDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
-              "value": "swaps"
+              "value": "feePercent"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "swapHistory"
             },
             "selectionSet": {
               "kind": "SelectionSet",
@@ -2890,7 +2896,7 @@ const PoolDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
-              "value": "addLiquiditys"
+              "value": "addLiquidityHistory"
             },
             "selectionSet": {
               "kind": "SelectionSet",
@@ -2918,7 +2924,7 @@ const PoolDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
-              "value": "removeLiquiditys"
+              "value": "removeLiquidityHistory"
             },
             "selectionSet": {
               "kind": "SelectionSet",
@@ -2992,7 +2998,7 @@ function PoolsEventTableContainer({}) {
   });
   const pool = (_a = poolQuery == null ? void 0 : poolQuery.data) == null ? void 0 : _a.pool;
   const [filterBy, setFilterBy] = react.exports.useState(3);
-  const swapTableData = ((_b = pool == null ? void 0 : pool.swaps) != null ? _b : []).map(({
+  const swapTableData = ((_b = pool == null ? void 0 : pool.swapHistory) != null ? _b : []).map(({
     amountIn,
     amountOut,
     coinInfoIn,
@@ -3010,7 +3016,7 @@ function PoolsEventTableContainer({}) {
       type: `Swap ${coinInfoIn.symbol} for ${coinInfoOut.symbol}`
     };
   });
-  const addLiquidityTableData = ((_c = pool == null ? void 0 : pool.addLiquiditys) != null ? _c : []).map(({
+  const addLiquidityTableData = ((_c = pool == null ? void 0 : pool.addLiquidityHistory) != null ? _c : []).map(({
     amountAddedX,
     amountAddedY,
     amountMintedLP
@@ -3027,7 +3033,7 @@ function PoolsEventTableContainer({}) {
       type: `Add ${(_e = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _e : ""} and ${(_f = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _f : ""}`
     };
   });
-  const removeLiquidityTableData = ((_d = pool == null ? void 0 : pool.removeLiquiditys) != null ? _d : []).map(({
+  const removeLiquidityTableData = ((_d = pool == null ? void 0 : pool.removeLiquidityHistory) != null ? _d : []).map(({
     amountBurnedLP,
     amountRemovedX,
     amountRemovedY
@@ -3727,6 +3733,7 @@ function RemoveLiquidityContainer({}) {
 function PoolView({
   pool
 }) {
+  var _a, _b, _c;
   const [isAddOpen, setAddOpen] = react.exports.useState(false);
   const [isRemoveOpen, setRemoveOpen] = react.exports.useState(false);
   return /* @__PURE__ */ jsxs("div", {
@@ -3753,13 +3760,13 @@ function PoolView({
       className: "flex",
       children: [/* @__PURE__ */ jsx(Cn, {
         title: `${pool == null ? void 0 : pool.coinInfoX.name} Locked`,
-        value: 146794.317623
+        value: (_a = pool == null ? void 0 : pool.amountX) != null ? _a : "-"
       }), /* @__PURE__ */ jsx(Cn, {
         title: `${pool == null ? void 0 : pool.coinInfoY.name} Locked`,
-        value: 146794.317623
+        value: (_b = pool == null ? void 0 : pool.amountY) != null ? _b : "-"
       }), /* @__PURE__ */ jsx(Cn, {
-        title: "Fees Collected",
-        value: 146794.317623
+        title: "Fee Percent",
+        value: (_c = pool == null ? void 0 : pool.feePercent) != null ? _c : "-"
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex gap-4 mt-6",
@@ -3767,12 +3774,12 @@ function PoolView({
         onClick: () => setAddOpen(true),
         variant: "buy",
         size: "sm",
-        children: "Add Liquidity"
+        children: "Adds"
       }), /* @__PURE__ */ jsx(Ke, {
         onClick: () => setRemoveOpen(true),
         variant: "sell",
         size: "sm",
-        children: "Remove Liquidity"
+        children: "Removes"
       })]
     }), /* @__PURE__ */ jsx(PoolsEventTableContainer, {}), /* @__PURE__ */ jsx(We$1, {
       appear: true,
@@ -4634,32 +4641,36 @@ function PortfolioView({
             })
           })]
         })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex",
-        children: [/* @__PURE__ */ jsx(Cn, {
-          title: "Total Value",
-          value: 37.567241,
-          className: "ml-1"
-        }), /* @__PURE__ */ jsx(Cn, {
-          title: "Available",
-          value: 23.567241,
-          className: "mx-1"
-        }), /* @__PURE__ */ jsx(Cn, {
-          title: "Staked",
-          value: 14.874971,
-          className: "mx-1"
-        }), /* @__PURE__ */ jsx(Cn, {
-          title: "Fees Collected",
-          value: 123.567241,
-          className: "ml-1"
-        })]
+      }), /* @__PURE__ */ jsx("div", {
+        className: "flex"
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "grid grid-cols-6 grid-rows-2 gap-4 m-3",
       children: [/* @__PURE__ */ jsx(_n, {
-        className: "sm:col-span-6 md:col-span-4",
-        children: /* @__PURE__ */ jsx(bn, {
-          children: "Performance"
+        className: "sm:col-span-6 md:col-span-4 md:row-span-2 h-full",
+        children: /* @__PURE__ */ jsxs(Ge$1.Group, {
+          children: [/* @__PURE__ */ jsxs(Ge$1.List, {
+            className: "mb-8 border-b-2 border-primary-600",
+            children: [/* @__PURE__ */ jsx(Ge$1, {
+              className: "px-4 py-2 text-primary-200 border-b-4 border-transparent ui-selected:border-brand ui-selected:text-white",
+              children: "Open Orders"
+            }), /* @__PURE__ */ jsx(Ge$1, {
+              className: "px-4 py-2 text-primary-200 border-b-4 border-transparent ui-selected:border-brand ui-selected:text-white",
+              children: "Filled Orders"
+            })]
+          }), /* @__PURE__ */ jsxs(Ge$1.Panels, {
+            children: [/* @__PURE__ */ jsx(Ge$1.Panel, {
+              children: /* @__PURE__ */ jsx(Tn, {
+                columns: orderColumns,
+                data: orderData
+              })
+            }), /* @__PURE__ */ jsx(Ge$1.Panel, {
+              children: /* @__PURE__ */ jsx(Tn, {
+                columns: filledOrderColumns,
+                data: filledOrderData
+              })
+            })]
+          })]
         })
       }), /* @__PURE__ */ jsxs(_n, {
         className: "sm:col-span-6 md:col-span-2",
@@ -4687,32 +4698,6 @@ function PortfolioView({
             children: /* @__PURE__ */ jsx(EllipsisVerticalIcon, {})
           })]
         }, `${coin.name}-${index2}`))]
-      }), /* @__PURE__ */ jsx(_n, {
-        className: "sm:col-span-6 md:col-span-4",
-        children: /* @__PURE__ */ jsxs(Ge$1.Group, {
-          children: [/* @__PURE__ */ jsxs(Ge$1.List, {
-            className: "mb-8 border-b-2 border-primary-600",
-            children: [/* @__PURE__ */ jsx(Ge$1, {
-              className: "px-4 py-2 text-primary-200 border-b-4 border-transparent ui-selected:border-brand ui-selected:text-white",
-              children: "Open Orders"
-            }), /* @__PURE__ */ jsx(Ge$1, {
-              className: "px-4 py-2 text-primary-200 border-b-4 border-transparent ui-selected:border-brand ui-selected:text-white",
-              children: "Filled Orders"
-            })]
-          }), /* @__PURE__ */ jsxs(Ge$1.Panels, {
-            children: [/* @__PURE__ */ jsx(Ge$1.Panel, {
-              children: /* @__PURE__ */ jsx(Tn, {
-                columns: orderColumns,
-                data: orderData
-              })
-            }), /* @__PURE__ */ jsx(Ge$1.Panel, {
-              children: /* @__PURE__ */ jsx(Tn, {
-                columns: filledOrderColumns,
-                data: filledOrderData
-              })
-            })]
-          })]
-        })
       }), /* @__PURE__ */ jsxs(_n, {
         className: "sm:col-span-6 md:col-span-2",
         children: [/* @__PURE__ */ jsx(bn, {
@@ -8855,6 +8840,7 @@ function PoolsView({
     children: "No Pools Available"
   });
   const renderLiquidityItem = (pool) => {
+    var _a2;
     return /* @__PURE__ */ jsxs(_n, {
       className: "flex justify-between hover:bg-primary-900/70 hover:cursor-pointer border-primary-700 border",
       onClick: () => goToPoolInfo(pool.coinInfoX.coinType, pool.coinInfoY.coinType),
@@ -8877,8 +8863,8 @@ function PoolsView({
         title: `${pool.coinInfoY.name} Locked`,
         value: 146794.317623
       }), /* @__PURE__ */ jsx(Cn, {
-        title: "Fees Collected",
-        value: 146794.317623
+        title: "Fee Perecent",
+        value: (_a2 = pool.feePercent) != null ? _a2 : "-"
       }), /* @__PURE__ */ jsx(Ke, {
         size: "sm",
         className: "h-auto self-center",
@@ -8937,7 +8923,7 @@ function Nav({}) {
   const navLinkClasses = "w-auto px-8 py-4 text-primary-300 align-middle border-b-4 border-transparent border-solid hover:border-primary-600 hover:text-primary-300 hover:bg-primary-800";
   const activeLinkClasses = " border-accent-500 border-brand text-white";
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-row w-auto mx-auto max-w-[100vw] overflow-x-auto",
+    className: "flex flex-row w-auto mx-auto max-w-[100vw] overflow-x-auto md:translate-x-10",
     children: [/* @__PURE__ */ jsx(NavLink, {
       end: true,
       to: "/",
@@ -9085,8 +9071,144 @@ function SwapFormView({
     })]
   });
 }
+const PoolPriceInDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "PoolPriceIn"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "coinTypeIn"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "String"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "amount"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Float"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "priceIn"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeIn"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "amount"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "amount"
+                }
+              }
+            }]
+          }]
+        }
+      }]
+    }
+  }]
+};
+function usePoolPrice(input) {
+  const poolPrice = useQuery(PoolPriceInDocument, {
+    variables: input
+  });
+  return poolPrice;
+}
 function SwapFormContainer({}) {
-  var _a, _b;
+  var _a, _b, _c;
   const {
     firstCoin,
     secondCoin,
@@ -9095,11 +9217,15 @@ function SwapFormContainer({}) {
     coins
   } = useCoinXYParamState();
   const [value, setValue] = react.exports.useState(1);
-  const firstCoinPrice = useLastTradePrice([{
-    baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-    quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-  }]);
-  const conversion = value * Number((_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.lastTradePrice) != null ? _b : 0);
+  const firstCoinPrice = usePoolPrice({
+    amount: value,
+    coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
+    poolInput: {
+      coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+      coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+    }
+  });
+  const conversion = value * Number((_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0);
   const invertSelections = react.exports.useCallback(() => {
     const pc = firstCoin;
     const sc = secondCoin;
