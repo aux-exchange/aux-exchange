@@ -58,7 +58,7 @@ export function swapExactCoinForCoinPayload(
   swapInput: SwapExactCoinForCoinInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${auxClient.moduleAddress}::router::swap_exact_coin_for_coin`,
+    function: `${auxClient.moduleAddress}::router::swap_exact_coin_for_coin_`,
     type_arguments: [swapInput.coinTypeIn, swapInput.coinTypeOut],
     arguments: [swapInput.exactAmountAuIn, swapInput.minAmountAuOut],
   };
@@ -69,7 +69,7 @@ export function swapCoinForExactCoinPayload(
   swapInput: SwapCoinForExactCoinInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${auxClient.moduleAddress}::router::swap_coin_for_exact_coin`,
+    function: `${auxClient.moduleAddress}::router::swap_coin_for_exact_coin_`,
     type_arguments: [swapInput.coinTypeIn, swapInput.coinTypeOut],
     arguments: [swapInput.maxAmountAuIn, swapInput.exactAmountAuOut],
   };

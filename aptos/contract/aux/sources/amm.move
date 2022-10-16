@@ -55,7 +55,7 @@ module aux::amm {
         timestamp: u64,
         fee_bps: u64,
 
-        // Events 
+        // Events
         swap_events: EventHandle<SwapEvent>,
         add_liquidity_events: EventHandle<AddLiquidityEvent>,
         remove_liquidity_events: EventHandle<RemoveLiquidityEvent>,
@@ -123,7 +123,7 @@ module aux::amm {
         let x_type = type_info::type_of<X>();
         let y_type = type_info::type_of<Y>();
         let sender_address = signer::address_of(sender);
-        if (type_info::account_address(&x_type) != sender_address && 
+        if (type_info::account_address(&x_type) != sender_address &&
             type_info::account_address(&y_type) != sender_address) {
             // Asserts that sender has the authority for @aux.
             authority::get_signer(sender);
@@ -141,7 +141,7 @@ module aux::amm {
             true // monitor_supply
         );
         coin::destroy_freeze_cap(lp_freeze);
-        
+
         if (!coin::is_account_registered<X>(@aux)) {
             coin::register<X>(amm_signer);
         };
@@ -168,15 +168,15 @@ module aux::amm {
     }
 
     /// Swap exact amount of input coin for variable amount of output coin
-    public entry fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
+    public entry fun swap_exact_coin_for_coin_<CoinIn, CoinOut>(
         sender: &signer,
         au_in: u64,
         min_au_out: u64,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
-        coin_swap_exact_coin_for_coin(
-            sender,
+        swap_exact_coin_for_coin_mut(
+            signer::address_of(sender),
             &mut in,
             &mut out,
             au_in,
@@ -192,15 +192,15 @@ module aux::amm {
 
     /// Swaps at most max_in_au of CoinIn for exactly exact_out_au of CoinOut.
     /// Fails if this cannot be done.
-    public entry fun swap_coin_for_exact_coin<CoinIn, CoinOut>(
+    public entry fun swap_coin_for_exact_coin_<CoinIn, CoinOut>(
         sender: &signer,
         max_in_au: u64,
         exact_out_au: u64,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
-        coin_swap_coin_for_exact_coin(
-            sender,
+        swap_coin_for_exact_coin_mut(
+            signer::address_of(sender),
             &mut in,
             &mut out,
             max_in_au,
@@ -217,7 +217,7 @@ module aux::amm {
     /// Swaps exactly au_in of CoinIn for CoinOut up to a maximum marginal price
     /// of max_out_per_in_au_numerator / max_out_per_in_au_denominator CoinOut
     /// per CoinIn. Fails if this cannot be done.
-    /// 
+    ///
     /// For example, sender wants to swap up to 1 BTC for USDC with a maximum
     /// marginal price of 0.00005 BTC per USDC. In this example, au_in = 1 BTC
     /// in atomic units and max_in_per_out_au = 0.00005 BTC in atomic units,
@@ -230,14 +230,14 @@ module aux::amm {
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
-        coin_swap_exact_coin_for_coin(
-            sender,
+        swap_exact_coin_for_coin_mut(
+            signer::address_of(sender),
             &mut in,
             &mut out,
             au_in,
             0,
-            true, 
-            max_out_per_in_au_numerator, 
+            true,
+            max_out_per_in_au_numerator,
             max_out_per_in_au_denominator
         );
         let sender_address = signer::address_of(sender);
@@ -258,8 +258,8 @@ module aux::amm {
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
-        coin_swap_coin_for_exact_coin(
-            sender,
+        swap_coin_for_exact_coin_mut(
+            signer::address_of(sender),
             &mut in,
             &mut out,
             max_in_au,
@@ -274,7 +274,7 @@ module aux::amm {
     }
 
     /// Add liquidity up to x_au and y_au. The LP tokens received must be at
-    /// most max_slippage_bps lower than LP x (x_debited / x_reserve) or 
+    /// most max_slippage_bps lower than LP x (x_debited / x_reserve) or
     /// LP x (y_debited / y_reserve).
     public entry fun add_liquidity<X, Y>(
         sender: &signer,
@@ -443,9 +443,9 @@ module aux::amm {
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
             get_amount_out(
-                au_in, 
-                x_reserve, 
-                y_reserve, 
+                au_in,
+                x_reserve,
+                y_reserve,
                 pool.fee_bps
             )
         } else if (exists<Pool<CoinOut, CoinIn>>(@aux)) {
@@ -495,7 +495,7 @@ module aux::amm {
         let lp_tokens = calculate_lp_token_exact(
             x_reserve,
             y_reserve,
-            pool_lp_au, 
+            pool_lp_au,
             coin::value(&user_x),
             coin::value(&user_y),
         );
@@ -506,7 +506,7 @@ module aux::amm {
     }
 
     /// Add liquidity up to x_au and y_au. The LP tokens received must be at
-    /// most max_slippage_bps lower than LP x (x_debited / x_reserve) or 
+    /// most max_slippage_bps lower than LP x (x_debited / x_reserve) or
     /// LP x (y_debited / y_reserve).
     public fun coin_add_liquidity<X, Y>(
         user_x: &mut coin::Coin<X>,
@@ -517,7 +517,7 @@ module aux::amm {
         let x_reserve = coin::value(&pool.x_reserve);
         let y_reserve = coin::value(&pool.y_reserve);
         let pool_lp_au = option::get_with_default(
-            &coin::supply<LP<X, Y>>(), 
+            &coin::supply<LP<X, Y>>(),
             0
         );
         let x_au = coin::value(user_x);
@@ -623,10 +623,10 @@ module aux::amm {
         let extract_dy = coin::extract<Y>(user_y, dy);
 
         transfer_tokens_and_mint_after_adding_liquidity(
-            pool, 
-            is_new_pool, 
-            extract_dx, 
-            extract_dy, 
+            pool,
+            is_new_pool,
+            extract_dx,
+            extract_dy,
             lp
         )
     }
@@ -673,14 +673,61 @@ module aux::amm {
         (x, y)
     }
 
+    public fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
+        sender_addr: address,
+        coin_in: coin::Coin<CoinIn>,
+        coin_out: coin::Coin<CoinOut>,
+        au_in: u64,
+        min_au_out: u64,
+        use_limit_price: bool,
+        max_out_per_in_au_numerator: u64,
+        max_out_per_in_au_denominator: u64,
+    ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
+        swap_exact_coin_for_coin_mut(
+            sender_addr,
+            &mut coin_in,
+            &mut coin_out,
+            au_in,
+            min_au_out,
+            use_limit_price,
+            max_out_per_in_au_numerator,
+            max_out_per_in_au_denominator
+        );
+        (coin_out, coin_in)
+    }
+    public fun swap_coin_for_exact_coin<CoinIn, CoinOut>(
+        sender_addr: address,
+        coin_in: coin::Coin<CoinIn>,
+        coin_out: coin::Coin<CoinOut>,
+        max_au_in: u64,
+        au_out: u64,
+        use_limit_price: bool,
+        max_in_per_out_au_numerator: u64,
+        max_in_per_out_au_denominator: u64,
+    ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
+        swap_coin_for_exact_coin_mut(
+            sender_addr,
+            &mut coin_in,
+            &mut coin_out,
+            max_au_in,
+            au_out,
+            use_limit_price,
+            max_in_per_out_au_numerator,
+            max_in_per_out_au_denominator
+        );
+        (coin_out, coin_in)
+
+    }
+
+
     /// Performs a swap and returns (atomic units CoinOut received, atomic units
     /// CoinIn spent). Debits from user_in and merges to user_out.
-    /// 
+    ///
     /// See comments for swap_exact_coin_for_coin.
-    public fun coin_swap_exact_coin_for_coin<CoinIn, CoinOut>(
-        sender: &signer,
-        user_in: &mut coin::Coin<CoinIn>,
-        user_out: &mut coin::Coin<CoinOut>,
+    public fun swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
+        sender_addr: address,
+        coin_in: &mut coin::Coin<CoinIn>,
+        coin_out: &mut coin::Coin<CoinOut>,
         au_in: u64,
         min_au_out: u64,
         use_limit_price: bool,
@@ -698,8 +745,8 @@ module aux::amm {
 
             if (use_limit_price) {
                 let max_amount_in = amount_in_limit(
-                    max_out_per_in_au_numerator, 
-                    max_out_per_in_au_denominator, 
+                    max_out_per_in_au_numerator,
+                    max_out_per_in_au_denominator,
                     x_reserve,
                     y_reserve,
                     pool.fee_bps
@@ -717,10 +764,10 @@ module aux::amm {
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
 
             // transfer tokens
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.x_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.y_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve + au_in) as u128) * ((y_reserve - au_out) as u128);
@@ -729,7 +776,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -751,8 +798,8 @@ module aux::amm {
 
             if (use_limit_price) {
                 let max_amount_in = amount_in_limit(
-                    max_out_per_in_au_numerator, 
-                    max_out_per_in_au_denominator, 
+                    max_out_per_in_au_numerator,
+                    max_out_per_in_au_denominator,
                     y_reserve,
                     x_reserve,
                     pool.fee_bps
@@ -768,12 +815,12 @@ module aux::amm {
             // Update pool balances
             let au_out = get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
-            
+
             // transfer tokens
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.y_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.x_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((y_reserve + au_in) as u128) * ((x_reserve - au_out) as u128);
@@ -782,7 +829,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -811,13 +858,13 @@ module aux::amm {
     }
 
     /// Performs a swap and returns (atomic units CoinOut received, atomic units
-    /// CoinIn spent). Debits from user_in and credits to user_out.
-    /// 
-    /// See comments for swap_coin_for_exact_coin. 
-    public fun coin_swap_coin_for_exact_coin<CoinIn, CoinOut>(
-        sender: &signer,
-        user_in: &mut coin::Coin<CoinIn>,
-        user_out: &mut coin::Coin<CoinOut>,
+    /// CoinIn spent). Debits from coin_in and credits to coin_out.
+    ///
+    /// See comments for swap_coin_for_exact_coin.
+    public fun swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
+        sender_addr: address,
+        coin_in: &mut coin::Coin<CoinIn>,
+        coin_out: &mut coin::Coin<CoinOut>,
         max_au_in: u64,
         au_out: u64,
         use_limit_price: bool,
@@ -835,8 +882,8 @@ module aux::amm {
 
             if (use_limit_price) {
                 let limit_amount_in = amount_in_limit(
-                    max_in_per_out_au_denominator, 
-                    max_in_per_out_au_numerator, 
+                    max_in_per_out_au_denominator,
+                    max_in_per_out_au_numerator,
                     x_reserve,
                     y_reserve,
                     pool.fee_bps
@@ -845,7 +892,7 @@ module aux::amm {
                     return (0, 0)
                 };
                 let limit_amount_out = get_amount_out(
-                    limit_amount_in, 
+                    limit_amount_in,
                     x_reserve,
                     y_reserve,
                     pool.fee_bps
@@ -860,10 +907,10 @@ module aux::amm {
             let au_in = get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.x_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.y_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve + au_in) as u128) * ((y_reserve - au_out) as u128);
@@ -872,7 +919,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -894,8 +941,8 @@ module aux::amm {
 
             if (use_limit_price) {
                 let limit_amount_in = amount_in_limit(
-                    max_in_per_out_au_denominator, 
-                    max_in_per_out_au_numerator, 
+                    max_in_per_out_au_denominator,
+                    max_in_per_out_au_numerator,
                     y_reserve,
                     x_reserve,
                     pool.fee_bps
@@ -915,10 +962,10 @@ module aux::amm {
             let au_in = get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
-            let in = coin::extract<CoinIn>(user_in, au_in);
+            let in = coin::extract<CoinIn>(coin_in, au_in);
             coin::merge<CoinIn>(&mut pool.y_reserve, in);
             let out = coin::extract<CoinOut>(&mut pool.x_reserve, au_out);
-            coin::merge<CoinOut>(user_out, out);
+            coin::merge<CoinOut>(coin_out, out);
 
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((y_reserve + au_in) as u128) * ((x_reserve - au_out) as u128);
@@ -927,7 +974,7 @@ module aux::amm {
             event::emit_event<SwapEvent>(
                 &mut pool.swap_events,
                 SwapEvent {
-                    sender_addr: signer::address_of(sender),
+                    sender_addr,
                     timestamp: now,
                     in_coin_type: type_info::type_name<CoinIn>(),
                     out_coin_type: type_info::type_name<CoinOut>(),
@@ -1137,10 +1184,10 @@ module aux::amm {
     }
 
     fun transfer_tokens_and_mint_after_adding_liquidity<X, Y>(
-        pool: &mut Pool<X,Y>, 
-        is_new_pool: bool, 
-        dx: coin::Coin<X>, 
-        dy: coin::Coin<Y>, 
+        pool: &mut Pool<X,Y>,
+        is_new_pool: bool,
+        dx: coin::Coin<X>,
+        dy: coin::Coin<Y>,
         liquidity_au: u64,
     ): coin::Coin<LP<X, Y>> {
         let dx_value = coin::value(&dx);
@@ -1152,7 +1199,7 @@ module aux::amm {
                 // Permanently lock the first MIN_LIQUIDITY tokens
                 let locked = coin::mint<LP<X, Y>>(
                     MIN_LIQUIDITY,
-                    &pool.lp_mint, 
+                    &pool.lp_mint,
                 );
                 if (!coin::is_account_registered<LP<X, Y>>(@aux)) {
                     coin::register<LP<X, Y>>(&authority::get_signer_self());
@@ -1188,10 +1235,10 @@ module aux::amm {
 
     /// Returns the LP tokens given the AMM state.
     fun calculate_lp_token_exact(
-        x_reserve: u64, 
-        y_reserve: u64, 
-        lp_reserve: u128,  
-        x_au: u64, 
+        x_reserve: u64,
+        y_reserve: u64,
+        lp_reserve: u128,
+        x_au: u64,
         y_au: u64,
     ): u64 {
         assert!(x_au != 0, error::invalid_argument(EINVALID_AMM_RATIO));
@@ -1202,7 +1249,7 @@ module aux::amm {
         if (x_reserve != 0 && y_reserve != 0) {
             // amm.x_au / amm.y_au == x_au / y_au => amm.x_au * y_au == amm.y_au * x_au
             assert!(
-                (x_reserve as u128) * (y_au as u128) == (x_au as u128) * (y_reserve as u128), 
+                (x_reserve as u128) * (y_au as u128) == (x_au as u128) * (y_reserve as u128),
                 EINVALID_AMM_RATIO
             );
             lp_tokens = to128(div128(mul256((x_au as u128), lp_reserve), (x_reserve as u128)));
@@ -1222,11 +1269,11 @@ module aux::amm {
     /// added, y added) in native units. Any rounding that occurs in the
     /// approximation benefits the pool.
     fun calculate_approximate_liquidity(
-        x_reserve: u64, 
-        y_reserve: u64, 
-        lp_reserve: u128, 
-        max_x_au: u64, 
-        max_y_au: u64, 
+        x_reserve: u64,
+        y_reserve: u64,
+        lp_reserve: u128,
+        max_x_au: u64,
+        max_y_au: u64,
         minimum_lp_au: u64
     ): (u64, u64, u64) {
         assert!(max_x_au != 0, error::invalid_argument(EINVALID_AMM_RATIO));
@@ -1277,9 +1324,9 @@ module aux::amm {
     }
 
     fun get_amount_out(
-        amount_in: u64, 
-        reserve_in: u64, 
-        reserve_out: u64, 
+        amount_in: u64,
+        reserve_in: u64,
+        reserve_out: u64,
         fee_bps: u64
     ): u64 {
         // Swapping x -> y
@@ -1287,8 +1334,8 @@ module aux::amm {
         // dx_f = dx(1-fee)
         //
         // (x + dx_f)*(y - dy) = x*y
-        // 
-        // dy = y * dx_f / (x + dx_f)  
+        //
+        // dy = y * dx_f / (x + dx_f)
         assert!(amount_in > 0, EINSUFFICIENT_INPUT_AMOUNT);
         assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
         let amount_in_with_fee = (amount_in as u128) * ((10000 - fee_bps) as u128);
@@ -1298,9 +1345,9 @@ module aux::amm {
     }
 
     fun get_amount_in(
-        amount_out: u64, 
-        reserve_in: u64, 
-        reserve_out: u64, 
+        amount_out: u64,
+        reserve_in: u64,
+        reserve_out: u64,
         fee_bps: u64
     ): u64 {
         // Swapping x -> y
@@ -1308,9 +1355,9 @@ module aux::amm {
         // dx_f = dx(1-fee)
         //
         // (x + dx_f)*(y - dy) = x*y
-        // dx_f = x * dy / (y + dy)  
+        // dx_f = x * dy / (y + dy)
         //
-        // dx = x * dy / ((y + dy)*(1-f)) 
+        // dx = x * dy / ((y + dy)*(1-f))
         assert!(amount_out > 0, EINSUFFICIENT_OUTPUT_AMOUNT);
         assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
         let numerator = (reserve_in as u128) * (amount_out as u128) * 10000;
@@ -1321,10 +1368,10 @@ module aux::amm {
     // Returns the amount of input coin (coin added to pool) that would achieve
     // the provided limit price of OutputCoin/InputCoin
     fun amount_in_limit(
-        limit_out_per_in_num: u64, 
-        limit_out_per_in_denom: u64, 
-        reserve_in: u64, 
-        reserve_out: u64, 
+        limit_out_per_in_num: u64,
+        limit_out_per_in_denom: u64,
+        reserve_in: u64,
+        reserve_out: u64,
         _fee_bps: u64
     ): u64 {
         // Approximation (ignores fees)
@@ -1333,9 +1380,9 @@ module aux::amm {
         // p = limit price of input coin (y/x)
         // q = amount x added to pool to achieve limit price (p)
         // f = (10000 + fee_bps) / 10000
-        // 
-        // p = y / x 
-        //   = x*y / x^2 
+        //
+        // p = y / x
+        //   = x*y / x^2
         //   = k / x^2
         //   = k / (x + q)^2
         //
@@ -1343,7 +1390,7 @@ module aux::amm {
 
         let inside_root = div128(
             mul256(
-                (reserve_in as u128) * (reserve_out as u128), 
+                (reserve_in as u128) * (reserve_out as u128),
                 (limit_out_per_in_denom as u128
             )
         ), (limit_out_per_in_num as u128));
@@ -1417,7 +1464,7 @@ module aux::amm {
             timestamp: _,
             fee_bps: _,
 
-            // Events 
+            // Events
             swap_events,
             add_liquidity_events,
             remove_liquidity_events,
@@ -1431,7 +1478,7 @@ module aux::amm {
         event::destroy_handle<AddLiquidityEvent>(add_liquidity_events);
         event::destroy_handle<RemoveLiquidityEvent>(remove_liquidity_events);
 
-        let x = coin::extract_all(&mut x_reserve); 
+        let x = coin::extract_all(&mut x_reserve);
         coin::deposit(@aux, x);
         coin::destroy_zero(x_reserve);
 
@@ -1496,7 +1543,7 @@ module aux::amm {
 
         managed_coin::mint<AuxCoin>(&authority::get_signer(sender), sender_addr, sender_init_x);
         managed_coin::mint<AuxTestCoin>(&authority::get_signer(sender), sender_addr, sender_init_y);
-    } 
+    }
 
     #[test_only]
     fun setup_pool_for_test(sender: &signer, fee_bps: u64, sender_init_x: u64, sender_init_y: u64) {
@@ -1643,7 +1690,7 @@ module aux::amm {
         };
         let au_out = au_out<AuxCoin, AuxTestCoin>(2);
         assert!(au_out == 7, ETEST_FAILED);
-        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 2, 7);
+        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 2, 7);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8998, coin::balance<AuxCoin>(sender_addr));
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6007, ETEST_FAILED);
         {
@@ -1658,7 +1705,7 @@ module aux::amm {
         // We get less X out for the same amount of Y, due to rounding errors working in favor of the pool
         let au_out = au_out<AuxTestCoin, AuxCoin>(7);
         assert!(au_out == 1, ETEST_FAILED);
-        swap_exact_coin_for_coin<AuxTestCoin, AuxCoin>(sender, 7, 1);
+        swap_exact_coin_for_coin_<AuxTestCoin, AuxCoin>(sender, 7, 1);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6000, ETEST_FAILED);
         {
@@ -1725,7 +1772,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // ratio 1, 10 => 2, 5
-        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 1, 3);
+        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 1, 3);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6003, ETEST_FAILED);
         {
@@ -1922,7 +1969,7 @@ module aux::amm {
 
     #[test_only]
     fun test_swap_helper<AuxCoin, AuxTestCoin, CoinIn, CoinOut>(
-        sender: &signer, 
+        sender: &signer,
         aptos_framework: &signer,
         input: &SwapHelperInput
     ) acquires Pool {
@@ -1937,25 +1984,25 @@ module aux::amm {
         let out = coin::zero();
 
         let (actual_au_out, actual_au_in) = if (input.exact_in) {
-            coin_swap_exact_coin_for_coin<CoinIn, CoinOut>(
-                sender, 
+            swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
-                input.au_in, 
-                input.au_out, 
-                input.use_limit, 
-                input.limit_num, 
+                input.au_in,
+                input.au_out,
+                input.use_limit,
+                input.limit_num,
                 input.limit_denom
             )
         } else {
-            coin_swap_coin_for_exact_coin<CoinIn, CoinOut>(
-                sender, 
+            swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
-                input.au_in, 
-                input.au_out, 
-                input.use_limit, 
-                input.limit_num, 
+                input.au_in,
+                input.au_out,
+                input.use_limit,
+                input.limit_num,
                 input.limit_denom
             )
         };
@@ -2087,7 +2134,7 @@ module aux::amm {
             expected_au_in: 1000,
             expected_au_out: 1813,
             // final_x: 11000,
-            // final_y: 18187 
+            // final_y: 18187
             x_in_y_out: true,
             use_limit: false,
             limit_num: 0,
@@ -2115,7 +2162,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 1,
-            limit_denom: 2, 
+            limit_denom: 2,
             expected_au_in: 1000,
             expected_au_out: 909
         };
@@ -2139,7 +2186,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 1,
-            limit_denom: 2, 
+            limit_denom: 2,
             expected_au_in: 1000,
             expected_au_out: 906
         };
@@ -2166,7 +2213,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 3,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 1547,
             expected_au_out: 5358
         };
@@ -2195,7 +2242,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 4,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 0,
             expected_au_out: 0
         };
@@ -2223,7 +2270,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 1,
-            limit_denom: 2, 
+            limit_denom: 2,
             expected_au_in: 4142,
             expected_au_out: 2928
         };
@@ -2248,7 +2295,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 3,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 1547,
             expected_au_out: 5345
         };
@@ -2276,7 +2323,7 @@ module aux::amm {
             au_out: 0,
             use_limit: true,
             limit_num: 1,
-            limit_denom: 2, 
+            limit_denom: 2,
             expected_au_in: 4142,
             expected_au_out: 2922
         };
@@ -2300,7 +2347,7 @@ module aux::amm {
             au_out: 909,
             use_limit: true,
             limit_num: 2,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 1000,
             expected_au_out: 909,
         };
@@ -2324,7 +2371,7 @@ module aux::amm {
             au_out: 906,
             use_limit: true,
             limit_num: 2,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 1000,
             expected_au_out: 906
         };
@@ -2352,7 +2399,7 @@ module aux::amm {
             au_out: 10000,
             use_limit: true,
             limit_num: 1,   // in/out numerator
-            limit_denom: 3, // in/out denominator 
+            limit_denom: 3, // in/out denominator
             expected_au_in: 1547,
             expected_au_out: 5358
         };
@@ -2381,7 +2428,7 @@ module aux::amm {
             au_out: 10000,
             use_limit: true,
             limit_num: 1,   // in/out numerator
-            limit_denom: 4, // in/out denominator 
+            limit_denom: 4, // in/out denominator
             expected_au_in: 0,
             expected_au_out: 0
         };
@@ -2409,7 +2456,7 @@ module aux::amm {
             au_out: 5000,
             use_limit: true,
             limit_num: 2,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 4141,
             expected_au_out: 2928
         };
@@ -2436,7 +2483,7 @@ module aux::amm {
             au_out: 10000,
             use_limit: true,
             limit_num: 1,
-            limit_denom: 3, 
+            limit_denom: 3,
             expected_au_in: 1547,
             expected_au_out: 5345
         };
@@ -2464,7 +2511,7 @@ module aux::amm {
             au_out: 5000,
             use_limit: true,
             limit_num: 2,
-            limit_denom: 1, 
+            limit_denom: 1,
             expected_au_in: 4141,
             expected_au_out: 2922
         };
@@ -2564,8 +2611,8 @@ module aux::amm {
         let in = coin::withdraw<AuxCoin>(sender, 150000);
         let out = coin::zero();
         while (i < 100) {
-            let (y, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
-                sender,
+            let (y, _) = swap_exact_coin_for_coin_mut<AuxCoin, AuxTestCoin>(
+                signer::address_of(sender),
                 &mut in,
                 &mut out,
                 100,
@@ -2587,8 +2634,8 @@ module aux::amm {
         add_exact_liquidity<AuxCoin, AuxTestCoin>(sender, 1000, 4000);
         let in = coin::withdraw<AuxCoin>(sender, 150000);
         let out = coin::zero();
-        let (y_received_2, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(
-            sender,
+        let (y_received_2, _) = swap_exact_coin_for_coin_mut<AuxCoin, AuxTestCoin>(
+            signer::address_of(sender),
             &mut in,
             &mut out,
             x_spent,
@@ -2599,14 +2646,13 @@ module aux::amm {
         );
         coin::deposit(signer::address_of(sender), in);
         coin::deposit(signer::address_of(sender), out);
-        // let (y_received_2, _) = coin_swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, x_spent, 0, false, 0, 0);
 
         assert!(y_received_1 <= y_received_2, 1);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_add_liquidity_with_slippage_tolerance(
-        sender: &signer, 
+        sender: &signer,
         aptos_framework: &signer
     ) acquires Pool {
         timestamp::set_time_has_started_for_testing(aptos_framework);

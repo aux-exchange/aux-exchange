@@ -48,7 +48,7 @@
 /// =>
 /// lot_size * tick_size / 1 e base_decimals > 0
 /// ```
-/// 
+///
 module aux::clob_market {
     friend aux::router;
 
@@ -403,6 +403,7 @@ module aux::clob_market {
         // Confirm the vault_account_owner has volume tracker registered
         assert!(volume_tracker::global_volume_tracker_registered(vault_account_owner), E_VOLUME_TRACKER_UNREGISTERED);
 
+        // TODO: confirm fee is determined from vault_account_owner not sender if using vault
         // Confirm the vault_account_owner has fee published
         assert!(fee::fee_exists(vault_account_owner), E_FEE_UNINITIALIZED);
 
@@ -411,9 +412,8 @@ module aux::clob_market {
         assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
         let market = borrow_global_mut<Market<B, Q>>(resource_addr);
 
-        new_order(
+        let(base_au, quote_au) = new_order(
             market,
-            sender,
             vault_account_owner,
             is_bid,
             limit_price,
@@ -425,8 +425,24 @@ module aux::clob_market {
             direction_aggressive,
             timeout_timestamp,
             stp_action_type,
-            true
         );
+        if (base_au != 0 && quote_au != 0) {
+            assert!(order_type != POST_ONLY && order_type != PASSIVE_JOIN, E_INVALID_STATE);
+            // Debit/credit the sender's vault account
+            if (is_bid) {
+                // taker pays quote, receives base
+                vault::decrease_user_balance<Q>(vault_account_owner, quote_au);
+                vault::increase_user_balance<B>(vault_account_owner, base_au);
+            } else {
+                // taker receives quote, pays base
+                vault::increase_user_balance<Q>(vault_account_owner, quote_au);
+                vault::decrease_user_balance<B>(vault_account_owner, base_au);
+            }
+        } else if (base_au != 0 || quote_au != 0) {
+            // abort if sender paid but did not receive and vice versa
+            abort(E_INVALID_STATE)
+        }
+
     }
 
 
@@ -597,8 +613,9 @@ module aux::clob_market {
     /// Returns (base_quantity_filled, quote_quantity_filled)
     fun new_order<B, Q>(
         market: &mut Market<B, Q>,
-        sender: &signer,
-        vault_account_owner: address,
+        // base_coin: &mut coin::Coin<B>,
+        // quote_coin: &mut coin::Coin<Q>,
+        order_owner: address,
         is_bid: bool,
         limit_price: u64,
         quantity: u64,
@@ -609,7 +626,6 @@ module aux::clob_market {
         direction_aggressive: bool,
         timeout_timestamp: u64,
         stp_action_type: u64,
-        use_vault_account: bool
     ): (u128, u128) acquires OpenOrderAccount {
         // Check lot sizes
         let tick_size = market.tick_size;
@@ -630,7 +646,7 @@ module aux::clob_market {
             quantity,
             aux_au_to_burn_per_lot,
             is_bid,
-            owner_id: vault_account_owner,
+            owner_id: order_owner,
             timeout_timestamp,
             order_type,
             timestamp,
@@ -669,33 +685,9 @@ module aux::clob_market {
 
         // Check for matches
         let (base_qty_filled, quote_qty_filled) = match(market, &mut order, timestamp, stp_action_type);
-        if (use_vault_account) {
-            if (order.is_bid) {
-                // taker pays quote, receives base
-                vault::decrease_user_balance<Q>(vault_account_owner, quote_qty_filled);
-                vault::increase_user_balance<B>(vault_account_owner, base_qty_filled);
-            } else {
-                // taker receives quote, pays base
-                vault::increase_user_balance<Q>(vault_account_owner, quote_qty_filled);
-                vault::decrease_user_balance<B>(vault_account_owner, base_qty_filled);
-            }
-        } else {
-            let vault_addr = @aux;
-            let module_signer = &authority::get_signer_self();
-            if (order.is_bid) {
-                // taker pays quote, receives base
-                coin::transfer<Q>(sender, vault_addr, (quote_qty_filled as u64));
-                coin::transfer<B>(module_signer, signer::address_of(sender), (base_qty_filled as u64));
-
-            } else {
-                // taker receives quote, pays base
-                coin::transfer<Q>(module_signer, signer::address_of(sender), (quote_qty_filled as u64));
-                coin::transfer<B>(sender, vault_addr, (base_qty_filled as u64));
-
-            }
-        };
         // Check for remaining order quantity
         if (order.quantity > 0) {
+            assert!(order_type != FILL_OR_KILL, E_INVALID_STATE);
             if (order_type == IMMEDIATE_OR_CANCEL) {
                 event::emit_event<OrderCancelEvent>(
                     &mut market.cancel_events,
@@ -710,13 +702,12 @@ module aux::clob_market {
                 );
                 destroy_order(order);
             } else {
-                handle_placed_order(market, &order, vault_account_owner);
+                handle_placed_order(market, &order, order_owner);
                 insert_order(market, order);
             }
         } else {
             destroy_order(order);
         };
-
         (base_qty_filled, quote_qty_filled)
     }
 
@@ -1142,23 +1133,43 @@ module aux::clob_market {
 
         return (order, true)
     }
-    /********************/
-    /* FRIEND FUNCTIONS */
-    /********************/
 
+    public fun place_market_order<B, Q>(
+        sender_addr: address,
+        base_coin: coin::Coin<B>,
+        quote_coin: coin::Coin<Q>,
+        is_bid: bool,
+        order_type: u64,
+        limit_price: u64,
+        quantity: u64,
+        client_order_id: u128,
+    ): (coin::Coin<B>, coin::Coin<Q>)  acquires Market, OpenOrderAccount {
+        place_market_order_mut(
+            sender_addr,
+            &mut base_coin,
+            &mut quote_coin,
+            is_bid,
+            order_type,
+            limit_price,
+            quantity,
+            client_order_id
+        );
+        (base_coin, quote_coin)
+    }
 
     /// Place a market order (IOC or FOK) on behalf of the router.
     /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
     /// Emits events on order placement and fills.
-    public(friend) fun place_order_for_router<B, Q>(
-        sender: &signer,
+    public fun place_market_order_mut<B, Q>(
+        sender_addr: address,
+        base_coin: &mut coin::Coin<B>,
+        quote_coin: &mut coin::Coin<Q>,
         is_bid: bool,
         order_type: u64,
         limit_price: u64,
         quantity: u64,
         client_order_id: u128,
     ): (u128, u128)  acquires Market, OpenOrderAccount {
-        let sender_addr = signer::address_of(sender);
         assert!(fee::fee_exists(sender_addr), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
@@ -1173,9 +1184,8 @@ module aux::clob_market {
         let lot_size = market.lot_size;
         let rounded_quantity = quantity / lot_size * lot_size;
 
-        new_order<B, Q>(
+        let (base_au, quote_au) = new_order<B, Q>(
             market,
-            sender,
             sender_addr,
             is_bid,
             limit_price,
@@ -1187,8 +1197,31 @@ module aux::clob_market {
             false,
             MAX_U64,
             CANCEL_PASSIVE,
-            false
-        )
+        );
+
+        // Transfer coins
+        let vault_addr = @aux;
+        let module_signer = &authority::get_signer_self();
+        if (base_au != 0 && quote_au != 0) {
+            if (is_bid) {
+                // taker pays quote, receives base
+                let quote = coin::extract<Q>(quote_coin, (quote_au as u64));
+                coin::deposit<Q>(vault_addr, quote);
+                let base = coin::withdraw<B>(module_signer, (base_au as u64));
+                coin::merge<B>(base_coin, base);
+            } else {
+                // taker receives quote, pays base
+                let base = coin::extract<B>(base_coin, (base_au as u64));
+                coin::deposit<B>(vault_addr, base);
+                let quote = coin::withdraw<Q>(module_signer, (quote_au as u64));
+                coin::merge<Q>(quote_coin, quote);
+
+            }
+        } else if (base_au != 0 || quote_au != 0) {
+            // abort if sender paid but did not receive and vice versa
+            abort(E_INVALID_STATE)
+        };
+        (base_au, quote_au)
     }
 
     /*********************/
@@ -2215,17 +2248,15 @@ module aux::clob_market {
         vault::deposit<QuoteCoin>(alice, alice_addr, 500000);
         vault::deposit<BaseCoin>(bob, bob_addr, 500000);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/copy bob, bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 0, E_TEST_FAILURE);
         assert!(base_qty == 50, (base_qty as u64));
         assert!(quote_qty == 500, (quote_qty as u64));
-        assert!(vault::balance<QuoteCoin>(alice_addr) == 500000 - 500, E_TEST_FAILURE);
-        assert!(vault::balance<BaseCoin>(bob_addr) == 500000 - 50, E_TEST_FAILURE);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
@@ -2239,18 +2270,15 @@ module aux::clob_market {
         vault::deposit<BaseCoin>(alice, alice_addr, 500000);
         vault::deposit<QuoteCoin>(bob, bob_addr, 500000);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/50, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 0, E_TEST_FAILURE);
         assert!(base_qty == 50, (base_qty as u64));
         assert!(quote_qty == 500, (quote_qty as u64));
-
-        assert!(vault::balance<QuoteCoin>(bob_addr) == 500000 - 500, E_TEST_FAILURE);
-        assert!(vault::balance<BaseCoin>(alice_addr) == 500000 - 50, E_TEST_FAILURE);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
@@ -2264,23 +2292,20 @@ module aux::clob_market {
         vault::deposit<BaseCoin>(alice, alice_addr, 500000);
         vault::deposit<QuoteCoin>(bob, bob_addr, 500000);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 0, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
-
-        assert!(vault::balance<QuoteCoin>(bob_addr) == 500000 - 200, E_TEST_FAILURE);
-        assert!(vault::balance<BaseCoin>(alice_addr) == 500000 - 20, E_TEST_FAILURE);
     }
 
     #[test_only]
@@ -2341,25 +2366,25 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // 1001: aux = 0
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // 1002: aux = 1
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // 1003: aux = 1
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1003, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1003, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
         // 1004: aux = 2
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 2, LIMIT_ORDER, 1004, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/10, 2, LIMIT_ORDER, 1004, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 4, E_TEST_FAILURE);
@@ -2369,7 +2394,7 @@ module aux::clob_market {
             assert!(best_ask_order.client_order_id == 1004, (best_ask_order.id as u64));
         };
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
@@ -2379,7 +2404,7 @@ module aux::clob_market {
             assert!(best_ask_order.client_order_id == 1002, (best_ask_order.id as u64));
         };
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
@@ -2389,7 +2414,7 @@ module aux::clob_market {
             assert!(best_ask_order.client_order_id == 1003, (best_ask_order.id as u64));
         };
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1003, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1003, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
@@ -2400,13 +2425,10 @@ module aux::clob_market {
         };
 
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1004, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/10, 1, LIMIT_ORDER, 1004, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(n_orders(market) == 0, E_TEST_FAILURE);
         assert!(base_qty == 10, (base_qty as u64));
         assert!(quote_qty == 100, (quote_qty as u64));
-
-        assert!(vault::balance<QuoteCoin>(bob_addr) == 500000 - 400, E_TEST_FAILURE);
-        assert!(vault::balance<BaseCoin>(alice_addr) == 500000 - 40, E_TEST_FAILURE);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
@@ -2422,32 +2444,32 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(alice, alice_addr, 500);
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/2000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/2000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/3000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/3000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/4000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/4000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 4, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/2000, /*quantity=*/30, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/2000, /*quantity=*/30, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 30, (base_qty as u64));
         assert!(quote_qty == 400, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/5000, /*quantity=*/100, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/5000, /*quantity=*/100, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 50, (base_qty as u64));
         assert!(quote_qty == 1600, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -2469,22 +2491,22 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(alice, alice_addr, 500);
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/2000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/2000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/3000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/3000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/4000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/4000, /*quantity=*/20, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 4, E_TEST_FAILURE);
@@ -2531,24 +2553,24 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // alice places a normal order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/80, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/80, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/60, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/60, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // bob places a fok order, since it's can be fully filled immediately, it has same effect as a normal order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, FILL_OR_KILL, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, FILL_OR_KILL, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 100, (base_qty as u64));
         assert!(quote_qty == 920, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places another fok order, this time since market has not enough liquidity, it's a no-op, and a fok_cancel_event should be emitted
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, FILL_OR_KILL, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, FILL_OR_KILL, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -2571,23 +2593,23 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // alice places a normal order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1100, /*quantity=*/1000, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1100, /*quantity=*/1000, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/40, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/40, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
         // bob places a ioc order, the unfilled part is cancelled immediately
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, IMMEDIATE_OR_CANCEL, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, IMMEDIATE_OR_CANCEL, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 140, (base_qty as u64));
         assert!(quote_qty == 1360, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -2607,14 +2629,14 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // alice places a po order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, POST_ONLY, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, POST_ONLY, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
 
         // bob places a po order, since it would be filled, got cancelled immediately
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, POST_ONLY, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, POST_ONLY, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -2622,7 +2644,7 @@ module aux::clob_market {
         // --------------- Test with slide of ticks --------------------------
 
         // since there's 1 tick slide allowance, this will successfully place with price = 9
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, POST_ONLY, 1002, 1, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/150, 0, POST_ONLY, 1002, 1, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
@@ -2632,7 +2654,7 @@ module aux::clob_market {
         assert!(best_bid.price == 900, best_bid.price);
 
         // since there's only 2 tick slide allowance, this will not successfully placed
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1200, /*quantity=*/150, 0, POST_ONLY, 1003, 2, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1200, /*quantity=*/150, 0, POST_ONLY, 1003, 2, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
@@ -2657,43 +2679,43 @@ module aux::clob_market {
 
         // --------------- Test passively join buy-----------------------------
         // alice places a sell limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // passive join with limit 900, join at 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
         // passive join with limit 900, ticks = 1, join at 900
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1003, 1, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1003, 1, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 4, E_TEST_FAILURE);
 
         // passive join with limit 900, ticks = 2, join at 900
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1004, 2, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1004, 2, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 5, E_TEST_FAILURE);
 
         // passive join with limit 800, ticks 2, direction passive, join at 700
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, PASSIVE_JOIN, 1005, 2, false, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, PASSIVE_JOIN, 1005, 2, false, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 6, E_TEST_FAILURE);
 
         // passive join with limit 800, ticks 2, direction aggressive, cancel due to limit price too low
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, PASSIVE_JOIN, 1006, 2, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, PASSIVE_JOIN, 1006, 2, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 6, E_TEST_FAILURE);
@@ -2752,44 +2774,44 @@ module aux::clob_market {
 
         // --------------- Test passively join sell-----------------------------
         // alice places a sell limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
 
         // passive join with limit 900, join at 1000
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 3, E_TEST_FAILURE);
 
         // passive join with limit 900, ticks = 1, join at 900
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1003, 1, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1003, 1, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 4, E_TEST_FAILURE);
 
         // passive join with limit 900, ticks = 2, join at 900
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1004, 2, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/900, /*quantity=*/150, 0, PASSIVE_JOIN, 1004, 2, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 5, E_TEST_FAILURE);
 
         // passive join with limit 1000, ticks 2, direction passive, join at 1100
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/150, 0, PASSIVE_JOIN, 1005, 2, false, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/150, 0, PASSIVE_JOIN, 1005, 2, false, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 6, E_TEST_FAILURE);
 
         // passive join with limit 1000, ticks 2, direction aggressive, cancel due to limit price too low
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/150, 0, PASSIVE_JOIN, 1006, 2, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/150, 0, PASSIVE_JOIN, 1006, 2, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 6, E_TEST_FAILURE);
@@ -2851,20 +2873,20 @@ module aux::clob_market {
         // alice places a sell limit order, @10
 
         // alice places a sell limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // bob get cancelled
         timestamp::fast_forward_seconds(1);
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/800, /*quantity=*/100, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/800, /*quantity=*/100, 0, LIMIT_ORDER, 1002, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, E_TEST_FAILURE);
         assert!(quote_qty == 0, E_TEST_FAILURE);
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
@@ -2888,19 +2910,19 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // alice places a sell limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // bob place a sell order @7, cancel passive order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
@@ -2931,20 +2953,20 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
         // alice places a buy limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // bob place a sell order @8, cancel aggressive order
         // should match 100 from alice's order, then cancel the remainder
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_AGGRESSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_AGGRESSIVE);
         assert!(base_qty == 100, (base_qty as u64));
         assert!(quote_qty == 1000, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -2977,19 +2999,19 @@ module aux::clob_market {
 
 
         // alice places a sell limit order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/alice, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, alice_addr, /*is_bid=*/false, /*price=*/1000, /*quantity=*/100, 0, LIMIT_ORDER, 1001, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
 
         // bob places a buy limit order @ 800
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/800, /*quantity=*/150, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 2, E_TEST_FAILURE);
 
         // bob place a sell order @7, cancel aggressive order
-        let (base_qty, quote_qty) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_BOTH, true);
+        let (base_qty, quote_qty) = new_order(market, bob_addr, /*is_bid=*/false, /*price=*/700, /*quantity=*/150, 0, LIMIT_ORDER, 1002, 0, true, 1000000, CANCEL_BOTH);
         assert!(base_qty == 0, (base_qty as u64));
         assert!(quote_qty == 0, (quote_qty as u64));
         assert!(n_orders(market) == 1, E_TEST_FAILURE);
@@ -3015,7 +3037,7 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(alice, alice_addr, 500);
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
-        let (_, _) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1001, /*quantity=*/200, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (_, _) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1001, /*quantity=*/200, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
     }
 
     #[expected_failure(abort_code = 22)]
@@ -3029,7 +3051,7 @@ module aux::clob_market {
         vault::deposit<AuxCoin>(alice, alice_addr, 500);
         vault::deposit<AuxCoin>(bob, bob_addr, 500);
 
-        let (_, _) = new_order(market, /*owner_id=*/bob, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/201, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE, true);
+        let (_, _) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/201, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
     }
 
     #[expected_failure(abort_code = 26)]
