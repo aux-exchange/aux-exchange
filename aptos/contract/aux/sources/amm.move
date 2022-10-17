@@ -168,7 +168,7 @@ module aux::amm {
     }
 
     /// Swap exact amount of input coin for variable amount of output coin
-    public entry fun swap_exact_coin_for_coin_<CoinIn, CoinOut>(
+    public entry fun swap_exact_coin_for_coin_with_signer<CoinIn, CoinOut>(
         sender: &signer,
         au_in: u64,
         min_au_out: u64,
@@ -192,7 +192,7 @@ module aux::amm {
 
     /// Swaps at most max_in_au of CoinIn for exactly exact_out_au of CoinOut.
     /// Fails if this cannot be done.
-    public entry fun swap_coin_for_exact_coin_<CoinIn, CoinOut>(
+    public entry fun swap_coin_for_exact_coin_with_signer<CoinIn, CoinOut>(
         sender: &signer,
         max_in_au: u64,
         exact_out_au: u64,
@@ -1690,7 +1690,7 @@ module aux::amm {
         };
         let au_out = au_out<AuxCoin, AuxTestCoin>(2);
         assert!(au_out == 7, ETEST_FAILED);
-        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 2, 7);
+        swap_exact_coin_for_coin_with_signer<AuxCoin, AuxTestCoin>(sender, 2, 7);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8998, coin::balance<AuxCoin>(sender_addr));
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6007, ETEST_FAILED);
         {
@@ -1705,7 +1705,7 @@ module aux::amm {
         // We get less X out for the same amount of Y, due to rounding errors working in favor of the pool
         let au_out = au_out<AuxTestCoin, AuxCoin>(7);
         assert!(au_out == 1, ETEST_FAILED);
-        swap_exact_coin_for_coin_<AuxTestCoin, AuxCoin>(sender, 7, 1);
+        swap_exact_coin_for_coin_with_signer<AuxTestCoin, AuxCoin>(sender, 7, 1);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6000, ETEST_FAILED);
         {
@@ -1772,7 +1772,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // ratio 1, 10 => 2, 5
-        swap_exact_coin_for_coin_<AuxCoin, AuxTestCoin>(sender, 1, 3);
+        swap_exact_coin_for_coin_with_signer<AuxCoin, AuxTestCoin>(sender, 1, 3);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, ETEST_FAILED);
         assert!(coin::balance<AuxTestCoin>(sender_addr) == 6003, ETEST_FAILED);
         {
