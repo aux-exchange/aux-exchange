@@ -142,7 +142,7 @@ module aux::vault {
         if(!fee::fee_exists(sender_addr)){
             fee::initialize_fee_default(sender);
         };
-        
+
         // TODO: emit event for account creation?
     }
 
@@ -180,7 +180,7 @@ module aux::vault {
     /// whitelisted.
     public entry fun deposit<CoinType>(
         sender: &signer,
-        to: address, 
+        to: address,
         amount: u64
     ) acquires AuxUserAccount, CoinBalance, Vault {
         // Confirm whether can deposit
@@ -258,7 +258,7 @@ module aux::vault {
     /// is granted by add_authorized_trader and removed by
     /// remove_authorized_trader.
     public fun assert_trader_is_authorized_for_account(
-        trader: &signer, 
+        trader: &signer,
         account: address
     ) acquires AuxUserAccount {
         let trader_address = signer::address_of(trader);
@@ -269,9 +269,9 @@ module aux::vault {
         let target_account = borrow_global<AuxUserAccount>(account);
         assert!(
             table::contains(
-                &target_account.authorized_traders, 
+                &target_account.authorized_traders,
                 trader_address
-            ), 
+            ),
             ETRADER_NOT_AUTHORIZED
         );
     }
@@ -310,7 +310,7 @@ module aux::vault {
 
     /// add position
     public(friend) fun increase_user_balance<CoinType>(
-        user_addr: address, 
+        user_addr: address,
         amount: u128
     ): u128 acquires CoinBalance {
         let balance_address = onchain_signer::get_signer_address(user_addr);
@@ -359,7 +359,7 @@ module aux::vault {
         );
         coin_balance.balance = coin_balance.balance - amount;
         assert!(
-            coin_balance.available_balance <= coin_balance.balance, 
+            coin_balance.available_balance <= coin_balance.balance,
             error::invalid_state(EBALANCE_INVARIANT_VIOLATION)
         );
         coin_balance.balance
@@ -598,7 +598,7 @@ module aux::vault {
 
         // Deposit its own account
         deposit<QuoteCoin>(alice, alice_addr, 300);
-        
+
         // Sender add alice in acl
         add_authorized_trader(sender, alice_addr);
 

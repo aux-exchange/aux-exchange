@@ -272,34 +272,34 @@ module aux::clob_market {
 
     struct OrderFillEvent has store, drop {
         order_id: u128,
+        client_order_id: u128,
         is_bid: bool,
         owner: address,
-        base_qty: u128,  // base qty filled
-        price: u128,
-        fee: u128,
-        rebate: u128,
-        remaining_qty: u128,
+        base_qty: u64,  // base qty filled
+        price: u64,
+        fee: u64,
+        rebate: u64,
+        remaining_qty: u64,
         timestamp: u64, // timestamp of when the event happens
-        client_order_id: u128,
     }
 
     struct OrderCancelEvent has store, drop {
         order_id: u128,
-        owner: address,
-        cancel_qty: u128,
-        timestamp: u64, // timestamp of when the event happens
         client_order_id: u128,
+        owner: address,
+        cancel_qty: u64,
+        timestamp: u64, // timestamp of when the event happens
         order_type: u64, // immediate-or-cancel, fill-or-kill, maker-or-cancel
     }
 
     struct OrderPlacedEvent has store, drop {
         order_id: u128,
+        client_order_id: u128,
         owner: address,
         is_bid: bool,
-        qty: u128,
-        price: u128,
+        qty: u64,
+        price: u64,
         timestamp: u64, // timestamp of when the event happens
-        client_order_id: u128,
     }
 
     struct OpenOrderInfo has store, drop {
@@ -375,9 +375,9 @@ module aux::clob_market {
     }
 
     /// Returns value of order in quote AU
-    fun quote_qty<B>(price: u128, quantity: u128): u128 {
+    fun quote_qty<B>(price: u64, quantity: u64): u64 {
         // TODO: pass in decimals for gas saving
-        price * quantity / exp(10, (coin::decimals<B>() as u128))
+        ((price as u128) * (quantity as u128) / exp(10, (coin::decimals<B>() as u128)) as u64)
     }
 
     /// Place a limit order. Returns order ID of new order. Emits events on order placement and fills.
@@ -433,12 +433,12 @@ module aux::clob_market {
             // Debit/credit the sender's vault account
             if (is_bid) {
                 // taker pays quote, receives base
-                vault::decrease_user_balance<Q>(vault_account_owner, quote_au);
-                vault::increase_user_balance<B>(vault_account_owner, base_au);
+                vault::decrease_user_balance<Q>(vault_account_owner, (quote_au as u128));
+                vault::increase_user_balance<B>(vault_account_owner, (base_au as u128));
             } else {
                 // taker receives quote, pays base
-                vault::increase_user_balance<Q>(vault_account_owner, quote_au);
-                vault::decrease_user_balance<B>(vault_account_owner, base_au);
+                vault::increase_user_balance<Q>(vault_account_owner, (quote_au as u128));
+                vault::decrease_user_balance<B>(vault_account_owner, (base_au as u128));
             }
         } else if (base_au != 0 || quote_au != 0) {
             // abort if sender paid but did not receive and vice versa
@@ -450,13 +450,19 @@ module aux::clob_market {
 
     /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
     /// Emits OrderFill events
-    fun handle_fill<B, Q>(fill_events: &mut event::EventHandle<OrderFillEvent>, taker_order: &Order, maker_order: &Order, base_qty: u128, lot_size: u128): (u128, u128) acquires OpenOrderAccount {
+    fun handle_fill<B, Q>(
+        fill_events: &mut event::EventHandle<OrderFillEvent>,
+        taker_order: &Order,
+        maker_order: &Order,
+        base_qty: u64,
+        lot_size: u128
+    ): (u64, u64) acquires OpenOrderAccount {
         let timestamp = timestamp::now_microseconds();
         let resource_addr = @aux;
 
         let taker = taker_order.owner_id;
         let maker = maker_order.owner_id;
-        let price = (maker_order.price as u128);
+        let price = maker_order.price;
         let quote_qty = quote_qty<B>(price, base_qty);
         let taker_is_bid = taker_order.is_bid;
         let taker_fee = fee::taker_fee(taker, quote_qty);
@@ -470,13 +476,13 @@ module aux::clob_market {
             total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote_qty + taker_fee;
 
             // maker receives quote - fee, pays base
-            vault::increase_user_balance<Q>(maker, quote_qty + maker_rebate);
-            vault::decrease_unavailable_balance<B>(maker, base_qty);
+            vault::increase_user_balance<Q>(maker, (quote_qty + maker_rebate as u128));
+            vault::decrease_unavailable_balance<B>(maker, (base_qty as u128));
         } else {
             // maker pays quote + fee, receives base
-            vault::increase_available_balance<Q>(maker, quote_qty);
-            vault::decrease_user_balance<Q>(maker, quote_qty - maker_rebate);
-            vault::increase_user_balance<B>(maker, base_qty);
+            vault::increase_available_balance<Q>(maker, (quote_qty as u128));
+            vault::decrease_user_balance<Q>(maker, (quote_qty - maker_rebate as u128));
+            vault::increase_user_balance<B>(maker, (base_qty as u128));
 
             // taker receives quote - fee, pays base
             total_base_quantity_owed_au = total_base_quantity_owed_au + base_qty;
@@ -494,15 +500,15 @@ module aux::clob_market {
                 price,
                 fee: taker_fee,
                 rebate: 0,
-                remaining_qty: (util::sub_min_0(taker_order.quantity, (base_qty as u64)) as u128),
+                remaining_qty: util::sub_min_0(taker_order.quantity, (base_qty as u64)),
                 is_bid: taker_order.is_bid,
                 timestamp,
                 client_order_id: taker_order.client_order_id,
             }
         );
-        let maker_remaining_qty = (util::sub_min_0(maker_order.quantity, (base_qty as u64)) as u128);
+        let maker_remaining_qty = util::sub_min_0(maker_order.quantity, (base_qty as u64));
         if (maker_order.aux_au_to_burn_per_lot > 0) {
-            let aux_to_burn = (maker_order.aux_au_to_burn_per_lot as u128) * base_qty / lot_size;
+            let aux_to_burn = (maker_order.aux_au_to_burn_per_lot as u128) * (base_qty as u128) / lot_size;
             vault::increase_available_balance<AuxCoin>(maker, aux_to_burn);
             vault::decrease_user_balance<AuxCoin>(maker, aux_to_burn);
         };
@@ -514,7 +520,7 @@ module aux::clob_market {
                 order_id: maker_order.id,
                 owner: maker,
                 base_qty,  // base qty filled
-                price: (price as u128),
+                price,
                 fee: 0,
                 rebate: maker_rebate,
                 remaining_qty: maker_remaining_qty,
@@ -567,25 +573,25 @@ module aux::clob_market {
         let placed_order_owner = order.owner_id;
         assert!(placed_order_owner == vault_account_owner, E_INVALID_STATE);
 
-        let qty = (order.quantity as u128);
-        let price = (order.price as u128);
+        let qty = order.quantity;
+        let price = order.price;
         let placed_quote_qty = quote_qty<B>(price, qty);
 
         if (order.is_bid) {
-            vault::decrease_available_balance<Q>(vault_account_owner, placed_quote_qty);
+            vault::decrease_available_balance<Q>(vault_account_owner, (placed_quote_qty as u128));
         } else {
-            vault::decrease_available_balance<B>(vault_account_owner, qty);
+            vault::decrease_available_balance<B>(vault_account_owner, (qty as u128));
         };
         if (order.aux_au_to_burn_per_lot > 0) {
-            vault::decrease_available_balance<AuxCoin>(vault_account_owner, (order.aux_au_to_burn_per_lot as u128) * qty / lot_size);
+            vault::decrease_available_balance<AuxCoin>(vault_account_owner, (order.aux_au_to_burn_per_lot as u128) * (qty as u128) / lot_size);
         };
         event::emit_event<OrderPlacedEvent>(
             &mut market.placed_events,
             OrderPlacedEvent{
                 order_id: placed_order_id,
                 owner: placed_order_owner,
-                price: (price as u128),
-                qty: (qty as u128),
+                price,
+                qty,
                 is_bid: order.is_bid,
                 timestamp,
                 client_order_id: order.client_order_id,
@@ -615,8 +621,6 @@ module aux::clob_market {
     /// Returns (base_quantity_filled, quote_quantity_filled)
     fun new_order<B, Q>(
         market: &mut Market<B, Q>,
-        // base_coin: &mut coin::Coin<B>,
-        // quote_coin: &mut coin::Coin<Q>,
         order_owner: address,
         is_bid: bool,
         limit_price: u64,
@@ -628,7 +632,7 @@ module aux::clob_market {
         direction_aggressive: bool,
         timeout_timestamp: u64,
         stp_action_type: u64,
-    ): (u128, u128) acquires OpenOrderAccount {
+    ): (u64, u64) acquires OpenOrderAccount {
         // Check lot sizes
         let tick_size = market.tick_size;
         let lot_size = market.lot_size;
@@ -674,7 +678,7 @@ module aux::clob_market {
                 OrderCancelEvent {
                     order_id,
                     owner: order.owner_id,
-                    cancel_qty: (order.quantity as u128),
+                    cancel_qty: order.quantity,
                     timestamp,
                     client_order_id: client_order_id, // this is same given the invariant
                     order_type: order_type, // this is same given the invariant
@@ -696,7 +700,7 @@ module aux::clob_market {
                     OrderCancelEvent {
                         order_id,
                         owner: order.owner_id,
-                        cancel_qty: (order.quantity as u128),
+                        cancel_qty: order.quantity,
                         timestamp,
                         client_order_id: client_order_id, // this is same given the invariant
                         order_type: order_type, // this is same given the invariant
@@ -1094,15 +1098,15 @@ module aux::clob_market {
 
     // TODO: consolidate these with inner functions
     // Returns the best bid price as quote coin atomic units
-    public fun best_bid_au<B, Q>(): u128 acquires Market {
+    public fun best_bid_au<B, Q>(): u64 acquires Market {
         let market = borrow_global<Market<B, Q>>(@aux);
-        (best_bid_price(market) as u128)
+        best_bid_price(market)
     }
 
     // Returns the best bid price as quote coin atomic units
-    public fun best_ask_au<B, Q>(): u128 acquires Market {
+    public fun best_ask_au<B, Q>(): u64 acquires Market {
         let market = borrow_global<Market<B, Q>>(@aux);
-        (best_ask_price(market) as u128)
+        best_ask_price(market)
     }
 
     // cancel_order returns (order_cancelled, cancel_success)
@@ -1172,7 +1176,7 @@ module aux::clob_market {
         limit_price: u64,
         quantity: u64,
         client_order_id: u128,
-    ): (u128, u128)  acquires Market, OpenOrderAccount {
+    ): (u64, u64)  acquires Market, OpenOrderAccount {
         assert!(fee::fee_exists(sender_addr), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
@@ -1231,12 +1235,17 @@ module aux::clob_market {
     /* PRIVATE FUNCTIONS */
     /*********************/
 
-    fun process_cancel_without_open_order_account<B, Q>(cancelled: Order, timestamp: u64, lot_size: u128, cancel_events: &mut event::EventHandle<OrderCancelEvent>) {
-        let cancel_qty = (cancelled.quantity as u128);
+    fun process_cancel_without_open_order_account<B, Q>(
+        cancelled: Order,
+        timestamp: u64,
+        lot_size: u128,
+        cancel_events: &mut event::EventHandle<OrderCancelEvent>
+    ) {
+        let cancel_qty = cancelled.quantity;
         let event = OrderCancelEvent {
                 order_id: cancelled.id,
                 owner: cancelled.owner_id,
-                cancel_qty,
+                cancel_qty: cancelled.quantity,
                 timestamp,
                 client_order_id: cancelled.client_order_id,
                 order_type: cancelled.order_type,
@@ -1247,7 +1256,7 @@ module aux::clob_market {
         if (cancelled.is_bid) {
             vault::increase_available_balance<Q>(
                 cancelled.owner_id,
-                quote_qty<B>((cancelled.price as u128), cancel_qty),
+                (quote_qty<B>(cancelled.price, cancel_qty) as u128),
             );
         } else {
             vault::increase_available_balance<B>(
@@ -1437,7 +1446,7 @@ module aux::clob_market {
         }
     }
 
-    fun match<B, Q>(market: &mut Market<B, Q>, taker_order: &mut Order, current_timestamp: u64, stp_action_type: u64): (u128, u128) acquires OpenOrderAccount {
+    fun match<B, Q>(market: &mut Market<B, Q>, taker_order: &mut Order, current_timestamp: u64, stp_action_type: u64): (u64, u64) acquires OpenOrderAccount {
         let side = if (taker_order.is_bid) { &mut market.asks } else { &mut market.bids };
         let order_price = taker_order.price;
         let total_base_quantity_owed_au = 0;
@@ -1481,7 +1490,7 @@ module aux::clob_market {
                             let event = OrderCancelEvent {
                                     order_id: taker_order.id,
                                     owner: taker_order.owner_id,
-                                    cancel_qty: (taker_order.quantity as u128),
+                                    cancel_qty: taker_order.quantity,
                                     timestamp: current_timestamp,
                                     client_order_id: taker_order.client_order_id,
                                     order_type: taker_order.order_type,
@@ -1498,7 +1507,7 @@ module aux::clob_market {
                             let event = OrderCancelEvent {
                                     order_id: taker_order.id,
                                     owner: taker_order.owner_id,
-                                    cancel_qty: (taker_order.quantity as u128),
+                                    cancel_qty: taker_order.quantity,
                                     timestamp: current_timestamp,
                                     client_order_id: taker_order.client_order_id,
                                     order_type: taker_order.order_type,
@@ -1515,7 +1524,7 @@ module aux::clob_market {
                     let current_maker_quantity = maker_order.quantity;
                     if (current_maker_quantity <= taker_order.quantity) {
                         // emit fill event
-                        let (base, quote) = handle_fill<B, Q>(&mut market.fill_events, taker_order, maker_order, (current_maker_quantity as u128), lot_size);
+                        let (base, quote) = handle_fill<B, Q>(&mut market.fill_events, taker_order, maker_order, current_maker_quantity, lot_size);
                         total_base_quantity_owed_au = total_base_quantity_owed_au + base;
                         total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote;
                         // update taker quantity
@@ -1527,7 +1536,7 @@ module aux::clob_market {
                     } else {
                         // emit fill event
                         let quantity = taker_order.quantity;
-                        let (base, quote) = handle_fill<B, Q>(&mut market.fill_events, taker_order, maker_order, (quantity as u128), lot_size);
+                        let (base, quote) = handle_fill<B, Q>(&mut market.fill_events, taker_order, maker_order, quantity, lot_size);
                         total_base_quantity_owed_au = total_base_quantity_owed_au + base;
                         total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote;
 

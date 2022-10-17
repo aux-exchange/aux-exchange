@@ -78,20 +78,20 @@ module aux::volume_tracker {
         })
     }
 
-    public(friend) fun update_volume_tracker<Coin>(account: address, timestamp: u64, volume: u128) acquires SingleAssetTracker {
+    public(friend) fun update_volume_tracker<CoinType>(account: address, timestamp: u64, volume: u64) acquires SingleAssetTracker {
         // Make sure the coin is volume tracked
-        assert!(is_coin_volume_tracked<Coin>(account), ECOIN_NOT_VOLUME_TRACKED);
+        assert!(is_coin_volume_tracked<CoinType>(account), ECOIN_NOT_VOLUME_TRACKED);
         let res_account = onchain_signer::get_signer_address(account);
 
-        let volume_tracker = &mut borrow_global_mut<SingleAssetTracker<Coin>>(res_account).volume_tracker;
+        let volume_tracker = &mut borrow_global_mut<SingleAssetTracker<CoinType>>(res_account).volume_tracker;
         let day = (timestamp - volume_tracker.initial_timestamp) / SECONDS_IN_DAY;
         let slot_idx = day % (BUFFER_SIZE as u64);
         let volume_entry_mut = vector::borrow_mut(&mut volume_tracker.buffer, slot_idx);
         if(volume_entry_mut.day != day) {
             volume_entry_mut.day = day;
-            volume_entry_mut.volume = volume;
+            volume_entry_mut.volume = (volume as u128);
         }else{
-            volume_entry_mut.volume = volume_entry_mut.volume + volume;
+            volume_entry_mut.volume = volume_entry_mut.volume + (volume as u128);
         };
         volume_entry_mut.timestamp = timestamp;
     }

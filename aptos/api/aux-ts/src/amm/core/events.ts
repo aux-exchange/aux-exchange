@@ -10,11 +10,11 @@ export interface RawSwapEvent {
     sender_addr: Types.Address;
     in_coin_type: Types.MoveStructTag;
     out_coin_type: Types.MoveStructTag;
-    in_au: Types.U128;
-    out_au: Types.U128;
-    in_reserve: Types.U128;
-    out_reserve: Types.U128;
-    fee_bps: Types.U128;
+    in_au: Types.U64;
+    out_au: Types.U64;
+    in_reserve: Types.U64;
+    out_reserve: Types.U64;
+    fee_bps: Types.U64;
   };
 }
 
@@ -25,9 +25,9 @@ export interface RawAddLiquidityEvent {
     timestamp: Types.U128;
     x_coin_type: Types.MoveStructTag;
     y_coin_type: Types.MoveStructTag;
-    x_added_au: Types.U128;
-    y_added_au: Types.U128;
-    lp_minted_au: Types.U128;
+    x_added_au: Types.U64;
+    y_added_au: Types.U64;
+    lp_minted_au: Types.U64;
   };
 }
 
@@ -38,9 +38,9 @@ export interface RawRemoveLiquidityEvent {
     timestamp: Types.U128;
     x_coin_type: Types.MoveStructTag;
     y_coin_type: Types.MoveStructTag;
-    x_removed_au: Types.U128;
-    y_removed_au: Types.U128;
-    lp_burned_au: Types.U128;
+    x_removed_au: Types.U64;
+    y_removed_au: Types.U64;
+    lp_burned_au: Types.U64;
   };
 }
 

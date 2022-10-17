@@ -1,5 +1,5 @@
 // Have to separete fee as a separate module to resolve dependency cycle after initialize fee when `create_aux_account` in vault, the reason is when delegator places an order, it won't have signer capability of the original account creator, so won't be able to initialize the fee during place_order
-// a incomplete view of the dependency graph: 
+// a incomplete view of the dependency graph:
 // router -> amm -> constant_product (the amm fee is independent of clob)
 //        -> clob_market  -> clob ->: clob_side -> clob_level -> clob_order
 //                                                -> rb_tree    -> rb_tree
@@ -13,7 +13,7 @@ module aux::fee {
     struct Fee has key {
         maker_rebate_bps: u8,
         taker_fee_bps: u8
-    }    
+    }
 
     public fun fee_exists(account: address) : bool{
         exists<Fee>(account)
@@ -39,32 +39,32 @@ module aux::fee {
 
     public fun get_maker_rebate_bps(user: address): u8 acquires Fee {
         borrow_global<Fee>(user).maker_rebate_bps
-    }   
-
-    public fun maker_rebate(user: address, val: u128): u128 acquires Fee {
-        val * (get_maker_rebate_bps(user) as u128)/ 10000
     }
 
-    public fun taker_fee(user: address, val: u128): u128 acquires Fee {
-        val * (get_taker_fee_bps(user) as u128)/ 10000
+    public fun maker_rebate(user: address, val: u64): u64 acquires Fee {
+        ((val as u128) * (get_maker_rebate_bps(user) as u128)/ 10000 as u64)
     }
 
-    public fun add_fee(user: address, val: u128, is_taker: bool): u128 acquires Fee {
-        if (is_taker) {
-            val * (10000 + (get_taker_fee_bps(user) as u128)) / 10000
+    public fun taker_fee(user: address, val: u64): u64 acquires Fee {
+        ((val as u128) * (get_taker_fee_bps(user) as u128)/ 10000 as u64)
+    }
+
+    public fun add_fee(user: address, val: u64, is_taker: bool): u64 acquires Fee {
+        (if (is_taker) {
+            (val as u128) * (10000 + (get_taker_fee_bps(user) as u128)) / 10000
         } else {
             // maker rebate is a negative fee, so we subtract
-            val * (10000 - (get_maker_rebate_bps(user) as u128)) / 10000
-        }
+            (val as u128) * (10000 - (get_maker_rebate_bps(user) as u128)) / 10000
+        } as u64)
     }
 
-    public fun subtract_fee(user: address, val: u128, is_taker: bool): u128 acquires Fee {
-        if (is_taker) {
-            val * (10000 - (get_taker_fee_bps(user) as u128)) / 10000
+    public fun subtract_fee(user: address, val: u64, is_taker: bool): u64 acquires Fee {
+        (if (is_taker) {
+            (val as u128) * (10000 - (get_taker_fee_bps(user) as u128)) / 10000
         } else {
             // maker rebate is a negative fee, so we add
-            val * (10000 + (get_maker_rebate_bps(user) as u128)) / 10000
-        }
+            (val as u128) * (10000 + (get_maker_rebate_bps(user) as u128)) / 10000
+        } as u64)
     }
 
     #[test_only]
@@ -77,5 +77,5 @@ module aux::fee {
             move_to(sender, Fee{maker_rebate_bps: 0, taker_fee_bps: 0});
         };
     }
-    
+
 }
