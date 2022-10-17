@@ -42,28 +42,28 @@ module aux::fee {
     }
 
     public fun maker_rebate(user: address, val: u64): u64 acquires Fee {
-        ((val as u128) * (get_maker_rebate_bps(user) as u128)/ 10000 as u64)
+        ((val as u128) * (borrow_global<Fee>(user).maker_rebate_bps as u128)/ 10000 as u64)
     }
 
     public fun taker_fee(user: address, val: u64): u64 acquires Fee {
-        ((val as u128) * (get_taker_fee_bps(user) as u128)/ 10000 as u64)
+        ((val as u128) * (borrow_global<Fee>(user).taker_fee_bps as u128)/ 10000 as u64)
     }
 
     public fun add_fee(user: address, val: u64, is_taker: bool): u64 acquires Fee {
         (if (is_taker) {
-            (val as u128) * (10000 + (get_taker_fee_bps(user) as u128)) / 10000
+            (val as u128) * (10000 + (borrow_global<Fee>(user).taker_fee_bps as u128)) / 10000
         } else {
             // maker rebate is a negative fee, so we subtract
-            (val as u128) * (10000 - (get_maker_rebate_bps(user) as u128)) / 10000
+            (val as u128) * (10000 - (borrow_global<Fee>(user).maker_rebate_bps as u128)) / 10000
         } as u64)
     }
 
     public fun subtract_fee(user: address, val: u64, is_taker: bool): u64 acquires Fee {
         (if (is_taker) {
-            (val as u128) * (10000 - (get_taker_fee_bps(user) as u128)) / 10000
+            (val as u128) * (10000 - (borrow_global<Fee>(user).taker_fee_bps as u128)) / 10000
         } else {
             // maker rebate is a negative fee, so we add
-            (val as u128) * (10000 + (get_maker_rebate_bps(user) as u128)) / 10000
+            (val as u128) * (10000 + (borrow_global<Fee>(user).maker_rebate_bps as u128)) / 10000
         } as u64)
     }
 
