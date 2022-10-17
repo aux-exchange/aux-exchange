@@ -1,0 +1,168 @@
+import type { AptosAccount } from "aptos";
+import * as assert from "assert";
+import { AuxClient, FakeCoin } from "../src/client";
+import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import Market from "../src/clob/dsl/market";
+import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
+import Vault from "../src/vault/dsl/vault";
+import { getAliceBob } from "../test/alice_and_bob";
+
+async function main() {
+  const [auxClient, aux] = AuxClient.createFromEnvForTesting({});
+
+  const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
+  const baseCoin = auxCoin;
+  const quoteCoin = auxClient.getWrappedFakeCoinType(FakeCoin.SOL);
+
+  let alice: AptosAccount;
+  let bob: AptosAccount;
+  let aliceAddr: string;
+  let bobAddr: string;
+
+  let vault: Vault;
+  let market: Market;
+
+  [alice, bob] = await getAliceBob(auxClient);
+  aliceAddr = alice.address().toString();
+  bobAddr = bob.address().toString();
+
+  // Create two accounts, Alice and Bob, and fund
+  console.log("\n=== Addresses ===");
+  console.log(`Module: ${auxClient.moduleAddress}`);
+  console.log(`Alice: ${alice.address()}`);
+  console.log(`Bob: ${bob.address()}`);
+
+  let tx = await auxClient.registerAuxCoin(alice);
+  // assert.ok(tx.success, `${tx.vm_status}`);
+  tx = await auxClient.registerAuxCoin(bob);
+  // assert.ok(tx.success, `${tx.vm_status}`);
+  tx = await auxClient.mintAux(aux, aliceAddr, AU(100_000_000));
+  assert.ok(tx.success, `${tx.vm_status}`);
+  tx = await auxClient.mintAux(aux, bobAddr, AU(100_000_000));
+  assert.ok(tx.success, `${tx.vm_status}`);
+
+  vault = new Vault(auxClient);
+
+  await vault.createAuxAccount(alice);
+  await vault.createAuxAccount(bob);
+
+  tx = await vault.deposit(alice, quoteCoin, DU(0.04));
+  assert.ok(tx.success, `${tx.vm_status}}]`);
+  assert.equal((await vault.balance(aliceAddr, quoteCoin)).toNumber(), 0.04);
+  assert.equal((await vault.balance(aliceAddr, baseCoin)).toNumber(), 0);
+
+  tx = await vault.deposit(bob, baseCoin, DU(1000));
+  assert.ok(tx.success, `${tx.vm_status}}]`);
+  assert.equal((await vault.balance(bobAddr, quoteCoin)).toNumber(), 0);
+  assert.equal((await vault.balance(bobAddr, baseCoin)).toNumber(), 1000);
+
+  market = await Market.create(auxClient, {
+    sender: aux,
+    baseCoinType: baseCoin,
+    quoteCoinType: quoteCoin,
+    baseLotSize: new AtomicUnits(1000),
+    quoteLotSize: new AtomicUnits(1000),
+  });
+
+  assert.ok(market);
+
+  const simResultNoTimeout = await market.placeOrder(
+    {
+      sender: alice,
+      delegator: aliceAddr,
+      isBid: true,
+      limitPrice: new DecimalUnits(0.001),
+      quantity: new DecimalUnits(2),
+      auxToBurn: new DecimalUnits(0),
+      orderType: OrderType.LIMIT_ORDER,
+      stpActionType: STPActionType.CANCEL_PASSIVE,
+    },
+    { simulate: true }
+  );
+  assert.ok(simResultNoTimeout.tx.success, `${simResultNoTimeout.tx}`);
+  // confirm order was actually placed
+  assert.ok(simResultNoTimeout.payload[0]!.type === "OrderPlacedEvent");
+  assert.equal(simResultNoTimeout.payload.length, 1);
+  const withoutCancelGasAmount = Number(simResultNoTimeout.tx.gas_used);
+  console.log(
+    "place order no timeout",
+    `Gas used: ${simResultNoTimeout.tx.gas_used}, gas price: ${simResultNoTimeout.tx.gas_unit_price}, timestamp: ${simResultNoTimeout.tx.timestamp}`
+  );
+  let lastTime = Number(simResultNoTimeout.tx.timestamp);
+  for (let i = 1; i <= 100; i++) {
+    const placeTimeoutResult = await market.placeOrder({
+      sender: bob,
+      delegator: bobAddr,
+      isBid: false,
+      limitPrice: new DecimalUnits(0.01 + i * 10 ** -4),
+      quantity: new DecimalUnits(2),
+      auxToBurn: new DecimalUnits(0),
+      orderType: OrderType.LIMIT_ORDER,
+      stpActionType: STPActionType.CANCEL_PASSIVE,
+    });
+    assert.ok(
+      placeTimeoutResult.tx.success,
+      `${placeTimeoutResult.tx.vm_status}`
+    );
+    lastTime = Number(placeTimeoutResult.tx.timestamp);
+  }
+  console.log(lastTime);
+  const placeTimeoutResult = await market.placeOrder({
+    sender: bob,
+    delegator: bobAddr,
+    isBid: false,
+    limitPrice: new DecimalUnits(0.01),
+    quantity: new DecimalUnits(2),
+    auxToBurn: new DecimalUnits(0),
+    orderType: OrderType.LIMIT_ORDER,
+    stpActionType: STPActionType.CANCEL_PASSIVE,
+    timeoutTimestamp: (lastTime + 2e6).toString(),
+  });
+  assert.ok(
+    placeTimeoutResult.tx.success,
+    `${placeTimeoutResult.tx.vm_status}`
+  );
+  //   confirm order was actually placed
+  //   console.dir(placeTimeoutResult, { depth: null });
+  console.log(placeTimeoutResult);
+  assert.ok(placeTimeoutResult.payload[0]!.type === "OrderPlacedEvent");
+  await new Promise((r) => setTimeout(r, 2000));
+  const simResultWithTimeout = await market.placeOrder(
+    {
+      sender: alice,
+      delegator: aliceAddr,
+      isBid: true,
+      limitPrice: new DecimalUnits(0.01),
+      quantity: new DecimalUnits(2),
+      auxToBurn: new DecimalUnits(0),
+      orderType: OrderType.LIMIT_ORDER,
+      stpActionType: STPActionType.CANCEL_PASSIVE,
+    },
+    { simulate: true }
+  );
+  assert.ok(
+    simResultWithTimeout.tx.success,
+    `${simResultWithTimeout.tx.vm_status}`
+  );
+  // confirm order was actually cancelled
+  //   console.dir(simResultWithTimeout, { depth: null });
+  console.log(simResultWithTimeout);
+  assert.ok(
+    simResultWithTimeout.payload.find((e) => {
+      return e.type === "OrderCancelEvent";
+    })
+  );
+  const withCancelGasAmount = Number(simResultWithTimeout.tx.gas_used);
+  console.log(
+    "place order with timeout",
+    `Gas used: ${simResultWithTimeout.tx.gas_used}, gas price: ${simResultWithTimeout.tx.gas_unit_price}, timestamp: ${simResultWithTimeout.tx.timestamp}`
+  );
+  console.log(
+    "Gas cost per cancel:",
+    withCancelGasAmount - withoutCancelGasAmount
+  );
+  const bobCancel = await market.cancelAll(bob);
+  assert.ok(bobCancel.success, `${bobCancel.hash}: ${bobCancel.vm_status}`);
+}
+
+main();
