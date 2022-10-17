@@ -114,7 +114,7 @@ describe("CLOB DSL tests", function () {
     assert.equal(
       await vault.availableBalance(aliceAddr, quoteCoin),
       // looks like we should subtract maker rebates 1bps
-      quantize(0.004 - 0.002 * 1.0005, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.002, quoteCoinInfo.decimals)
     );
     const auxAccount = new AuxAccount(auxClient, alice.address().toString());
 
@@ -152,7 +152,7 @@ describe("CLOB DSL tests", function () {
     assert.equal((await vault.balance(aliceAddr, baseCoin)).toNumber(), 1);
     assert.equal(
       (await vault.availableBalance(aliceAddr, quoteCoin)).toNumber(),
-      quantize(0.004 - 0.001 * 1.0005 - 0.001 * 0.9999, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.001 - 0.001 * 0.9999, quoteCoinInfo.decimals)
     );
   });
 
@@ -399,7 +399,7 @@ describe("CLOB Core tests", function () {
     });
     assert.equal(
       await vault.query.availableBalance(auxClient, aliceAddr, quoteCoin),
-      400_000 - 200_000 * 1.0005
+      400_000 - 200_000
     );
     await clob.mutation.placeOrder(auxClient, {
       sender: bob,
@@ -437,7 +437,7 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       await vault.query.availableBalance(auxClient, aliceAddr, quoteCoin),
-      400_000 - Math.floor(100_000 * 0.9999) - Math.floor(100_000 * 1.0005)
+      400_000 - Math.floor(100_000 * 0.9999) - Math.floor(100_000)
     );
   });
 

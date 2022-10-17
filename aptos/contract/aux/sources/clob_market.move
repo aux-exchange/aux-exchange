@@ -74,7 +74,6 @@ module aux::clob_market {
     // Config
     const CANCEL_EXPIRATION_TIME: u64 = 100000000; // 100 s
     const MAX_U64: u64 = 18446744073709551615;
-    const HOLD_FEE_BPS: u128 = 5;
     const CRITBIT_NULL_INDEX: u64 = 1 << 63;
 
     //////////////////////////////////////////////////////////////////
@@ -472,7 +471,7 @@ module aux::clob_market {
             vault::decrease_unavailable_balance<B>(maker, base_qty);
         } else {
             // maker pays quote + fee, receives base
-            vault::increase_available_balance<Q>(maker, quote_qty * (10000 + HOLD_FEE_BPS) / 10000);
+            vault::increase_available_balance<Q>(maker, quote_qty);
             vault::decrease_user_balance<Q>(maker, quote_qty - maker_rebate);
             vault::increase_user_balance<B>(maker, base_qty);
 
@@ -570,7 +569,7 @@ module aux::clob_market {
         let placed_quote_qty = quote_qty<B>(price, qty);
 
         if (order.is_bid) {
-            vault::decrease_available_balance<Q>(vault_account_owner, placed_quote_qty * (10000 + HOLD_FEE_BPS) / 10000);
+            vault::decrease_available_balance<Q>(vault_account_owner, placed_quote_qty);
         } else {
             vault::decrease_available_balance<B>(vault_account_owner, qty);
         };
@@ -1244,7 +1243,7 @@ module aux::clob_market {
         if (cancelled.is_bid) {
             vault::increase_available_balance<Q>(
                 cancelled.owner_id,
-                quote_qty<B>((cancelled.price as u128), cancel_qty) * (10000 + HOLD_FEE_BPS) / 10000,
+                quote_qty<B>((cancelled.price as u128), cancel_qty),
             );
         } else {
             vault::increase_available_balance<B>(
@@ -1678,12 +1677,12 @@ module aux::clob_market {
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 479990, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
+        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 480000, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490000);
-        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 479995, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
+        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 480000, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -1698,7 +1697,7 @@ module aux::clob_market {
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 120000, 20, 0, 1003, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
 
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 468000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 457995);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 458000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 30);
 
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 4970);
@@ -1731,12 +1730,12 @@ module aux::clob_market {
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         let order_id = get_test_order_id(0, 0);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         vault::deposit<BaseCoin>(bob, bob_addr, 5000);
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 490000);
-        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 479995, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
+        assert!(vault::available_balance<QuoteCoin>(alice_addr) == 480000, (vault::available_balance<QuoteCoin>(alice_addr) as u64));
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -1768,7 +1767,7 @@ module aux::clob_market {
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 0, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         let order_id = get_test_order_id(0, 0);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         vault::deposit<BaseCoin>(bob, bob_addr, 5000);
         cancel_order<BaseCoin, QuoteCoin>(bob, bob_addr, order_id);
@@ -1786,12 +1785,12 @@ module aux::clob_market {
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         let order_id = get_test_order_id(0, 0);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         vault::deposit<BaseCoin>(bob, bob_addr, 5000);
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 490000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479995);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -1848,12 +1847,12 @@ module aux::clob_market {
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490001);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479996);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480001);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 9998);
@@ -1884,12 +1883,12 @@ module aux::clob_market {
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479995);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -1946,13 +1945,13 @@ module aux::clob_market {
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, 1000000, CANCEL_PASSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_PASSIVE);
 
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479995);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -1984,13 +1983,13 @@ module aux::clob_market {
         // alice places has buy 20 qty open order
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
 
         // bob place a sell order, make alice has 10 qty open order
         vault::deposit<BaseCoin>(bob, bob_addr, 5000);
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_PASSIVE);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 490000);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479995);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
@@ -2023,7 +2022,7 @@ module aux::clob_market {
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 500000);
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 5000);
         // 500000 - 1000 * 20 = 480000
-        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 480000);
         assert_eq_u128(vault::available_balance<BaseCoin>(bob_addr), 5000);
 
         // bob place a sell 10 qty with stp action type "cancel passive", it self-trades with his previous order, so it cancels previous order with buy qty 20, and place this sell 10 qty order
@@ -2066,7 +2065,7 @@ module aux::clob_market {
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 0);
         // 500000 - 1000 * 20 = 480000
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::available_balance<BaseCoin>(alice_addr), 0);
 
         // Alice add bob as her friend trader
@@ -2076,7 +2075,7 @@ module aux::clob_market {
         vault::deposit<BaseCoin>(bob, alice_addr, 50);
         assert_eq_u128(vault::balance<QuoteCoin>(alice_addr), 500000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 50);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 479990);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::available_balance<BaseCoin>(alice_addr), 50);
 
         assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 0);
