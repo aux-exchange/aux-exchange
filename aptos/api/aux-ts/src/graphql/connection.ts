@@ -1,10 +1,14 @@
 import { PubSub } from "graphql-subscriptions";
 import { AuxClient, Network } from "../client";
+import * as dotenv from "dotenv";
 
-export const auxClient = process.env["APTOS_LOCAL"] === "true"
-  ? AuxClient.createFromEnvForTesting({})[0]
-  : AuxClient.create({
-      network: Network.Devnet,
-      validatorAddress: "https://fullnode.devnet.aptoslabs.com/v1",
-    });
+dotenv.config();
+
+export const auxClient =
+  process.env["APTOS_LOCAL"] === "true"
+    ? AuxClient.createFromEnvForTesting({})[0]
+    : AuxClient.create({
+        network: Network.Devnet,
+        validatorAddress: process.env["DEVNET_NODE_URL"]!,
+      });
 export const pubsub = new PubSub();
