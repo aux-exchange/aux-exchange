@@ -1,4 +1,8 @@
 module aux::amm {
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
+    fun is_not_emergency(): bool {
+        false
+    }
     use std::error;
     use std::string::{Self, String};
     use std::option;
@@ -115,6 +119,7 @@ module aux::amm {
     /// Creates an empty pool for coins of type X and Y. Charge the given basis
     /// point fee on swaps.
     public entry fun create_pool<X, Y>(sender: &signer, fee_bps: u64) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(fee_bps <= 10000, error::invalid_argument(EINVALID_FEE));
         assert!(!exists<Pool<X, Y>>(@aux), error::already_exists(EPOOL_ALREADY_EXISTS));
         assert!(!exists<Pool<Y, X>>(@aux), error::already_exists(ETYPE_ARGS_WRONG_ORDER));
@@ -173,6 +178,7 @@ module aux::amm {
         au_in: u64,
         min_au_out: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
         swap_exact_coin_for_coin_mut(
@@ -197,6 +203,7 @@ module aux::amm {
         max_in_au: u64,
         exact_out_au: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
         swap_coin_for_exact_coin_mut(
@@ -228,6 +235,7 @@ module aux::amm {
         max_out_per_in_au_numerator: u128,
         max_out_per_in_au_denominator: u128,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
         swap_exact_coin_for_coin_mut(
@@ -256,6 +264,7 @@ module aux::amm {
         max_in_per_out_au_denominator: u128,
         exact_out_au: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
         let out = coin::zero();
         swap_coin_for_exact_coin_mut(
@@ -282,6 +291,7 @@ module aux::amm {
         y_au: u64,
         max_slippage_bps: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let user_x = coin::withdraw<X>(sender, x_au);
         let user_y = coin::withdraw<Y>(sender, y_au);
         let lp = coin_add_liquidity(&mut user_x, &mut user_y, max_slippage_bps);
@@ -302,6 +312,7 @@ module aux::amm {
         x_au: u64,
         y_au: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let user_x = coin::withdraw<X>(sender, x_au);
         let user_y = coin::withdraw<Y>(sender, y_au);
         let lp = coin_add_exact_liquidity(user_x, user_y);
@@ -360,6 +371,7 @@ module aux::amm {
         min_pool_x_au: u64,
         min_pool_y_au: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let user_x = coin::withdraw<X>(sender, max_x_au);
         let user_y = coin::withdraw<Y>(sender, max_y_au);
         let lp = coin_add_approximate_liquidity(
@@ -389,6 +401,7 @@ module aux::amm {
         sender: &signer,
         lp_au: u64,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let lp = coin::withdraw<LP<X, Y>>(sender, lp_au);
         let (x, y) = coin_remove_liquidity(lp);
         let sender_address = signer::address_of(sender);
@@ -401,6 +414,7 @@ module aux::amm {
     /// that the minimum LP buffer does not correspond to a real position since
     /// it was effectively burned to add initial liquidity to the pool.
     public entry fun reset_pool<X, Y>(sender: &signer) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert_pool<X, Y>();
 
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
@@ -423,21 +437,25 @@ module aux::amm {
     /********************/
 
     public fun pool_exists<X, Y>(): bool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         exists<Pool<X, Y>>(@aux)
     }
 
     public fun x_au<X, Y>(): u64 acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let pool = borrow_global<Pool<X, Y>>(@aux);
         coin::value(&pool.x_reserve)
     }
 
     public fun y_au<X, Y>(): u64 acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let pool = borrow_global<Pool<X, Y>>(@aux);
         coin::value(&pool.y_reserve)
     }
 
     /// Returns au of output token received for au of input token
     public fun au_out<CoinIn, CoinOut>(au_in: u64): u64 acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (exists<Pool<CoinIn, CoinOut>>(@aux)) {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
@@ -460,6 +478,7 @@ module aux::amm {
 
     /// Returns au of input token required to receive au of output token
     public fun au_in<CoinIn, CoinOut>(au_out: u64): u64 acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (exists<Pool<CoinIn, CoinOut>>(@aux)) {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
@@ -482,6 +501,7 @@ module aux::amm {
         user_x: coin::Coin<X>,
         user_y: coin::Coin<Y>,
     ): coin::Coin<LP<X, Y>> acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert_pool<X, Y>();
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
         assert!(!pool.frozen, EPOOL_FROZEN);
@@ -513,6 +533,7 @@ module aux::amm {
         user_y: &mut coin::Coin<Y>,
         max_slippage_bps: u64,
     ): coin::Coin<LP<X, Y>> acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
         let x_reserve = coin::value(&pool.x_reserve);
         let y_reserve = coin::value(&pool.y_reserve);
@@ -597,6 +618,7 @@ module aux::amm {
         min_pool_x_au: u64,
         min_pool_y_au: u64,
     ): coin::Coin<LP<X, Y>> acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert_pool<X, Y>();
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
         assert!(!pool.frozen, EPOOL_FROZEN);
@@ -638,6 +660,7 @@ module aux::amm {
     public fun coin_remove_liquidity<X, Y>(
         lp: coin::Coin<LP<X, Y>>,
     ): (coin::Coin<X>, coin::Coin<Y>) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert_pool<X, Y>();
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
         assert!(!pool.frozen, EPOOL_FROZEN);
@@ -683,6 +706,7 @@ module aux::amm {
         max_out_per_in_au_numerator: u128,
         max_out_per_in_au_denominator: u128,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         swap_exact_coin_for_coin_mut(
             sender_addr,
             &mut coin_in,
@@ -705,6 +729,7 @@ module aux::amm {
         max_in_per_out_au_numerator: u128,
         max_in_per_out_au_denominator: u128,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         swap_coin_for_exact_coin_mut(
             sender_addr,
             &mut coin_in,
@@ -734,6 +759,7 @@ module aux::amm {
         max_out_per_in_au_numerator: u128,
         max_out_per_in_au_denominator: u128,
     ): (u64, u64) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let now = timestamp::now_microseconds();
 
         let (au_out, au_in, reserve_out, reserve_in) = if (exists<Pool<CoinIn, CoinOut>>(@aux)) {
@@ -871,6 +897,7 @@ module aux::amm {
         max_in_per_out_au_numerator: u128,
         max_in_per_out_au_denominator: u128,
     ): (u64, u64) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let now = timestamp::now_microseconds();
 
         let (au_out, au_in, reserve_out, reserve_in) = if (exists<Pool<CoinIn, CoinOut>>(@aux)) {
@@ -1009,6 +1036,7 @@ module aux::amm {
         user_in: &mut coin::Coin<InCoinType>,
         flash_swap: FlashSwap<InCoinType, OutCoinType>,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let FlashSwap { in_au, out_au } = flash_swap;
         // figure out which pool it was and emit a swap event
         // (not very ergonomic, but easier than passing swap_events around with the loan)
@@ -1066,6 +1094,7 @@ module aux::amm {
         sender: &signer,
         flash_swap: FlashSwap<InCoinType, OutCoinType>,
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let in = coin::withdraw<InCoinType>(sender, flash_swap.in_au);
         coin_repay(
             sender,
@@ -1084,6 +1113,7 @@ module aux::amm {
         au_in: u64,
         min_au_out: u64,
     ): FlashSwap<CoinIn, CoinOut> acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (au_in, au_out, out_coin) = if (exists<Pool<CoinIn, CoinOut>>(@aux)) {
             let pool = borrow_global_mut<Pool<CoinIn, CoinOut>>(@aux);
             assert!(!pool.frozen, EPOOL_FROZEN);
@@ -1127,6 +1157,7 @@ module aux::amm {
         au_in: u64,
         min_au_out: u64,
     ): FlashSwap<CoinIn, CoinOut> acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let out = coin::zero();
         let swap = coin_flash_swap<CoinIn, CoinOut>(
             &mut out,
@@ -1435,6 +1466,7 @@ module aux::amm {
 
     #[test_only]
     public fun setup_module_for_test(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         deployer::deployer::create_resource_account(sender, b"amm");
         authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
     }
@@ -1448,6 +1480,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3)]
     public entry fun test_lp_name(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         setup_module_for_test(sender);
 
         aux::aux_coin::initialize_aux_coin(sender);
@@ -1459,6 +1492,7 @@ module aux::amm {
 
     #[test_only]
     public fun destroy_pool_for_test<X, Y>() acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let pool = move_from<Pool<X, Y>>(@aux);
         let Pool {
             frozen: _,
@@ -1493,6 +1527,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3)]
     public entry fun test_lp_symbol(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         setup_module_for_test(sender);
 
         aux::aux_coin::initialize_aux_coin(sender);
@@ -1504,6 +1539,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_create_pool(sender: &signer, aptos_framework: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         timestamp::set_time_has_started_for_testing(aptos_framework);
         let signer_addr = signer::address_of(sender);
         account::create_account_for_test(signer_addr);
@@ -1557,6 +1593,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_add_initial_liquidity(sender: &signer, aptos_framework: &signer) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
@@ -1591,6 +1628,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_add_exact_liquidity(sender: &signer, aptos_framework: &signer) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
@@ -1858,6 +1896,7 @@ module aux::amm {
 
     #[test(sender = @0x5e7c3, aux = @aux)]
     public fun test_lp_name_regression(sender: &signer/*, aux: &signer*/) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let signer_addr = signer::address_of(sender);
         account::create_account_for_test(signer_addr);
 
@@ -2657,6 +2696,7 @@ module aux::amm {
         sender: &signer,
         aptos_framework: &signer
     ) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
@@ -2726,3 +2766,4 @@ module aux::amm {
         assert!(in1 == in2, in1);
     }
 }
+
