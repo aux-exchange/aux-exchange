@@ -77,15 +77,15 @@ export async function publishClobEvents() {
       }
       const marketName = `${market.baseCoinInfo.symbol}/${market.quoteCoinInfo.symbol}`;
 
-      market.update();
+      await market.update();
       pubsub.publish("ORDERBOOK", {
         baseCoinType: market.baseCoinInfo.coinType,
         quoteCoinType: market.quoteCoinInfo.coinType,
-        bids: market.level2.bids.map((level) => ({
+        bids: market.l2.bids.map((level) => ({
           price: level.price.toNumber(),
           quantity: level.quantity.toNumber(),
         })),
-        asks: market.level2.bids.map((level) => ({
+        asks: market.l2.asks.map((level) => ({
           price: level.price.toNumber(),
           quantity: level.quantity.toNumber(),
         })),

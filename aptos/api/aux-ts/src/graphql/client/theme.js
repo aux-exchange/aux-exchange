@@ -10,6 +10,7 @@ const secondary = createPalletteValues('secondary', colors.blue)
 const accent = createPalletteValues('accent', colors.sky)
 const green = createPalletteValues('green', colors.emerald)
 const red = createPalletteValues('red', colors.red)
+const orange = createPalletteValues('orange', colors.orange)
 const brand = createPalletteValues('accent', colors.sky)
 
 const tag = document.createElement('style')
@@ -20,6 +21,7 @@ tag.innerHTML = `
     ${secondary}
     ${accent}
     ${green}
+    ${orange}
     ${red}
     --brand-default: #00aeef;
     --brand-primary: #262262;
