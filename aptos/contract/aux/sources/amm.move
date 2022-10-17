@@ -225,8 +225,8 @@ module aux::amm {
     public entry fun swap_exact_coin_for_coin_limit<CoinIn, CoinOut>(
         sender: &signer,
         au_in: u64,
-        max_out_per_in_au_numerator: u64,
-        max_out_per_in_au_denominator: u64,
+        max_out_per_in_au_numerator: u128,
+        max_out_per_in_au_denominator: u128,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, au_in);
         let out = coin::zero();
@@ -252,8 +252,8 @@ module aux::amm {
     public entry fun swap_coin_for_exact_coin_limit<CoinIn, CoinOut>(
         sender: &signer,
         max_in_au: u64,
-        max_in_per_out_au_numerator: u64,
-        max_in_per_out_au_denominator: u64,
+        max_in_per_out_au_numerator: u128,
+        max_in_per_out_au_denominator: u128,
         exact_out_au: u64,
     ) acquires Pool {
         let in = coin::withdraw<CoinIn>(sender, max_in_au);
@@ -680,8 +680,8 @@ module aux::amm {
         au_in: u64,
         min_au_out: u64,
         use_limit_price: bool,
-        max_out_per_in_au_numerator: u64,
-        max_out_per_in_au_denominator: u64,
+        max_out_per_in_au_numerator: u128,
+        max_out_per_in_au_denominator: u128,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
         swap_exact_coin_for_coin_mut(
             sender_addr,
@@ -702,8 +702,8 @@ module aux::amm {
         max_au_in: u64,
         au_out: u64,
         use_limit_price: bool,
-        max_in_per_out_au_numerator: u64,
-        max_in_per_out_au_denominator: u64,
+        max_in_per_out_au_numerator: u128,
+        max_in_per_out_au_denominator: u128,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) acquires Pool {
         swap_coin_for_exact_coin_mut(
             sender_addr,
@@ -731,8 +731,8 @@ module aux::amm {
         au_in: u64,
         min_au_out: u64,
         use_limit_price: bool,
-        max_out_per_in_au_numerator: u64,
-        max_out_per_in_au_denominator: u64,
+        max_out_per_in_au_numerator: u128,
+        max_out_per_in_au_denominator: u128,
     ): (u64, u64) acquires Pool {
         let now = timestamp::now_microseconds();
 
@@ -848,9 +848,9 @@ module aux::amm {
 
         if (use_limit_price) {
             if (max_out_per_in_au_numerator / max_out_per_in_au_denominator > 0) {
-                assert!(reserve_out / reserve_in >= max_out_per_in_au_numerator / max_out_per_in_au_denominator, EVIOLATED_LIMIT_PRICE);
+                assert!((reserve_out / reserve_in as u128) >= max_out_per_in_au_numerator / max_out_per_in_au_denominator, EVIOLATED_LIMIT_PRICE);
             } else {
-                assert!(reserve_in / reserve_out <= max_out_per_in_au_denominator / max_out_per_in_au_numerator, EVIOLATED_LIMIT_PRICE);
+                assert!((reserve_in / reserve_out as u128) <= max_out_per_in_au_denominator / max_out_per_in_au_numerator, EVIOLATED_LIMIT_PRICE);
             };
         };
 
@@ -868,8 +868,8 @@ module aux::amm {
         max_au_in: u64,
         au_out: u64,
         use_limit_price: bool,
-        max_in_per_out_au_numerator: u64,
-        max_in_per_out_au_denominator: u64,
+        max_in_per_out_au_numerator: u128,
+        max_in_per_out_au_denominator: u128,
     ): (u64, u64) acquires Pool {
         let now = timestamp::now_microseconds();
 
@@ -993,9 +993,9 @@ module aux::amm {
 
         if (use_limit_price) {
             if ( max_in_per_out_au_numerator / max_in_per_out_au_denominator > 0) {
-                assert!(reserve_in / reserve_out <=  max_in_per_out_au_numerator / max_in_per_out_au_denominator, EVIOLATED_LIMIT_PRICE);
+                assert!((reserve_in / reserve_out as u128) <=  max_in_per_out_au_numerator / max_in_per_out_au_denominator, EVIOLATED_LIMIT_PRICE);
             } else {
-                assert!(reserve_out / reserve_in >= max_in_per_out_au_denominator /  max_in_per_out_au_numerator, EVIOLATED_LIMIT_PRICE);
+                assert!((reserve_out / reserve_in as u128) >= max_in_per_out_au_denominator /  max_in_per_out_au_numerator, EVIOLATED_LIMIT_PRICE);
             };
         };
         (au_out, au_in)
@@ -1368,8 +1368,8 @@ module aux::amm {
     // Returns the amount of input coin (coin added to pool) that would achieve
     // the provided limit price of OutputCoin/InputCoin
     fun amount_in_limit(
-        limit_out_per_in_num: u64,
-        limit_out_per_in_denom: u64,
+        limit_out_per_in_num: u128,
+        limit_out_per_in_denom: u128,
         reserve_in: u64,
         reserve_out: u64,
         _fee_bps: u64
@@ -1391,9 +1391,10 @@ module aux::amm {
         let inside_root = div128(
             mul256(
                 (reserve_in as u128) * (reserve_out as u128),
-                (limit_out_per_in_denom as u128
-            )
-        ), (limit_out_per_in_num as u128));
+                limit_out_per_in_denom
+            ),
+            limit_out_per_in_num
+        );
         let left = integer_square_root(inside_root);
         if (left < (reserve_in as u128)) {
             0
@@ -1963,8 +1964,8 @@ module aux::amm {
         expected_au_in: u64,
         expected_au_out: u64,
         use_limit: bool,
-        limit_num: u64,
-        limit_denom: u64
+        limit_num: u128,
+        limit_denom: u128
     }
 
     #[test_only]
@@ -2709,5 +2710,18 @@ module aux::amm {
         assert!(sender_x == 8000, sender_x);
         assert!(sender_y == 1999, sender_y);
         assert!(sender_lp == 2999, sender_lp);
+    }
+
+    #[test]
+    fun test_amount_in_limit_max_u128() {
+                    // max_out_per_in_au_numerator,
+                    // max_out_per_in_au_denominator,
+                    // x_reserve,
+                    // y_reserve,
+                    // pool.fee_bps
+        let max_u128 = 340282366920938463463374607431768211455u128;
+        let in1 = amount_in_limit(1, 1, 70000, 100000, 30);
+        let in2 = amount_in_limit(max_u128, max_u128, 70000, 100000, 30);
+        assert!(in1 == in2, in1);
     }
 }

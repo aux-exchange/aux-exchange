@@ -167,7 +167,6 @@ module aux::router {
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
                 let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
-                let (numerator, denominator) = simplify((best_bid_less_fee as u128), base_unit_au);
                 let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -175,8 +174,8 @@ module aux::router {
                     au_in - total_input_spent_au,
                     0,
                     true,
-                    (numerator as u64),
-                    (denominator as u64),
+                    (best_bid_less_fee as u128),
+                    base_unit_au,
                 );
 
                 total_input_spent_au = total_input_spent_au + x_spent_au;
@@ -251,7 +250,6 @@ module aux::router {
                     break
                 };
 
-                let (numerator, denominator) = simplify(base_unit_au, (best_ask_plus_fee as u128));
                 let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
                         &mut coin_in,
@@ -259,8 +257,8 @@ module aux::router {
                         au_in - total_input_spent_au,
                         0,
                         true,
-                        (numerator as u64),
-                        (denominator as u64)
+                        base_unit_au,
+                        (best_ask_plus_fee as u128)
                 );
 
                 total_input_spent_au = total_input_spent_au + x_spent_au;
@@ -386,7 +384,6 @@ module aux::router {
                     break
                 };
 
-                let (numerator, denominator) = simplify(base_unit_au, (best_bid_less_fee as u128));
                 let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -394,8 +391,8 @@ module aux::router {
                     max_au_in - total_input_spent_au,
                     au_out - total_output_received_au,
                     true,
-                    (numerator as u64),
-                    (denominator as u64)
+                    base_unit_au,
+                    (best_bid_less_fee as u128)
                 );
                 // coin::deposit<CoinIn>(sender_addr, coin_in);
 
@@ -451,7 +448,6 @@ module aux::router {
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
                 let best_ask_price_au = clob_market::best_ask_au<CoinOut, CoinIn>();
                 let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
-                let (numerator, denominator) = simplify((best_ask_plus_fee as u128), base_unit_au);
                 let (y_received_au, x_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -459,8 +455,8 @@ module aux::router {
                     max_au_in - total_input_spent_au,
                     au_out - total_output_received_au,
                     true,
-                    (numerator as u64),
-                    (denominator as u64),
+                    (best_ask_plus_fee as u128),
+                    base_unit_au,
                 );
                 total_input_spent_au = total_input_spent_au + x_spent_au;
                 total_output_received_au = total_output_received_au + y_received_au;
@@ -515,23 +511,6 @@ module aux::router {
         (coin_out, coin_in)
     }
 
-
-    /*********************/
-    /* PRIVATE FUNCTIONS */
-    /*********************/
-
-    /// simplify uses the Euclidean algorithm to compute the greatest
-    /// common divisor of two number and simplify the ratio.
-    fun simplify(a: u128, b: u128): (u128, u128) {
-        let a_orig = a;
-        let b_orig = b;
-        while (b != 0) {
-            let a_mod_b = a % b;
-            a = b;
-            b = a_mod_b;
-        };
-        (a_orig / a, b_orig / a)
-    }
 
     /*********/
     /* TESTS */
