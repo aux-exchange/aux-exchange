@@ -165,6 +165,7 @@ module aux::clob_market {
     /*********/
     /* ORDER */
     /*********/
+
     struct Order has store {
         id: u128,
         client_order_id: u128,
@@ -219,6 +220,9 @@ module aux::clob_market {
         }
     }
 
+    /*********/
+    /* LEVEL */
+    /*********/
 
     struct Level has store {
         // price
@@ -239,6 +243,10 @@ module aux::clob_market {
         critbit_v::destroy_empty(orders);
     }
 
+    /**********/
+    /* MARKET */
+    /**********/
+
     struct Market<phantom B, phantom Q> has key {
         // Orderbook
         bids:  CritbitTree<Level>,
@@ -247,9 +255,7 @@ module aux::clob_market {
 
         // MarketInfo
         base_decimals: u8,
-        base_exp: u128,
         quote_decimals: u8,
-        quote_exp: u128,
         lot_size: u64,
         tick_size: u64,
 
@@ -340,7 +346,6 @@ module aux::clob_market {
         let base_decimals = coin::decimals<B>();
         let quote_decimals = coin::decimals<Q>();
         let base_exp = exp(10, (base_decimals as u128));
-        let quote_exp = exp(10, (quote_decimals as u128));
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
         assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
         // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
@@ -358,8 +363,6 @@ module aux::clob_market {
         move_to(&clob_signer, Market<B, Q> {
             base_decimals,
             quote_decimals,
-            base_exp,
-            quote_exp,
             lot_size,
             tick_size,
             bids: critbit::new(),
@@ -955,10 +958,11 @@ module aux::clob_market {
 
         let market = borrow_global_mut<Market<B, Q>>(@aux);
 
+        let base_exp = exp(10, (market.base_decimals as u128));
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) / market.base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
         // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) % market.base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
+        assert!((lot_size as u128) * (tick_size as u128) % base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
 
         assert!(
             tick_size != market.tick_size || lot_size != market.lot_size,
