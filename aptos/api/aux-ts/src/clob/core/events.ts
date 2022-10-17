@@ -9,15 +9,15 @@ export interface RawOrderFillEvent {
   type: string;
   data: {
     order_id: Types.U128;
+    client_order_id: Types.U128;
     is_bid: boolean;
     owner: Types.Address;
     base_qty: Types.U128;
-    price: Types.U128;
-    fee: Types.U128;
-    rebate: Types.U128;
-    remaining_qty: Types.U128;
+    price: Types.U64;
+    fee: Types.U64;
+    rebate: Types.U64;
+    remaining_qty: Types.U64;
     timestamp: Types.U64;
-    client_order_id: Types.U128;
   };
 }
 
@@ -26,10 +26,10 @@ export interface RawOrderCancelEvent {
   type: string;
   data: {
     order_id: Types.U128;
-    owner: Types.Address;
-    cancel_qty: Types.U128;
-    timestamp: Types.U64;
     client_order_id: Types.U128;
+    owner: Types.Address;
+    cancel_qty: Types.U64;
+    timestamp: Types.U64;
     order_type: Types.U64;
   };
 }
@@ -39,12 +39,12 @@ export interface RawOrderPlacedEvent {
   type: string;
   data: {
     order_id: Types.U128;
+    client_order_id: Types.U128;
     owner: Types.Address;
     is_bid: boolean;
-    qty: Types.U128;
-    price: Types.U128;
+    qty: Types.U64;
+    price: Types.U64;
     timestamp: Types.U64;
-    client_order_id: Types.U128;
   };
 }
 

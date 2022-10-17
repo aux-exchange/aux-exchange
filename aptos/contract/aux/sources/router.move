@@ -167,7 +167,7 @@ module aux::router {
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
                 let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
-                let (numerator, denominator) = simplify(best_bid_less_fee, base_unit_au);
+                let (numerator, denominator) = simplify((best_bid_less_fee as u128), base_unit_au);
                 let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -233,7 +233,7 @@ module aux::router {
                 let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
 
                 // if we can't purchase at least one lot, execute the rest through the pool
-                let base_au_for_level = (((au_in - total_input_spent_au) as u128) * base_unit_au / best_ask_plus_fee as u64) ;  // how many au of base can we buy at the best ask with our remaining quote?
+                let base_au_for_level = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64) ;  // how many au of base can we buy at the best ask with our remaining quote?
                 if (base_au_for_level < lot_size) {
                     let (coin_received_au, coin_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
@@ -251,7 +251,7 @@ module aux::router {
                     break
                 };
 
-                let (numerator, denominator) = simplify(base_unit_au, best_ask_plus_fee);
+                let (numerator, denominator) = simplify(base_unit_au, (best_ask_plus_fee as u128));
                 let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut(
                         sender_addr,
                         &mut coin_in,
@@ -268,7 +268,7 @@ module aux::router {
 
                 if (total_input_spent_au < au_in) {
                     // remaining input coin is max_quote_qty
-                    let base_au_for_level = (((au_in - total_input_spent_au) as u128) * base_unit_au / best_ask_plus_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
+                    let base_au_for_level = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                     let (base_received_au, quote_spent_au) = clob_market::place_market_order_mut<CoinOut, CoinIn>(
                         sender_addr,
                         &mut coin_out,
@@ -368,7 +368,7 @@ module aux::router {
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
                 let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
-                let base_au_for_level = (((au_out - total_output_received_au) as u128) * base_unit_au / best_bid_less_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
+                let base_au_for_level = (((au_out - total_output_received_au) as u128) * (base_unit_au as u128) / (best_bid_less_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                 if (base_au_for_level < lot_size) {
                     let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                         sender_addr,
@@ -386,7 +386,7 @@ module aux::router {
                     break
                 };
 
-                let (numerator, denominator) = simplify(base_unit_au, best_bid_less_fee);
+                let (numerator, denominator) = simplify(base_unit_au, (best_bid_less_fee as u128));
                 let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -403,7 +403,7 @@ module aux::router {
                 total_output_received_au = total_output_received_au + coin_received_au;
 
                 if (total_output_received_au < au_out && total_input_spent_au < max_au_in) {
-                    let base_au_for_level = (((au_out - total_output_received_au) as u128) * base_unit_au / best_bid_less_fee as u64);  // how many au of base can we buy at the best ask with our remaining quote?
+                    let base_au_for_level = (((au_out - total_output_received_au) as u128) * (base_unit_au as u128) / (best_bid_less_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                     let (base_spent_au, quote_received_au) = clob_market::place_market_order_mut<CoinIn, CoinOut>(
                         sender_addr,
                         &mut coin_in,
@@ -451,7 +451,7 @@ module aux::router {
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
                 let best_ask_price_au = clob_market::best_ask_au<CoinOut, CoinIn>();
                 let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
-                let (numerator, denominator) = simplify(best_ask_plus_fee, base_unit_au);
+                let (numerator, denominator) = simplify((best_ask_plus_fee as u128), base_unit_au);
                 let (y_received_au, x_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
