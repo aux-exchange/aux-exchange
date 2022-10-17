@@ -6,12 +6,12 @@ import (
 	"regexp"
 )
 
-const requiredVersion = "0.3.9"
+const requiredVersion = "0.4.0"
 
 func checkAptosVersion() {
 	versionCmd := exec.Command("aptos", "--version")
 
-	versionMatch := regexp.MustCompile(`(?m)^aptos 0\.3\.9$`)
+	versionMatch := regexp.MustCompile(`(?m)^aptos 0\.4\.0$`)
 
 	output := getOrPanic(versionCmd.Output())
 
@@ -20,7 +20,7 @@ func checkAptosVersion() {
 			fmt.Errorf("required %s is not available, got: %s. install with: %s",
 				requiredVersion,
 				string(output),
-				`RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-labs/aptos-core.git --rev aptos-cli-v0.3.9 aptos`,
+				`RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-labs/aptos-core.git --rev aptos-cli-v0.4.0 aptos`,
 			),
 		)
 	}

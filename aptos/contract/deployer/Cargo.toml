@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.3.9" }
-framework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.3.9" }
-cached-packages = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.3.9" }
+aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.4.0" }
+framework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.4.0" }
+cached-packages = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v0.4.0" }
 tokio = { version = "1.21.0", features = ["macros", "rt-multi-thread"] }
 url = "2.2.2"
 hex = "0.4.3"
