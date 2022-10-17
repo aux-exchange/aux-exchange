@@ -61,9 +61,9 @@ with the AMM and CLOB.
 
 ## Addresses
 
-network | contract | address 
----- | ---- | ----
-devnet | deployer | [`0xb8c8f08a30d60df6da709326ea61d4d55ddb0168d8893eba0f41ba4c860be2a0`](https://explorer.aptoslabs.com/account/0xb8c8f08a30d60df6da709326ea61d4d55ddb0168d8893eba0f41ba4c860be2a0?network=devnet)
-devnet | aux | [`0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70`](https://explorer.aptoslabs.com/account/0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70?network=devnet)
-testnet | deployer | [`0x22ce10dcffe2503ab09950b4d7db74f9771347c582ca3a3fed7828b6f2d3e081`](https://explorer.aptoslabs.com/account/0x22ce10dcffe2503ab09950b4d7db74f9771347c582ca3a3fed7828b6f2d3e081?network=testnet)
-testnet | aux | [`0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27`](https://explorer.aptoslabs.com/account/0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27?network=testnet)
+| network | contract | address                                                                                                                                                                                           |
+| ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| devnet  | deployer | [`0x7af3306d26c59abae84394a781233310617aff2e6ea229fb383db89042be4a74`](https://explorer.aptoslabs.com/account/0x7af3306d26c59abae84394a781233310617aff2e6ea229fb383db89042be4a74?network=devnet)  |
+| devnet  | aux      | [`0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a`](https://explorer.aptoslabs.com/account/0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a?network=devnet)  |
+| testnet | deployer | [`0x27a5ed998335d3b74ee2329bdb803f25095ca1137015a115e748b366c44f73be`](https://explorer.aptoslabs.com/account/0x27a5ed998335d3b74ee2329bdb803f25095ca1137015a115e748b366c44f73be?network=testnet) |
+| testnet | aux      | [`0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53`](https://explorer.aptoslabs.com/account/0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53?network=testnet) |
