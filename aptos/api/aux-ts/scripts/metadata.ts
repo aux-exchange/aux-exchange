@@ -82,6 +82,16 @@ async function main() {
       4
     )
   );
+  console.log(
+    JSON.stringify({
+      poolInput: ethUsdcPool,
+    })
+  );
+  console.log(
+    JSON.stringify({
+      marketInput: ethUsdcPool,
+    })
+  );
 }
 
 main();

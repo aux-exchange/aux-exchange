@@ -13,7 +13,7 @@ import type {
 } from "../types";
 
 export const pool = {
-  async swapHistory(parent: Pool): Promise<Swap[]> {
+  async swaps(parent: Pool): Promise<Swap[]> {
     const swaps = await aux.amm.core.query.swapEvents(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
@@ -32,7 +32,7 @@ export const pool = {
       amountOut: swap.out.toNumber(),
     }));
   },
-  async addLiquidityHistory(parent: Pool) {
+  async adds(parent: Pool) {
     const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
       auxClient,
       {
@@ -47,7 +47,7 @@ export const pool = {
       amountMintedLP: addLiquidity.lpMinted.toNumber(),
     }));
   },
-  async removeLiquidityHistory(parent: Pool) {
+  async removes(parent: Pool) {
     const removeLiquiditys = await aux.amm.core.query.removeLiquidityEvents(
       auxClient,
       {
