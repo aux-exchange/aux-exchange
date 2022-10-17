@@ -67,7 +67,7 @@ module aux::router {
     /*******************/
 
     /// USER -> CoinIn -> POOL -> CoinOut -> USER
-    public entry fun swap_exact_coin_for_coin_<CoinIn, CoinOut>(
+    public entry fun swap_exact_coin_for_coin_with_signer<CoinIn, CoinOut>(
         sender: &signer, // delegatee, see place_order in clob_market for more comments
         au_in: u64,
         min_au_out: u64,
@@ -90,7 +90,7 @@ module aux::router {
     }
 
     /// USER -> CoinIn -> POOL -> CoinOut -> USER
-    public entry fun swap_coin_for_exact_coin_<CoinIn, CoinOut>(
+    public entry fun swap_coin_for_exact_coin_with_signer<CoinIn, CoinOut>(
         sender: &signer,
         max_au_in: u64,
         au_out: u64,
@@ -670,7 +670,7 @@ module aux::router {
         let btc_t0 = coin::balance<BTC>(sender_addr);
         let usdc_t0 = coin::balance<USDC>(sender_addr);
 
-        swap_exact_coin_for_coin_<BTC, USDC>(sender, 75000000, 16000000000);
+        swap_exact_coin_for_coin_with_signer<BTC, USDC>(sender, 75000000, 16000000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
         let usdc_t1 = coin::balance<USDC>(sender_addr);
@@ -743,7 +743,7 @@ module aux::router {
         let btc_t0 = coin::balance<BTC>(sender_addr);
         let usdc_t0 = coin::balance<USDC>(sender_addr);
 
-        swap_exact_coin_for_coin_<USDC, BTC>(sender, 17000000000, 75000000);
+        swap_exact_coin_for_coin_with_signer<USDC, BTC>(sender, 17000000000, 75000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
         let usdc_t1 = coin::balance<USDC>(sender_addr);
@@ -813,7 +813,7 @@ module aux::router {
 
         coin::register<BTC>(&authority::get_signer_self());
 
-        swap_exact_coin_for_coin_<BTC, USDC>(sender, 75000000, 15000000000);
+        swap_exact_coin_for_coin_with_signer<BTC, USDC>(sender, 75000000, 15000000000);
 
         // all orders should have been matched
         assert!(clob_market::n_bid_levels<BTC, USDC>() == 0, ETEST_FAILED);
@@ -875,7 +875,7 @@ module aux::router {
 
         let predicted_btc_out = amm::au_out<USDC, BTC>(17500000000);
         // std::debug::print<u128>(&predicted_btc_out);
-        swap_exact_coin_for_coin_<USDC, BTC>(sender, 17500000000, 40000000);
+        swap_exact_coin_for_coin_with_signer<USDC, BTC>(sender, 17500000000, 40000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
         let usdc_t1 = coin::balance<USDC>(sender_addr);
@@ -922,7 +922,7 @@ module aux::router {
 
 
         // Swap exact amount in book of USDC (17,025) for min .74 BTC
-        swap_exact_coin_for_coin_<USDC, BTC>(sender, 1702500000, 74000000);
+        swap_exact_coin_for_coin_with_signer<USDC, BTC>(sender, 1702500000, 74000000);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
@@ -981,7 +981,7 @@ module aux::router {
         let btc_t0 = coin::balance<BTC>(sender_addr);
         let usdc_t0 = coin::balance<USDC>(sender_addr);
 
-        swap_coin_for_exact_coin_<BTC, USDC>(sender, 75000000, 16000000000);
+        swap_coin_for_exact_coin_with_signer<BTC, USDC>(sender, 75000000, 16000000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
         let usdc_t1 = coin::balance<USDC>(sender_addr);
