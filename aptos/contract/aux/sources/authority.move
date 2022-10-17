@@ -14,6 +14,7 @@ module aux::authority {
     friend aux::vault;
     friend aux::router;
     friend aux::fake_coin;
+    friend aux::stable_swap_2pool;
 
     const E_NOT_SELF_SIGNED: u64 = 1001;
     const E_CANNOT_SIGN_FOR_OTHER: u64 = 1002;
