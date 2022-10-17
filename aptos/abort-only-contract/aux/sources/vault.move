@@ -3,6 +3,10 @@
 //   other coin is priced in.
 // - user balances in each of the coins (or the shares of the coins that the user entitled to in the treasury).
 module aux::vault {
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
+    fun is_not_emergency(): bool {
+        false
+    }
     friend aux::clob_market;
 
     use std::signer;
@@ -84,6 +88,9 @@ module aux::vault {
     }
 
     fun init_module(source: &signer) {
+        if (1 == 1) {
+            return
+        };
         if (!exists<Vault>(signer::address_of(source))) {
             move_to(source, Vault {
                 transfer_events: account::new_event_handle<TransferEvent>(source),
@@ -104,6 +111,7 @@ module aux::vault {
     // }
 
     public entry fun create_vault(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // Allow init_module functions in aux to call this function.
         let vault_signer = if (signer::address_of(sender) == @aux) {
             sender
@@ -127,6 +135,7 @@ module aux::vault {
 
     /// request an account from treasury.
     public entry fun create_aux_account(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let sender_addr = signer::address_of(sender);
         assert!(!exists<AuxUserAccount>(sender_addr), error::already_exists(EACCOUNT_ALREADY_EXISTS));
         move_to(sender, AuxUserAccount{
@@ -154,6 +163,7 @@ module aux::vault {
         to: address,
         amount_au: u64
     ) acquires Vault, CoinBalance {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // TODO: Account health check must be done before users can transfer funds.
         let from_addr = signer::address_of(from);
         assert!(
@@ -183,6 +193,7 @@ module aux::vault {
         to: address,
         amount: u64
     ) acquires AuxUserAccount, CoinBalance, Vault {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // Confirm whether can deposit
         assert_trader_is_authorized_for_account(sender, to);
         assert!(exists<AuxUserAccount>(to), error::not_found(EACCOUNT_NOT_FOUND));
@@ -209,6 +220,7 @@ module aux::vault {
         sender: &signer,
         amount_au: u64
     ) acquires CoinBalance, Vault {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // TODO: Account health check must be done before users can withdraw funds
         let owner_addr = signer::address_of(sender);
         decrease_user_balance<CoinType>(owner_addr, (amount_au as u128));
@@ -233,6 +245,7 @@ module aux::vault {
         sender: &signer,
         trader: address
     ) acquires AuxUserAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let owner = signer::address_of(sender);
         let account = borrow_global_mut<AuxUserAccount>(owner);
         table::add(&mut account.authorized_traders, trader, Nothing {});
@@ -245,6 +258,7 @@ module aux::vault {
         sender: &signer,
         trader: address
     ) acquires AuxUserAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let owner = signer::address_of(sender);
         let account = borrow_global_mut<AuxUserAccount>(owner);
         table::remove(&mut account.authorized_traders, trader);
@@ -261,6 +275,7 @@ module aux::vault {
         trader: &signer,
         account: address
     ) acquires AuxUserAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let trader_address = signer::address_of(trader);
         // You are always authorized to trade your own account.
         if (trader_address == account) {
@@ -277,12 +292,14 @@ module aux::vault {
     }
 
     public fun has_aux_account(addr: address): bool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         exists<AuxUserAccount>(addr)
     }
 
     /// Return's the user balance in CoinType. Returns zero if no amount of
     /// CoinType has ever been transferred to the user.
     public fun balance<CoinType>(user_addr: address): u128 acquires CoinBalance {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let balance_address = onchain_signer::get_signer_address(user_addr);
         if (exists<CoinBalance<CoinType>>(balance_address)) {
             let balance = borrow_global<CoinBalance<CoinType>>(balance_address);
@@ -295,6 +312,7 @@ module aux::vault {
     /// Return's the user available balance in CoinType. Returns zero if no
     /// amount of CoinType has ever been transferred to the user.
     public fun available_balance<CoinType>(user_addr: address): u128 acquires CoinBalance {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let balance_address = onchain_signer::get_signer_address(user_addr);
         if (exists<CoinBalance<CoinType>>(balance_address)) {
             let balance = borrow_global<CoinBalance<CoinType>>(balance_address);
@@ -404,6 +422,7 @@ module aux::vault {
 
     #[test_only]
     public fun create_vault_for_test(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (!account::exists_at(@aux)) {
             create_resource_account(sender, b"amm");
             authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
@@ -420,6 +439,7 @@ module aux::vault {
 
     #[test_only]
     public fun init_accounts_for_test(alice: &signer): address {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let alice_addr = signer::address_of(alice);
         account::create_account_for_test(alice_addr);
         alice_addr
@@ -611,3 +631,4 @@ module aux::vault {
         create_vault_for_test(sender);
     }
 }
+

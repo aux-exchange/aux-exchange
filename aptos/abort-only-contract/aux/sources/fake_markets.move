@@ -1,4 +1,8 @@
 module aux::fake_markets {
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
+    fun is_not_emergency(): bool {
+        false
+    }
     use aptos_framework::chain_id;
     use aux::clob_market;
     use aux::amm;
@@ -27,6 +31,9 @@ module aux::fake_markets {
     struct Initialized has key {}
 
     fun init_module(source: &signer) {
+        if (1 == 1) {
+            return
+        };
         // https://github.com/aptos-labs/aptos-core/blob/main/types/src/chain_id.rs
         // Mainnet is 1 and pre-mainnet is 5
         let chain = chain_id::get();

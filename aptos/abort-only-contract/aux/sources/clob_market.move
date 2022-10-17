@@ -50,6 +50,10 @@
 /// ```
 ///
 module aux::clob_market {
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
+    fun is_not_emergency(): bool {
+        false
+    }
     friend aux::router;
 
     use std::signer;
@@ -321,6 +325,7 @@ module aux::clob_market {
         lot_size: u64,
         tick_size: u64
     ) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
 
         // The signer must own one of the coins or be the aux authority.
         let base_type = type_info::type_of<B>();
@@ -390,6 +395,7 @@ module aux::clob_market {
         timeout_timestamp: u64, // if by the timeout_timestamp the submitted order is not filled, then it would be cancelled automatically, if the timeout_timestamp <= current_timestamp, the order would not be placed and cancelled immediately
         stp_action_type: u64 // STP action type
     ) acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // TODO: move these checks into new_order
         // First confirm the sender is allowed to trade on behalf of vault_account_owner
         vault::assert_trader_is_authorized_for_account(sender, vault_account_owner);
@@ -713,6 +719,7 @@ module aux::clob_market {
     }
 
     public entry fun fast_cancel_order<B, Q>(sender: &signer, delegator: address, order_id: u128, price: u64, is_bid: bool) acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // First confirm the sender is allowed to trade on behalf of delegator
         vault::assert_trader_is_authorized_for_account(sender, delegator);
 
@@ -736,6 +743,7 @@ module aux::clob_market {
     }
 
     public entry fun cancel_order<B, Q>(sender: &signer, delegator: address, order_id: u128) acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // First confirm the sender is allowed to trade on behalf of delegator
         vault::assert_trader_is_authorized_for_account(sender, delegator);
 
@@ -766,6 +774,7 @@ module aux::clob_market {
     }
 
     public entry fun cancel_all<B, Q>(sender: &signer, delegator: address) acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // First confirm the sender is allowed to trade on behalf of delegator
         vault::assert_trader_is_authorized_for_account(sender, delegator);
 
@@ -837,6 +846,7 @@ module aux::clob_market {
     }
 
     public entry fun load_market_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, MarketDataStore<B, Q> {
@@ -885,6 +895,7 @@ module aux::clob_market {
     }
 
     public entry fun load_open_orders_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, MarketDataStore<B, Q> {
@@ -942,6 +953,7 @@ module aux::clob_market {
     }
 
     public entry fun update_market_parameter<B,Q>(sender: &signer, tick_size: u64, lot_size: u64) acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (signer::address_of(sender) != @aux) {
             assert!(
                 authority::is_signer_owner(sender),
@@ -1064,28 +1076,33 @@ module aux::clob_market {
     /********************/
 
     public fun market_exists<B, Q>(): bool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         exists<Market<B, Q>>(@aux)
     }
 
     public fun n_bid_levels<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
         let market = borrow_global<Market<B, Q>>(@aux);
         critbit::size(&market.bids)
     }
 
     public fun n_ask_levels<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
         let market = borrow_global<Market<B, Q>>(@aux);
         critbit::size(&market.asks)
     }
 
     public fun lot_size<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
         let market = borrow_global<Market<B, Q>>(@aux);
         market.lot_size
     }
 
     public fun tick_size<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
         let market = borrow_global<Market<B, Q>>(@aux);
         market.tick_size
@@ -1094,12 +1111,14 @@ module aux::clob_market {
     // TODO: consolidate these with inner functions
     // Returns the best bid price as quote coin atomic units
     public fun best_bid_au<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let market = borrow_global<Market<B, Q>>(@aux);
         best_bid_price(market)
     }
 
     // Returns the best bid price as quote coin atomic units
     public fun best_ask_au<B, Q>(): u64 acquires Market {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let market = borrow_global<Market<B, Q>>(@aux);
         best_ask_price(market)
     }
@@ -1146,6 +1165,7 @@ module aux::clob_market {
         quantity: u64,
         client_order_id: u128,
     ): (coin::Coin<B>, coin::Coin<Q>)  acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         place_market_order_mut(
             sender_addr,
             &mut base_coin,
@@ -1172,6 +1192,7 @@ module aux::clob_market {
         quantity: u64,
         client_order_id: u128,
     ): (u64, u64)  acquires Market, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(fee::fee_exists(sender_addr), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
@@ -1373,6 +1394,7 @@ module aux::clob_market {
     }
 
     public fun best_bid_price<B, Q>(market: &Market<B, Q>): u64 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(critbit::size(&market.bids) > 0, E_NO_BIDS_IN_BOOK);
         let index = critbit::get_max_index(&market.bids);
         let (_, level) = critbit::borrow_at_index(&market.bids, index);
@@ -1380,6 +1402,7 @@ module aux::clob_market {
     }
 
     public fun best_ask_price<B, Q>(market: &Market<B, Q>): u64 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(critbit::size(&market.asks) > 0, E_NO_ASKS_IN_BOOK);
         let index = critbit::get_min_index(&market.asks);
         let (_, level) = critbit::borrow_at_index(&market.asks, index);
@@ -1614,6 +1637,7 @@ module aux::clob_market {
         lot_size: u64,
         tick_size: u64
     ): (address, address) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // create test accounts
         let alice_addr = signer::address_of(alice);
         let bob_addr = signer::address_of(bob);
@@ -3064,3 +3088,4 @@ module aux::clob_market {
     }
 
 }
+

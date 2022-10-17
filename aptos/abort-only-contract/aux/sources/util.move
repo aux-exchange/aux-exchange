@@ -1,4 +1,8 @@
 module aux::util {
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
+    fun is_not_emergency(): bool {
+        false
+    }
     use std::vector;
     use std::string::String;
     use std::hash;
@@ -14,12 +18,14 @@ module aux::util {
     }
 
     public fun type_of<T>(): Type {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         Type {
             name: type_info::type_name<T>()
         }
     }
 
     public fun name(type: &Type): String {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         type.name
     }
 
@@ -28,6 +34,7 @@ module aux::util {
     // cache an address in the module address, publish the module to the
     // resource account, or pass the resource account address in.
     public fun create_resource_account_addr(addr: address, seed: vector<u8>): address {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let bytes = bcs::to_bytes(&addr);
         vector::append(&mut bytes, seed);
         vector::push_back(&mut bytes, 255u8);
@@ -38,6 +45,7 @@ module aux::util {
     // TODO: hardcode common powers of 10
     /// Returns a to the power of b. (adapted from https://github.com/pentagonxyz/movemate/blob/main/aptos/sources/math.move)
     public fun exp(a: u128, b: u128): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let c = 1;
 
         while (b > 0) {
@@ -50,35 +58,44 @@ module aux::util {
     }
 
     public fun pow_10_4(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         10000
     }
     public fun pow_10_5(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         100000
     }
     public fun pow_10_6(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         1000000
     }
     public fun pow_10_7(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         10000000
     }
     public fun pow_10_8(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         100000000
     }
     public fun pow_10_9(): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         1000000000
     }
 
     public fun sub_min_0(left: u64, right: u64): u64 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (right >= left) { 0 } else {left - right }
     }
 
     public fun sub_min_0_u128(left: u128, right: u128): u128 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (right >= left) { 0 } else {left - right }
     }
 
     // TEST UTILS
     #[test_only]
     public fun assert_eq_u128(val: u128, expected: u128) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (val != expected) {
             // std::debug::print_stack_trace();
             std::debug::print<u128>(&expected);
@@ -87,6 +104,7 @@ module aux::util {
     }
     #[test_only]
     public fun assert_eq_u64(val: u64, expected: u64) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (val != expected) {
             std::debug::print<u64>(&expected)
         };
@@ -100,6 +118,7 @@ module aux::util {
 
     #[test_only]
     public fun init_coin_for_test<CoinType>(sender: &signer, decimals: u8) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         aptos_framework::managed_coin::initialize<CoinType>(
             sender,
             b"Test",
@@ -110,11 +129,13 @@ module aux::util {
     }
     #[test_only]
     public fun mint_coin_for_test<CoinType>(sender: &signer, to: address, amount: u64) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         aptos_framework::managed_coin::mint<CoinType>(sender, to, amount)
     }
 
     #[test_only]
     public fun maybe_register_coin<CoinType>(sender: &signer) {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (!std::coin::is_account_registered<CoinType>(std::signer::address_of(sender))) {
             std::coin::register<CoinType>(sender);
         };

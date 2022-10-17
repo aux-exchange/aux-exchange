@@ -122,10 +122,10 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 			if skipFaucet {
 				redWarn.Printf("Newly created profile... not requesting airdrop, quit\n")
 			} else {
-				fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 100_000_000)))
+				fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 1_000_000_000)))
 			}
 		} else if doFaucet {
-			fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 100_000_000)))
+			fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 1_000_000_000)))
 		}
 
 		resourceAccount := getOrPanic(aptos.CalculateResourceAddress(getOrPanic(aptos.StringToAddress(config.Account)), []byte(seed))).String()
