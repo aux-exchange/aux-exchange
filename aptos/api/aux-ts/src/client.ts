@@ -62,7 +62,7 @@ const networkConfigs: Record<Network, NetworkConfig> = {
   testnet: {
     fullnode: "https://fullnode.testnet.aptoslabs.com/v1",
     moduleAddress:
-      "0xe1d61154f57bbbb256bb6e3ea786102e7d5c9af481cb4d11b11e579f98218f27",
+      "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53",
     dataFeedPublicKey: mustEd25519PublicKey(
       "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
     ),
@@ -73,7 +73,7 @@ const networkConfigs: Record<Network, NetworkConfig> = {
     fullnode: "https://fullnode.devnet.aptoslabs.com/v1",
     faucet: "https://faucet.devnet.aptoslabs.com",
     moduleAddress:
-      "0x21f31fc1e363b71c8cfd3b5c6820515d23a80621c1e6a83de3fd2fe94a095e70",
+      "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a",
     dataFeedPublicKey: mustEd25519PublicKey(
       "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
     ),
@@ -238,6 +238,8 @@ export class AuxClient {
           ? undefined
           : trimTrailingSlash(profile.faucet_url)
         : faucetAddress;
+
+    console.log(`connecting to: ${node}`);
     return new AuxClient({
       aptosClient: new AptosClient(node),
       faucetClient:
@@ -773,13 +775,22 @@ export function getAuxAuthorityAndAddressFromEnvironment(): [
   AptosAccount,
   Types.Address
 ] {
-  const privateKeyHex = getAptosProfile(getAptosProfileNameFromEnvironment())
-    ?.private_key!;
-  const moduleAuthority = AptosAccount.fromAptosAccountObject({
-    privateKeyHex,
-  });
-  const moduleAddress = deriveModuleAddress(moduleAuthority);
-  return [moduleAuthority, moduleAddress];
+  let profileName = getAptosProfileNameFromEnvironment();
+  if (profileName == "localnet") {
+    const privateKeyHex = getAptosProfile(profileName)?.private_key!;
+    const moduleAuthority = AptosAccount.fromAptosAccountObject({
+      privateKeyHex,
+    });
+    const moduleAddress = deriveModuleAddress(moduleAuthority);
+    return [moduleAuthority, moduleAddress];
+  } else {
+    let config = networkConfigs[profileName as Network];
+    if (config === undefined) {
+      throw `cannot find configuration for ${profileName}`;
+    } else {
+      return [new AptosAccount(), config.moduleAddress!];
+    }
+  }
 }
 
 /**
