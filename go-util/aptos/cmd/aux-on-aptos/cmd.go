@@ -3,5 +3,5 @@ package main
 import "github.com/aux-exchange/aux-exchange/go-util/aptos/cmd"
 
 func main() {
-	cmd.GetKeyAndMnemonicCmd().Execute()
+	cmd.GetRootCmd().Execute()
 }
