@@ -1341,7 +1341,7 @@ module aux::clob_market {
         return (order, true)
     }
 
-    public fun place_market_order<B, Q>(
+    public(friend) fun place_market_order<B, Q>(
         sender_addr: address,
         base_coin: coin::Coin<B>,
         quote_coin: coin::Coin<Q>,
@@ -1367,7 +1367,7 @@ module aux::clob_market {
     /// Place a market order (IOC or FOK) on behalf of the router.
     /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
     /// Emits events on order placement and fills.
-    public fun place_market_order_mut<B, Q>(
+    public(friend) fun place_market_order_mut<B, Q>(
         sender_addr: address,
         base_coin: &mut coin::Coin<B>,
         quote_coin: &mut coin::Coin<Q>,
