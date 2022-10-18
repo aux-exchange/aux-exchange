@@ -17,6 +17,7 @@
 
     "preserveSymlinks": true,
     "allowSyntheticDefaultImports": true,
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*", "test/**/*", "examples/**/*", "scripts/**/*"],
   "exclude": ["src/graphql/client"]

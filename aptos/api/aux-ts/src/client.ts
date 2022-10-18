@@ -39,6 +39,8 @@ export enum Network {
   Mainnet = "mainnet",
 }
 
+const DEFAULT_NETWORK: Network = Network.Localnet;
+
 interface NetworkConfig {
   moduleAddress?: string;
   fullnode: string;
@@ -202,6 +204,9 @@ export class AuxClient {
     let defaultConfig = networkConfigs[network];
     validatorAddress = validatorAddress ?? defaultConfig.fullnode;
     faucetAddress = faucetAddress ?? defaultConfig.faucet;
+    dataFeedAddress = dataFeedAddress ?? defaultConfig.dataFeedAddress;
+    console.log("dataFeedAddress:", dataFeedAddress);
+    console.log(`connecting to: ${validatorAddress}`);
     return new AuxClient({
       aptosClient: new AptosClient(validatorAddress),
       faucetClient:
@@ -210,7 +215,7 @@ export class AuxClient {
           : undefined,
       moduleAddress: moduleAddress ?? defaultConfig.moduleAddress!,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
-      dataFeedAddress: dataFeedAddress ?? defaultConfig.dataFeedAddress,
+      dataFeedAddress,
       dataFeedPublicKey: dataFeedPublicKey ?? defaultConfig.dataFeedPublicKey,
       transactionOptions,
     });
@@ -233,8 +238,13 @@ export class AuxClient {
     forceSimulate?: boolean;
     transactionOptions?: TransactionOptions | undefined;
   }): AuxClient {
-    const profile = getAptosProfile(getAptosProfileNameFromEnvironment());
-    const node =
+    let profileName = getAptosProfileNameFromEnvironment();
+    if (!Object.values(Network).includes(profileName as Network)) {
+      profileName = DEFAULT_NETWORK;
+    }
+    const profile = getAptosProfile(profileName);
+    console.log(profile);
+    const validator =
       validatorAddress === undefined
         ? trimTrailingSlash(profile?.rest_url!)
         : validatorAddress;
@@ -244,18 +254,22 @@ export class AuxClient {
           ? undefined
           : trimTrailingSlash(profile.faucet_url)
         : faucetAddress;
+    const dataFeedAddress =
+      profileName === Network.Localnet ? profile?.account : undefined;
+    const dataFeedPublicKey =
+      profileName === Network.Localnet
+        ? mustEd25519PublicKey(profile?.public_key!)
+        : undefined;
 
-    console.log(`connecting to: ${node}`);
-    return new AuxClient({
-      aptosClient: new AptosClient(node),
-      faucetClient:
-        faucet === undefined ? undefined : new FaucetClient(node, faucet),
-      moduleAddress:
-        moduleAddress ?? networkConfigs[Network.Devnet].moduleAddress!,
-      forceSimulate: forceSimulate === undefined ? false : forceSimulate,
+    return this.create({
+      network: profileName as Network,
+      validatorAddress: validator,
+      faucetAddress: faucet,
+      moduleAddress,
+      forceSimulate,
       transactionOptions,
-      dataFeedAddress: profile?.account,
-      dataFeedPublicKey: mustEd25519PublicKey(profile?.public_key!),
+      dataFeedAddress,
+      dataFeedPublicKey,
     });
   }
 

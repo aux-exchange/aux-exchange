@@ -244,8 +244,8 @@ export async function market(
     bids: [],
     asks: [],
     l2: {
-      bids: bids,
-      asks: asks,
+      bids,
+      asks,
     },
   };
 }
