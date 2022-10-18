@@ -13,6 +13,7 @@ import {
   RawOrderFillEvent,
   RawOrderPlacedEvent,
 } from "./events";
+import type { OrderType } from "./mutation";
 
 export interface Level {
   price: AtomicUnits;
@@ -28,22 +29,34 @@ export type Side = "bid" | "ask";
 
 export interface Order {
   id: BN;
+  clientId: BN;
   side: Side;
   auxBurned: AtomicUnits;
-  time: BN;
-  price: BN;
-  quantity: BN;
+  timestamp: BN;
+  price: AtomicUnits;
+  quantity: AtomicUnits;
   ownerId: HexString;
+  orderType: OrderType;
 }
 
 interface RawOrder {
   id: Types.U128;
+  client_order_id: Types.U128;
   price: Types.U64;
   quantity: Types.U64;
+  aux_au_to_burn_per_lot: Types.U64;
   is_bid: boolean;
   owner_id: Types.Address;
-  aux_au_to_burn: Types.U64;
+  order_type: Types.U64;
   timestamp: Types.U64;
+}
+
+interface RawOpenOrdersEvent {
+  sequence_number: string;
+  type: string;
+  data: {
+    open_orders: RawOrder[];
+  };
 }
 
 interface TreeEntry<T> {
@@ -151,10 +164,10 @@ function auxTimePriority(lhs: Order, rhs: Order): number {
   if (lhs.auxBurned.toBN().lt(rhs.auxBurned.toBN())) {
     return 1;
   }
-  if (lhs.time.lt(rhs.time)) {
+  if (lhs.timestamp.lt(rhs.timestamp)) {
     return -1;
   }
-  if (lhs.time.gt(rhs.time)) {
+  if (lhs.timestamp.gt(rhs.timestamp)) {
     return 1;
   }
   return 0;
@@ -164,16 +177,18 @@ export function parseRawSideLevel(level: RawSideLevel, side: Side): Level {
   const price = level.price;
   const orders = level.orders.entries.map(
     ({ value: order }: TreeEntry<RawOrder>) => {
-      const auxBurned = order.aux_au_to_burn;
+      const auxBurned = order.aux_au_to_burn_per_lot;
       const time = order.timestamp;
       return {
         id: new BN(order.id),
         side,
         auxBurned: new AtomicUnits(auxBurned),
-        time: new BN(time),
-        price: new BN(order.price),
-        quantity: new BN(order.quantity),
+        timestamp: new BN(time),
+        price: AU(order.price),
+        quantity: AU(order.quantity),
         ownerId: new HexString(order.owner_id),
+        clientId: new BN(order.client_order_id),
+        orderType: Number(order.order_type),
       };
     }
   );
@@ -244,8 +259,8 @@ export async function market(
     bids: [],
     asks: [],
     l2: {
-      bids: bids,
-      asks: asks,
+      bids,
+      asks,
     },
   };
 }
@@ -260,27 +275,30 @@ export async function openOrders(
   owner;
   baseCoinType;
   quoteCoinType;
-  // const marketStruct = await market(auxClient, baseCoinType, quoteCoinType);
-  return [];
-  // TODO
-  // return [
-  //   marketStruct.bids
-  //     .flatMap((level) =>
-  //       level.orders.map((order) => {
-  //         order.side = "bid";
-  //         return order;
-  //       })
-  //     )
-  //     .filter((order) => order.ownerId.hex() === owner),
-  //   marketStruct.asks
-  //     .flatMap((level) =>
-  //       level.orders.map((order) => {
-  //         order.side = "ask";
-  //         return order;
-  //       })
-  //     )
-  //     .filter((order) => order.ownerId.hex() === owner),
-  // ].flat();
+  const payload = {
+    function: `${auxClient.moduleAddress}::clob_market::load_open_orders_into_event_for_address`,
+    type_arguments: [baseCoinType, quoteCoinType],
+    arguments: [owner],
+  };
+  const txResult = await auxClient.dataSimulate({
+    payload,
+  });
+  const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;
+  return event.data.open_orders.map((order) => {
+    const auxBurned = order.aux_au_to_burn_per_lot;
+    const time = order.timestamp;
+    return {
+      id: new BN(order.id),
+      side: order.is_bid ? "bid" : "ask",
+      auxBurned: new AtomicUnits(auxBurned),
+      timestamp: new BN(time),
+      price: AU(order.price),
+      quantity: AU(order.quantity),
+      ownerId: new HexString(order.owner_id),
+      clientId: new BN(order.client_order_id),
+      orderType: Number(order.order_type),
+    };
+  });
 }
 
 export async function orderHistory(

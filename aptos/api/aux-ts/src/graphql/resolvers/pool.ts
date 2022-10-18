@@ -18,19 +18,23 @@ export const pool = {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
     });
-    return swaps.map((swap) => ({
-      ...swap,
-      coinInfoIn:
+    return swaps.map((swap) => {
+      const coinInfoIn =
         swap.inCoinType === parent.coinInfoX.coinType
           ? parent.coinInfoX
-          : parent.coinInfoY,
-      coinInfoOut:
+          : parent.coinInfoY;
+      const coinInfoOut =
         swap.outCoinType === parent.coinInfoY.coinType
           ? parent.coinInfoY
-          : parent.coinInfoX,
-      amountIn: swap.in.toNumber(),
-      amountOut: swap.out.toNumber(),
-    }));
+          : parent.coinInfoX;
+      return {
+        ...swap,
+        coinInfoIn,
+        coinInfoOut,
+        amountIn: swap.in.toDecimalUnits(coinInfoIn.decimals).toNumber(),
+        amountOut: swap.out.toDecimalUnits(coinInfoOut.decimals).toNumber(),
+      };
+    });
   },
   async adds(parent: Pool) {
     const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
@@ -42,9 +46,15 @@ export const pool = {
     );
     return addLiquiditys.map((addLiquidity) => ({
       ...addLiquidity,
-      amountAddedX: addLiquidity.xAdded.toNumber(),
-      amountAddedY: addLiquidity.yAdded.toNumber(),
-      amountMintedLP: addLiquidity.lpMinted.toNumber(),
+      amountAddedX: addLiquidity.xAdded
+        .toDecimalUnits(parent.coinInfoX.decimals)
+        .toNumber(),
+      amountAddedY: addLiquidity.yAdded
+        .toDecimalUnits(parent.coinInfoY.decimals)
+        .toNumber(),
+      amountMintedLP: addLiquidity.lpMinted
+        .toDecimalUnits(parent.coinInfoLP.decimals)
+        .toNumber(),
     }));
   },
   async removes(parent: Pool) {
@@ -57,9 +67,15 @@ export const pool = {
     );
     return removeLiquiditys.map((removeLiquidity) => ({
       ...removeLiquidity,
-      amountRemovedX: removeLiquidity.xRemoved.toNumber(),
-      amountRemovedY: removeLiquidity.yRemoved.toNumber(),
-      amountBurnedLP: removeLiquidity.lpBurned.toNumber(),
+      amountRemovedX: removeLiquidity.xRemoved
+        .toDecimalUnits(parent.coinInfoX.decimals)
+        .toNumber(),
+      amountRemovedY: removeLiquidity.yRemoved
+        .toDecimalUnits(parent.coinInfoY.decimals)
+        .toNumber(),
+      amountBurnedLP: removeLiquidity.lpBurned
+        .toDecimalUnits(parent.coinInfoLP.decimals)
+        .toNumber(),
     }));
   },
   async position(

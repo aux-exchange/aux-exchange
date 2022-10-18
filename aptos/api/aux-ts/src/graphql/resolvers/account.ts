@@ -29,11 +29,14 @@ export const account = {
     console.log(balances.balances);
     return await Promise.all(
       balances.balances.map(async (e) => {
-        const [coinType] = parseTypeArgs(e.key.name)
+        const [coinType] = parseTypeArgs(e.key.name);
+        const coinInfo = await auxClient.getCoinInfo(coinType!);
         return {
-          coinInfo: await auxClient.getCoinInfo(coinType!),
-          availableBalance: e.value.available_balance.toNumber(),
-          balance: e.value.balance.toNumber(),
+          coinInfo,
+          availableBalance: e.value.available_balance
+            .toDecimalUnits(coinInfo.decimals)
+            .toNumber(),
+          balance: e.value.balance.toDecimalUnits(coinInfo.decimals).toNumber(),
         };
       })
     );

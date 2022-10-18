@@ -1,6 +1,5 @@
 import { getBar } from "../../../src/indexer/analytics";
 import * as aux from "../../";
-import { AU } from "../../";
 import { auxClient } from "../connection";
 import {
   Bar,
@@ -24,37 +23,34 @@ export const market = {
     parent: Market,
     { owner }: MarketOpenOrdersArgs
   ): Promise<Order[]> {
-    AU
-    // const account = new aux.Account(auxClient, owner);
-    return this.orderHistory(parent, { owner });
-
-    // const orders = await account.openOrders({
-    //   baseCoinType: parent.baseCoinInfo.coinType,
-    //   quoteCoinType: parent.quoteCoinInfo.coinType,
-    // });
-    // console.log(orders)
-    // return orders.map((order) => {
-    //   return {
-    //     baseCoinType: parent.baseCoinInfo.coinType,
-    //     quoteCoinType: parent.quoteCoinInfo.coinType,
-    //     orderId: order.id.toString(),
-    //     owner: order.ownerId.toString(),
-    //     market: `${parent.baseCoinInfo.symbol}-${parent.quoteCoinInfo.symbol}`,
-    //     orderType: OrderType.Limit,
-    //     orderStatus: OrderStatus.Open,
-    //     side: order.side === "bid" ? Side.Buy : Side.Sell,
-    //     auxBurned: order.auxBurned
-    //       .toDecimalUnits(6) // FIXME
-    //       .toNumber(),
-    //     time: order.time.toString(),
-    //     price: AU(order.price)
-    //       .toDecimalUnits(parent.quoteCoinInfo.decimals)
-    //       .toNumber(),
-    //     quantity: AU(order.quantity)
-    //       .toDecimalUnits(parent.baseCoinInfo.decimals)
-    //       .toNumber(),
-    //   };
-    // });
+    const account = new aux.Account(auxClient, owner);
+    const orders = await account.openOrders({
+      baseCoinType: parent.baseCoinInfo.coinType,
+      quoteCoinType: parent.quoteCoinInfo.coinType,
+    });
+    console.log(orders);
+    return orders.map((order) => {
+      return {
+        baseCoinType: parent.baseCoinInfo.coinType,
+        quoteCoinType: parent.quoteCoinInfo.coinType,
+        orderId: order.id.toString(),
+        owner: order.ownerId.toString(),
+        market: `${parent.baseCoinInfo.symbol}-${parent.quoteCoinInfo.symbol}`,
+        orderType: OrderType.Limit,
+        orderStatus: OrderStatus.Open,
+        side: order.side === "bid" ? Side.Buy : Side.Sell,
+        auxBurned: order.auxBurned
+          .toDecimalUnits(6) // FIXME
+          .toNumber(),
+        time: order.timestamp.toString(),
+        price: order.price
+          .toDecimalUnits(parent.quoteCoinInfo.decimals)
+          .toNumber(),
+        quantity: order.quantity
+          .toDecimalUnits(parent.baseCoinInfo.decimals)
+          .toNumber(),
+      };
+    });
   },
   async orderHistory(
     parent: Market,

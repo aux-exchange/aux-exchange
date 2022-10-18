@@ -17,6 +17,7 @@ import { mutation } from "./resolvers/mutation";
 import { pool } from "./resolvers/pool";
 import { query } from "./resolvers/query";
 import { subscription } from "./resolvers/subscription";
+import cors from "cors";
 
 const resolvers = {
   Query: query,
@@ -31,6 +32,7 @@ async function startApolloServer() {
   const typeDefs = await loadFiles("src/graphql/typeDefs/**/*.graphql");
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const app = express();
+  app.use(cors());
   app.use(express.static(path.join(__dirname, "client")));
 
   const server = http.createServer(app);
@@ -70,6 +72,6 @@ async function startApolloServer() {
   });
 }
 
-publishAmmEvents;
-publishClobEvents;
+publishAmmEvents();
+publishClobEvents();
 startApolloServer().then(() => {});

@@ -75,6 +75,7 @@ module aux::clob_market {
     const CANCEL_EXPIRATION_TIME: u64 = 100000000; // 100 s
     const MAX_U64: u64 = 18446744073709551615;
     const CRITBIT_NULL_INDEX: u64 = 1 << 63;
+    const ZERO_FEES: bool = true;
 
     //////////////////////////////////////////////////////////////////
     // !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
@@ -394,15 +395,11 @@ module aux::clob_market {
         // First confirm the sender is allowed to trade on behalf of vault_account_owner
         vault::assert_trader_is_authorized_for_account(sender, vault_account_owner);
 
-        // Confirm that vault_account_owner has a aux account
+        // Confirm that vault_account_owner has an aux account
         assert!(has_aux_account(vault_account_owner), E_MISSING_AUX_USER_ACCOUNT);
 
         // Confirm the vault_account_owner has volume tracker registered
         assert!(volume_tracker::global_volume_tracker_registered(vault_account_owner), E_VOLUME_TRACKER_UNREGISTERED);
-
-        // TODO: confirm fee is determined from vault_account_owner not sender if using vault
-        // Confirm the vault_account_owner has fee published
-        assert!(fee::fee_exists(vault_account_owner), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
         let resource_addr = @aux;
@@ -460,9 +457,11 @@ module aux::clob_market {
         let price = maker_order.price;
         let quote_qty = quote_qty<B>(price, base_qty);
         let taker_is_bid = taker_order.is_bid;
-        let taker_fee = fee::taker_fee(taker, quote_qty);
-        let maker_rebate = fee::maker_rebate(maker, quote_qty);
-
+        let (taker_fee, maker_rebate) = if (ZERO_FEES) {
+            (0, 0)
+        } else {
+            (fee::taker_fee(taker, quote_qty), fee::maker_rebate(maker, quote_qty))
+        };
         let total_base_quantity_owed_au = 0;
         let total_quote_quantity_owed_au = 0;
         if (taker_is_bid) {
@@ -482,6 +481,12 @@ module aux::clob_market {
             // taker receives quote - fee, pays base
             total_base_quantity_owed_au = total_base_quantity_owed_au + base_qty;
             total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote_qty - taker_fee;
+        };
+
+        // The net proceeds go to the protocol. This implicitly asserts that
+        // taker fees can cover the maker rebate.
+        if (!ZERO_FEES) {
+            vault::increase_user_balance<Q>(@aux, (taker_fee - maker_rebate as u128));
         };
 
         // Emit event for taker
@@ -628,6 +633,10 @@ module aux::clob_market {
         timeout_timestamp: u64,
         stp_action_type: u64,
     ): (u64, u64) acquires OpenOrderAccount {
+        // Confirm the order_owner has fee published
+        if (!ZERO_FEES) {
+            assert!(fee::fee_exists(order_owner), E_FEE_UNINITIALIZED);
+        };
         // Check lot sizes
         let tick_size = market.tick_size;
         let lot_size = market.lot_size;
@@ -653,13 +662,115 @@ module aux::clob_market {
             timestamp,
         };
 
+        if (order_type == FILL_OR_KILL) {
+            let filled = 0u64;
+            let side = if (is_bid) { &mut market.asks } else { &mut market.bids };
+            if (critbit::size(side) == 0) {
+                // Just emit the event
+                event::emit_event<OrderCancelEvent>(
+                    &mut market.cancel_events,
+                    OrderCancelEvent {
+                        order_id,
+                        owner: order.owner_id,
+                        cancel_qty: order.quantity,
+                        timestamp,
+                        client_order_id: client_order_id, // this is same given the invariant
+                        order_type: order_type, // this is same given the invariant
+                    }
+                );
+                destroy_order(order);
+                return (0,0)
+            };
+
+            let idx = if (is_bid) { critbit::get_min_index(side) } else { critbit::get_max_index(side) };
+
+            while(idx != CRITBIT_NULL_INDEX && filled < quantity) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+                let can_fill = (is_bid && level.price <= limit_price) || (!is_bid && level.price >= limit_price);
+                if (can_fill) {
+                    // now walk the book.
+                    // since some orders have already expired, we need to check the orders one by one.
+                    let order_idx = critbit_v::get_min_index(&level.orders);
+                    while (order_idx != CRITBIT_NULL_INDEX && filled < quantity) {
+                        let (_, passive_order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                        if (passive_order.owner_id == order_owner) {
+                            if (stp_action_type == CANCEL_AGGRESSIVE) {
+                                // Just emit the event
+                                event::emit_event<OrderCancelEvent>(
+                                    &mut market.cancel_events,
+                                    OrderCancelEvent {
+                                        order_id,
+                                        owner: order.owner_id,
+                                        cancel_qty: order.quantity,
+                                        timestamp,
+                                        client_order_id: client_order_id, // this is same given the invariant
+                                        order_type: order_type, // this is same given the invariant
+                                    }
+                                );
+                                destroy_order(order);
+                                return (0,0)
+                            } else if (stp_action_type == CANCEL_BOTH) {
+                                let (_, level) = critbit::borrow_at_index_mut(side, idx);
+                                let (_, cancelled) = critbit_v::remove(&mut level.orders, order_idx);
+                                level.total_quantity = level.total_quantity - (cancelled.quantity as u128);
+                                process_cancel_order<B, Q>(cancelled, timestamp, (lot_size as u128), &mut market.cancel_events);
+                                // Just emit the event
+                                event::emit_event<OrderCancelEvent>(
+                                    &mut market.cancel_events,
+                                    OrderCancelEvent {
+                                        order_id,
+                                        owner: order.owner_id,
+                                        cancel_qty: order.quantity,
+                                        timestamp,
+                                        client_order_id: client_order_id, // this is same given the invariant
+                                        order_type: order_type, // this is same given the invariant
+                                    }
+                                );
+                                destroy_order(order);
+                                return (0,0)
+                            };
+                        };
+                        if (passive_order.timeout_timestamp >= timestamp) {
+                            let remaining = quantity - filled;
+                            if (remaining < passive_order.quantity) {
+                                filled = quantity;
+                            } else {
+                                filled = filled + passive_order.quantity;
+                            };
+                        };
+                        order_idx = critbit_v::next_in_order(&level.orders, order_idx);
+                    };
+                    idx = if (is_bid) {
+                        critbit::next_in_order(side, idx)
+                    } else {
+                        critbit::next_in_reverse_order(side, idx)
+                    };
+                } else {
+                    break
+                }
+            };
+
+            if (filled < quantity) {
+                // Just emit the event
+                event::emit_event<OrderCancelEvent>(
+                    &mut market.cancel_events,
+                    OrderCancelEvent {
+                        order_id,
+                        owner: order.owner_id,
+                        cancel_qty: order.quantity,
+                        timestamp,
+                        client_order_id: client_order_id, // this is same given the invariant
+                        order_type: order_type, // this is same given the invariant
+                    }
+                );
+                destroy_order(order);
+                return (0,0)
+            }
+        };
         // Check for orders that should be cancelled immediately
         if (
             // order timed out
             timeout_timestamp <= timestamp
-            // If the order is a fok order and cannot be fully filled, the order won't touch market and immediately "cancelled" like a no-op
-            || (order_type == FILL_OR_KILL
-                && estimate_fill(market, is_bid, limit_price, quantity, timestamp) < quantity)
             // If the order is passive join, it will use ticks_to_slide and market to determine join price, and if join_price is not worse than limit_price, place the order, otherwise cancel
             || (order_type == PASSIVE_JOIN
                 && order_price_worse_than_limit(market, &mut order, ticks_to_slide, direction_aggressive))
@@ -895,7 +1006,7 @@ module aux::clob_market {
 
     public entry fun load_all_orders_into_event<B,Q>(sender: &signer) acquires Market, AllOrdersStore {
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-        if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
+        if (!exists<AllOrdersStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, AllOrdersStore<B, Q> {
                 all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
             });
@@ -1266,7 +1377,6 @@ module aux::clob_market {
         quantity: u64,
         client_order_id: u128,
     ): (u64, u64)  acquires Market, OpenOrderAccount {
-        assert!(fee::fee_exists(sender_addr), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
         let resource_addr = @aux;
@@ -1384,48 +1494,6 @@ module aux::clob_market {
         market.next_order_id = market.next_order_id + 1;
         order_id
     }
-
-    fun estimate_fill<B, Q>(market: &Market<B, Q>, is_bid: bool, price: u64, quantity: u64, timestamp: u64): u64 {
-        let filled: u64 = 0;
-        let side = if (is_bid) { &market.asks } else { &market.bids };
-        if (critbit::size(side) == 0) {
-            return filled
-        };
-
-        let idx = if (is_bid) { critbit::get_min_index(side) } else { critbit::get_max_index(side) };
-
-        while(idx != CRITBIT_NULL_INDEX) {
-            let (_, level) = critbit::borrow_at_index(side, idx);
-            let can_fill = (is_bid && level.price <= price) || (!is_bid && level.price >= price);
-            if (can_fill) {
-                // now walk the book.
-                // since some orders have already expired, we need to check the orders one by one.
-                let n_orders = critbit_v::size(&level.orders);
-                while (n_orders > 0) {
-                    n_orders = n_orders - 1;
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, n_orders);
-                    if (order.timeout_timestamp >= timestamp) {
-                        let remaining = quantity - filled;
-                        if (remaining < order.quantity) {
-                            return quantity
-                        } else {
-                            filled = filled + order.quantity;
-                        };
-                    };
-                };
-                idx = if (is_bid) {
-                    critbit::next_in_order(side, idx)
-                } else {
-                    critbit::next_in_reverse_order(side, idx)
-                };
-            } else {
-                break
-            }
-        };
-
-        filled
-    }
-
 
     // TODO: it's pretty unintuitive that this modifies the order. Maybe there's a better way to structure this.
     // true if any amount of the order can be filled by orderbook even after the maximum ticks_to_slide specified, otherwise return false and change the order.price_ticks by minimum_ticks_to_slide to make it not fill
@@ -1939,6 +2007,7 @@ module aux::clob_market {
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 5000);
 
         // Test placing limit orders
+        // FIXME: with 0 fees this doesn't test logic
 
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
@@ -1947,12 +2016,12 @@ module aux::clob_market {
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
-        assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490001);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480001);
+        assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490000);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
-        assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 9998);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 9998);
+        assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 10000);
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 4990);
     }
 
