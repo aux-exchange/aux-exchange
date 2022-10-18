@@ -75,6 +75,7 @@ module aux::clob_market {
     const CANCEL_EXPIRATION_TIME: u64 = 100000000; // 100 s
     const MAX_U64: u64 = 18446744073709551615;
     const CRITBIT_NULL_INDEX: u64 = 1 << 63;
+    const ZERO_FEES: bool = true;
 
     //////////////////////////////////////////////////////////////////
     // !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
@@ -394,15 +395,11 @@ module aux::clob_market {
         // First confirm the sender is allowed to trade on behalf of vault_account_owner
         vault::assert_trader_is_authorized_for_account(sender, vault_account_owner);
 
-        // Confirm that vault_account_owner has a aux account
+        // Confirm that vault_account_owner has an aux account
         assert!(has_aux_account(vault_account_owner), E_MISSING_AUX_USER_ACCOUNT);
 
         // Confirm the vault_account_owner has volume tracker registered
         assert!(volume_tracker::global_volume_tracker_registered(vault_account_owner), E_VOLUME_TRACKER_UNREGISTERED);
-
-        // TODO: confirm fee is determined from vault_account_owner not sender if using vault
-        // Confirm the vault_account_owner has fee published
-        assert!(fee::fee_exists(vault_account_owner), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
         let resource_addr = @aux;
@@ -460,9 +457,11 @@ module aux::clob_market {
         let price = maker_order.price;
         let quote_qty = quote_qty<B>(price, base_qty);
         let taker_is_bid = taker_order.is_bid;
-        let taker_fee = fee::taker_fee(taker, quote_qty);
-        let maker_rebate = fee::maker_rebate(maker, quote_qty);
-
+        let (taker_fee, maker_rebate) = if (ZERO_FEES) {
+            (0, 0)
+        } else {
+            (fee::taker_fee(taker, quote_qty), fee::maker_rebate(maker, quote_qty))
+        };
         let total_base_quantity_owed_au = 0;
         let total_quote_quantity_owed_au = 0;
         if (taker_is_bid) {
@@ -486,7 +485,9 @@ module aux::clob_market {
 
         // The net proceeds go to the protocol. This implicitly asserts that
         // taker fees can cover the maker rebate.
-        vault::increase_user_balance<Q>(@aux, (taker_fee - maker_rebate as u128));
+        if (!ZERO_FEES) {
+            vault::increase_user_balance<Q>(@aux, (taker_fee - maker_rebate as u128));
+        };
 
         // Emit event for taker
         let taker_order_id = taker_order.id;
@@ -632,6 +633,10 @@ module aux::clob_market {
         timeout_timestamp: u64,
         stp_action_type: u64,
     ): (u64, u64) acquires OpenOrderAccount {
+        // Confirm the order_owner has fee published
+        if (!ZERO_FEES) {
+            assert!(fee::fee_exists(order_owner), E_FEE_UNINITIALIZED);
+        };
         // Check lot sizes
         let tick_size = market.tick_size;
         let lot_size = market.lot_size;
@@ -1372,7 +1377,6 @@ module aux::clob_market {
         quantity: u64,
         client_order_id: u128,
     ): (u64, u64)  acquires Market, OpenOrderAccount {
-        assert!(fee::fee_exists(sender_addr), E_FEE_UNINITIALIZED);
 
         // Confirm that market exists
         let resource_addr = @aux;
@@ -2003,6 +2007,7 @@ module aux::clob_market {
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 5000);
 
         // Test placing limit orders
+        // FIXME: with 0 fees this doesn't test logic
 
         // 1. alice: BUY .2 @ 100
         place_order<BaseCoin, QuoteCoin>(alice, alice_addr, true, 100000, 20, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
