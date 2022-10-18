@@ -848,6 +848,9 @@ module aux::clob_market {
     struct MarketDataStore<phantom B, phantom Q> has key {
         l2_events: event::EventHandle<L2Event>,
         open_orders_events: event::EventHandle<OpenOrdersEvent>,
+    }
+
+    struct AllOrdersStore<phantom B, phantom Q> has key {
         all_ordes_events: event::EventHandle<AllOrdersEvent>,
     }
 
@@ -858,7 +861,6 @@ module aux::clob_market {
             move_to(sender, MarketDataStore<B, Q> {
                 l2_events: account::new_event_handle<L2Event>(sender),
                 open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
-                all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
             });
         };
 
@@ -901,13 +903,11 @@ module aux::clob_market {
         );
     }
 
-    public entry fun load_all_orders_into_event<B,Q>(sender: &signer) acquires Market, MarketDataStore {
+    public entry fun load_all_orders_into_event<B,Q>(sender: &signer) acquires Market, AllOrdersStore {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
-            move_to(sender, MarketDataStore<B, Q> {
-                l2_events: account::new_event_handle<L2Event>(sender),
-                open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
+            move_to(sender, AllOrdersStore<B, Q> {
                 all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
             });
         };
@@ -980,7 +980,7 @@ module aux::clob_market {
         };
 
         event::emit_event<AllOrdersEvent>(
-            &mut borrow_global_mut<MarketDataStore<B, Q>>(signer::address_of(sender)).all_ordes_events,
+            &mut borrow_global_mut<AllOrdersStore<B, Q>>(signer::address_of(sender)).all_ordes_events,
             all_orders
         );
     }
@@ -997,7 +997,6 @@ module aux::clob_market {
             move_to(sender, MarketDataStore<B, Q> {
                 l2_events: account::new_event_handle<L2Event>(sender),
                 open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
-                all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
             });
         };
 
@@ -2279,7 +2278,7 @@ module aux::clob_market {
         n_orders(borrow_global<Market<B, Q>>(@aux))
     }
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
-    fun test_market_data(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) acquires Market, OpenOrderAccount, MarketDataStore {
+    fun test_market_data(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) acquires Market, OpenOrderAccount, MarketDataStore, AllOrdersStore {
         let (alice_addr, bob_addr) = setup_for_test<BaseCoin, QuoteCoin>(sender, aux, alice, bob, aptos_framework, 2, 3, 10, 100);
 
         // Deposit 500 QuoteCoin to alice
