@@ -18,7 +18,7 @@
     "start:localnet-amm-trader": "APTOS_LOCAL=true ts-node examples/localnet-amm-trader.ts",
     "start:localnet-clob-trader": "APTOS_LOCAL=true ts-node examples/localnet-clob-trader.ts",
     "start:devnet-clob-trader": "APTOS_LOCAL=true ts-node examples/devnet-clob-trader.ts",
-    "start:graphql": "tsnode src/indexer/data src/graphql/index.ts",
+    "start:graphql": "ts-node src/graphql/index.ts",
     "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts"
   },
   "dependencies": {
