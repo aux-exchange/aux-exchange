@@ -2175,7 +2175,6 @@ function useTradeHistoryTable() {
           var _a3;
           const val = cell.getValue();
           const name = (_a3 = getMarketCoinByType(val)) == null ? void 0 : _a3.name;
-          console.log(name);
           return name != null ? name : "-";
         }
       }, {
@@ -2185,7 +2184,6 @@ function useTradeHistoryTable() {
           var _a3;
           const val = cell.getValue();
           const name = (_a3 = getMarketCoinByType(val)) == null ? void 0 : _a3.name;
-          console.log(name);
           return name != null ? name : "-";
         }
       }, {
@@ -5458,15 +5456,6 @@ function PoolsEventTableContainer({}) {
       type: `Remove ${(_e2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _e2 : ""} and ${(_f2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _f2 : ""}`
     };
   });
-  const columnKeys = react.exports.useMemo(() => {
-    if (filterBy === 0)
-      return ["amountIn", "amountOut"];
-    if (filterBy === 2)
-      return ["amountAddedX", "amountAddedY"];
-    if (filterBy === 1)
-      return ["amountRemovedX", "amountRemovedY"];
-    return [];
-  }, [filterBy]);
   const tableData = react.exports.useMemo(() => {
     if (filterBy === 0)
       return swapTableData;
@@ -5497,7 +5486,6 @@ function PoolsEventTableContainer({}) {
       setFilterBy(2);
     }
   }];
-  const [ck1, ck2] = columnKeys;
   const poolTableProps = {
     data: tableData,
     columns: [
@@ -5510,7 +5498,7 @@ function PoolsEventTableContainer({}) {
         header: "Total Value"
       },
       {
-        accessorKey: ck1,
+        accessorKey: "amountIn",
         header: ``,
         cell(c) {
           const value = c.getValue();
@@ -5518,7 +5506,7 @@ function PoolsEventTableContainer({}) {
         }
       },
       {
-        accessorKey: ck2,
+        accessorKey: "amountOut",
         header: "",
         cell(c) {
           const value = c.getValue();
@@ -8565,9 +8553,6 @@ function useTradeControls() {
   const [ioc, setIOC] = react.exports.useState(false);
   const [fok, setFok] = react.exports.useState(false);
   const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
-  console.log({
-    price
-  });
   const setPctFactory = (n2) => () => {
     if (quantX)
       setCxAmount(quantX * n2);
@@ -9423,7 +9408,7 @@ function SwapFormView({
       children: "Swap"
     }), /* @__PURE__ */ jsx(SwapPanel, {
       title: "From",
-      coins: coins.filter((c) => c !== secondaryCoin),
+      coins,
       coin: primaryCoin,
       onCoinSelect: onSelectPrimary,
       setValue,
@@ -9432,7 +9417,7 @@ function SwapFormView({
       onClick: invertSelections
     }), /* @__PURE__ */ jsx(SwapPanel, {
       title: "To",
-      coins: coins.filter((c) => c !== primaryCoin),
+      coins,
       coin: secondaryCoin,
       onCoinSelect: onSelectSecondary,
       value: conversion,
@@ -9463,15 +9448,14 @@ function SwapFormContainer({}) {
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
   });
-  const conversion = value * ((_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0);
-  const invertSelections = react.exports.useCallback(() => {
+  const conversion = (_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0;
+  const invertSelections = () => {
     const pc = firstCoin;
     const sc = secondCoin;
-    if (pc && sc) {
-      onFirstCoinSelect(sc);
-      onSecondCoinSelect(pc);
-    }
-  }, [firstCoin, secondCoin, onFirstCoinSelect, onSecondCoinSelect]);
+    onFirstCoinSelect(sc);
+    onSecondCoinSelect(pc);
+    setValue(1);
+  };
   const [wallet] = useWallet();
   const [swapMutation, swapResult] = useMutation(SwapDocument);
   const handleSwap = react.exports.useCallback(async () => {
@@ -9480,12 +9464,12 @@ function SwapFormContainer({}) {
       variables: {
         swapInput: {
           amountIn: value,
-          coinTypeIn: firstCoin.coinType,
-          coinTypeOut: secondCoin.coinType,
+          coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
+          coinTypeOut: secondCoin == null ? void 0 : secondCoin.coinType,
           minAmountOut: conversion,
           poolInput: {
-            coinTypeX: firstCoin.coinType,
-            coinTypeY: secondCoin.coinType
+            coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+            coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
           }
         }
       }
