@@ -113,7 +113,6 @@ describe("CLOB DSL tests", function () {
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "2000000");
     assert.equal(
       await vault.availableBalance(aliceAddr, quoteCoin),
-      // looks like we should subtract maker rebates 1bps
       quantize(0.004 - 0.002, quoteCoinInfo.decimals)
     );
     const auxAccount = new AuxAccount(auxClient, alice.address().toString());
@@ -122,8 +121,6 @@ describe("CLOB DSL tests", function () {
       baseCoinType: baseCoin,
       quoteCoinType: quoteCoin,
     });
-
-    //await auxAccount.openOrders();
 
     await market.placeOrder({
       sender: bob,
@@ -138,21 +135,20 @@ describe("CLOB DSL tests", function () {
     assert.equal((await vault.balance(bobAddr, baseCoin)).toNumber(), 49);
     assert.equal(
       (await vault.balance(bobAddr, quoteCoin)).toNumber(),
-      // looks like we should subtract taker fee 2bps
-      quantize(0.001 * 0.9998, quoteCoinInfo.decimals)
+      quantize(0.001, quoteCoinInfo.decimals)
     );
     assert.equal(
       (await vault.availableBalance(bobAddr, quoteCoin)).toNumber(),
-      quantize(0.001 * 0.9998, quoteCoinInfo.decimals)
+      quantize(0.001, quoteCoinInfo.decimals)
     );
     assert.equal(
       (await vault.balance(aliceAddr, quoteCoin)).toNumber(),
-      quantize(0.004 - 0.001 * 0.9999, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.001, quoteCoinInfo.decimals)
     );
     assert.equal((await vault.balance(aliceAddr, baseCoin)).toNumber(), 1);
     assert.equal(
       (await vault.availableBalance(aliceAddr, quoteCoin)).toNumber(),
-      quantize(0.004 - 0.001 - 0.001 * 0.9999, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.001 - 0.001, quoteCoinInfo.decimals)
     );
   });
 
@@ -169,11 +165,11 @@ describe("CLOB DSL tests", function () {
     await market.cancelOrder({ sender: alice, orderId });
     assert.equal(
       await vault.availableBalance(aliceAddr, quoteCoin),
-      quantize(0.004 - 0.001 * 0.9999, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.001, quoteCoinInfo.decimals)
     );
     assert.equal(
       (await vault.balance(aliceAddr, quoteCoin)).toNumber(),
-      quantize(0.004 - 0.001 * 0.9999, quoteCoinInfo.decimals)
+      quantize(0.004 - 0.001, quoteCoinInfo.decimals)
     );
   });
 
@@ -186,12 +182,11 @@ describe("CLOB DSL tests", function () {
     assert.equal((await vault.balance(bobAddr, baseCoin)).toNumber(), 49);
     assert.equal(
       (await vault.balance(bobAddr, quoteCoin)).toNumber(),
-      // looks like we should subtract taker fee 2bps
-      quantize(0.001 * 0.9998, quoteCoinInfo.decimals)
+      quantize(0.001, quoteCoinInfo.decimals)
     );
     assert.equal(
       await vault.availableBalance(bobAddr, quoteCoin),
-      quantize(0.001 * 0.9998, quoteCoinInfo.decimals)
+      quantize(0.001, quoteCoinInfo.decimals)
     );
   });
 
@@ -419,17 +414,17 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       (await vault.query.balance(auxClient, bobAddr, quoteCoin)).toNumber(),
-      Math.floor(100_000 * 0.9998)
+      Math.floor(100_000)
     );
     assert.equal(
       (
         await vault.query.availableBalance(auxClient, bobAddr, quoteCoin)
       ).toNumber(),
-      Math.floor(100_000 * 0.9998)
+      Math.floor(100_000)
     );
     assert.equal(
       (await vault.query.balance(auxClient, aliceAddr, quoteCoin)).toNumber(),
-      400_000 - Math.floor(100_000 * 0.9999)
+      400_000 - Math.floor(100_000)
     );
     assert.equal(
       (await vault.query.balance(auxClient, aliceAddr, auxCoin)).toNumber(),
@@ -437,7 +432,7 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       await vault.query.availableBalance(auxClient, aliceAddr, quoteCoin),
-      400_000 - Math.floor(100_000 * 0.9999) - Math.floor(100_000)
+      400_000 - Math.floor(100_000) - Math.floor(100_000)
     );
   });
 
@@ -453,7 +448,7 @@ describe("CLOB Core tests", function () {
     });
     assert.equal(
       await vault.query.availableBalance(auxClient, aliceAddr, quoteCoin),
-      400_000 - 100_000 * 0.9999
+      400_000 - 100_000
     );
   });
 
@@ -476,13 +471,13 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       (await vault.query.balance(auxClient, bobAddr, quoteCoin)).toNumber(),
-      Math.floor(100_000 * 0.9998)
+      Math.floor(100_000)
     );
     assert.equal(
       (
         await vault.query.availableBalance(auxClient, bobAddr, quoteCoin)
       ).toNumber(),
-      Math.floor(100_000 * 0.9998)
+      Math.floor(100_000)
     );
   });
 

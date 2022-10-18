@@ -22,7 +22,7 @@ module aux::fee {
     public fun initialize_fee_default(sender: &signer) {
         // Make sure the user hasn't initialize fee before
         assert!(!fee_exists(signer::address_of(sender)),FEE_ALREADY_INITIALIZED);
-        move_to<Fee>(sender, Fee {maker_rebate_bps: 1, taker_fee_bps: 2});
+        move_to<Fee>(sender, Fee {maker_rebate_bps: 0, taker_fee_bps: 0});
     }
 
     public(friend) fun update_maker_rebase_bps(account: address, new_maker_rebate_bps: u8) acquires Fee {
