@@ -10,13 +10,7 @@ import axios from "axios";
 import BN from "bn.js";
 import { assert } from "console";
 import { AU, DU, Market, MarketSubscriber, Vault } from "../src";
-import {
-  AuxClient,
-  deriveModuleAddress,
-  FakeCoin,
-  getAptosProfile,
-  Network,
-} from "../src/client";
+import { AuxClient, FakeCoin } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 
 const AUX_TRADER_CONFIG = {
@@ -31,21 +25,7 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-// Get the account that has authority over the module from local profile
-// This is also the account that deployed the Aux program
-const privateKeyHex = getAptosProfile("localnet")?.private_key!;
-const moduleAuthority: AptosAccount = AptosAccount.fromAptosAccountObject({
-  privateKeyHex,
-});
-
-// This is the address where the AUX module is published to
-const moduleAddress = deriveModuleAddress(moduleAuthority);
-
-// Start an AUX client
-const auxClient = AuxClient.create({
-  network: Network.Localnet,
-  moduleAddress,
-});
+const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const aptosCoin = "0x1::aptos_coin::AptosCoin";
@@ -163,7 +143,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.asks[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );
@@ -180,7 +160,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.bids[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );

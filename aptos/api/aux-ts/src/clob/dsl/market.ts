@@ -5,7 +5,6 @@ import type { TransactionResult } from "../../transaction";
 import {
   AnyUnits,
   AtomicUnits,
-  AU,
   DecimalUnits,
   DU,
   toAtomicUnits,
@@ -475,9 +474,7 @@ export default class Market implements core.query.Market {
     return levels.map((level) => {
       const sum = level.orders
         .map((order) =>
-          AU(order.quantity)
-            .toDecimalUnits(market.baseCoinInfo.decimals)
-            .toNumber()
+          order.quantity.toDecimalUnits(market.baseCoinInfo.decimals).toNumber()
         )
         // TODO better to do ops in AU (overflow) or DU (precision loss)?
         .reduce((a, b) => a + b, 0);

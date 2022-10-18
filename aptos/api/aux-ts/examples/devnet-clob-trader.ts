@@ -131,7 +131,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.asks[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );
@@ -148,7 +148,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.bids[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );

@@ -46,8 +46,8 @@ interface NetworkConfig {
   moduleAddress?: string;
   fullnode: string;
   faucet?: string;
-  dataFeedAddress?: Types.Address;
-  dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey;
+  simulatorAddress?: Types.Address;
+  simulatorPublicKey?: TxnBuilderTypes.Ed25519PublicKey;
 }
 
 function mustEd25519PublicKey(
@@ -67,10 +67,10 @@ const networkConfigs: Record<Network, NetworkConfig> = {
     fullnode: "https://fullnode.testnet.aptoslabs.com/v1",
     moduleAddress:
       "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53",
-    dataFeedPublicKey: mustEd25519PublicKey(
+    simulatorPublicKey: mustEd25519PublicKey(
       "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
     ),
-    dataFeedAddress:
+    simulatorAddress:
       "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8",
   },
   devnet: {
@@ -78,10 +78,10 @@ const networkConfigs: Record<Network, NetworkConfig> = {
     faucet: "https://faucet.devnet.aptoslabs.com",
     moduleAddress:
       "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a",
-    dataFeedPublicKey: mustEd25519PublicKey(
+    simulatorPublicKey: mustEd25519PublicKey(
       "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
     ),
-    dataFeedAddress:
+    simulatorAddress:
       "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f",
   },
   mainnet: {
@@ -146,8 +146,8 @@ export class AuxClient {
   transactionOptions: TransactionOptions | undefined;
   forceSimulate: boolean;
 
-  dataFeedAddress: Types.Address | undefined;
-  dataFeedPublicKey: TxnBuilderTypes.Ed25519PublicKey | undefined;
+  simulatorAddress: Types.Address | undefined;
+  simulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey | undefined;
 
   // Internal state.
 
@@ -160,24 +160,24 @@ export class AuxClient {
     moduleAddress,
     forceSimulate,
     transactionOptions,
-    dataFeedAddress,
-    dataFeedPublicKey,
+    simulatorAddress,
+    simulatorPublicKey,
   }: {
     aptosClient: AptosClient;
     faucetClient?: FaucetClient | undefined;
     moduleAddress: Types.Address;
     forceSimulate: boolean;
     transactionOptions?: TransactionOptions | undefined;
-    dataFeedAddress?: Types.Address | undefined;
-    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
+    simulatorAddress?: Types.Address | undefined;
+    simulatorPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
   }) {
     this.aptosClient = aptosClient;
     this.faucetClient = faucetClient;
     this.moduleAddress = moduleAddress;
     this.forceSimulate = forceSimulate;
     this.transactionOptions = transactionOptions;
-    this.dataFeedAddress = dataFeedAddress;
-    this.dataFeedPublicKey = dataFeedPublicKey;
+    this.simulatorAddress = simulatorAddress;
+    this.simulatorPublicKey = simulatorPublicKey;
 
     this.coinInfo = new Map();
     this.vaults = new Map();
@@ -190,8 +190,8 @@ export class AuxClient {
     moduleAddress,
     forceSimulate,
     transactionOptions,
-    dataFeedAddress,
-    dataFeedPublicKey,
+    simulatorAddress,
+    simulatorPublicKey,
   }: {
     network: Network;
     validatorAddress?: string | undefined;
@@ -199,14 +199,14 @@ export class AuxClient {
     moduleAddress?: string | undefined;
     forceSimulate?: boolean | undefined;
     transactionOptions?: TransactionOptions | undefined;
-    dataFeedAddress?: Types.Address | undefined;
-    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
+    simulatorAddress?: Types.Address | undefined;
+    simulatorPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
   }): AuxClient {
     let defaultConfig = networkConfigs[network];
     validatorAddress = validatorAddress ?? defaultConfig.fullnode;
     faucetAddress = faucetAddress ?? defaultConfig.faucet;
-    dataFeedAddress = dataFeedAddress ?? defaultConfig.dataFeedAddress;
-    console.log("dataFeedAddress:", dataFeedAddress);
+    simulatorAddress = simulatorAddress ?? defaultConfig.simulatorAddress;
+    console.log("simulatorAddress:", simulatorAddress);
     console.log(`connecting to: ${validatorAddress}`);
     return new AuxClient({
       aptosClient: new AptosClient(validatorAddress),
@@ -216,8 +216,9 @@ export class AuxClient {
           : undefined,
       moduleAddress: moduleAddress ?? defaultConfig.moduleAddress!,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
-      dataFeedAddress,
-      dataFeedPublicKey: dataFeedPublicKey ?? defaultConfig.dataFeedPublicKey,
+      simulatorAddress,
+      simulatorPublicKey:
+        simulatorPublicKey ?? defaultConfig.simulatorPublicKey,
       transactionOptions,
     });
   }
@@ -249,9 +250,9 @@ export class AuxClient {
     }
     const validator = validatorAddress ?? trimTrailingSlash(profile.rest_url);
     const faucet = faucetAddress ?? profile.faucet_url;
-    const dataFeedAddress =
+    const simulatorAddress =
       profileName === Network.Localnet ? profile.account : undefined;
-    const dataFeedPublicKey =
+    const simulatorPublicKey =
       profileName === Network.Localnet
         ? mustEd25519PublicKey(profile.public_key!)
         : undefined;
@@ -263,8 +264,8 @@ export class AuxClient {
       moduleAddress,
       forceSimulate,
       transactionOptions,
-      dataFeedAddress,
-      dataFeedPublicKey,
+      simulatorAddress,
+      simulatorPublicKey,
     });
   }
 
@@ -338,13 +339,13 @@ export class AuxClient {
     );
 
     const rawTxn = await this.aptosClient.generateTransaction(
-      this.dataFeedAddress!,
+      this.simulatorAddress!,
       payload,
       options
     );
 
     const simTxn = await this.aptosClient.simulateTransaction(
-      this.dataFeedPublicKey!,
+      this.simulatorPublicKey!,
       rawTxn,
       {
         estimateGasUnitPrice: true,
