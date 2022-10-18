@@ -49,6 +49,15 @@ export interface SwapCoinForExactCoinLimitInput extends SwapInput {
   limitPriceDenominator: Types.U128;
 }
 
+export interface AddLiquidityInput {
+  sender: AptosAccount;
+  coinTypeX: Types.MoveStructTag;
+  coinTypeY: Types.MoveStructTag;
+  amountAuX: Types.U64;
+  amountAuY: Types.U64;
+  maxSlippageBps: Types.U64;
+}
+
 export interface AddExactLiquidityInput {
   sender: AptosAccount;
   coinTypeX: Types.MoveStructTag;
@@ -370,6 +379,17 @@ export function swapCoinForExactCoinPayload(
     function: `${auxClient.moduleAddress}::amm::swap_coin_for_exact_coin_with_signer`,
     type_arguments: [input.coinTypeIn, input.coinTypeOut],
     arguments: [input.maxAmountAuIn, input.exactAmountAuOut],
+  };
+}
+
+export function addLiquidityPayload(
+  auxClient: AuxClient,
+  input: AddLiquidityInput
+): Types.EntryFunctionPayload {
+  return {
+    function: `${auxClient.moduleAddress}::amm::add_liquidity`,
+    type_arguments: [input.coinTypeX, input.coinTypeY],
+    arguments: [input.amountAuX, input.amountAuY, input.maxSlippageBps],
   };
 }
 

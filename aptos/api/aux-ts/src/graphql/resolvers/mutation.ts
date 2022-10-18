@@ -56,7 +56,7 @@ export const mutation = {
       auxClient.getCoinInfo(coinTypeX),
       auxClient.getCoinInfo(coinTypeY),
     ]);
-    return aux.amm.core.mutation.addExactLiquidityPayload(auxClient, {
+    return aux.amm.core.mutation.addLiquidityPayload(auxClient, {
       // @ts-ignore
       sender: undefined,
       coinTypeX,
@@ -67,6 +67,7 @@ export const mutation = {
       amountAuY: DU(addLiquidityInput.amountY)
         .toAtomicUnits(coinInfoY.decimals)
         .toString(),
+      maxSlippageBps: "50",
     });
   },
   async removeLiquidity(
