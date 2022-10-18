@@ -80,29 +80,7 @@ async function estimate(
     flag: "w",
   });
   for (let iter = 1; iter <= iterations; iter++) {
-    const simResultNoTimeout = await market.placeOrder(
-      {
-        sender: alice,
-        delegator: aliceAddr,
-        isBid: true,
-        limitPrice: new DecimalUnits(0.001),
-        quantity: new DecimalUnits(2),
-        auxToBurn: new DecimalUnits(0),
-        orderType: OrderType.LIMIT_ORDER,
-        stpActionType: STPActionType.CANCEL_PASSIVE,
-      },
-      { simulate: true }
-    );
-    assert.ok(simResultNoTimeout.tx.success, `${simResultNoTimeout.tx}`);
-    // confirm order was actually placed
-    assert.ok(simResultNoTimeout.payload[0]!.type === "OrderPlacedEvent");
-    assert.equal(simResultNoTimeout.payload.length, 1);
-    const withoutCancelGasAmount = Number(simResultNoTimeout.tx.gas_used);
-    console.log(
-      "place order no timeout",
-      `Gas used: ${simResultNoTimeout.tx.gas_used}, gas price: ${simResultNoTimeout.tx.gas_unit_price}, timestamp: ${simResultNoTimeout.tx.timestamp}`
-    );
-    let lastTime = Number(simResultNoTimeout.tx.timestamp);
+    let lastTime = 0;
     for (let i = n_cancels; i < n_levels; i++) {
       const placeTimeoutResult = await market.placeOrder({
         sender: bob,
@@ -122,7 +100,7 @@ async function estimate(
     }
     for (let i = 1; i <= n_cancels; i++) {
       for (let j = 0; j < n_orders; j++) {
-        const placeTimeoutResult = await market.placeOrder({
+        const placeOrderResult = await market.placeOrder({
           sender: bob,
           delegator: bobAddr,
           isBid: false,
@@ -133,15 +111,38 @@ async function estimate(
           stpActionType: STPActionType.CANCEL_PASSIVE,
         });
         assert.ok(
-          placeTimeoutResult.tx.success,
-          `${placeTimeoutResult.tx.vm_status}`
+          placeOrderResult.tx.success,
+          `${placeOrderResult.tx.vm_status}`
         );
         //   confirm order was actually placed
         //   console.dir(placeTimeoutResult, { depth: null });
-        console.log(placeTimeoutResult);
-        assert.ok(placeTimeoutResult.payload[0]!.type === "OrderPlacedEvent");
-        lastTime = Number(placeTimeoutResult.tx.timestamp);
+        console.log(placeOrderResult);
+        assert.ok(placeOrderResult.payload[0]!.type === "OrderPlacedEvent");
+        lastTime = Number(placeOrderResult.tx.timestamp);
       }
+      const simResultNoTimeout = await market.placeOrder(
+        {
+          sender: alice,
+          delegator: aliceAddr,
+          isBid: true,
+          limitPrice: new DecimalUnits(0.01),
+          quantity: new DecimalUnits(100),
+          auxToBurn: new DecimalUnits(0),
+          orderType: OrderType.LIMIT_ORDER,
+          stpActionType: STPActionType.CANCEL_PASSIVE,
+        },
+        { simulate: true }
+      );
+      console.log(simResultNoTimeout.tx.vm_status);
+      assert.ok(simResultNoTimeout.tx.success, `${simResultNoTimeout.tx}`);
+      // confirm order was actually placed
+      assert.ok(simResultNoTimeout.payload[0]!.type === "OrderFillEvent");
+      const withoutCancelGasAmount = Number(simResultNoTimeout.tx.gas_used);
+      console.log(
+        "place order no timeout",
+        `Gas used: ${simResultNoTimeout.tx.gas_used}, gas price: ${simResultNoTimeout.tx.gas_unit_price}, timestamp: ${simResultNoTimeout.tx.timestamp}`
+      );
+      lastTime = Number(simResultNoTimeout.tx.timestamp);
       console.log(lastTime);
       const placeTimeoutResult = await market.placeOrder({
         sender: bob,
