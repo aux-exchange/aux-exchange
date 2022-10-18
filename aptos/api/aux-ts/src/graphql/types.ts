@@ -62,6 +62,7 @@ export type Market = {
   low24h?: Maybe<Scalars['Float']>;
   volume24h?: Maybe<Scalars['Float']>;
   bars: Array<Bar>;
+  pythRating: PythRating;
 };
 
 
@@ -85,6 +86,18 @@ export type MarketBarsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
 };
+
+
+export type MarketPythRatingArgs = {
+  price: Scalars['Float'];
+  side: Side;
+};
+
+export enum PythRating {
+  Red = 'RED',
+  Yellow = 'YELLOW',
+  Green = 'GREEN'
+}
 
 export type Orderbook = {
   __typename?: 'Orderbook';
@@ -237,11 +250,32 @@ export type Pool = {
   amountLP: Scalars['Float'];
   feePercent: Scalars['Float'];
   swaps: Array<Swap>;
-  addLiquiditys: Array<AddLiquidity>;
-  removeLiquiditys: Array<RemoveLiquidity>;
+  adds: Array<AddLiquidity>;
+  removes: Array<RemoveLiquidity>;
   position?: Maybe<Position>;
   priceIn?: Maybe<Scalars['Float']>;
   priceOut?: Maybe<Scalars['Float']>;
+};
+
+
+export type PoolSwapsArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type PoolAddsArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type PoolRemovesArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 
