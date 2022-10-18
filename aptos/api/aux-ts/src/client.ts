@@ -18,6 +18,7 @@ import os from "os";
 import YAML from "yaml";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 import Router from "./router/dsl/router";
+import _ from "lodash";
 
 /**
  * If APTOS_LOCAL is set, AuxClient.createFromEnv() creates a local client.
@@ -193,13 +194,13 @@ export class AuxClient {
     dataFeedPublicKey,
   }: {
     network: Network;
-    validatorAddress?: string;
-    faucetAddress?: string;
-    moduleAddress?: string;
-    forceSimulate?: boolean;
+    validatorAddress?: string | undefined;
+    faucetAddress?: string | undefined;
+    moduleAddress?: string | undefined;
+    forceSimulate?: boolean | undefined;
     transactionOptions?: TransactionOptions | undefined;
-    dataFeedAddress?: Types.Address;
-    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey;
+    dataFeedAddress?: Types.Address | undefined;
+    dataFeedPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
   }): AuxClient {
     let defaultConfig = networkConfigs[network];
     validatorAddress = validatorAddress ?? defaultConfig.fullnode;
@@ -243,22 +244,16 @@ export class AuxClient {
       profileName = DEFAULT_NETWORK;
     }
     const profile = getAptosProfile(profileName);
-    console.log(profile);
-    const validator =
-      validatorAddress === undefined
-        ? trimTrailingSlash(profile?.rest_url!)
-        : validatorAddress;
-    const faucet =
-      faucetAddress === undefined
-        ? profile?.faucet_url === undefined
-          ? undefined
-          : trimTrailingSlash(profile.faucet_url)
-        : faucetAddress;
+    if (_.isUndefined(profile)) {
+      throw new Error(`Could not find ${profile} in aptos config.yaml.`);
+    }
+    const validator = validatorAddress ?? trimTrailingSlash(profile.rest_url);
+    const faucet = faucetAddress ?? profile.faucet_url;
     const dataFeedAddress =
-      profileName === Network.Localnet ? profile?.account : undefined;
+      profileName === Network.Localnet ? profile.account : undefined;
     const dataFeedPublicKey =
       profileName === Network.Localnet
-        ? mustEd25519PublicKey(profile?.public_key!)
+        ? mustEd25519PublicKey(profile.public_key!)
         : undefined;
 
     return this.create({
