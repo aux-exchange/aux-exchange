@@ -14,7 +14,7 @@ import { publishAmmEvents, publishClobEvents } from "./feed";
 import { account } from "./resolvers/account";
 import { market } from "./resolvers/market";
 import { mutation } from "./resolvers/mutation";
-import { pool } from "./resolvers/pool";
+import { pool } from "./resolvers/pool"
 import { query } from "./resolvers/query";
 import { subscription } from "./resolvers/subscription";
 
