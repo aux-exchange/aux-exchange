@@ -17,9 +17,9 @@ query Query(
   ethUsdcPool: pool(poolInput: $ethUsdcPool) {
     ...poolFields
     ethPriceIn: priceIn(coinTypeIn: $eth, amount: 1)
-    usdcPriceIn: priceIn(coinTypeIn: $usdc, amount: 1700)
+    usdcPriceIn: priceIn(coinTypeIn: $usdc, amount: 1333)
     ethPriceOut: priceOut(coinTypeOut: $eth, amount: 1)
-    usdcPriceOut: priceOut(coinTypeOut: $usdc, amount: 1700)
+    usdcPriceOut: priceOut(coinTypeOut: $usdc, amount: 1333)
   }
   allPools: pools {
     ...poolFields
@@ -58,7 +58,7 @@ fragment poolFields on Pool {
   amountY
   amountLP
   feePercent
-  swapHistory {
+  swaps {
     coinInfoIn {
       coinType
       decimals
@@ -74,12 +74,12 @@ fragment poolFields on Pool {
     amountIn
     amountOut
   }
-  addLiquidityHistory {
+  adds {
     amountAddedX
     amountAddedY
     amountMintedLP
   }
-  removeLiquidityHistory {
+  removes {
     amountRemovedX
     amountRemovedY
     amountBurnedLP

@@ -51,7 +51,7 @@ export async function publishAmmEvents() {
         removeLiquiditySeqNum = removeLiquidityEvent.sequenceNumber;
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 }
 
@@ -125,6 +125,6 @@ export async function publishClobEvents() {
         });
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 }
