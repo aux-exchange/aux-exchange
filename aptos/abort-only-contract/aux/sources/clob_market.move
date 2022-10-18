@@ -659,13 +659,115 @@ module aux::clob_market {
             timestamp,
         };
 
+        if (order_type == FILL_OR_KILL) {
+            let filled = 0u64;
+            let side = if (is_bid) { &mut market.asks } else { &mut market.bids };
+            if (critbit::size(side) == 0) {
+                // Just emit the event
+                event::emit_event<OrderCancelEvent>(
+                    &mut market.cancel_events,
+                    OrderCancelEvent {
+                        order_id,
+                        owner: order.owner_id,
+                        cancel_qty: order.quantity,
+                        timestamp,
+                        client_order_id: client_order_id, // this is same given the invariant
+                        order_type: order_type, // this is same given the invariant
+                    }
+                );
+                destroy_order(order);
+                return (0,0)
+            };
+
+            let idx = if (is_bid) { critbit::get_min_index(side) } else { critbit::get_max_index(side) };
+
+            while(idx != CRITBIT_NULL_INDEX && filled < quantity) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+                let can_fill = (is_bid && level.price <= limit_price) || (!is_bid && level.price >= limit_price);
+                if (can_fill) {
+                    // now walk the book.
+                    // since some orders have already expired, we need to check the orders one by one.
+                    let order_idx = critbit_v::get_min_index(&level.orders);
+                    while (order_idx != CRITBIT_NULL_INDEX && filled < quantity) {
+                        let (_, passive_order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                        if (passive_order.owner_id == order_owner) {
+                            if (stp_action_type == CANCEL_AGGRESSIVE) {
+                                // Just emit the event
+                                event::emit_event<OrderCancelEvent>(
+                                    &mut market.cancel_events,
+                                    OrderCancelEvent {
+                                        order_id,
+                                        owner: order.owner_id,
+                                        cancel_qty: order.quantity,
+                                        timestamp,
+                                        client_order_id: client_order_id, // this is same given the invariant
+                                        order_type: order_type, // this is same given the invariant
+                                    }
+                                );
+                                destroy_order(order);
+                                return (0,0)
+                            } else if (stp_action_type == CANCEL_BOTH) {
+                                let (_, level) = critbit::borrow_at_index_mut(side, idx);
+                                let (_, cancelled) = critbit_v::remove(&mut level.orders, order_idx);
+                                level.total_quantity = level.total_quantity - (cancelled.quantity as u128);
+                                process_cancel_order<B, Q>(cancelled, timestamp, (lot_size as u128), &mut market.cancel_events);
+                                // Just emit the event
+                                event::emit_event<OrderCancelEvent>(
+                                    &mut market.cancel_events,
+                                    OrderCancelEvent {
+                                        order_id,
+                                        owner: order.owner_id,
+                                        cancel_qty: order.quantity,
+                                        timestamp,
+                                        client_order_id: client_order_id, // this is same given the invariant
+                                        order_type: order_type, // this is same given the invariant
+                                    }
+                                );
+                                destroy_order(order);
+                                return (0,0)
+                            };
+                        };
+                        if (passive_order.timeout_timestamp >= timestamp) {
+                            let remaining = quantity - filled;
+                            if (remaining < passive_order.quantity) {
+                                filled = quantity;
+                            } else {
+                                filled = filled + passive_order.quantity;
+                            };
+                        };
+                        order_idx = critbit_v::next_in_order(&level.orders, order_idx);
+                    };
+                    idx = if (is_bid) {
+                        critbit::next_in_order(side, idx)
+                    } else {
+                        critbit::next_in_reverse_order(side, idx)
+                    };
+                } else {
+                    break
+                }
+            };
+
+            if (filled < quantity) {
+                // Just emit the event
+                event::emit_event<OrderCancelEvent>(
+                    &mut market.cancel_events,
+                    OrderCancelEvent {
+                        order_id,
+                        owner: order.owner_id,
+                        cancel_qty: order.quantity,
+                        timestamp,
+                        client_order_id: client_order_id, // this is same given the invariant
+                        order_type: order_type, // this is same given the invariant
+                    }
+                );
+                destroy_order(order);
+                return (0,0)
+            }
+        };
         // Check for orders that should be cancelled immediately
         if (
             // order timed out
             timeout_timestamp <= timestamp
-            // If the order is a fok order and cannot be fully filled, the order won't touch market and immediately "cancelled" like a no-op
-            || (order_type == FILL_OR_KILL
-                && estimate_fill(market, is_bid, limit_price, quantity, timestamp) < quantity)
             // If the order is passive join, it will use ticks_to_slide and market to determine join price, and if join_price is not worse than limit_price, place the order, otherwise cancel
             || (order_type == PASSIVE_JOIN
                 && order_price_worse_than_limit(market, &mut order, ticks_to_slide, direction_aggressive))
@@ -1407,48 +1509,6 @@ module aux::clob_market {
         market.next_order_id = market.next_order_id + 1;
         order_id
     }
-
-    fun estimate_fill<B, Q>(market: &Market<B, Q>, is_bid: bool, price: u64, quantity: u64, timestamp: u64): u64 {
-        let filled: u64 = 0;
-        let side = if (is_bid) { &market.asks } else { &market.bids };
-        if (critbit::size(side) == 0) {
-            return filled
-        };
-
-        let idx = if (is_bid) { critbit::get_min_index(side) } else { critbit::get_max_index(side) };
-
-        while(idx != CRITBIT_NULL_INDEX) {
-            let (_, level) = critbit::borrow_at_index(side, idx);
-            let can_fill = (is_bid && level.price <= price) || (!is_bid && level.price >= price);
-            if (can_fill) {
-                // now walk the book.
-                // since some orders have already expired, we need to check the orders one by one.
-                let n_orders = critbit_v::size(&level.orders);
-                while (n_orders > 0) {
-                    n_orders = n_orders - 1;
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, n_orders);
-                    if (order.timeout_timestamp >= timestamp) {
-                        let remaining = quantity - filled;
-                        if (remaining < order.quantity) {
-                            return quantity
-                        } else {
-                            filled = filled + order.quantity;
-                        };
-                    };
-                };
-                idx = if (is_bid) {
-                    critbit::next_in_order(side, idx)
-                } else {
-                    critbit::next_in_reverse_order(side, idx)
-                };
-            } else {
-                break
-            }
-        };
-
-        filled
-    }
-
 
     // TODO: it's pretty unintuitive that this modifies the order. Maybe there's a better way to structure this.
     // true if any amount of the order can be filled by orderbook even after the maximum ticks_to_slide specified, otherwise return false and change the order.price_ticks by minimum_ticks_to_slide to make it not fill
