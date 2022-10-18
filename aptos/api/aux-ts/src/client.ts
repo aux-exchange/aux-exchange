@@ -228,7 +228,6 @@ export class AuxClient {
     transactionOptions?: TransactionOptions | undefined;
   }): AuxClient {
     const profile = getAptosProfile(getAptosProfileNameFromEnvironment());
-    console.log(profile);
     const node =
       validatorAddress === undefined
         ? trimTrailingSlash(profile?.rest_url!)
