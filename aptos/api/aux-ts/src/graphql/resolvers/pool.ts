@@ -83,28 +83,11 @@ export const pool = {
     parent: Pool,
     { coinTypeIn, amount }: PoolPriceInArgs
   ): Promise<Maybe<number>> {
-    // console.log(parent.amountY)
     const ratio =
       coinTypeIn === parent.coinInfoX.coinType
         ? parent.amountY / parent.amountX
         : parent.amountX / parent.amountY;
-    // console.log(ratio, amount)
     return amount * ratio;
-    // const coinInfoOut =
-    //   coinTypeIn === parent.coinInfoX.coinType
-    //     ? parent.coinInfoY
-    //     : parent.coinInfoX;
-    // const router = new aux.Router({ client: auxClient });
-    // router.sender = new AptosAccount();
-    // const quote = await router.getQuoteExactCoinForCoin({
-    //   exactAmountIn: DU(amount),
-    //   coinTypeIn,
-    //   coinTypeOut: coinInfoOut.coinType,
-    // });
-    // return (
-    //   quote.payload?.amount.toDecimalUnits(coinInfoOut.decimals).toNumber() ??
-    //   null
-    // );
   },
   async priceOut(
     parent: Pool,
@@ -116,21 +99,6 @@ export const pool = {
       coinTypeOut === parent.coinInfoY.coinType
         ? parent.amountY / parent.amountX
         : parent.amountX / parent.amountY;
-    // console.log(ratio, amount)
     return amount * ratio;
-    // const coinInfoIn =
-    //   coinTypeOut === parent.coinInfoY.coinType
-    //     ? parent.coinInfoX
-    //     : parent.coinInfoY;
-    // const router = new aux.Router({ client: auxClient });
-    // const quote = await router.getQuoteCoinForExactCoin({
-    //   exactAmountOut: DU(amount),
-    //   coinTypeIn: coinInfoIn.coinType,
-    //   coinTypeOut,
-    // });
-    // return (
-    //   quote.payload?.amount.toDecimalUnits(coinInfoIn.decimals).toNumber() ??
-    //   null
-    // );
   },
 };

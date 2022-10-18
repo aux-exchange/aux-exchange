@@ -1,16 +1,9 @@
-import { parseMarketType } from "../src/clob/core/query";
 import { parsePoolType } from "../src/amm/core/query";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient, FakeCoin } from "../src/client";
+import { parseMarketType } from "../src/clob/core/query";
 
 async function main() {
-  const auxClient =
-    process.env["APTOS_LOCAL"] === "true"
-      ? AuxClient.createFromEnvForTesting({})[0]
-      : AuxClient.create({
-          network: Network.Devnet,
-          validatorAddress: "https://fullnode.devnet.aptoslabs.com/v1",
-        });
-
+  const auxClient = AuxClient.createFromEnvForTesting({})[0];
   const moduleAddress = auxClient.moduleAddress;
   const resources = await auxClient.aptosClient.getAccountResources(
     auxClient.moduleAddress
@@ -77,20 +70,13 @@ async function main() {
             coinTypeY: usdc,
           },
         },
+        poolInput: ethUsdcPool,
+        marketInput: ethUsdcPool,
+        coinTypeIn: eth,
       },
       undefined,
       4
     )
-  );
-  console.log(
-    JSON.stringify({
-      poolInput: ethUsdcPool,
-    })
-  );
-  console.log(
-    JSON.stringify({
-      marketInput: ethUsdcPool,
-    })
   );
 }
 

@@ -1,3 +1,4 @@
+import _ from "lodash";
 import * as aux from "../../";
 import { auxClient } from "../connection";
 import type {
@@ -57,7 +58,7 @@ export const query = {
   async poolCoins(parent: any) {
     const pools = await this.pools(parent, {});
     const coinInfos = pools.flatMap((pool) => [pool.coinInfoX, pool.coinInfoY]);
-    return coinInfos.filter((coinInfo, i) => coinInfos.indexOf(coinInfo) === i);
+    return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
   },
   async market(_parent: any, args: QueryMarketArgs): Promise<Maybe<Market>> {
     let market: aux.Market;
@@ -162,7 +163,7 @@ export const query = {
       market.baseCoinInfo,
       market.quoteCoinInfo,
     ]);
-    return coinInfos.filter((coinInfo, i) => coinInfos.indexOf(coinInfo) === i);
+    return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
   },
   account(_parent: any, { owner }: QueryAccountArgs): Account {
     // @ts-ignore
