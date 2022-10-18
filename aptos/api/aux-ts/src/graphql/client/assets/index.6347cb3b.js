@@ -4,7 +4,11 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
 import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, F as Fragment, s as useSubscription, C as ChevronUpIcon, t as ChevronDownIcon, M as MagnifyingGlassIcon, v as randRecentDate, w as Do, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.77d0c9f4.js";
+=======
+import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -636,7 +640,7 @@ function or({
   variant: s2,
   details: n2
 }) {
-  const o2 = "flex self-stretch items-center bg-primary-900 h-auto p-4 z-10 border-l-4 rounded-sm text-primary-100", l = {
+  const o2 = "flex self-stretch items-center bg-primary-900 h-auto p-4 z-10 border-l-4 rounded-sm text-primary-100 border-b border-y-primary-700", l = {
     basic: " border-l-secondary-400",
     success: " border-l-green-400",
     error: " border-l-red-400",
@@ -1549,8 +1553,8 @@ function Fn({
     className: `${e2 ? "bg-green-600" : "bg-accent-900"}
         relative 
         inline-flex 
-        h-[28px] 
-        w-[54px] 
+        h-[24px] 
+        w-[48px] 
         shrink-0 
         cursor-pointer 
         rounded-full 
@@ -1566,13 +1570,13 @@ function Fn({
     children: /* @__PURE__ */ a("span", {
       "aria-hidden": "true",
       className: `
-          ${e2 ? "translate-x-[25px]" : "translate-x-0"}
+          ${e2 ? "translate-x-[23px]" : "translate-x-0"}
           pointer-events-none 
           inline-block 
-          h-[24px] 
-          w-[24px] 
+          h-[20px] 
+          w-[20px] 
           transform 
-          rounded-full 
+          rounded-full
           bg-white 
           shadow-lg 
           ring-0 
@@ -1586,7 +1590,7 @@ function jn({
   tabs: e2
 }) {
   const t2 = (n2) => n2 === "buy" ? "border-b-green-500 text-green-400" : n2 === "sell" ? "border-b-red-500 text-red-400" : "border-b-secondary-500 text-secondary-400", s2 = (n2, o2) => {
-    const l = "w-full py-2.5 text-sm font-semibold leading-5 border-b-2 border-primary-700 outline-none";
+    const l = "w-full py-2.5 text-sm font-semibold leading-5 border-b-2 border-primary-700 outline-none rounded-t-2xl";
     if (n2) {
       const c = t2(o2);
       return `${l} ${c}`;
@@ -1705,7 +1709,7 @@ const Vn = react.exports.forwardRef(function({
               leaveFrom: "opacity-100 translate-y-0 sm:scale-100",
               leaveTo: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
               children: /* @__PURE__ */ a(gt$1.Panel, {
-                className: "relative transform overflow-hidden bg-transparent text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg",
+                className: "relative transform overflow-hidden bg-transparent text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg md:max-w-4xl",
                 children: t2
               })
             })
@@ -3972,7 +3976,11 @@ function useOrderHistoryTable(displayMarket) {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
       noData: /* @__PURE__ */ jsx(or, {
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
         message: "No past orders. Once you complete one check back here.",
+=======
+        message: "No past orders. Complete one and check back here.",
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
         variant: "basic"
       }),
       data: (_b2 = orderHistory == null ? void 0 : orderHistory.map(({
@@ -4019,6 +4027,278 @@ function OrdersTable({
     customRowRender: orderTableProps.customRowRender,
     className: orderTableProps.className
   });
+}
+const DepositDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Deposit"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "depositInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "DepositInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "deposit"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "depositInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "depositInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const CoinList = "";
+function CoinListItem({
+  onCoinSelect,
+  ...coinInfo
+}) {
+  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
+  return /* @__PURE__ */ jsxs(Do.Option, {
+    value: coinInfo,
+    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
+    children: [/* @__PURE__ */ jsx(Jt, {
+      coin: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xl font-medium text-primary-100",
+      children: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xs text-primary-200",
+      children: coinInfo.name
+    })]
+  }, coinInfo.symbol);
+}
+function CoinListView({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(Do.Options, {
+    className: "bg-transparent",
+    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
+      onCoinSelect,
+      ...info
+    }, info.symbol))
+  });
+}
+function CoinListContainer({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(CoinListView, {
+    onCoinSelect,
+    coins
+  });
+}
+const CoinSearchModal = "";
+function CoinSearchModalView({
+  onCoinSelect,
+  trigger,
+  onQueryChange,
+  query,
+  coins
+}) {
+  var _a;
+  const modalRef = react.exports.useRef(null);
+  react.exports.useRef(null);
+  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
+    var _a2;
+    onCoinSelect(coin);
+    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
+  }, []);
+  return /* @__PURE__ */ jsx(Vn, {
+    trigger,
+    ref: modalRef,
+    children: /* @__PURE__ */ jsx(ModalContents, {
+      coins,
+      onQueryChange,
+      query,
+      selectCoinAndCloseModal,
+      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
+    })
+  });
+}
+function ModalContents({
+  coins,
+  onQueryChange,
+  query,
+  selectCoinAndCloseModal,
+  modalOpen
+}) {
+  const buttonRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    const interval = setInterval(() => {
+      var _a;
+      if (buttonRef.current) {
+        (_a = buttonRef.current) == null ? void 0 : _a.click();
+        clearInterval(interval);
+      }
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+  return /* @__PURE__ */ jsxs(Dn, {
+    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
+    children: [/* @__PURE__ */ jsx(_n, {
+      id: "headlessui-dialog-title-:rh:",
+      children: "Select Token"
+    }), /* @__PURE__ */ jsxs(Do, {
+      onChange: selectCoinAndCloseModal,
+      children: [/* @__PURE__ */ jsx(Do.Input, {
+        placeholder: "Search Tokens",
+        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
+        value: query,
+        tabIndex: 0,
+        onChange: onQueryChange
+      }), /* @__PURE__ */ jsx(Do.Button, {
+        ref: buttonRef,
+        className: "hidden"
+      }), /* @__PURE__ */ jsx(Do.Options, {
+        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
+          onCoinSelect: selectCoinAndCloseModal,
+          coins
+        }) : null
+      })]
+    })]
+  });
+}
+function CoinSearchModalContainer({
+  onCoinSelect,
+  trigger,
+  coins
+}) {
+  const [query, setQuery] = react.exports.useState("");
+  const filteredCoins = coins.filter((c) => {
+    var _a;
+    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
+  });
+  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
+  return /* @__PURE__ */ jsx(CoinSearchModalView, {
+    onCoinSelect,
+    trigger,
+    onQueryChange,
+    query,
+    coins: filteredCoins
+  });
+}
+function CoinSelectButton({
+  coin,
+  className
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    className,
+    children: /* @__PURE__ */ jsxs("button", {
+      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
+      children: [coin ? /* @__PURE__ */ jsx(Jt, {
+        coin: coin.symbol,
+        size: 24
+      }) : null, /* @__PURE__ */ jsx("span", {
+        className: "ml-2 mr-7",
+        children: coin == null ? void 0 : coin.symbol
+      }), /* @__PURE__ */ jsx("div", {
+        className: "absolute w-4 right-4",
+        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
+      })]
+    })
+  });
+}
+function DepositView({}) {
+  var _a, _b, _c;
+  const [amount, setAmount] = react.exports.useState(0);
+  const balances = useBalances();
+  const coins = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances.map((b) => b.coinInfo)) != null ? _c : [];
+  const [coin, selectCoin] = react.exports.useState();
+  return /* @__PURE__ */ jsx(Vn, {
+    trigger: /* @__PURE__ */ jsx(qe, {
+      onClick: () => {
+      },
+      children: "Deposit"
+    }),
+    children: /* @__PURE__ */ jsxs(Dn, {
+      className: "w-[700px] mx-auto gap-4 flex flex-col",
+      padding: 6,
+      children: [/* @__PURE__ */ jsx(_n, {
+        className: "mb-4",
+        children: "Deposit"
+      }), !coins.length && /* @__PURE__ */ jsx(or, {
+        title: "Nothing to deposit.",
+        message: "Cannot find existing balances in your wallet. Please add some money."
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-2",
+          children: [/* @__PURE__ */ jsx(ie, {
+            className: "text-primary-300",
+            children: "Enter Deposit Amount"
+          }), /* @__PURE__ */ jsx("div", {
+            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
+              coins,
+              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
+                coin
+              }),
+              onCoinSelect: (c) => selectCoin(c)
+            })
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-4",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "text-sm text-right",
+            children: "Balance: -"
+          }), /* @__PURE__ */ jsx("input", {
+            disabled: false,
+            inputMode: "decimal",
+            min: "0",
+            type: "text",
+            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
+            value: amount,
+            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
+            placeholder: "0.00"
+          })]
+        })]
+      }), /* @__PURE__ */ jsx(qe, {
+        onClick: () => {
+        },
+        children: "Submit Deposit"
+      })]
+    })
+  });
+}
+function DepositContainer({}) {
+  useMutation(DepositDocument);
+  return /* @__PURE__ */ jsx(DepositView, {});
 }
 const martian = new MartianWalletAdapter();
 const petra = new PetraWalletAdapter();
@@ -4699,9 +4979,7 @@ function MarketSelector({
       }) => {
         var _a2, _b, _c, _d, _e;
         return /* @__PURE__ */ jsxs(Fragment, {
-          children: [/* @__PURE__ */ jsx(ie, {
-            children: "Select Market"
-          }), /* @__PURE__ */ jsxs(mt.Button, {
+          children: [/* @__PURE__ */ jsxs(mt.Button, {
             className: `${open ? "" : "hover:bg-primary-700"} ${baseButtonClasses}`,
             children: [/* @__PURE__ */ jsx(Tn, {
               coins: [firstCoin == null ? void 0 : firstCoin.symbol, secondCoin == null ? void 0 : secondCoin.symbol],
@@ -5188,6 +5466,15 @@ function PoolsEventTableContainer({}) {
       type: `Remove ${(_e2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _e2 : ""} and ${(_f2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _f2 : ""}`
     };
   });
+  const columnKeys = react.exports.useMemo(() => {
+    if (filterBy === 0)
+      return ["amountIn", "amountOut"];
+    if (filterBy === 2)
+      return ["amountAddedX", "amountAddedY"];
+    if (filterBy === 1)
+      return ["amountRemovedX", "amountRemovedY"];
+    return [];
+  }, [filterBy]);
   const tableData = react.exports.useMemo(() => {
     if (filterBy === 0)
       return swapTableData;
@@ -5208,16 +5495,17 @@ function PoolsEventTableContainer({}) {
       setFilterBy(0);
     }
   }, {
-    children: "Deposits",
+    children: "Adds",
     onClick() {
       setFilterBy(1);
     }
   }, {
-    children: "Withdrawals",
+    children: "Removes",
     onClick() {
       setFilterBy(2);
     }
   }];
+  const [ck1, ck2] = columnKeys;
   const poolTableProps = {
     data: tableData,
     columns: [
@@ -5230,16 +5518,16 @@ function PoolsEventTableContainer({}) {
         header: "Total Value"
       },
       {
-        accessorKey: "amountAuIn",
-        header: "Token In (Au)",
+        accessorKey: ck1,
+        header: ``,
         cell(c) {
           const value = c.getValue();
           return `${value} ${pool == null ? void 0 : pool.coinInfoX.symbol}`;
         }
       },
       {
-        accessorKey: "amountAuOut",
-        header: "Token Out (Au)",
+        accessorKey: ck2,
+        header: "",
         cell(c) {
           const value = c.getValue();
           return `${value} ${pool == null ? void 0 : pool.coinInfoY.symbol}`;
@@ -5257,158 +5545,6 @@ function PoolsEventTableContainer({}) {
   });
 }
 const AddLiquidity = "";
-const CoinList = "";
-function CoinListItem({
-  onCoinSelect,
-  ...coinInfo
-}) {
-  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
-  return /* @__PURE__ */ jsxs(Do.Option, {
-    value: coinInfo,
-    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(Jt, {
-      coin: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xl font-medium text-primary-100",
-      children: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xs text-primary-200",
-      children: coinInfo.name
-    })]
-  }, coinInfo.symbol);
-}
-function CoinListView({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(Do.Options, {
-    className: "bg-transparent",
-    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
-      onCoinSelect,
-      ...info
-    }, info.symbol))
-  });
-}
-function CoinListContainer({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(CoinListView, {
-    onCoinSelect,
-    coins
-  });
-}
-const CoinSearchModal = "";
-function CoinSearchModalView({
-  onCoinSelect,
-  trigger,
-  onQueryChange,
-  query,
-  coins
-}) {
-  var _a;
-  const modalRef = react.exports.useRef(null);
-  react.exports.useRef(null);
-  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
-    var _a2;
-    onCoinSelect(coin);
-    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
-  }, []);
-  return /* @__PURE__ */ jsx(Vn, {
-    trigger,
-    ref: modalRef,
-    children: /* @__PURE__ */ jsx(ModalContents, {
-      coins,
-      onQueryChange,
-      query,
-      selectCoinAndCloseModal,
-      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
-    })
-  });
-}
-function ModalContents({
-  coins,
-  onQueryChange,
-  query,
-  selectCoinAndCloseModal,
-  modalOpen
-}) {
-  const buttonRef = react.exports.useRef(null);
-  react.exports.useEffect(() => {
-    const interval = setInterval(() => {
-      var _a;
-      if (buttonRef.current) {
-        (_a = buttonRef.current) == null ? void 0 : _a.click();
-        clearInterval(interval);
-      }
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
-  return /* @__PURE__ */ jsxs(Dn, {
-    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
-    children: [/* @__PURE__ */ jsx(_n, {
-      id: "headlessui-dialog-title-:rh:",
-      children: "Select Token"
-    }), /* @__PURE__ */ jsxs(Do, {
-      onChange: selectCoinAndCloseModal,
-      children: [/* @__PURE__ */ jsx(Do.Input, {
-        placeholder: "Search Tokens",
-        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
-        value: query,
-        tabIndex: 0,
-        onChange: onQueryChange
-      }), /* @__PURE__ */ jsx(Do.Button, {
-        ref: buttonRef,
-        className: "hidden"
-      }), /* @__PURE__ */ jsx(Do.Options, {
-        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
-          onCoinSelect: selectCoinAndCloseModal,
-          coins
-        }) : null
-      })]
-    })]
-  });
-}
-function CoinSearchModalContainer({
-  onCoinSelect,
-  trigger,
-  coins
-}) {
-  const [query, setQuery] = react.exports.useState("");
-  const filteredCoins = coins.filter((c) => {
-    var _a;
-    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
-  });
-  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
-  return /* @__PURE__ */ jsx(CoinSearchModalView, {
-    onCoinSelect,
-    trigger,
-    onQueryChange,
-    query,
-    coins: filteredCoins
-  });
-}
-function CoinSelectButton({
-  coin,
-  className
-}) {
-  return /* @__PURE__ */ jsx("div", {
-    className,
-    children: /* @__PURE__ */ jsxs("button", {
-      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(Jt, {
-        coin: coin.symbol,
-        size: 24
-      }) : null, /* @__PURE__ */ jsx("span", {
-        className: "ml-2 mr-7",
-        children: coin == null ? void 0 : coin.symbol
-      }), /* @__PURE__ */ jsx("div", {
-        className: "absolute w-4 right-4",
-        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
-      })]
-    })
-  });
-}
 function DepositInput({
   coins,
   coin,
@@ -5533,6 +5669,7 @@ const AddLiquidityDocument = {
     }
   }]
 };
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
 function AddLiquidityContainer({}) {
   const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
   const [wallet] = useWallet();
@@ -5579,6 +5716,249 @@ function AddLiquidityContainer({}) {
   const handleChangeFirstCoinAu = (e2) => {
     const v = Number(e2.currentTarget.value);
     setFirstCoinAu(v);
+  };
+  return /* @__PURE__ */ jsx(AddLiquidityView, {
+    coins,
+    onFirstCoinSelect,
+    onSecondCoinSelect,
+    firstCoin,
+    secondCoin,
+    addLiquidity: addLiquidityHandler,
+    handleChangeFirstCoinAu,
+    handleChangeSecondCoinAu,
+    firstCoinAu,
+    secondCoinAu
+  });
+}
+const RemoveLiquidityDocument = {
+=======
+const PoolPriceInDocument = {
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+      "value": "RemoveLiquidity"
+=======
+      "value": "PoolPriceIn"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+          "value": "removeLiquidityInput"
+=======
+          "value": "poolInput"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+            "value": "RemoveLiquidityInput"
+=======
+            "value": "PoolInput"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "coinTypeIn"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "String"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "amount"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Float"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+          "value": "removeLiquidity"
+=======
+          "value": "pool"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+            "value": "removeLiquidityInput"
+=======
+            "value": "poolInput"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+              "value": "removeLiquidityInput"
+=======
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "priceIn"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeIn"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "amount"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "amount"
+                }
+              }
+            }]
+          }]
+        }
+      }]
+    }
+  }]
+};
+function usePoolPriceIn(input) {
+  const poolPrice = useQuery(PoolPriceInDocument, {
+    variables: input
+  });
+  return poolPrice;
+}
+function AddLiquidityContainer({}) {
+  var _a, _b, _c, _d, _e, _f;
+  const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
+  const [wallet] = useWallet();
+  const navigate = useNavigate();
+  const [firstCoinAu, setFirstCoinAu] = react.exports.useState(0);
+  const [secondCoinAu, setSecondCoinAu] = react.exports.useState(0);
+  const {
+    firstCoin,
+    secondCoin,
+    onFirstCoinSelect,
+    onSecondCoinSelect,
+    coins
+  } = useCoinXYParamState();
+  const firstCoinPrice = usePoolPriceIn({
+    amount: firstCoinAu,
+    coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
+    poolInput: {
+      coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+      coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+    }
+  });
+  const secondCoinPrice = usePoolPriceIn({
+    amount: secondCoinAu,
+    coinTypeIn: secondCoin == null ? void 0 : secondCoin.coinType,
+    poolInput: {
+      coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+      coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+    }
+  });
+  const conversionIn = (_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0;
+  const conversionOut = (_f = (_e = (_d = secondCoinPrice.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.priceIn) != null ? _f : 0;
+  async function addLiquidityHandler() {
+    return await addLiquidity({
+      variables: {
+        addLiquidityInput: {
+          amountX: firstCoinAu,
+          amountY: secondCoinAu,
+          poolInput: {
+            coinTypeX: firstCoin.coinType,
+            coinTypeY: secondCoin.coinType
+          }
+        }
+      }
+    }).then(async (res) => {
+      var _a2;
+      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = res.data) == null ? void 0 : _a2.addLiquidity));
+    }).finally(() => navigate("/pools"));
+  }
+  const handleChangeSecondCoinAu = (e2) => {
+    const v = Number(e2.currentTarget.value);
+    setSecondCoinAu(v);
+    setTouched("second");
+  };
+  const [touched, setTouched] = react.exports.useState("first");
+  react.exports.useEffect(() => {
+    if (touched === "first")
+      setSecondCoinAu(conversionIn != null ? conversionIn : 0);
+  }, [conversionIn, firstCoinAu, touched]);
+  react.exports.useEffect(() => {
+    if (touched === "second")
+      setFirstCoinAu(conversionOut != null ? conversionOut : 0);
+  }, [conversionOut, secondCoinAu, touched]);
+  const handleChangeFirstCoinAu = (e2) => {
+    const v = Number(e2.currentTarget.value);
+    setFirstCoinAu(v);
+    setTouched("first");
   };
   return /* @__PURE__ */ jsx(AddLiquidityView, {
     coins,
@@ -5875,6 +6255,7 @@ const RlPoolPositionDocument = {
             "name": {
               "kind": "Name",
               "value": "amountX"
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
             }
           }, {
             "kind": "Field",
@@ -5900,6 +6281,261 @@ const RlPoolPositionDocument = {
     }
   }]
 };
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
+const RlPoolPositionDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "RLPoolPosition"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoX"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoY"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoLP"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "position"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "owner"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "owner"
+                }
+              }
+            }],
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountX"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountY"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountLP"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "share"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountX"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountY"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountLP"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "feePercent"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+=======
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
 const SwapDocument = {
   "kind": "Document",
   "definitions": [{
@@ -6183,12 +6819,12 @@ function PoolView({
         onClick: () => setAddOpen(true),
         variant: "buy",
         size: "sm",
-        children: "Adds"
+        children: "Add"
       }), /* @__PURE__ */ jsx(qe, {
         onClick: () => setRemoveOpen(true),
         variant: "sell",
         size: "sm",
-        children: "Removes"
+        children: "Remove"
       })]
     }), /* @__PURE__ */ jsx(PoolsEventTableContainer, {}), /* @__PURE__ */ jsx(We, {
       appear: true,
@@ -6317,7 +6953,7 @@ function PortfolioView({
   const [wallet, , connection] = useWallet();
   (connection == null ? void 0 : connection.address) ? `${connection.address.slice(0, 6)}...${connection.address.slice(connection.address.length - 6, connection.address.length)}` : "-";
   return !connection || connection.address === null ? noWalletUI : /* @__PURE__ */ jsxs("div", {
-    className: " w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[48px_260px_1fr] md:grid-cols-6 gap-2 p-4 mx-auto md:max-w-[1140px] overflow-hidden",
+    className: " w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[48px_260px_1fr] md:grid-cols-6 gap-2 p-4 mx-auto md:max-w-[1140px]",
     children: [/* @__PURE__ */ jsx("div", {
       className: " sm:col-span-1 md:col-span-6 h-full",
       children: /* @__PURE__ */ jsxs("div", {
@@ -6327,9 +6963,7 @@ function PortfolioView({
           children: "My Portfolio"
         }), /* @__PURE__ */ jsx("div", {
           className: "items-end",
-          children: /* @__PURE__ */ jsx(ConnectWalletContainer, {
-            trigger: connectWalletTrigger
-          })
+          children: /* @__PURE__ */ jsx(DepositContainer, {})
         })]
       })
     }), /* @__PURE__ */ jsxs(Dn, {
@@ -8454,7 +9088,7 @@ function TradingForm() {
     variant: "sell"
   }];
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col w-full h-full gap-3 p-4",
+    className: "flex flex-col w-full h-full gap-3 px-4",
     children: [/* @__PURE__ */ jsx(Ge$1.Group, {
       onChange: setActiveTab,
       selectedIndex: activeTab,
@@ -8619,7 +9253,7 @@ function TradeView({}) {
     skip: !firstCoin || !secondCoin
   });
   const [priceDirection, setPriceDirection] = react.exports.useState("up");
-  const lastPriceRef = react.exports.useRef(0);
+  const lastPriceRef = react.exports.useRef(lastTradePrice);
   const [priceDiff, setPriceDiff] = react.exports.useState(0);
   const [priceDiffPct, setPriceDiffPct] = react.exports.useState(0);
   react.exports.useEffect(() => {
@@ -8641,6 +9275,9 @@ function TradeView({}) {
       symbol: m.name,
       interval: "1D"
     });
+    setPriceDiff(0);
+    setPriceDiffPct(0);
+    lastPriceRef.current = 0;
   };
   const orderTableTabs = [{
     label: "Open Orders"
@@ -8682,7 +9319,7 @@ function TradeView({}) {
     children: [/* @__PURE__ */ jsxs("div", {
       className: " sm:col-span-1 md:col-span-1 sm:row-span-1 md:row-span-4 h-full md:border-r md:border-r-primary-700",
       children: [/* @__PURE__ */ jsx("div", {
-        className: "flex px-4 pt-3 w-full",
+        className: "flex px-4 py-2.5 w-full",
         children: /* @__PURE__ */ jsx(MarketSelector, {
           onSelectMarket
         })
@@ -9159,143 +9796,8 @@ function SwapFormView({
     })]
   });
 }
-const PoolPriceInDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "PoolPriceIn"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "poolInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "PoolInput"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "coinTypeIn"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "String"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "amount"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Float"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "pool"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "poolInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "poolInput"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "priceIn"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "coinTypeIn"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinTypeIn"
-                }
-              }
-            }, {
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "amount"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "amount"
-                }
-              }
-            }]
-          }]
-        }
-      }]
-    }
-  }]
-};
-function usePoolPriceIn(input) {
-  const poolPrice = useQuery(PoolPriceInDocument, {
-    variables: input
-  });
-  return poolPrice;
-}
 function SwapFormContainer({}) {
+  var _a, _b, _c;
   const {
     firstCoin,
     secondCoin,
@@ -9304,7 +9806,7 @@ function SwapFormContainer({}) {
     coins
   } = useCoinXYParamState();
   const [value, setValue] = react.exports.useState(1);
-  usePoolPriceIn({
+  const firstCoinPrice = usePoolPriceIn({
     amount: value,
     coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
     poolInput: {
@@ -9312,7 +9814,7 @@ function SwapFormContainer({}) {
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
   });
-  const conversion = value;
+  const conversion = value * ((_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0);
   const invertSelections = react.exports.useCallback(() => {
     const pc = firstCoin;
     const sc = secondCoin;
@@ -9324,7 +9826,7 @@ function SwapFormContainer({}) {
   const [wallet] = useWallet();
   const [swapMutation, swapResult] = useMutation(SwapDocument);
   const handleSwap = react.exports.useCallback(async () => {
-    var _a;
+    var _a2;
     const swapTx = await swapMutation({
       variables: {
         swapInput: {
@@ -9339,7 +9841,7 @@ function SwapFormContainer({}) {
         }
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = swapTx.data) == null ? void 0 : _a.swap));
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap));
   }, [firstCoin, secondCoin, value, conversion, wallet, swapMutation]);
   const onSelectPrimary = (c) => {
     onFirstCoinSelect(c);

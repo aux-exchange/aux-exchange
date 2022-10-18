@@ -846,9 +846,18 @@ video {
 }
 .w-\[600px\] {
   width: 600px;
+<<<<<<< HEAD
 }
 .w-\[700px\] {
   width: 700px;
+=======
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.09a923d7.css
+=======
+}
+.w-\[700px\] {
+  width: 700px;
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.89172174.css
+>>>>>>> ba89901 (bump ui)
 }
 .w-5 {
   width: 1.25rem;
@@ -862,8 +871,18 @@ video {
 .w-12 {
   width: 3rem;
 }
+<<<<<<< HEAD
 .w-\[24px\] {
   width: 24px;
+=======
+<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.09a923d7.css
+.w-\[700px\] {
+  width: 700px;
+=======
+.w-\[24px\] {
+  width: 24px;
+>>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.89172174.css
+>>>>>>> ba89901 (bump ui)
 }
 .min-w-\[400px\] {
   min-width: 400px;
