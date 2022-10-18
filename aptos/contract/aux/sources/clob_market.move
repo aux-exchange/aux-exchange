@@ -77,7 +77,7 @@ module aux::clob_market {
     const MAX_U64: u64 = 18446744073709551615;
     const CRITBIT_NULL_INDEX: u64 = 1 << 63;
     const ZERO_FEES: bool = true;
-    const TIMEOUT_ORDER_APT_COST: u128 = 1000;
+    const TIMEOUT_ORDER_APT_COST: u128 = 4000;
 
     //////////////////////////////////////////////////////////////////
     // !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
@@ -513,7 +513,8 @@ module aux::clob_market {
         let maker_remaining_qty = util::sub_min_0(maker_order.quantity, (base_qty as u64));
         if (maker_order.aux_au_to_burn_per_lot > 0) {
             let aux_to_burn = (maker_order.aux_au_to_burn_per_lot as u128) * (base_qty as u128) / lot_size;
-            vault::decrease_unavailable_balance<AuxCoin>(maker, aux_to_burn);
+            vault::increase_available_balance<AuxCoin>(maker, aux_to_burn);
+            vault::decrease_user_balance<AuxCoin>(maker, aux_to_burn);
         };
 
         // Emit event for maker
@@ -1419,7 +1420,7 @@ module aux::clob_market {
             0,
             false,
             MAX_U64,
-            CANCEL_PASSIVE,
+            CANCEL_AGGRESSIVE,
         );
 
         // Transfer coins
@@ -1653,7 +1654,8 @@ module aux::clob_market {
                     if (maker_order.timeout_timestamp <= current_timestamp) {
                         let (_, min_order) = critbit_v::remove(&mut level.orders, min_order_idx);
                         level.total_quantity = level.total_quantity - (min_order.quantity as u128);
-                        vault::decrease_unavailable_balance<AptosCoin>(min_order.owner_id, TIMEOUT_ORDER_APT_COST);
+                        vault::increase_available_balance<AptosCoin>(min_order.owner_id, TIMEOUT_ORDER_APT_COST);
+                        vault::decrease_user_balance<AptosCoin>(min_order.owner_id, TIMEOUT_ORDER_APT_COST);
                         total_apt_owed_au = total_apt_owed_au + TIMEOUT_ORDER_APT_COST;
                         process_cancel_order<B, Q>(min_order, current_timestamp, lot_size, &mut market.cancel_events);
                         continue

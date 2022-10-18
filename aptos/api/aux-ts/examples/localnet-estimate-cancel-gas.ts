@@ -1,6 +1,6 @@
 import type { AptosAccount } from "aptos";
 import * as assert from "assert";
-import { AuxClient, FakeCoin } from "../src/client";
+import { AuxClient, FakeCoin, NATIVE_APTOS_COIN } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
 import { AtomicUnits, AU, DecimalUnits } from "../src/units";
@@ -50,14 +50,21 @@ async function setup() {
   await vault.createAuxAccount(bob);
 
   tx = await vault.deposit(alice, quoteCoin, AU(5_000_000_000));
+  tx = await vault.deposit(alice, NATIVE_APTOS_COIN, AU(100_000_000));
   assert.ok(tx.success, `${tx.vm_status}}]`);
   assert.equal((await vault.balance(aliceAddr, quoteCoin)).toNumber(), 5);
   assert.equal((await vault.balance(aliceAddr, baseCoin)).toNumber(), 0);
+  assert.equal(
+    (await vault.balance(aliceAddr, NATIVE_APTOS_COIN)).toNumber(),
+    1
+  );
 
   tx = await vault.deposit(bob, baseCoin, AU(5_000_000_000));
+  tx = await vault.deposit(bob, NATIVE_APTOS_COIN, AU(100_000_000));
   assert.ok(tx.success, `${tx.vm_status}}]`);
   assert.equal((await vault.balance(bobAddr, quoteCoin)).toNumber(), 0);
   assert.equal((await vault.balance(bobAddr, baseCoin)).toNumber(), 5000);
+  assert.equal((await vault.balance(bobAddr, NATIVE_APTOS_COIN)).toNumber(), 1);
 
   market = await Market.create(auxClient, {
     sender: aux,
@@ -133,7 +140,7 @@ async function estimate(
         },
         { simulate: true }
       );
-      console.log(simResultNoTimeout.tx.vm_status);
+      console.log("simResultNoTimeout", simResultNoTimeout);
       assert.ok(simResultNoTimeout.tx.success, `${simResultNoTimeout.tx}`);
       // confirm order was actually placed
       assert.ok(simResultNoTimeout.payload[0]!.type === "OrderFillEvent");
@@ -215,7 +222,7 @@ async function estimate(
 
 async function main() {
   await setup();
-  await estimate(4, 5, 100, 3);
+  await estimate(4, 5, 5, 3);
 }
 
 main();
