@@ -75,13 +75,13 @@ export const query = {
       lotSize: market.lotSize.toNumber(),
       tickSize: market.tickSize.toNumber(),
       orderbook: {
-        bids: market.level2.bids.map((l2) => ({
-          price: l2.price.toNumber(),
-          quantity: l2.quantity.toNumber(),
+        bids: market.l2.bids.map((l2Quote) => ({
+          price: l2Quote.price.toNumber(),
+          quantity: l2Quote.quantity.toNumber(),
         })),
-        asks: market.level2.asks.map((l2) => ({
-          price: l2.price.toNumber(),
-          quantity: l2.quantity.toNumber(),
+        asks: market.l2.asks.map((l2Quote) => ({
+          price: l2Quote.price.toNumber(),
+          quantity: l2Quote.quantity.toNumber(),
         })),
       },
     };
@@ -112,13 +112,13 @@ export const query = {
           tickSize: market.tickSize.toNumber(),
           auxCoinInfo,
           orderbook: {
-            bids: market.level2.bids.map((l2) => ({
-              price: l2.price.toNumber(),
-              quantity: l2.quantity.toNumber(),
+            bids: market.l2.bids.map((l2Quote) => ({
+              price: l2Quote.price.toNumber(),
+              quantity: l2Quote.quantity.toNumber(),
             })),
-            asks: market.level2.asks.map((l2) => ({
-              price: l2.price.toNumber(),
-              quantity: l2.quantity.toNumber(),
+            asks: market.l2.asks.map((l2Quote) => ({
+              price: l2Quote.price.toNumber(),
+              quantity: l2Quote.quantity.toNumber(),
             })),
           },
         };
@@ -144,13 +144,13 @@ export const query = {
             tickSize: market.tickSize.toNumber(),
             auxCoinInfo,
             orderbook: {
-              bids: market.level2.bids.map((l2) => ({
-                price: l2.price.toNumber(),
-                quantity: l2.quantity.toNumber(),
+              bids: market.l2.bids.map((l2Quote) => ({
+                price: l2Quote.price.toNumber(),
+                quantity: l2Quote.quantity.toNumber(),
               })),
-              asks: market.level2.asks.map((l2) => ({
-                price: l2.price.toNumber(),
-                quantity: l2.quantity.toNumber(),
+              asks: market.l2.asks.map((l2Quote) => ({
+                price: l2Quote.price.toNumber(),
+                quantity: l2Quote.quantity.toNumber(),
               })),
             },
           };
