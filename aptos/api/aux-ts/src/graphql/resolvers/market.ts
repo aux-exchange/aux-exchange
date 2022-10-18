@@ -1,22 +1,26 @@
 import { getBar } from "../../../src/indexer/analytics";
 import * as aux from "../../";
-import { auxClient } from "../connection";
+import { auxClient, pythClient } from "../connection";
 import {
   Bar,
   Market,
   MarketBarsArgs,
   MarketOpenOrdersArgs,
   MarketOrderHistoryArgs,
+  MarketPythRatingArgs,
   MarketTradeHistoryArgs,
+  Maybe,
   Order,
   OrderStatus,
   OrderType,
+  PythRating,
   Side,
   Trade,
 } from "../types";
 import _ from "lodash";
 import fs from "fs";
 import readline from "readline";
+import { FakeCoin } from "../../../src/client";
 
 export const market = {
   async openOrders(
@@ -184,5 +188,69 @@ export const market = {
     }
 
     return bars;
+  },
+  async pythRating(
+    parent: Market,
+    { price, side }: MarketPythRatingArgs
+  ): Promise<Maybe<PythRating>> {
+    const data = await pythClient.getData();
+    console.log("here", parent.baseCoinInfo.symbol);
+    const [fakeBtc, fakeEth, fakeSol, fakeUsdc] = await Promise.all([
+      auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
+      auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
+      auxClient.getWrappedFakeCoinType(FakeCoin.SOL),
+      auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
+    ]);
+    // wormhole
+    const [btc, eth, sol, usdcet] = [
+      "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T",
+      "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T",
+      "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13::coin::T",
+      "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
+    ];
+    let pythPriceObj;
+    if (
+      (parent.baseCoinInfo.coinType === fakeBtc &&
+        parent.quoteCoinInfo.coinType === fakeUsdc) ||
+      (parent.baseCoinInfo.coinType === btc &&
+        parent.quoteCoinInfo.coinType === usdcet)
+    ) {
+      pythPriceObj = data.productPrice.get("Crypto.BTC/USD");
+    } else if (
+      (parent.baseCoinInfo.coinType === fakeEth &&
+        parent.quoteCoinInfo.coinType === fakeUsdc) ||
+      (parent.baseCoinInfo.coinType === eth &&
+        parent.quoteCoinInfo.coinType === usdcet)
+    ) {
+      pythPriceObj = data.productPrice.get("Crypto.ETH/USD");
+    } else if (
+      (parent.baseCoinInfo.coinType === fakeSol &&
+        parent.quoteCoinInfo.coinType === fakeUsdc) ||
+      (parent.baseCoinInfo.coinType === sol &&
+        parent.quoteCoinInfo.coinType === usdcet)
+    ) {
+      pythPriceObj = data.productPrice.get("Crypto.SOL/USD");
+    } else {
+      return null;
+    }
+    const pythPrice = pythPriceObj!.price ?? pythPriceObj!.previousPrice;
+    if (!pythPrice) {
+      return null;
+    }
+    if (side === Side.Buy) {
+      const ratio = (price - pythPrice) / pythPrice;
+      return ratio > 0.005
+        ? PythRating.Red
+        : ratio > 0.001
+        ? PythRating.Yellow
+        : PythRating.Green;
+    } else {
+      const ratio = (pythPrice - price) / pythPrice;
+      return ratio > 0.005
+        ? PythRating.Red
+        : ratio > 0.001
+        ? PythRating.Yellow
+        : PythRating.Green;
+    }
   },
 };

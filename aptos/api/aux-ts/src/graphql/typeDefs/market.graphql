@@ -12,6 +12,13 @@ type Market {
   low24h: Float
   volume24h: Float
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
+  pythRating(price: Float!, side: Side!): PythRating
+}
+
+enum PythRating {
+  RED
+  YELLOW
+  GREEN
 }
 
 type Orderbook {
