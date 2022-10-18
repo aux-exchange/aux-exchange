@@ -202,8 +202,8 @@ async function estimate(
         with_cancel_gas_used: simResultWithTimeout.tx.gas_used,
         with_cancel_gas_price: simResultWithTimeout.tx.gas_unit_price,
         n_levels: n_levels * iter,
-        n_cancels: i + iter * n_cancels,
-        n_orders: i * n_orders + iter * n_cancels * n_orders,
+        n_cancels: 1,
+        n_orders: i * n_orders,
         cancel_gas: withCancelGasAmount - withoutCancelGasAmount,
       };
       await writeFileSync(

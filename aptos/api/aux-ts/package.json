@@ -21,7 +21,7 @@
     "start:devnet-clob-orders": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-orders.ts",
     "start:graphql": "ts-node src/graphql/index.ts",
     "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts",
-    "start:localnet-estimate-cancel-gas": "APTOS_LOCAL=true ts-node examples/localnet-estimate-cancel-gas.ts",
+    "start:localnet-estimate-cancel-gas": "APTOS_PROFILE=localnet ts-node examples/localnet-estimate-cancel-gas.ts",
     "start:devnet-router-swap": "ts-node examples/devnet-router-swap.ts",
     "start:localnet-router-swap": "APTOS_LOCAL=true ts-node examples/localnet-router-swap.ts"
   },
