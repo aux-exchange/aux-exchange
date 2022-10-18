@@ -29,7 +29,7 @@ const AUX_TRADER_CONFIG = {
 // running a full validator for RPCs.
 const auxClient = AuxClient.create({
   network: Network.Devnet,
-  validatorAddress: "http://localhost:8080",
+  // validatorAddress: "http://localhost:8080",
 });
 
 // We create a new Aptos account for the trader

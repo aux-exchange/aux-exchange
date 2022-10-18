@@ -17,6 +17,7 @@
     "seed": "ts-node scripts/seed.ts",
     "start:localnet-amm-trader": "APTOS_LOCAL=true ts-node examples/localnet-amm-trader.ts",
     "start:localnet-clob-trader": "APTOS_LOCAL=true ts-node examples/localnet-clob-trader.ts",
+    "start:devnet-clob-trader": "APTOS_LOCAL=true ts-node examples/devnet-clob-trader.ts",
     "start:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts",
     "start:devnet-router-swap": "ts-node examples/devnet-router-swap.ts",
     "start:localnet-router-swap": "APTOS_LOCAL=true ts-node examples/localnet-router-swap.ts"
