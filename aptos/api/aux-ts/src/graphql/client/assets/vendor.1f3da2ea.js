@@ -8405,6 +8405,34 @@ function useLinkClickHandler(to, _temp) {
     }
   }, [location, navigate, path, replaceProp, state, target, to]);
 }
+const useGeoLocation = (options = {}) => {
+  const [country, setCountry] = react.exports.useState(options.country);
+  const [error, setError] = react.exports.useState(false);
+  const [isLoading, setIsLoading] = react.exports.useState(true);
+  const api = options.api || "https://api.country.is";
+  react.exports.useEffect(() => {
+    let isCancelled = false;
+    if (country || country === false)
+      return;
+    async function fetchAPI() {
+      setIsLoading(true);
+      await fetch(api).then((res) => {
+        if (!res.ok) {
+          throw Error(res.statusText);
+        }
+        return res.json();
+      }).then((res) => {
+        if (res && res.country && !isCancelled)
+          setCountry(res.country);
+      }).catch((err) => setError(err)).finally(() => setIsLoading(false));
+    }
+    fetchAPI();
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+  return { country, error, isLoading };
+};
 class LuxonError extends Error {
 }
 class InvalidDateTimeError extends LuxonError {
@@ -38667,9 +38695,10 @@ function isWebSocket(val) {
   return typeof val === "function" && "constructor" in val && "CLOSED" in val && "CLOSING" in val && "CONNECTING" in val && "OPEN" in val;
 }
 export {
+  client as $,
   ArrowDownIcon$1 as A,
   colors_1 as B,
-  ChevronUpIcon$1 as C,
+  ChevronDownIcon$1 as C,
   DateTime as D,
   ArrowsUpDownIcon$1 as E,
   Fragment as F,
@@ -38687,13 +38716,13 @@ export {
   React as R,
   Slider as S,
   InMemoryCache as T,
-  ApolloProvider as U,
-  BrowserRouter as V,
+  useGeoLocation as U,
+  ApolloProvider as V,
   We as W,
   XMarkIcon$1 as X,
-  Routes as Y,
-  Route as Z,
-  client as _,
+  BrowserRouter as Y,
+  Routes as Z,
+  Route as _,
   useAnimationControls as a,
   motion as b,
   create$1$1 as c,
@@ -38712,11 +38741,11 @@ export {
   pt as p,
   qe as q,
   react as r,
-  useSubscription as s,
-  ChevronDownIcon$1 as t,
+  Do as s,
+  useSubscription as t,
   useQuery as u,
-  randRecentDate as v,
-  Do as w,
+  ChevronUpIcon$1 as v,
+  randRecentDate as w,
   ArrowLongLeftIcon$1 as x,
   useLazyQuery as y,
   linear as z

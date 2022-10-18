@@ -575,6 +575,10 @@ video {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
 }
+.mx-6 {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
 .my-2 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -641,6 +645,12 @@ video {
 }
 .ml-1 {
   margin-left: 0.25rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.ml-auto {
+  margin-left: auto;
 }
 .mr-7 {
   margin-right: 1.75rem;
@@ -717,11 +727,11 @@ video {
 .h-\[46px\] {
   height: 46px;
 }
-.h-\[28px\] {
-  height: 28px;
-}
 .h-\[24px\] {
   height: 24px;
+}
+.h-\[20px\] {
+  height: 20px;
 }
 .h-3 {
   height: 0.75rem;
@@ -740,6 +750,9 @@ video {
 }
 .h-\[400px\] {
   height: 400px;
+}
+.h-\[44px\] {
+  height: 44px;
 }
 .h-\[32px\] {
   height: 32px;
@@ -767,9 +780,6 @@ video {
 }
 .h-40 {
   height: 10rem;
-}
-.h-\[44px\] {
-  height: 44px;
 }
 .max-h-56 {
   max-height: 14rem;
@@ -825,14 +835,17 @@ video {
 .w-56 {
   width: 14rem;
 }
-.w-\[54px\] {
-  width: 54px;
+.w-\[48px\] {
+  width: 48px;
 }
-.w-\[24px\] {
-  width: 24px;
+.w-\[20px\] {
+  width: 20px;
 }
 .w-3 {
   width: 0.75rem;
+}
+.w-\[600px\] {
+  width: 600px;
 }
 .w-\[700px\] {
   width: 700px;
@@ -848,6 +861,9 @@ video {
 }
 .w-12 {
   width: 3rem;
+}
+.w-\[24px\] {
+  width: 24px;
 }
 .min-w-\[400px\] {
   min-width: 400px;
@@ -897,8 +913,8 @@ video {
 .border-collapse {
   border-collapse: collapse;
 }
-.translate-x-\[25px\] {
-  --tw-translate-x: 25px;
+.translate-x-\[23px\] {
+  --tw-translate-x: 23px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .translate-x-0 {
@@ -1008,9 +1024,6 @@ video {
 .justify-between {
   justify-content: space-between;
 }
-.justify-evenly {
-  justify-content: space-evenly;
-}
 .gap-2 {
   gap: 0.5rem;
 }
@@ -1115,6 +1128,10 @@ video {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }
+.rounded-t-2xl {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
 .border {
   border-width: 1px;
 }
@@ -1127,11 +1144,11 @@ video {
 .border-l-4 {
   border-left-width: 4px;
 }
-.border-b-2 {
-  border-bottom-width: 2px;
-}
 .border-b {
   border-bottom-width: 1px;
+}
+.border-b-2 {
+  border-bottom-width: 2px;
 }
 .border-b-4 {
   border-bottom-width: 4px;
@@ -1192,8 +1209,16 @@ video {
 .border-accent-400 {
   border-color: var(--accent-400);
 }
+.border-slate-700 {
+  --tw-border-opacity: 1;
+  border-color: rgb(51 65 85 / var(--tw-border-opacity));
+}
 .border-accent-500 {
   border-color: var(--accent-500);
+}
+.border-y-primary-700 {
+  border-top-color: var(--primary-700);
+  border-bottom-color: var(--primary-700);
 }
 .border-l-secondary-400 {
   border-left-color: var(--accent-400);
@@ -1223,6 +1248,10 @@ video {
 }
 .border-b-primary-700 {
   border-bottom-color: var(--primary-700);
+}
+.border-b-slate-700 {
+  --tw-border-opacity: 1;
+  border-bottom-color: rgb(51 65 85 / var(--tw-border-opacity));
 }
 .border-t-primary-700 {
   border-top-color: var(--primary-700);
@@ -1329,9 +1358,6 @@ video {
 }
 .p-0 {
   padding: 0px;
-}
-.p-8 {
-  padding: 2rem;
 }
 .p-6 {
   padding: 1.5rem;
@@ -1445,6 +1471,12 @@ video {
 .pl-10 {
   padding-left: 2.5rem;
 }
+.pb-12 {
+  padding-bottom: 3rem;
+}
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
 .pt-2 {
   padding-top: 0.5rem;
 }
@@ -1487,10 +1519,6 @@ video {
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
-}
-.text-6xl {
-  font-size: 3.75rem;
-  line-height: 1;
 }
 .font-semibold {
   font-weight: 600;
@@ -1575,6 +1603,10 @@ video {
 .text-slate-300 {
   --tw-text-opacity: 1;
   color: rgb(203 213 225 / var(--tw-text-opacity));
+}
+.text-slate-400 {
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity));
 }
 .antialiased {
   -webkit-font-smoothing: antialiased;
@@ -1902,6 +1934,9 @@ video {
   }
   .md\:row-span-1 {
     grid-row: span 1 / span 1;
+  }
+  .md\:max-w-4xl {
+    max-width: 56rem;
   }
   .md\:max-w-\[1140px\] {
     max-width: 1140px;
@@ -2290,9 +2325,6 @@ video {
   border-width: 4px 4px 0;
   border-top-color: #6c6c6c;
 }
-.AddLiquidity-root {
-  background: #111111;
-}
 .icon-wrapper {
   box-sizing: border-box;
   display: inline-block;
@@ -2307,6 +2339,9 @@ video {
   position: relative;
 }
 .CoinSearchModal-root {
+  background: #111111;
+}
+.AddLiquidity-root {
   background: #111111;
 }
 .RemoveLiquidity-root {
