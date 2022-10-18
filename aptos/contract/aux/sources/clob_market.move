@@ -180,6 +180,7 @@ module aux::clob_market {
         timeout_timestamp: u64,
         order_type: u64,
         timestamp: u64,
+        apt_hold: u64
     }
 
     fun destroy_order(order: Order) {
@@ -194,6 +195,7 @@ module aux::clob_market {
             timeout_timestamp: _,
             order_type: _,
             timestamp: _,
+            apt_hold: _
         } = order;
     }
 
@@ -208,6 +210,7 @@ module aux::clob_market {
         timeout_timestamp: u64,
         order_type: u64,
         timestamp: u64,
+        apt_hold: u64
     ): Order {
         Order {
             id,
@@ -220,6 +223,7 @@ module aux::clob_market {
             timeout_timestamp,
             order_type,
             timestamp,
+            apt_hold
         }
     }
 
@@ -439,7 +443,7 @@ module aux::clob_market {
             abort(E_INVALID_STATE)
         };
         if (apt_earned_au != 0) {
-            vault::increase_user_balance<AptosCoin>(vault_account_owner, apt_earned_au);
+            vault::increase_user_balance<AptosCoin>(vault_account_owner, (apt_earned_au as u128));
         }
     }
 
@@ -548,7 +552,7 @@ module aux::clob_market {
             critbit::remove(&mut open_order_account.open_orders, order_idx);
 
             // if a timeout order fully fills, refund the APT
-            vault::increase_available_balance<AptosCoin>(maker, TIMEOUT_ORDER_APT_COST);
+            vault::increase_available_balance<AptosCoin>(maker, (maker_order.apt_hold as u128));
         };
 
         // record the volume filled / traded
@@ -572,7 +576,7 @@ module aux::clob_market {
         (total_base_quantity_owed_au, total_quote_quantity_owed_au)
     }
 
-    fun handle_placed_order<B, Q>(market: &mut Market<B, Q>, order: &Order, vault_account_owner: address) acquires OpenOrderAccount {
+    fun handle_placed_order<B, Q>(market: &mut Market<B, Q>, order: &mut Order, vault_account_owner: address) acquires OpenOrderAccount {
         let timestamp = timestamp::now_microseconds();
         let placed_order_id = order.id;
         let lot_size = (market.lot_size as u128);
@@ -593,7 +597,8 @@ module aux::clob_market {
             vault::decrease_available_balance<AuxCoin>(vault_account_owner, (order.aux_au_to_burn_per_lot as u128) * (qty as u128) / lot_size);
         };
         if (order.timeout_timestamp < MAX_U64) {
-            vault::decrease_available_balance<AptosCoin>(vault_account_owner, TIMEOUT_ORDER_APT_COST);
+            order.apt_hold = (TIMEOUT_ORDER_APT_COST as u64);
+            vault::decrease_available_balance<AptosCoin>(vault_account_owner, (order.apt_hold as u128));
         };
         event::emit_event<OrderPlacedEvent>(
             &mut market.placed_events,
@@ -642,7 +647,7 @@ module aux::clob_market {
         direction_aggressive: bool,
         timeout_timestamp: u64,
         stp_action_type: u64,
-    ): (u64, u64, u128) acquires OpenOrderAccount {
+    ): (u64, u64, u64) acquires OpenOrderAccount {
         // Confirm the order_owner has fee published
         if (!ZERO_FEES) {
             assert!(fee::fee_exists(order_owner), E_FEE_UNINITIALIZED);
@@ -670,6 +675,7 @@ module aux::clob_market {
             timeout_timestamp,
             order_type,
             timestamp,
+            apt_hold: 0
         };
 
         if (order_type == FILL_OR_KILL) {
@@ -824,7 +830,7 @@ module aux::clob_market {
                 );
                 destroy_order(order);
             } else {
-                handle_placed_order(market, &order, order_owner);
+                handle_placed_order(market, &mut order, order_owner);
                 insert_order(market, order);
             }
         } else {
@@ -888,7 +894,7 @@ module aux::clob_market {
         if (cancelled.timeout_timestamp < MAX_U64) {
             vault::increase_available_balance<AptosCoin>(
                 cancelled.owner_id,
-                TIMEOUT_ORDER_APT_COST
+                (cancelled.apt_hold as u128)
             );
         };
         process_cancel_order<B, Q>(cancelled, timestamp, lot_size, &mut market.cancel_events);
@@ -1334,12 +1340,12 @@ module aux::clob_market {
 
         let level_idx = critbit::find(side, (price as u128));
         if (level_idx == CRITBIT_NULL_INDEX) {
-            return (create_order(order_id, order_id, 0, 0, 0, false, sender_addr, MAX_U64, LIMIT_ORDER, 0), false)
+            return (create_order(order_id, order_id, 0, 0, 0, false, sender_addr, MAX_U64, LIMIT_ORDER, 0, 0), false)
         };
         let (_, level) = critbit::borrow_at_index_mut(side, level_idx);
         let order_idx = critbit_v::find(&level.orders, order_id);
         if (order_idx == CRITBIT_NULL_INDEX) {
-            return (create_order(order_id, order_id, 0, 0, 0, false, sender_addr, MAX_U64, LIMIT_ORDER, 0), false)
+            return (create_order(order_id, order_id, 0, 0, 0, false, sender_addr, MAX_U64, LIMIT_ORDER, 0, 0), false)
         };
 
         let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
@@ -1625,7 +1631,7 @@ module aux::clob_market {
         }
     }
 
-    fun match<B, Q>(market: &mut Market<B, Q>, taker_order: &mut Order, current_timestamp: u64, stp_action_type: u64): (u64, u64, u128) acquires OpenOrderAccount {
+    fun match<B, Q>(market: &mut Market<B, Q>, taker_order: &mut Order, current_timestamp: u64, stp_action_type: u64): (u64, u64, u64) acquires OpenOrderAccount {
         let side = if (taker_order.is_bid) { &mut market.asks } else { &mut market.bids };
         let order_price = taker_order.price;
         let total_base_quantity_owed_au = 0;
@@ -1654,9 +1660,9 @@ module aux::clob_market {
                     if (maker_order.timeout_timestamp <= current_timestamp) {
                         let (_, min_order) = critbit_v::remove(&mut level.orders, min_order_idx);
                         level.total_quantity = level.total_quantity - (min_order.quantity as u128);
-                        vault::increase_available_balance<AptosCoin>(min_order.owner_id, TIMEOUT_ORDER_APT_COST);
-                        vault::decrease_user_balance<AptosCoin>(min_order.owner_id, TIMEOUT_ORDER_APT_COST);
-                        total_apt_owed_au = total_apt_owed_au + TIMEOUT_ORDER_APT_COST;
+                        vault::increase_available_balance<AptosCoin>(min_order.owner_id, (min_order.apt_hold as u128));
+                        vault::decrease_user_balance<AptosCoin>(min_order.owner_id, (min_order.apt_hold as u128));
+                        total_apt_owed_au = total_apt_owed_au + min_order.apt_hold;
                         process_cancel_order<B, Q>(min_order, current_timestamp, lot_size, &mut market.cancel_events);
                         continue
                     };
