@@ -21,12 +21,14 @@ export const pool = {
     return swaps.map((swap) => ({
       ...swap,
       coinInfoIn:
-        ,
+        swap.inCoinType === parent.coinInfoX.coinType
+          ? parent.coinInfoX
+          : parent.coinInfoY,
       coinInfoOut:
         swap.outCoinType === parent.coinInfoY.coinType
           ? parent.coinInfoY
           : parent.coinInfoX,
-      amountIn: swap.in.toDecimalUnits().toNumber(),
+      amountIn: swap.in.toNumber(),
       amountOut: swap.out.toNumber(),
     }));
   },
