@@ -11,8 +11,7 @@ features:
 
 - Liquidity pool fees are set by the pool creator. AUX expects fees to range from
   0 bps to 30 bps. All fees are retained by the liquidity providers.
-- Central limit order book fees are 2 bps for orders that take liquidity. AUX pays
-  a 1 bp rebate for orders that add liquidity. 1 bp is retained for the protocol.
+- Central limit order book fees are 0 bps for both maker and taker sides.
 - The AUX router does not charge any fees on top of the underlying liquidity pool
   or central limit order book fees.
 

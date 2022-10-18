@@ -2011,12 +2011,12 @@ module aux::clob_market {
 
         // 2. bob: SELL .1 @ 100
         place_order<BaseCoin, QuoteCoin>(bob, bob_addr, false, 100000, 10, 0, 1001, LIMIT_ORDER, 0, true, MAX_U64, CANCEL_AGGRESSIVE);
-        assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490001);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480001);
+        assert_eq_u128(vault::balance<QuoteCoin>(alice_addr) , 490000);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(alice_addr), 480000);
         assert_eq_u128(vault::balance<BaseCoin>(alice_addr), 10);
 
-        assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 9998);
-        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 9998);
+        assert_eq_u128(vault::balance<QuoteCoin>(bob_addr), 10000);
+        assert_eq_u128(vault::available_balance<QuoteCoin>(bob_addr), 10000);
         assert_eq_u128(vault::balance<BaseCoin>(bob_addr), 4990);
     }
 
