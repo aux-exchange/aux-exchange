@@ -10,6 +10,8 @@
 module aux::fee {
     use std::signer;
     const FEE_ALREADY_INITIALIZED: u64 = 0;
+    const E_TEST_FAILURE: u64 = 1;
+
     struct Fee has key {
         maker_rebate_bps: u8,
         taker_fee_bps: u8
@@ -76,6 +78,30 @@ module aux::fee {
         }else{
             move_to(sender, Fee{maker_rebate_bps: 0, taker_fee_bps: 0});
         };
+    }
+
+    #[test_only]
+    public fun init_fees_for_test(sender: &signer, taker_fee_bps: u8, maker_rebate_bps: u8) acquires Fee {
+        let account = signer::address_of(sender);
+        if (fee_exists(account)){
+            update_maker_rebase_bps(account, maker_rebate_bps);
+            update_taker_fee_bps(account, taker_fee_bps);
+        }else{
+            move_to(sender, Fee{maker_rebate_bps, taker_fee_bps});
+        };
+    }
+
+    #[test(alice = @0x123, bob = @0x456)]
+    fun test_fees(alice: &signer, bob: &signer) acquires Fee {
+        init_fees_for_test(alice, 2, 1);
+        init_fees_for_test(bob, 2, 1);
+        let bob_addr = signer::address_of(bob);
+        let alice_addr = signer::address_of(alice);
+
+        assert!(add_fee(alice_addr, 10000, true) == 10002, E_TEST_FAILURE);
+        assert!(subtract_fee(alice_addr, 10000, true) == 9998, E_TEST_FAILURE);
+        assert!(add_fee(bob_addr, 10000, false) == 9999, E_TEST_FAILURE);
+        assert!(subtract_fee(bob_addr, 10000, false) == 10001, E_TEST_FAILURE);
     }
 
 }
