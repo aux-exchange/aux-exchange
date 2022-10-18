@@ -4,15 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-<<<<<<< HEAD
 import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, F as Fragment, s as useSubscription, C as ChevronUpIcon, t as ChevronDownIcon, M as MagnifyingGlassIcon, v as randRecentDate, w as Do, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.77d0c9f4.js";
-=======
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -3978,15 +3970,7 @@ function useOrderHistoryTable(displayMarket) {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
       noData: /* @__PURE__ */ jsx(or, {
-<<<<<<< HEAD
         message: "No past orders. Complete one and check back here.",
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-        message: "No past orders. Once you complete one check back here.",
-=======
-        message: "No past orders. Complete one and check back here.",
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
         variant: "basic"
       }),
       data: (_b2 = orderHistory == null ? void 0 : orderHistory.map(({
@@ -5665,90 +5649,14 @@ const AddLiquidityDocument = {
     }
   }]
 };
-<<<<<<< HEAD
 const PoolPriceInDocument = {
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-function AddLiquidityContainer({}) {
-  const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
-  const [wallet] = useWallet();
-  const navigate = useNavigate();
-  const [firstCoinAu, setFirstCoinAu] = react.exports.useState(0);
-  const [secondCoinAu, setSecondCoinAu] = react.exports.useState(0);
-  const {
-    firstCoin,
-    secondCoin,
-    onFirstCoinSelect,
-    onSecondCoinSelect,
-    coins
-  } = useCoinXYParamState();
-  const priceQuery = useLastTradePrice([{
-    baseCoinType: firstCoin.coinType,
-    quoteCoinType: secondCoin.coinType
-  }]);
-  const conversion = react.exports.useMemo(() => {
-    var _a;
-    return (_a = priceQuery.data) == null ? void 0 : _a.lastTradePrice;
-  }, [priceQuery.data]);
-  async function addLiquidityHandler() {
-    return await addLiquidity({
-      variables: {
-        addLiquidityInput: {
-          amountX: firstCoinAu,
-          amountY: secondCoinAu,
-          poolInput: {
-            coinTypeX: firstCoin.coinType,
-            coinTypeY: secondCoin.coinType
-          }
-        }
-      }
-    }).then(async (res) => {
-      var _a;
-      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = res.data) == null ? void 0 : _a.addLiquidity));
-    }).finally(() => navigate("/pools"));
-  }
-  const handleChangeSecondCoinAu = (e2) => {
-  };
-  react.exports.useEffect(() => {
-    setSecondCoinAu(firstCoinAu * (conversion != null ? conversion : 0));
-  }, [conversion, firstCoinAu]);
-  const handleChangeFirstCoinAu = (e2) => {
-    const v = Number(e2.currentTarget.value);
-    setFirstCoinAu(v);
-  };
-  return /* @__PURE__ */ jsx(AddLiquidityView, {
-    coins,
-    onFirstCoinSelect,
-    onSecondCoinSelect,
-    firstCoin,
-    secondCoin,
-    addLiquidity: addLiquidityHandler,
-    handleChangeFirstCoinAu,
-    handleChangeSecondCoinAu,
-    firstCoinAu,
-    secondCoinAu
-  });
-}
-const RemoveLiquidityDocument = {
-=======
-const PoolPriceInDocument = {
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
   "kind": "Document",
   "definitions": [{
     "kind": "OperationDefinition",
     "operation": "query",
     "name": {
       "kind": "Name",
-<<<<<<< HEAD
       "value": "PoolPriceIn"
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-      "value": "RemoveLiquidity"
-=======
-      "value": "PoolPriceIn"
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
     },
     "variableDefinitions": [{
       "kind": "VariableDefinition",
@@ -5756,15 +5664,7 @@ const PoolPriceInDocument = {
         "kind": "Variable",
         "name": {
           "kind": "Name",
-<<<<<<< HEAD
           "value": "poolInput"
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-          "value": "removeLiquidityInput"
-=======
-          "value": "poolInput"
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
         }
       },
       "type": {
@@ -5773,12 +5673,6 @@ const PoolPriceInDocument = {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-            "value": "RemoveLiquidityInput"
-=======
->>>>>>> ba89901 (bump ui)
             "value": "PoolInput"
           }
         }
@@ -5818,10 +5712,6 @@ const PoolPriceInDocument = {
           "name": {
             "kind": "Name",
             "value": "Float"
-<<<<<<< HEAD
-=======
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
           }
         }
       }
@@ -5832,40 +5722,18 @@ const PoolPriceInDocument = {
         "kind": "Field",
         "name": {
           "kind": "Name",
-<<<<<<< HEAD
           "value": "pool"
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-          "value": "removeLiquidity"
-=======
-          "value": "pool"
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
         },
         "arguments": [{
           "kind": "Argument",
           "name": {
             "kind": "Name",
-<<<<<<< HEAD
             "value": "poolInput"
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-            "value": "removeLiquidityInput"
-=======
-            "value": "poolInput"
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
           },
           "value": {
             "kind": "Variable",
             "name": {
               "kind": "Name",
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-              "value": "removeLiquidityInput"
-=======
->>>>>>> ba89901 (bump ui)
               "value": "poolInput"
             }
           }
@@ -6280,9 +6148,6 @@ const RlPoolPositionDocument = {
             "name": {
               "kind": "Name",
               "value": "amountX"
-<<<<<<< HEAD
-=======
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
             }
           }, {
             "kind": "Field",
@@ -6308,265 +6173,6 @@ const RlPoolPositionDocument = {
     }
   }]
 };
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.6347cb3b.js
-const RlPoolPositionDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "RLPoolPosition"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "poolInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "PoolInput"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "pool"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "poolInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "poolInput"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "coinInfoX"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "decimals"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "name"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "symbol"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "coinInfoY"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "decimals"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "name"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "symbol"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "coinInfoLP"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "decimals"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "name"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "symbol"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "position"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "owner"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }
-            }],
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountX"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountY"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountLP"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "share"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "amountX"
->>>>>>> ba89901 (bump ui)
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "amountY"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "amountLP"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "feePercent"
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-<<<<<<< HEAD
-=======
-=======
->>>>>>> ba89901 (bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.da3c6d06.js
->>>>>>> ba89901 (bump ui)
 const SwapDocument = {
   "kind": "Document",
   "definitions": [{
