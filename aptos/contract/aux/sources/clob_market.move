@@ -895,7 +895,7 @@ module aux::clob_market {
 
     public entry fun load_all_orders_into_event<B,Q>(sender: &signer) acquires Market, AllOrdersStore {
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-        if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
+        if (!exists<AllOrdersStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, AllOrdersStore<B, Q> {
                 all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
             });
