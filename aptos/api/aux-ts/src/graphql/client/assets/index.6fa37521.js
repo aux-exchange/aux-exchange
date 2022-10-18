@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
+import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.d4906bac.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -372,27 +372,27 @@ function et() {
   Ze = 1;
   var e2 = React, t2 = Symbol.for("react.element"), s2 = Symbol.for("react.fragment"), n2 = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, l = { key: true, ref: true, __self: true, __source: true };
   function c(f, d, h) {
-    var g, b = {}, v = null, C = null;
+    var m, y = {}, v = null, C = null;
     h !== void 0 && (v = "" + h), d.key !== void 0 && (v = "" + d.key), d.ref !== void 0 && (C = d.ref);
-    for (g in d)
-      n2.call(d, g) && !l.hasOwnProperty(g) && (b[g] = d[g]);
+    for (m in d)
+      n2.call(d, m) && !l.hasOwnProperty(m) && (y[m] = d[m]);
     if (f && f.defaultProps)
-      for (g in d = f.defaultProps, d)
-        b[g] === void 0 && (b[g] = d[g]);
-    return { $$typeof: t2, type: f, key: v, ref: C, props: b, _owner: o2.current };
+      for (m in d = f.defaultProps, d)
+        y[m] === void 0 && (y[m] = d[m]);
+    return { $$typeof: t2, type: f, key: v, ref: C, props: y, _owner: o2.current };
   }
   return W.Fragment = s2, W.jsx = c, W.jsxs = c, W;
 }
 (function(e2) {
   e2.exports = et();
 })(se);
-const oe = se.exports.Fragment, a = se.exports.jsx, p = se.exports.jsxs;
+const oe = se.exports.Fragment, a = se.exports.jsx, g = se.exports.jsxs;
 function tt({
   title: e2,
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -419,7 +419,7 @@ function st({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -446,7 +446,7 @@ function lt({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -473,7 +473,7 @@ function ut({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -500,7 +500,7 @@ function ht({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -527,7 +527,7 @@ function gt({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -554,7 +554,7 @@ function bt({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -581,7 +581,7 @@ function wt({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -608,7 +608,7 @@ function xt({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       fill: "none",
@@ -636,14 +636,14 @@ function or({
   variant: s2,
   details: n2
 }) {
-  const o2 = "flex self-stretch items-center bg-primary-900 h-auto p-4 z-10 border-l-4 rounded-sm text-primary-100 border-b border-y-primary-700", l = {
+  const o2 = "flex self-stretch items-center bg-primary-900 h-auto p-4 z-10 border-l-4 rounded-sm text-primary-100 border-y border-r border-y-primary-700", l = {
     basic: " border-l-secondary-400",
     success: " border-l-green-400",
     error: " border-l-red-400",
     warning: " border-l-orange-400",
     info: " border-l-blue-500"
   }, c = o2 + (s2 ? l[s2] : l.basic);
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     role: "alert",
     className: c,
     children: [s2 === "error" ? /* @__PURE__ */ a(sr, {
@@ -654,7 +654,7 @@ function or({
       className: "w-10 h-10 text-orange-400"
     }) : s2 === "info" ? /* @__PURE__ */ a(ar, {
       className: "w-10 h-10 text-secondary-400"
-    }) : null, /* @__PURE__ */ p("div", {
+    }) : null, /* @__PURE__ */ g("div", {
       className: "flex flex-col justify-between ml-3 w-full",
       children: [e2 && /* @__PURE__ */ a("div", {
         className: "text-lg font-semibold",
@@ -670,7 +670,7 @@ function or({
   });
 }
 function kt({}) {
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     role: "status",
     className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
     children: [/* @__PURE__ */ a("div", {
@@ -696,7 +696,7 @@ function kt({}) {
   });
 }
 function Xe({}) {
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     role: "status",
     className: "w-full animate-pulse px-4",
     children: [/* @__PURE__ */ a("div", {
@@ -718,10 +718,10 @@ function Xe({}) {
   });
 }
 function St({}) {
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700",
-    children: [/* @__PURE__ */ p("div", {
+    children: [/* @__PURE__ */ g("div", {
       className: "flex items-center mt-4 space-x-3",
       children: [/* @__PURE__ */ a("svg", {
         className: "w-14 h-14 text-gray-200 dark:text-gray-700",
@@ -734,7 +734,7 @@ function St({}) {
           d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z",
           "clip-rule": "evenodd"
         })
-      }), /* @__PURE__ */ p("div", {
+      }), /* @__PURE__ */ g("div", {
         children: [/* @__PURE__ */ a("div", {
           className: "h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"
         }), /* @__PURE__ */ a("div", {
@@ -748,14 +748,14 @@ function St({}) {
   });
 }
 function Ot({}) {
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-primary-200 shadow animate-pulse md:p-6 dark:border-primary-700",
     children: [/* @__PURE__ */ a("div", {
       className: "h-2.5 bg-primary-200 rounded-full dark:bg-primary-700 w-32 mb-2.5"
     }), /* @__PURE__ */ a("div", {
       className: "mb-10 w-48 h-2 bg-primary-200 rounded-full dark:bg-primary-700"
-    }), /* @__PURE__ */ p("div", {
+    }), /* @__PURE__ */ g("div", {
       className: "flex items-baseline mt-4 space-x-6",
       children: [/* @__PURE__ */ a("div", {
         className: "w-full h-72 bg-primary-200 rounded-t-lg dark:bg-primary-700"
@@ -1004,7 +1004,7 @@ function qe({
   });
 }
 function Nn() {
-  var b;
+  var y;
   const {
     removeNotification: e2,
     notifications: t2
@@ -1043,7 +1043,7 @@ function Nn() {
       };
     }
   }, [t2, e2, n2]);
-  const g = react.exports.useCallback(async (v) => {
+  const m = react.exports.useCallback(async (v) => {
     v.preventDefault(), o2 && (e2(o2), await n2.start({
       opacity: [1, 0],
       x: [0, 200],
@@ -1053,7 +1053,7 @@ function Nn() {
       }
     }), l(void 0));
   }, [n2, e2, o2]);
-  return /* @__PURE__ */ p(motion.div, {
+  return /* @__PURE__ */ g(motion.div, {
     className: c + ((o2 == null ? void 0 : o2.type) != null ? f[o2 == null ? void 0 : o2.type] : f.info),
     animate: n2,
     children: [(o2 == null ? void 0 : o2.type) === L.error ? /* @__PURE__ */ a(sr, {
@@ -1064,9 +1064,9 @@ function Nn() {
       className: "w-10 h-10 text-orange-400"
     }) : (o2 == null ? void 0 : o2.type) === L.info ? /* @__PURE__ */ a(ar, {
       className: "w-10 h-10 text-secondary-400"
-    }) : null, /* @__PURE__ */ p("div", {
+    }) : null, /* @__PURE__ */ g("div", {
       className: "flex flex-col ml-3 w-full",
-      children: [/* @__PURE__ */ p("div", {
+      children: [/* @__PURE__ */ g("div", {
         className: "flex items-center justify-between text-lg font-semibold",
         children: [/* @__PURE__ */ a("div", {
           className: "mr-auto",
@@ -1075,7 +1075,7 @@ function Nn() {
           size: "xs",
           variant: "basic",
           className: "border-0 bg-none",
-          onClick: g,
+          onClick: m,
           children: /* @__PURE__ */ a(Rt, {
             className: "w-4 h-4"
           })
@@ -1084,7 +1084,7 @@ function Nn() {
         className: "text-white",
         children: o2 == null ? void 0 : o2.message
       }), /* @__PURE__ */ a("div", {
-        children: (b = o2 == null ? void 0 : o2.actions) == null ? void 0 : b.map((v, C) => /* @__PURE__ */ a(qe, {
+        children: (y = o2 == null ? void 0 : o2.actions) == null ? void 0 : y.map((v, C) => /* @__PURE__ */ a(qe, {
           ...v
         }, C))
       })]
@@ -1117,7 +1117,7 @@ function ie({
 }
 const At = ({
   size: e2
-}) => /* @__PURE__ */ p("svg", {
+}) => /* @__PURE__ */ g("svg", {
   width: e2,
   height: e2,
   baseProfile: "tiny",
@@ -1140,7 +1140,7 @@ const At = ({
   viewBox: "0 0 32 32",
   height: e2,
   width: e2,
-  children: /* @__PURE__ */ p("g", {
+  children: /* @__PURE__ */ g("g", {
     fill: "none",
     fillRule: "evenodd",
     children: [/* @__PURE__ */ a("circle", {
@@ -1161,7 +1161,7 @@ const At = ({
   viewBox: "0 0 32 32",
   width: e2,
   height: e2,
-  children: /* @__PURE__ */ p("g", {
+  children: /* @__PURE__ */ g("g", {
     fill: "none",
     fillRule: "evenodd",
     children: [/* @__PURE__ */ a("circle", {
@@ -1169,7 +1169,7 @@ const At = ({
       cy: "16",
       r: "16",
       fill: "#627EEA"
-    }), /* @__PURE__ */ p("g", {
+    }), /* @__PURE__ */ g("g", {
       fill: "#FFF",
       fillRule: "nonzero",
       children: [/* @__PURE__ */ a("path", {
@@ -1198,7 +1198,7 @@ const At = ({
   height: e2,
   viewBox: "0 0 32 32",
   xmlns: "http://www.w3.org/2000/svg",
-  children: /* @__PURE__ */ p("g", {
+  children: /* @__PURE__ */ g("g", {
     fill: "none",
     children: [/* @__PURE__ */ a("circle", {
       fill: "#66F9A1",
@@ -1217,14 +1217,14 @@ const At = ({
   height: e2,
   viewBox: "0 0 32 32",
   xmlns: "http://www.w3.org/2000/svg",
-  children: /* @__PURE__ */ p("g", {
+  children: /* @__PURE__ */ g("g", {
     fill: "none",
     children: [/* @__PURE__ */ a("circle", {
       fill: "#3E73C4",
       cx: "16",
       cy: "16",
       r: "16"
-    }), /* @__PURE__ */ p("g", {
+    }), /* @__PURE__ */ g("g", {
       fill: "#FFF",
       children: [/* @__PURE__ */ a("path", {
         d: "M20.022 18.124c0-2.124-1.28-2.852-3.84-3.156-1.828-.243-2.193-.728-2.193-1.578 0-.85.61-1.396 1.828-1.396 1.097 0 1.707.364 2.011 1.275a.458.458 0 00.427.303h.975a.416.416 0 00.427-.425v-.06a3.04 3.04 0 00-2.743-2.489V9.142c0-.243-.183-.425-.487-.486h-.915c-.243 0-.426.182-.487.486v1.396c-1.829.242-2.986 1.456-2.986 2.974 0 2.002 1.218 2.791 3.778 3.095 1.707.303 2.255.668 2.255 1.639 0 .97-.853 1.638-2.011 1.638-1.585 0-2.133-.667-2.316-1.578-.06-.242-.244-.364-.427-.364h-1.036a.416.416 0 00-.426.425v.06c.243 1.518 1.219 2.61 3.23 2.914v1.457c0 .242.183.425.487.485h.915c.243 0 .426-.182.487-.485V21.34c1.829-.303 3.047-1.578 3.047-3.217z"
@@ -1240,7 +1240,7 @@ const At = ({
   viewBox: "0 0 32 32",
   width: e2,
   height: e2,
-  children: /* @__PURE__ */ p("g", {
+  children: /* @__PURE__ */ g("g", {
     fill: "none",
     fillRule: "evenodd",
     children: [/* @__PURE__ */ a("circle", {
@@ -1255,7 +1255,7 @@ const At = ({
   })
 }), Yt = ({
   size: e2
-}) => /* @__PURE__ */ p("svg", {
+}) => /* @__PURE__ */ g("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 32 32",
   height: e2,
@@ -1306,7 +1306,7 @@ const At = ({
   })
 }), Kt = ({
   size: e2
-}) => /* @__PURE__ */ p("svg", {
+}) => /* @__PURE__ */ g("svg", {
   width: e2,
   height: e2,
   viewBox: "0 0 510 510",
@@ -1430,8 +1430,8 @@ function Mn({
         return "py-1 px-2 text-md";
     }
   }, d = (() => {
-    const h = "font-semibold rounded shadow-sm", g = c(), b = l();
-    return `${h} ${g} ${b} ${t2 != null ? t2 : ""}`;
+    const h = "font-semibold rounded shadow-sm", m = c(), y = l();
+    return `${h} ${m} ${y} ${t2 != null ? t2 : ""}`;
   })();
   return /* @__PURE__ */ a("span", {
     onClick: o2,
@@ -1448,13 +1448,13 @@ function qt({
     const l = "inline-flex items-center font-bold text-xs";
     return s2 && s2 === "up" ? `${l} text-green-400` : s2 && s2 === "down" ? `${l} text-red-400` : `${l} text-primary-400`;
   })();
-  return /* @__PURE__ */ p("div", {
+  return /* @__PURE__ */ g("div", {
     className: o2,
     children: [s2 && s2 === "up" ? /* @__PURE__ */ a(it, {
       className: "w-[14px] h-[14px] mr-1"
     }) : s2 && s2 === "down" ? /* @__PURE__ */ a(at, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : null, t2 && /* @__PURE__ */ p("div", {
+    }) : null, t2 && /* @__PURE__ */ g("div", {
       className: "mr-2",
       children: [t2, "%"]
     }), e2 && /* @__PURE__ */ a("div", {
@@ -1481,12 +1481,12 @@ function Pn({
       default:
         return "";
     }
-  }, g = (() => {
-    const b = "p-3 rounded-lg", v = d();
-    return `${b} ${v} ${c != null ? c : ""}`;
+  }, m = (() => {
+    const y = "p-3 rounded-lg", v = d();
+    return `${y} ${v} ${c != null ? c : ""}`;
   })();
-  return /* @__PURE__ */ p("div", {
-    className: g,
+  return /* @__PURE__ */ g("div", {
+    className: m,
     onClick: f,
     children: [/* @__PURE__ */ a(ie, {
       children: e2
@@ -1510,28 +1510,29 @@ function $n({
   suffix: c,
   className: f,
   inputClass: d,
-  autoFocus: h = false
+  autoFocus: h = false,
+  ...m
 }) {
-  const b = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${l ? "pl-7" : ""} ${c ? "pr-12" : ""} ${d}`)();
-  return /* @__PURE__ */ p("div", {
+  const v = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${l ? "pl-7" : ""} ${c ? "pr-12" : ""} ${d}`)();
+  return /* @__PURE__ */ g("div", {
     className: f,
     children: [o2 && /* @__PURE__ */ a(ie, {
       htmlFor: s2,
       children: o2
-    }), /* @__PURE__ */ p("div", {
+    }), /* @__PURE__ */ g("div", {
       className: "relative rounded-md shadow-sm ",
       children: [/* @__PURE__ */ a("div", {
         className: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
         children: l
       }), /* @__PURE__ */ a("input", {
         autoFocus: h,
-        type: "text",
         name: s2,
         id: s2,
         value: e2,
         placeholder: n2,
         onChange: t2,
-        className: b
+        className: v,
+        ...m
       }), /* @__PURE__ */ a("div", {
         className: "absolute inset-y-0 right-3 flex items-center text-gray-300",
         children: c
@@ -1669,14 +1670,14 @@ const Vn = react.exports.forwardRef(function({
     closeModal() {
       l(false);
     }
-  }), [o2]), /* @__PURE__ */ p(oe, {
+  }), [o2]), /* @__PURE__ */ g(oe, {
     children: [s2 ? /* @__PURE__ */ a("div", {
       onClick: () => l(true),
       children: s2
     }) : null, /* @__PURE__ */ a(We.Root, {
       show: o2,
       as: react.exports.Fragment,
-      children: /* @__PURE__ */ p(gt$1, {
+      children: /* @__PURE__ */ g(gt$1, {
         as: "div",
         className: "relative z-10",
         initialFocus: c,
@@ -1741,20 +1742,20 @@ function re(e2, t2, s2) {
     let l;
     s2.key && s2.debug != null && s2.debug() && (l = Date.now());
     const c = e2();
-    if (!(c.length !== n2.length || c.some((h, g) => n2[g] !== h)))
+    if (!(c.length !== n2.length || c.some((h, m) => n2[m] !== h)))
       return o2;
     n2 = c;
     let d;
     if (s2.key && s2.debug != null && s2.debug() && (d = Date.now()), o2 = t2(...c), s2 == null || s2.onChange == null || s2.onChange(o2), s2.key && s2.debug != null && s2.debug()) {
-      const h = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - d) * 100) / 100, b = g / 16, v = (C, O) => {
+      const h = Math.round((Date.now() - l) * 100) / 100, m = Math.round((Date.now() - d) * 100) / 100, y = m / 16, v = (C, O) => {
         for (C = String(C); C.length < O; )
           C = " " + C;
         return C;
       };
-      console.info("%c\u23F1 " + v(g, 5) + " /" + v(h, 5) + " ms", `
+      console.info("%c\u23F1 " + v(m, 5) + " /" + v(h, 5) + " ms", `
             font-size: .6rem;
             font-weight: bold;
-            color: hsl(` + Math.max(0, Math.min(120 - 120 * b, 120)) + "deg 100% 31%);", s2 == null ? void 0 : s2.key);
+            color: hsl(` + Math.max(0, Math.min(120 - 120 * y, 120)) + "deg 100% 31%);", s2 == null ? void 0 : s2.key);
     }
     return o2;
   };
@@ -1789,8 +1790,8 @@ const Qt = (e2) => e2, en = (e2) => {
   };
   f();
   const d = (h) => {
-    const g = h.currentTarget, b = g[n2], v = g[o2];
-    (t2.options.horizontal ? l - b : c - v) && f(), l = b, c = v;
+    const m = h.currentTarget, y = m[n2], v = m[o2];
+    (t2.options.horizontal ? l - y : c - v) && f(), l = y, c = v;
   };
   return t2.scrollElement.addEventListener("scroll", d, {
     capture: false,
@@ -1855,13 +1856,13 @@ class on {
       this.pendingMeasuredCacheIndexes = [];
       const d = this.measurementsCache.slice(0, f);
       for (let h = f; h < n2; h++) {
-        const g = l(h), b = c[g], v = d[h - 1] ? d[h - 1].end : o2, C = typeof b == "number" ? b : this.options.estimateSize(h), O = v + C;
+        const m = l(h), y = c[m], v = d[h - 1] ? d[h - 1].end : o2, C = typeof y == "number" ? y : this.options.estimateSize(h), O = v + C;
         d[h] = {
           index: h,
           start: v,
           size: C,
           end: O,
-          key: g
+          key: m
         };
       }
       return this.measurementsCache = d, d;
@@ -1886,20 +1887,20 @@ class on {
       key: false,
       debug: () => this.options.debug
     }), this.getVirtualItems = re(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (n2, o2, l) => {
-      const c = (g) => (b) => {
+      const c = (m) => (y) => {
         var v;
-        const C = this.measurementsCache[g];
-        if (!b)
+        const C = this.measurementsCache[m];
+        if (!y)
           return;
-        const O = l(b, this), j = (v = this.itemMeasurementsCache[C.key]) != null ? v : C.size;
-        O !== j && (C.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (O - j), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
+        const O = l(y, this), j = (v = this.itemMeasurementsCache[C.key]) != null ? v : C.size;
+        O !== j && (C.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (O - j), false)), this.pendingMeasuredCacheIndexes.push(m), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
           [C.key]: O
         }, this.notify());
       }, f = [], d = {};
-      for (let g = 0, b = n2.length; g < b; g++) {
+      for (let m = 0, y = n2.length; m < y; m++) {
         var h;
-        const v = n2[g], O = {
+        const v = n2[m], O = {
           ...o2[v],
           measureElement: d[v] = (h = this.measureElementCache[v]) != null ? h : c(v)
         };
@@ -1922,13 +1923,13 @@ class on {
         smoothScroll: c = s2.options.enableSmoothScroll,
         ...f
       } = o2 === void 0 ? {} : o2;
-      const d = s2.getMeasurements(), h = s2.scrollOffset, g = s2.getSize(), {
-        count: b
-      } = s2.options, v = d[Math.max(0, Math.min(n2, b - 1))];
+      const d = s2.getMeasurements(), h = s2.scrollOffset, m = s2.getSize(), {
+        count: y
+      } = s2.options, v = d[Math.max(0, Math.min(n2, y - 1))];
       if (!v)
         return;
       if (l === "auto")
-        if (v.end >= h + g - s2.options.scrollPaddingEnd)
+        if (v.end >= h + m - s2.options.scrollPaddingEnd)
           l = "end";
         else if (v.start <= h + s2.options.scrollPaddingStart)
           l = "start";
@@ -2014,7 +2015,7 @@ function hn({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       viewBox: "0 0 24 24",
@@ -2039,7 +2040,7 @@ function gn({
   titleId: t2,
   ...s2
 }, n2) {
-  return /* @__PURE__ */ p("svg", {
+  return /* @__PURE__ */ g("svg", {
     ...Object.assign({
       xmlns: "http://www.w3.org/2000/svg",
       viewBox: "0 0 24 24",
@@ -2069,7 +2070,7 @@ function An({
   error: c,
   noData: f
 }) {
-  const [d, h] = react.exports.useState([]), g = useReactTable({
+  const [d, h] = react.exports.useState([]), m = useReactTable({
     columns: t2,
     data: e2,
     getCoreRowModel: getCoreRowModel(),
@@ -2078,10 +2079,10 @@ function An({
     state: {
       sorting: d
     }
-  }), b = react.exports.useRef(null), {
+  }), y = react.exports.useRef(null), {
     rows: v
-  } = g.getRowModel(), C = fn(n2 != null ? n2 : {
-    getScrollElement: () => b.current,
+  } = m.getRowModel(), C = fn(n2 != null ? n2 : {
+    getScrollElement: () => y.current,
     count: v.length,
     estimateSize: () => v.length,
     overscan: 10
@@ -2097,15 +2098,15 @@ function An({
       message: "Uh Oh. Please try again.",
       variant: "error",
       details: c
-    }) : e2.length === 0 && f ? f : e2.length === 0 ? null : /* @__PURE__ */ p("table", {
+    }) : e2.length === 0 && f ? f : e2.length === 0 ? null : /* @__PURE__ */ g("table", {
       className: `border-collapse table-auto max-w-full w-full text-sm capitalize relative ${o2}`,
-      ref: b,
+      ref: y,
       children: [/* @__PURE__ */ a("thead", {
-        children: g.getHeaderGroups().map((P) => /* @__PURE__ */ a("tr", {
+        children: m.getHeaderGroups().map((P) => /* @__PURE__ */ a("tr", {
           children: P.headers.map((R) => /* @__PURE__ */ a("th", {
             onClick: R.column.getToggleSortingHandler(),
             className: "border-b dark:border-primary-600 font-medium pr-2 pl-4 pt-3 pb-3 text-primary-400 dark:text-primary-200 text-left",
-            children: /* @__PURE__ */ p(ie, {
+            children: /* @__PURE__ */ g(ie, {
               className: "mb-0",
               children: [flexRender(R.column.columnDef.header, R.getContext()), R.column.getIsSorted() ? R.column.getIsSorted() === "desc" ? /* @__PURE__ */ a("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
@@ -3930,6 +3931,7 @@ function useOpenOrdersTable() {
           const idx = cell.row.index;
           const cellValue = (_c2 = (_b2 = (_a2 = orders.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.openOrders) == null ? void 0 : _c2[idx];
           const onCancelOrder = async () => {
+            var _a3;
             const tx = await cancelOrder({
               variables: {
                 cancelOrderInput: {
@@ -3942,7 +3944,7 @@ function useOpenOrdersTable() {
                 }
               }
             });
-            wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx);
+            await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a3 = tx.data) == null ? void 0 : _a3.cancelOrder));
           };
           return /* @__PURE__ */ jsx("button", {
             onClick: onCancelOrder,
@@ -4233,6 +4235,7 @@ function DepositView({}) {
   const [coin, selectCoin] = react.exports.useState();
   return /* @__PURE__ */ jsx(Vn, {
     trigger: /* @__PURE__ */ jsx(qe, {
+      size: "sm",
       onClick: () => {
       },
       children: "Deposit"
@@ -4460,15 +4463,13 @@ function MarketListItem({
           className: "text-xl font-medium text-white mb-1",
           children: market.name
         }), /* @__PURE__ */ jsx("div", {
-          className: "text-xs font-bold text-primary-400 uppercase",
-          children: "Vol: Unavailable"
+          className: "text-xs font-bold text-primary-400 uppercase"
         })]
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col items-center text-right",
       children: [/* @__PURE__ */ jsx("div", {
-        className: "text-xl text-primary-200 mb-1",
-        children: "42"
+        className: "text-xl text-primary-200 mb-1"
       }), /* @__PURE__ */ jsx("div", {
         className: metaClasses
       })]
@@ -4618,10 +4619,10 @@ const CoinXYParamCtxProvider = ({
   const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
   const defaultCoinX = (_c = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("btc"))) == null ? void 0 : _c.coinType;
+  }) => coinType.toLowerCase().match("eth"))) == null ? void 0 : _c.coinType;
   const defaultCoinY = (_d = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("usd"))) == null ? void 0 : _d.coinType;
+  }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _d.coinType;
   const coinx = (_e = params.get("coinx")) != null ? _e : defaultCoinX;
   const coiny = (_f = params.get("coiny")) != null ? _f : defaultCoinY;
   const [firstCoin, setFirstCoin] = react.exports.useState(null);
@@ -5817,6 +5818,7 @@ function AddLiquidityContainer({}) {
   });
   const conversionIn = (_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0;
   const conversionOut = (_f = (_e = (_d = secondCoinPrice.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.priceIn) != null ? _f : 0;
+  const notifications = Lt();
   async function addLiquidityHandler() {
     return await addLiquidity({
       variables: {
@@ -5831,8 +5833,22 @@ function AddLiquidityContainer({}) {
       }
     }).then(async (res) => {
       var _a2;
-      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = res.data) == null ? void 0 : _a2.addLiquidity));
-    }).finally(() => navigate("/pools"));
+      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = res.data) == null ? void 0 : _a2.addLiquidity).then(() => {
+        notifications.addNotification({
+          title: "Success",
+          message: "Successfully added liquidity",
+          type: "success"
+        });
+      }).catch((e2) => notifications.addNotification({
+        title: "Error",
+        message: "Error adding liquidity",
+        type: "error"
+      })));
+    }).catch((e2) => notifications.addNotification({
+      title: "Error",
+      message: "Error adding liquidity",
+      type: "error"
+    })).finally(() => navigate("/pools"));
   }
   const handleChangeSecondCoinAu = (e2) => {
     const v = Number(e2.currentTarget.value);
@@ -6353,7 +6369,7 @@ function RemoveLiquidityView({
   });
 }
 function RemoveLiquidityContainer({}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n2, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x, _y, _z;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n2, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H;
   const navigate = useNavigate();
   const [removeLiquidityMutation, removeLiquidityResult] = useMutation(RemoveLiquidityDocument);
   const [wallet, , connection] = useWallet();
@@ -6372,21 +6388,29 @@ function RemoveLiquidityContainer({}) {
     },
     skip: !firstCoin
   });
-  const firstCoinRelativePriceQuery = useLastTradePrice([{
-    baseCoinType: (_e = (_d = (_c = poolQuery.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.coinInfoX.coinType) != null ? _e : "",
-    quoteCoinType: (_h = (_g = (_f = poolQuery.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.coinInfoY.coinType) != null ? _h : ""
-  }]);
-  const secondCoinRelativePriceQuery = useLastTradePrice([{
-    baseCoinType: (_k = (_j = (_i = poolQuery.data) == null ? void 0 : _i.pool) == null ? void 0 : _j.coinInfoY.coinType) != null ? _k : "",
-    quoteCoinType: (_n2 = (_m = (_l = poolQuery.data) == null ? void 0 : _l.pool) == null ? void 0 : _m.coinInfoX.coinType) != null ? _n2 : ""
-  }]);
+  const firstCoinRelativePriceQuery = usePoolPriceIn({
+    amount: 1,
+    coinTypeIn: (_e = (_d = (_c = poolQuery.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.coinInfoX.coinType) != null ? _e : "",
+    poolInput: {
+      coinTypeX: (_h = (_g = (_f = poolQuery.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.coinInfoX.coinType) != null ? _h : "",
+      coinTypeY: (_k = (_j = (_i = poolQuery.data) == null ? void 0 : _i.pool) == null ? void 0 : _j.coinInfoY.coinType) != null ? _k : ""
+    }
+  });
+  const secondCoinRelativePriceQuery = usePoolPriceIn({
+    amount: 1,
+    coinTypeIn: (_n2 = (_m = (_l = poolQuery.data) == null ? void 0 : _l.pool) == null ? void 0 : _m.coinInfoY.coinType) != null ? _n2 : "",
+    poolInput: {
+      coinTypeX: (_q = (_p = (_o = poolQuery.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.coinInfoX.coinType) != null ? _q : "",
+      coinTypeY: (_t2 = (_s = (_r = poolQuery.data) == null ? void 0 : _r.pool) == null ? void 0 : _s.coinInfoY.coinType) != null ? _t2 : ""
+    }
+  });
   const [pctVal, setPctVal] = react.exports.useState(0);
   const handleRemoveLiquidity = react.exports.useCallback(async function handleRemoveLiquidity2() {
-    var _a2;
+    var _a2, _b2, _c2, _d2, _e2;
     const res = await removeLiquidityMutation({
       variables: {
         removeLiquidityInput: {
-          amountLP: pctVal,
+          amountLP: pctVal / 100 * ((_d2 = (_c2 = (_b2 = (_a2 = poolQuery.data) == null ? void 0 : _a2.pool) == null ? void 0 : _b2.position) == null ? void 0 : _c2.amountLP) != null ? _d2 : 0),
           poolInput: {
             coinTypeX: firstCoin.coinType,
             coinTypeY: secondCoin.coinType
@@ -6394,16 +6418,18 @@ function RemoveLiquidityContainer({}) {
         }
       }
     });
-    const tx = (_a2 = res.data) == null ? void 0 : _a2.removeLiquidity;
+    const tx = (_e2 = res.data) == null ? void 0 : _e2.removeLiquidity;
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
     navigate("/pools");
   }, [firstCoin, secondCoin, pctVal, navigate, removeLiquidityMutation, wallet]);
+  const firstCoinAmount = ((_x = (_w = (_v = (_u = poolQuery.data) == null ? void 0 : _u.pool) == null ? void 0 : _v.position) == null ? void 0 : _w.amountX) != null ? _x : 1e3) * (pctVal / 100);
+  const secondCoinAmount = ((_B = (_A = (_z = (_y = poolQuery.data) == null ? void 0 : _y.pool) == null ? void 0 : _z.position) == null ? void 0 : _A.amountY) != null ? _B : 1e3) * (pctVal / 100);
   return /* @__PURE__ */ jsx(RemoveLiquidityView, {
     firstCoin,
-    firstCoinAmount: (_r = (_q = (_p = (_o = poolQuery.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.position) == null ? void 0 : _q.amountX) != null ? _r : 0,
-    firstCoinRelativePrice: (_t2 = (_s = firstCoinRelativePriceQuery.data) == null ? void 0 : _s.lastTradePrice) != null ? _t2 : 0,
-    secondCoinRelativePrice: (_v = (_u = secondCoinRelativePriceQuery.data) == null ? void 0 : _u.lastTradePrice) != null ? _v : 0,
-    secondCoinAmount: (_z = (_y = (_x = (_w = poolQuery.data) == null ? void 0 : _w.pool) == null ? void 0 : _x.position) == null ? void 0 : _y.amountY) != null ? _z : 0,
+    firstCoinAmount,
+    firstCoinRelativePrice: (_E = (_D = (_C = firstCoinRelativePriceQuery.data) == null ? void 0 : _C.pool) == null ? void 0 : _D.priceIn) != null ? _E : 0,
+    secondCoinRelativePrice: (_H = (_G = (_F = secondCoinRelativePriceQuery.data) == null ? void 0 : _F.pool) == null ? void 0 : _G.priceIn) != null ? _H : 0,
+    secondCoinAmount,
     goBackToPools: () => navigate("/pools"),
     handleRemoveLiquidity,
     pctVal,
@@ -8604,21 +8630,18 @@ function useTradeControls() {
   const onChangePrice = react.exports.useCallback((e2) => {
     setPrice(Number(e2.currentTarget.value));
   }, []);
-  const onChangeCxAmount = react.exports.useCallback((e2) => {
-    setCxAmount(Number(e2.currentTarget.value));
-  }, []);
-  const onChangeCyAmount = react.exports.useCallback((e2) => {
-    setCyAmount(Number(e2.currentTarget.value));
-  }, []);
+  const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(Number(e2.currentTarget.value)), []);
+  const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(Number(e2.currentTarget.value)), []);
   const [placeOrderMutation] = useMutation(PlaceOrderDocument);
   const [wallet, , connection] = useWallet();
   const placeOrder = async (placeOrderInput) => {
+    var _a2;
     const tx = await placeOrderMutation({
       variables: {
         placeOrderInput
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = tx.data) == null ? void 0 : _a2.placeOrder));
   };
   const {
     addNotification
@@ -8705,14 +8728,9 @@ function TradingForm() {
     setMax
   } = useTradeControls();
   useWallet();
-  Object.entries(OrderType).map(([key, val]) => ({
-    value: val,
-    label: key
-  }));
   const {
     firstCoin,
-    secondCoin,
-    lastTradePrice
+    secondCoin
   } = useCoinXYParamState();
   const tabs = [{
     label: "Buy",
@@ -8736,7 +8754,12 @@ function TradingForm() {
         onChange: onChangePrice,
         name: "price",
         label: "Price",
-        suffix: secondCoin == null ? void 0 : secondCoin.symbol
+        suffix: /* @__PURE__ */ jsx("div", {
+          className: "mr-[60px]",
+          children: secondCoin == null ? void 0 : secondCoin.symbol
+        }),
+        inputMode: "decimal",
+        type: "number"
       })
     }), /* @__PURE__ */ jsxs("div", {
       children: [/* @__PURE__ */ jsx($n, {
@@ -8744,8 +8767,13 @@ function TradingForm() {
         onChange: onChangeCxAmount,
         name: "coinx",
         label: "Amount",
-        suffix: firstCoin == null ? void 0 : firstCoin.symbol,
-        className: "w-full"
+        suffix: /* @__PURE__ */ jsx("div", {
+          className: "mr-[60px]",
+          children: firstCoin == null ? void 0 : firstCoin.symbol
+        }),
+        className: "w-full",
+        inputMode: "decimal",
+        type: "number"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex w-full gap-2 pt-2",
         children: [/* @__PURE__ */ jsx(qe, {
@@ -8809,7 +8837,7 @@ function TradingForm() {
           children: "Fee"
         }), /* @__PURE__ */ jsx("div", {
           className: "font-semibold",
-          children: "12.345"
+          children: "Zero! \u263A"
         })]
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex justify-between text-lg border-t border-t-primary-700 pt-3",
@@ -9369,7 +9397,7 @@ function SwapPanel({
         min: "0",
         type: "text",
         onChange,
-        value: disabled ? value.toFixed(coin == null ? void 0 : coin.decimals) : value,
+        value: Number(value.toFixed(coin == null ? void 0 : coin.decimals)),
         className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
         placeholder: "0.00"
       })]
@@ -9439,6 +9467,7 @@ function SwapFormContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
+  const notifications = Lt();
   const [value, setValue] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
     amount: value,
@@ -9474,7 +9503,17 @@ function SwapFormContainer({}) {
         }
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap));
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap).then(() => notifications.addNotification({
+      title: "Succes",
+      type: "success",
+      message: "Swap successful"
+    })).catch((err) => {
+      notifications.addNotification({
+        title: "Error",
+        type: "error",
+        message: "Swap unsuccessful"
+      });
+    }));
   }, [firstCoin, secondCoin, value, conversion, wallet, swapMutation]);
   const onSelectPrimary = (c) => {
     onFirstCoinSelect(c);
@@ -9518,44 +9557,47 @@ const BLACK_LIST = ["IR", "KP", "BY", "MM", "CI", "CU", "CD", "IQ", "LR", "SY", 
 function App() {
   const location = useGeoLocation();
   const country = location.country;
-  return /* @__PURE__ */ jsx(ApolloProvider, {
-    client,
-    children: /* @__PURE__ */ jsx(WalletProvider, {
-      children: /* @__PURE__ */ jsx(BrowserRouter, {
-        children: /* @__PURE__ */ jsxs("div", {
-          className: "flex flex-col h-full w-full",
-          children: [/* @__PURE__ */ jsx(Nn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
-            className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
-            children: ["Sorry we do not support ", country, " at this time."]
-          }) : /* @__PURE__ */ jsx("div", {
-            className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw]",
-            children: /* @__PURE__ */ jsx(CoinXYParamCtxProvider, {
-              children: /* @__PURE__ */ jsxs(Routes, {
-                children: [/* @__PURE__ */ jsx(Route, {
-                  path: "/",
-                  element: /* @__PURE__ */ jsx(SwapFormContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/add-liquidity",
-                  element: /* @__PURE__ */ jsx(AddLiquidityContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/remove-liquidity",
-                  element: /* @__PURE__ */ jsx(RemoveLiquidityContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/pools",
-                  element: /* @__PURE__ */ jsx(PoolsContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/pool",
-                  element: /* @__PURE__ */ jsx(PoolContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/trade",
-                  element: /* @__PURE__ */ jsx(TradeContainer, {})
-                }), /* @__PURE__ */ jsx(Route, {
-                  path: "/portfolio",
-                  element: /* @__PURE__ */ jsx(PortfolioContainer, {})
-                })]
+  return /* @__PURE__ */ jsx("div", {
+    className: "dark w-full h-full",
+    children: /* @__PURE__ */ jsx(ApolloProvider, {
+      client,
+      children: /* @__PURE__ */ jsx(WalletProvider, {
+        children: /* @__PURE__ */ jsx(BrowserRouter, {
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex flex-col h-full w-full",
+            children: [/* @__PURE__ */ jsx(Nn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
+              className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
+              children: ["Sorry we do not support ", country, " at this time."]
+            }) : /* @__PURE__ */ jsx("div", {
+              className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw]",
+              children: /* @__PURE__ */ jsx(CoinXYParamCtxProvider, {
+                children: /* @__PURE__ */ jsxs(Routes, {
+                  children: [/* @__PURE__ */ jsx(Route, {
+                    path: "/",
+                    element: /* @__PURE__ */ jsx(SwapFormContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/add-liquidity",
+                    element: /* @__PURE__ */ jsx(AddLiquidityContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/remove-liquidity",
+                    element: /* @__PURE__ */ jsx(RemoveLiquidityContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/pools",
+                    element: /* @__PURE__ */ jsx(PoolsContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/pool",
+                    element: /* @__PURE__ */ jsx(PoolContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/trade",
+                    element: /* @__PURE__ */ jsx(TradeContainer, {})
+                  }), /* @__PURE__ */ jsx(Route, {
+                    path: "/portfolio",
+                    element: /* @__PURE__ */ jsx(PortfolioContainer, {})
+                  })]
+                })
               })
-            })
-          })]
+            })]
+          })
         })
       })
     })
