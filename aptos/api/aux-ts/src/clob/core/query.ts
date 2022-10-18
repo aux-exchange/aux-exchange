@@ -1,4 +1,4 @@
-import { HexString, Types } from "aptos";
+import { AptosAccount, HexString, Types } from "aptos";
 import BN from "bn.js";
 import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
@@ -114,8 +114,6 @@ export interface Market {
   type: Types.MoveStructTag;
   baseCoinInfo: CoinInfo;
   quoteCoinInfo: CoinInfo;
-  bids: Level[];
-  asks: Level[];
   l2: L2;
 }
 
@@ -265,8 +263,6 @@ export async function market(
     quoteDecimals: rawMarket.data.quote_decimals,
     lotSize: new AtomicUnits(rawMarket.data.lot_size),
     tickSize,
-    bids: [],
-    asks: [],
     l2: {
       bids,
       asks,
@@ -274,17 +270,12 @@ export async function market(
   };
 }
 
-export async function allOrders(
+export async function orderbook(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
-  quoteCoinType: Types.MoveStructTag
+  quoteCoinType: Types.MoveStructTag,
+  simulatorAccount?: AptosAccount
 ): Promise<{ bids: Level[]; asks: Level[] }> {
-  // const type = `${auxClient.moduleAddress}::clob_market::Market<${baseCoinType}, ${quoteCoinType}>`;
-  // const [baseCoinInfo, quoteCoinInfo] = await Promise.all([
-  //   auxClient.getCoinInfo(baseCoinType),
-  //   auxClient.getCoinInfo(quoteCoinType),
-  // ]);
-
   const payload = {
     function: `${auxClient.moduleAddress}::clob_market::load_all_orders_into_event`,
     type_arguments: [baseCoinType, quoteCoinType],
@@ -292,6 +283,7 @@ export async function allOrders(
   };
   const txResult = await auxClient.dataSimulate({
     payload,
+    simulatorAccount,
   });
   const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
   const bids: Level[] = event.data.bids.map((level) => {

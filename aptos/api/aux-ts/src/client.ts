@@ -316,9 +316,11 @@ export class AuxClient {
    */
   async dataSimulate({
     payload,
+    simulatorAccount,
     transactionOptions,
   }: {
     payload: Types.EntryFunctionPayload;
+    simulatorAccount?: AptosAccount | undefined;
     transactionOptions?: TransactionOptions | undefined;
   }): Promise<Types.UserTransaction> {
     transactionOptions =
@@ -339,13 +341,15 @@ export class AuxClient {
     );
 
     const rawTxn = await this.aptosClient.generateTransaction(
-      this.simulatorAddress!,
+      simulatorAccount?.address.toString() || this.simulatorAddress!,
       payload,
       options
     );
 
     const simTxn = await this.aptosClient.simulateTransaction(
-      this.simulatorPublicKey!,
+      !!simulatorAccount
+        ? mustEd25519PublicKey(simulatorAccount.pubKey.toString())
+        : this.simulatorPublicKey!,
       rawTxn,
       {
         estimateGasUnitPrice: true,
