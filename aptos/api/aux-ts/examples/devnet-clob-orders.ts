@@ -5,15 +5,16 @@ import { AptosAccount } from "aptos";
 import { assert } from "console";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { AU, DU, Market, Vault } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient, FakeCoin } from "../src/client";
 
 async function main() {
-  const auxClient = AuxClient.create({
-    network: Network.Devnet,
-    // We highly recommend running a local node and connecting to it rather than
-    // hitting the devnet node.
-    // validatorAddress: "http://localhost:8080",
-  });
+  const auxClient = AuxClient.createFromEnv({});
+  // const auxClient = AuxClient.create({
+  //   network: Network.Devnet,
+  //   // We highly recommend running a local node and connecting to it rather than
+  //   // hitting the devnet node.
+  //   // validatorAddress: "http://localhost:8080",
+  // });
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.
