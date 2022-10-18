@@ -5,15 +5,16 @@ import { AptosAccount } from "aptos";
 import { assert } from "console";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { AU, DU, Market, Vault } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient, FakeCoin } from "../src/client";
 
 async function main() {
-  const auxClient = AuxClient.create({
-    network: Network.Devnet,
-    // We highly recommend running a local node and connecting to it rather than
-    // hitting the devnet node.
-    // validatorAddress: "http://localhost:8080",
-  });
+  const auxClient = AuxClient.createFromEnv({});
+  // const auxClient = AuxClient.create({
+  //   network: Network.Devnet,
+  //   // We highly recommend running a local node and connecting to it rather than
+  //   // hitting the devnet node.
+  //   // validatorAddress: "http://localhost:8080",
+  // });
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.
@@ -63,12 +64,8 @@ async function main() {
   await market.update();
 
   // Demo some orders around midpoint.
-  const maybeBid = market.bids[0]?.price
-    ?.toDecimalUnits(market.quoteCoinInfo.decimals)
-    .toNumber();
-  const maybeAsk = market.asks[0]?.price
-    ?.toDecimalUnits(market.quoteCoinInfo.decimals)
-    .toNumber();
+  const maybeBid = market.l2.bids[0]?.price.toNumber();
+  const maybeAsk = market.l2.asks[0]?.price.toNumber();
 
   const midpoint =
     maybeBid !== undefined && maybeAsk !== undefined
@@ -232,6 +229,9 @@ async function main() {
     directionAggressive: false,
     ticksToSlide: "2",
   });
+
+  const book = await market.orderbook();
+  console.dir(book, { depth: null });
 
   // Withdraw all money from the vault. We won't be able to trade the CLOB until
   // we deposit again.

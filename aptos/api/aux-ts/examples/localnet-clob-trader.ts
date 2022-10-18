@@ -7,9 +7,9 @@
  */
 import { AptosAccount } from "aptos";
 import axios from "axios";
-import BN from "bn.js";
+import type BN from "bn.js";
 import { assert } from "console";
-import { AU, DU, Market, MarketSubscriber, Vault } from "../src";
+import { DU, Market, MarketSubscriber, Vault } from "../src";
 import { AuxClient, FakeCoin } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 
@@ -128,47 +128,33 @@ async function tradeCLOB(): Promise<void> {
     console.log("  FTX Bid=", ftxBid, ", Ask=", ftxAsk, ", Mid=", ftxMid);
 
     await market.update();
-    const marketBid = market.bids[0]?.price
-      ?.toDecimalUnits(market.quoteCoinInfo.decimals)
-      .toNumber();
-    const marketAsk = market.asks[0]?.price
-      ?.toDecimalUnits(market.quoteCoinInfo.decimals)
-      .toNumber();
+    const marketBid = market.l2.bids[0]?.price.toNumber();
+    const marketAsk = market.l2.asks[0]?.price.toNumber();
 
     // TODO: This is pretty inefficient. We will have better tools for
     // interacting with the book data.
     console.log("  5x5 book");
     for (let i = 4; i >= 0; i--) {
-      const price = market.asks[i]?.price;
+      const price = market.l2.asks[i]?.price;
       if (price !== undefined) {
-        const quantity = market.asks[i]!.orders.map((o) => o.quantity).reduce(
-          (a, b) => {
-            return a.add(b.toBN());
-          },
-          new BN(0)
-        );
+        const quantity = market.l2.asks[i]!.quantity;
         console.log(
           "          ",
-          AU(quantity).toDecimalUnits(market.baseCoinInfo.decimals).toString(),
+          quantity.toString(),
           " @ $",
-          price!.toDecimalUnits(market.quoteCoinInfo.decimals).toString()
+          price!.toString()
         );
       }
     }
     for (let i = 0; i < 5; i++) {
-      const price = market.bids[i]?.price;
+      const price = market.l2.bids[i]?.price;
       if (price !== undefined) {
-        const quantity = market.bids[i]!.orders.map((o) => o.quantity).reduce(
-          (a, b) => {
-            return a.add(b.toBN());
-          },
-          new BN(0)
-        );
+        const quantity = market.l2.bids[i]!.quantity;
         console.log(
-          "  ",
-          AU(quantity).toDecimalUnits(market.baseCoinInfo.decimals).toString(),
+          "          ",
+          quantity.toString(),
           " @ $",
-          price!.toDecimalUnits(market.quoteCoinInfo.decimals).toString()
+          price!.toString()
         );
       }
     }
