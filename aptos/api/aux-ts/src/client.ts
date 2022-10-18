@@ -36,6 +36,7 @@ export enum Network {
   Testnet = "testnet",
   Devnet = "devnet",
   Localnet = "localnet",
+  Mainnet = "mainnet",
 }
 
 interface NetworkConfig {
@@ -79,6 +80,11 @@ const networkConfigs: Record<Network, NetworkConfig> = {
     ),
     dataFeedAddress:
       "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f",
+  },
+  mainnet: {
+    fullnode: "https://fullnode.mainnet.aptoslabs.com/v1",
+    moduleAddress:
+      "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541",
   },
 };
 
