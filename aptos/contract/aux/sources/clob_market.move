@@ -77,7 +77,7 @@ module aux::clob_market {
     const MAX_U64: u64 = 18446744073709551615;
     const CRITBIT_NULL_INDEX: u64 = 1 << 63;
     const ZERO_FEES: bool = true;
-    const TIMEOUT_ORDER_APT_COST: u128 = 4000;
+    const TIMEOUT_ORDER_APT_COST: u128 = 40000;
 
     //////////////////////////////////////////////////////////////////
     // !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
