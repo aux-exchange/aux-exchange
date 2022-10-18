@@ -29,7 +29,7 @@ const AUX_TRADER_CONFIG = {
 // running a full validator for RPCs.
 const auxClient = AuxClient.create({
   network: Network.Devnet,
-  validatorAddress: "http://localhost:8080",
+  // validatorAddress: "http://localhost:8080",
 });
 
 // We create a new Aptos account for the trader
@@ -131,7 +131,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.asks[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );
@@ -148,7 +148,7 @@ async function tradeCLOB(): Promise<void> {
       if (price !== undefined) {
         const quantity = market.bids[i]!.orders.map((o) => o.quantity).reduce(
           (a, b) => {
-            return a.add(b);
+            return a.add(b.toBN());
           },
           new BN(0)
         );
