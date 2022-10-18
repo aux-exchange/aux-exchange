@@ -896,6 +896,11 @@ module aux::clob_market {
 
     public entry fun load_open_orders_into_event<B, Q>(sender: &signer) acquires Market, MarketDataStore, OpenOrderAccount {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        load_open_orders_into_event_for_address<B, Q>(sender,  signer::address_of(sender))
+    }
+
+    public entry fun load_open_orders_into_event_for_address<B, Q>(sender: &signer, order_owner: address) acquires Market, MarketDataStore, OpenOrderAccount {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
         if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
             move_to(sender, MarketDataStore<B, Q> {
@@ -904,7 +909,7 @@ module aux::clob_market {
             });
         };
 
-        let open_order_address = onchain_signer::get_signer_address(signer::address_of(sender));
+        let open_order_address = onchain_signer::get_signer_address(order_owner);
         let open_order_account = borrow_global<OpenOrderAccount<B, Q>>(open_order_address);
         let n_orders = critbit::size(&open_order_account.open_orders);
         let idx = 0;
