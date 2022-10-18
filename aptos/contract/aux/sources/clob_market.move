@@ -484,6 +484,10 @@ module aux::clob_market {
             total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote_qty - taker_fee;
         };
 
+        // The net proceeds go to the protocol. This implicitly asserts that
+        // taker fees can cover the maker rebate.
+        vault::increase_user_balance<Q>(@aux, (taker_fee - maker_rebate as u128));
+
         // Emit event for taker
         let taker_order_id = taker_order.id;
         event::emit_event<OrderFillEvent>(
