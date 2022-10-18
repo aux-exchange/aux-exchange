@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, F as Fragment, s as useSubscription, C as ChevronUpIcon, t as ChevronDownIcon, M as MagnifyingGlassIcon, v as randRecentDate, w as Do, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as ApolloProvider, V as BrowserRouter, Y as Routes, Z as Route, _ as client$1 } from "./vendor.33085066.js";
+import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, F as Fragment, s as useSubscription, C as ChevronUpIcon, t as ChevronDownIcon, M as MagnifyingGlassIcon, v as randRecentDate, w as Do, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.77d0c9f4.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -1362,7 +1362,7 @@ function Xt({
       return /* @__PURE__ */ a(Kt, {
         size: t2
       });
-    case "martian":
+    case "tapt":
       return /* @__PURE__ */ a(Zt, {
         size: t2
       });
@@ -3972,7 +3972,7 @@ function useOrderHistoryTable(displayMarket) {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
       noData: /* @__PURE__ */ jsx(or, {
-        message: "You have no open orders for this market. Submit one and it will show up here.",
+        message: "No past orders. Once you complete one check back here.",
         variant: "basic"
       }),
       data: (_b2 = orderHistory == null ? void 0 : orderHistory.map(({
@@ -5449,7 +5449,7 @@ function AddLiquidityView({
   secondCoinAu
 }) {
   return /* @__PURE__ */ jsxs(Dn, {
-    className: "w-[700px] mx-auto self-center",
+    className: "w-[600px] mx-auto self-center border border-slate-700",
     children: [/* @__PURE__ */ jsx(_n, {
       className: "mb-4",
       children: "Add Liquidity"
@@ -5593,61 +5593,6 @@ function AddLiquidityContainer({}) {
     secondCoinAu
   });
 }
-const SwapDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "Swap"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "swapInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "SwapInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "swap"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "swapInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "swapInput"
-            }
-          }
-        }]
-      }]
-    }
-  }]
-};
 const RemoveLiquidityDocument = {
   "kind": "Document",
   "definitions": [{
@@ -5703,6 +5648,313 @@ const RemoveLiquidityDocument = {
     }
   }]
 };
+const RlPoolPositionDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "RLPoolPosition"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoX"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoY"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinInfoLP"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "position"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "owner"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "owner"
+                }
+              }
+            }],
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountX"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountY"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountLP"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "share"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountX"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountY"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountLP"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "feePercent"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+const SwapDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Swap"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "swapInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "SwapInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "swap"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "swapInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "swapInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
 const RemoveLiquidity = "";
 function RemoveLiquidityView({
   firstCoin,
@@ -5718,115 +5970,132 @@ function RemoveLiquidityView({
   notFoundMsg
 }) {
   return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(Dn, {
-    className: "flex flex-col gap-8 w-[700px] mx-auto self-center",
+    className: "flex flex-col gap-8 w-[600px] mx-auto self-center",
     children: [notFoundMsg, /* @__PURE__ */ jsx(qe, {
       onClick: goBackToPools,
       children: "Back to pools"
     })]
   }) : /* @__PURE__ */ jsxs(Dn, {
-    className: "flex flex-col gap-8 w-[700px] mx-auto self-center",
-    children: [/* @__PURE__ */ jsxs(Dn, {
-      className: "p-8 text-white flex flex-col gap-8",
-      children: ["Remove Liquidity", /* @__PURE__ */ jsx(In, {
-        value: pctVal,
-        onChange: setPctVal,
-        min: 0,
-        max: 100
-      }), /* @__PURE__ */ jsx("span", {
-        className: "text-6xl text-white font-bold",
-        children: `${pctVal}%`
+    className: "flex flex-col w-[600px] gap-6 mx-auto self-center border border-slate-700",
+    children: [/* @__PURE__ */ jsxs("div", {
+      className: "flex justify-between items-center",
+      children: [/* @__PURE__ */ jsx(_n, {
+        children: "Remove Liquidity"
       }), /* @__PURE__ */ jsxs("div", {
-        className: "flex w-full justify-evenly",
-        children: [/* @__PURE__ */ jsx(qe, {
-          onClick: () => setPctVal(25),
-          children: "25%"
-        }), /* @__PURE__ */ jsx(qe, {
-          onClick: () => setPctVal(50),
-          children: "50%"
-        }), /* @__PURE__ */ jsx(qe, {
-          onClick: () => setPctVal(75),
-          children: "75%"
-        }), /* @__PURE__ */ jsx(qe, {
-          onClick: () => setPctVal(100),
-          children: "Max"
+        className: "flex text-xs text-slate-300",
+        children: [/* @__PURE__ */ jsx("div", {
+          className: "flex gap-4",
+          children: firstCoinRelativePrice ? `1 ${firstCoin == null ? void 0 : firstCoin.symbol} = ${firstCoinRelativePrice} ${secondCoin == null ? void 0 : secondCoin.symbol}` : `${firstCoin == null ? void 0 : firstCoin.symbol} Price Unavailable.`
+        }), /* @__PURE__ */ jsx("span", {
+          className: "px-3",
+          children: "/"
+        }), /* @__PURE__ */ jsx("div", {
+          className: "flex gap-4",
+          children: secondCoinRelativePrice ? `1 ${secondCoin == null ? void 0 : secondCoin.symbol} = ${secondCoinRelativePrice} ${firstCoin == null ? void 0 : firstCoin.symbol}` : `${secondCoin == null ? void 0 : secondCoin.symbol} Price Unavailable`
         })]
       })]
-    }), /* @__PURE__ */ jsx("div", {
-      className: "w-full flex justify-center",
-      children: /* @__PURE__ */ jsx(ArrowDownIcon, {
-        className: "w-8 text-white"
-      })
-    }), /* @__PURE__ */ jsxs(Dn, {
-      className: "flex flex-col gap-8",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-white",
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-4",
+      children: [/* @__PURE__ */ jsx(ie, {
+        children: "Amount To Withdraw"
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "flex flex-row justify-between",
         children: [/* @__PURE__ */ jsx("div", {
-          children: firstCoinAmount
-        }), /* @__PURE__ */ jsx("div", {
-          className: "flex gap-4 justify-end",
+          className: "text-4xl text-white font-bold mr-auto",
+          children: `${pctVal}%`
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-start items-center gap-2",
+          children: [/* @__PURE__ */ jsx(qe, {
+            variant: "basic",
+            size: "xs",
+            onClick: () => setPctVal(25),
+            children: "25%"
+          }), /* @__PURE__ */ jsx(qe, {
+            variant: "basic",
+            size: "xs",
+            onClick: () => setPctVal(50),
+            children: "50%"
+          }), /* @__PURE__ */ jsx(qe, {
+            variant: "basic",
+            size: "xs",
+            onClick: () => setPctVal(75),
+            children: "75%"
+          }), /* @__PURE__ */ jsx(qe, {
+            variant: "basic",
+            size: "xs",
+            onClick: () => setPctVal(100),
+            children: "Max"
+          })]
+        })]
+      }), /* @__PURE__ */ jsx("div", {
+        className: "px-2",
+        children: /* @__PURE__ */ jsx(In, {
+          value: pctVal,
+          onChange: setPctVal,
+          min: 0,
+          max: 100
+        })
+      })]
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "w-full flex justify-center items-center",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "border-b border-b-slate-700 w-full"
+      }), /* @__PURE__ */ jsx("div", {
+        children: /* @__PURE__ */ jsx(ArrowDownIcon, {
+          className: "w-4 text-slate-400 mx-6"
+        })
+      }), /* @__PURE__ */ jsx("div", {
+        className: "border-b border-b-slate-700 w-full"
+      })]
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-4 pb-6 items-center",
+      children: [/* @__PURE__ */ jsx(ie, {
+        children: "Amount To Receive"
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "flex flex-row gap-6",
+        children: [/* @__PURE__ */ jsx("div", {
+          className: "flex items-center gap-2",
           children: (firstCoin == null ? void 0 : firstCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
             children: [/* @__PURE__ */ jsx(Jt, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
-            }), " ", firstCoin == null ? void 0 : firstCoin.symbol]
+            }), " ", firstCoinAmount]
           }) : /* @__PURE__ */ jsx(Fragment, {
-            children: "No coin selected"
+            children: "No Coin Selected"
           })
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-white",
-        children: [/* @__PURE__ */ jsx("div", {
-          children: secondCoinAmount
         }), /* @__PURE__ */ jsx("div", {
-          className: "flex gap-4 justify-end",
+          className: "flex items-center gap-2",
           children: (secondCoin == null ? void 0 : secondCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
             children: [/* @__PURE__ */ jsx(Jt, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
-            }), " ", secondCoin == null ? void 0 : secondCoin.symbol]
+            }), " ", secondCoinAmount]
           }) : /* @__PURE__ */ jsx(Fragment, {
-            children: "No coin selected"
+            children: "No Coin Selected"
           })
         })]
       })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex justify-between text-white",
-      children: [/* @__PURE__ */ jsx("div", {
-        children: "Price: "
-      }), /* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "flex gap-4",
-          children: firstCoinRelativePrice ? `1 ${firstCoin == null ? void 0 : firstCoin.symbol} = ${firstCoinRelativePrice} ${secondCoin == null ? void 0 : secondCoin.symbol}` : "Pricing information unavailable."
-        }), /* @__PURE__ */ jsx("div", {
-          className: "flex gap-4",
-          children: secondCoinRelativePrice ? `1 ${secondCoin == null ? void 0 : secondCoin.symbol} = ${secondCoinRelativePrice} ${firstCoin == null ? void 0 : firstCoin.symbol}` : "Pricing information unavailable."
-        })]
-      })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex justify-between",
-      children: [/* @__PURE__ */ jsx(qe, {
-        onClick: handleRemoveLiquidity,
-        children: "Confirm"
-      }), /* @__PURE__ */ jsx(qe, {
-        onClick: goBackToPools,
-        children: "Cancel"
-      })]
+    }), /* @__PURE__ */ jsx(qe, {
+      onClick: handleRemoveLiquidity,
+      children: "Remove Liquidity"
     })]
   });
 }
 function RemoveLiquidityContainer({}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n2, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n2, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x, _y, _z;
   const navigate = useNavigate();
   const [removeLiquidityMutation, removeLiquidityResult] = useMutation(RemoveLiquidityDocument);
-  const [wallet] = useWallet();
+  const [wallet, , connection] = useWallet();
   const {
     firstCoin,
     secondCoin
   } = useCoinXYParamState();
-  const poolQuery = useQuery(PoolDocument, {
+  const notFoundMsg = `Cannot find coins for types ${firstCoin == null ? void 0 : firstCoin.symbol} and ${secondCoin == null ? void 0 : secondCoin.symbol}`;
+  const poolQuery = useQuery(RlPoolPositionDocument, {
     variables: {
       poolInput: {
         coinTypeX: (_a = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _a : "",
         coinTypeY: (_b = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _b : ""
-      }
+      },
+      owner: connection == null ? void 0 : connection.address
     },
     skip: !firstCoin
   });
@@ -5856,13 +6125,12 @@ function RemoveLiquidityContainer({}) {
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
     navigate("/pools");
   }, [firstCoin, secondCoin, pctVal, navigate, removeLiquidityMutation, wallet]);
-  const notFoundMsg = `Cannot find coins for types ${firstCoin == null ? void 0 : firstCoin.symbol} and ${secondCoin == null ? void 0 : secondCoin.symbol}`;
   return /* @__PURE__ */ jsx(RemoveLiquidityView, {
     firstCoin,
-    firstCoinAmount: (_q = (_p = (_o = poolQuery.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.amountX) != null ? _q : 0,
-    firstCoinRelativePrice: (_s = (_r = firstCoinRelativePriceQuery.data) == null ? void 0 : _r.lastTradePrice) != null ? _s : 0,
-    secondCoinRelativePrice: (_u = (_t2 = secondCoinRelativePriceQuery.data) == null ? void 0 : _t2.lastTradePrice) != null ? _u : 0,
-    secondCoinAmount: (_x = (_w = (_v = poolQuery.data) == null ? void 0 : _v.pool) == null ? void 0 : _w.amountY) != null ? _x : 0,
+    firstCoinAmount: (_r = (_q = (_p = (_o = poolQuery.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.position) == null ? void 0 : _q.amountX) != null ? _r : 0,
+    firstCoinRelativePrice: (_t2 = (_s = firstCoinRelativePriceQuery.data) == null ? void 0 : _s.lastTradePrice) != null ? _t2 : 0,
+    secondCoinRelativePrice: (_v = (_u = secondCoinRelativePriceQuery.data) == null ? void 0 : _u.lastTradePrice) != null ? _v : 0,
+    secondCoinAmount: (_z = (_y = (_x = (_w = poolQuery.data) == null ? void 0 : _w.pool) == null ? void 0 : _x.position) == null ? void 0 : _y.amountY) != null ? _z : 0,
     goBackToPools: () => navigate("/pools"),
     handleRemoveLiquidity,
     pctVal,
@@ -8700,7 +8968,7 @@ function PoolsView({
         children: "Create Pool"
       })]
     }), /* @__PURE__ */ jsx("div", {
-      className: "flex flex-col gap-4 max-w-[1280px] w-full",
+      className: "flex flex-col gap-4 max-w-[1280px] w-full pb-12",
       children: (_a = pools == null ? void 0 : pools.map(renderLiquidityItem)) != null ? _a : NO_POOLS_UI
     })]
   });
@@ -9108,16 +9376,23 @@ const splitLink = split(({
 }, wsLink, httpLink);
 const client = new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  credentials: "include"
 });
+const BLACK_LIST = ["IR", "KP", "BY", "MM", "CI", "CU", "CD", "IQ", "LR", "SY", "ZW", "UA", "BI", "CF", "LY", "ML", "NI", "VE", "YE", "RU"];
 function App() {
+  const location = useGeoLocation();
+  const country = location.country;
   return /* @__PURE__ */ jsx(ApolloProvider, {
     client,
     children: /* @__PURE__ */ jsx(WalletProvider, {
       children: /* @__PURE__ */ jsx(BrowserRouter, {
         children: /* @__PURE__ */ jsxs("div", {
           className: "flex flex-col h-full w-full",
-          children: [/* @__PURE__ */ jsx(Nn, {}), /* @__PURE__ */ jsx(Header, {}), /* @__PURE__ */ jsx("div", {
+          children: [/* @__PURE__ */ jsx(Nn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
+            className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
+            children: ["Sorry we do not support ", country, " at this time."]
+          }) : /* @__PURE__ */ jsx("div", {
             className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw]",
             children: /* @__PURE__ */ jsx(CoinXYParamCtxProvider, {
               children: /* @__PURE__ */ jsxs(Routes, {
