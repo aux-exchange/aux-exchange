@@ -24,8 +24,9 @@ const WBTC =
   "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T";
 const USDA =
   "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA";
+const USDCsol = "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T"
 
-const MAINNET_COINS = [APT, USDC, SOL, WETH, WBTC, USDA];
+const MAINNET_COINS = [APT, USDC, SOL, WETH, WBTC, USDA, USDCsol];
 
 export const query = {
   address() {
