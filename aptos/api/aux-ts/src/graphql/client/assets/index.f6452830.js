@@ -4,8 +4,13 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
+<<<<<<< HEAD
 import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge$1, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, F as Fragment, D as DateTime, s as jsxs, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, z as colors_1, N as NavLink, B as ArrowsUpDownIcon, H as HttpLink, E as GraphQLWsLink, I as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, T as useGeoLocation, U as ApolloProvider, V as BrowserRouter, Y as Routes, Z as Route, _ as client$1 } from "./vendor.6f418bc8.js";
 import "./__commonjsHelpers__.5615ff64.js";
+=======
+import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
+import "./__commonjsHelpers__.4516dc8a.js";
+>>>>>>> b8eb8d0 (resolve conflicts)
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -4787,7 +4792,11 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
+<<<<<<< HEAD
       noData: /* @__PURE__ */ jsx(cr, {
+=======
+      noData: /* @__PURE__ */ jsx(or, {
+>>>>>>> b8eb8d0 (resolve conflicts)
         message: "No past orders. Complete one and check back here.",
         variant: "basic"
       }),
@@ -6541,6 +6550,7 @@ const AddLiquidityDocument = {
     }
   }]
 };
+<<<<<<< HEAD
 const SimplePoolDocument = {
   "kind": "Document",
   "definitions": [{
@@ -6612,6 +6622,8 @@ const SimplePoolDocument = {
     }
   }]
 };
+=======
+>>>>>>> b8eb8d0 (resolve conflicts)
 const PoolPriceInDocument = {
   "kind": "Document",
   "definitions": [{
