@@ -9,7 +9,12 @@ type Query {
   account(owner: Address!): Account
 }
 
+input RegisterCoinInput {
+  coinType: String!
+}
+
 type Mutation {
+  registerCoin(registerCoinInput: RegisterCoinInput!): EntryFunctionPayload!
   createPool(createPoolInput: CreatePoolInput!): EntryFunctionPayload!
   swap(swapInput: SwapInput!): EntryFunctionPayload!
   addLiquidity(addLiquidityInput: AddLiquidityInput!): EntryFunctionPayload!
