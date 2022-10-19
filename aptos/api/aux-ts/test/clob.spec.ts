@@ -545,7 +545,7 @@ describe("CLOB Core tests", function () {
 
     assert.ok(placedOrderEvents.length >= 1);
     const last = placedOrderEvents[placedOrderEvents.length - 1]!;
-    assert.equal(last.owner.toShortString(), alice.address().toShortString());
+    assert.equal(last.owner.toShortString(), bob.address().toShortString());
     assert.ok(last.isBid);
     assert.equal(
       last.quantity.toDecimalUnits(market.baseCoinInfo.decimals).toNumber(),
@@ -582,7 +582,7 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       last.price.toDecimalUnits(market.quoteCoinInfo.decimals).toNumber(),
-      0.0001
+      0.001
     );
 
     // secondLast is taker (bob)
@@ -606,7 +606,7 @@ describe("CLOB Core tests", function () {
     );
     assert.equal(
       secondLast.price.toDecimalUnits(market.quoteCoinInfo.decimals).toNumber(),
-      0.0001
+      0.001
     );
   });
 

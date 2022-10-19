@@ -16,7 +16,7 @@ import {
   MutationWithdrawArgs,
   OrderType,
   Side,
-} from "../types";
+} from "../generated/types";
 
 export const mutation = {
   createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {

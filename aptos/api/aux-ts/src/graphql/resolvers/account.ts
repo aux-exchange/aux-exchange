@@ -20,7 +20,7 @@ import {
   Trade,
   Transfer,
   Withdrawal,
-} from "../types";
+} from "../generated/types";
 
 export const account = {
   async isCoinRegistered(

@@ -34,12 +34,24 @@ const ENV_APTOS_LOCAL = "APTOS_LOCAL";
 const ENV_APTOS_PROFILE = "APTOS_PROFILE";
 
 const COIN_NAME_OVERRIDES = new Map<string, string>();
-COIN_NAME_OVERRIDES.set("0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T", "USD Coin (eth)");
-COIN_NAME_OVERRIDES.set("0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T", "USD Coin (sol)");
+COIN_NAME_OVERRIDES.set(
+  "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
+  "USD Coin (eth)"
+);
+COIN_NAME_OVERRIDES.set(
+  "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T",
+  "USD Coin (sol)"
+);
 
 const COIN_SYMBOL_OVERRIDES = new Map<string, string>();
-COIN_SYMBOL_OVERRIDES.set("0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T", "USDC (eth)");
-COIN_SYMBOL_OVERRIDES.set("0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T", "USDC (sol)");
+COIN_SYMBOL_OVERRIDES.set(
+  "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
+  "USDC (eth)"
+);
+COIN_SYMBOL_OVERRIDES.set(
+  "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T",
+  "USDC (sol)"
+);
 
 export enum Network {
   Testnet = "testnet",
