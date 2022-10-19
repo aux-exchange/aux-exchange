@@ -163,7 +163,9 @@ export const market = {
       WEEKS_1: "1w",
     };
 
-    const base = parent.baseCoinInfo.symbol;
+    const base = parent.baseCoinInfo.symbol
+      .replace("WBTC", "BTC")
+      .replace("WETH", "ETH");
     const quote = parent.quoteCoinInfo.symbol.replace("USDC", "USD");
     const filename = `${base}-${quote}_${convert[resolution]}.json`;
     const path = `${process.cwd()}/src/indexer/data/${filename}`;
