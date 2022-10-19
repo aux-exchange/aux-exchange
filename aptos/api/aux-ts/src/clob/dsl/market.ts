@@ -445,12 +445,12 @@ export default class Market implements core.query.Market {
    * @param owner
    * @returns
    */
-  async tradeHistory(owner: Types.Address): Promise<OrderFillEvent[]> {
+  async tradeHistory(owner?: Types.Address): Promise<OrderFillEvent[]> {
     return core.query.tradeHistory(
       this.auxClient,
-      owner,
       this.baseCoinInfo.coinType,
-      this.quoteCoinInfo.coinType
+      this.quoteCoinInfo.coinType,
+      owner
     );
   }
 
