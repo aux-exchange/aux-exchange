@@ -26,8 +26,9 @@ export const account = {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
     );
-    const coinStores = resources.filter((resource) =>
-      resource.type.includes("CoinStore<") && !resource.type.includes("LP")
+    const coinStores = resources.filter(
+      (resource) =>
+        resource.type.includes("CoinStore<") && !resource.type.includes("LP")
     );
     return Promise.all(
       coinStores.map(async (coinStore) => {
@@ -35,7 +36,9 @@ export const account = {
         console.log(coinType);
         const coinInfo = await auxClient.getCoinInfo(coinType);
         // @ts-ignore
-        const balance = coinStore.data.coin.value;
+        const balance = AU(coinStore.data.coin.value)
+          .toDecimalUnits(coinInfo.decimals)
+          .toNumber();
         return {
           balance,
           availableBalance: balance,
