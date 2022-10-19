@@ -20,16 +20,25 @@ import {
   Position,
   Trade,
 } from "../types";
+import type { Types } from "aptos";
 
 export const account = {
-  
+
+  async isCoinRegistered(parent: Account, coinType: Types.MoveStructTag): Promise<boolean> {
+    const coinStore = await auxClient.getAccountResourceOptional(
+      parent.address,
+      `0x1::coin::CoinStore<${coinType}>`,
+    );
+    return coinStore !== undefined;
+  },
+
   async walletBalances(parent: Account): Promise<Balance[]> {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
     );
-    
-    const coinStores = resources.filter((resource) =>
-      resource.type.includes("CoinStore<") && !resource.type.includes("LP")
+    const coinStores = resources.filter(
+      (resource) =>
+        resource.type.includes("CoinStore<") && !resource.type.includes("LP")
     );
     return Promise.all(
       coinStores.map(async (coinStore) => {
@@ -37,7 +46,9 @@ export const account = {
         console.log(coinType);
         const coinInfo = await auxClient.getCoinInfo(coinType);
         // @ts-ignore
-        const balance = coinStore.data.coin.value;
+        const balance = AU(coinStore.data.coin.value)
+          .toDecimalUnits(coinInfo.decimals)
+          .toNumber();
         return {
           balance,
           availableBalance: balance,

@@ -1,5 +1,6 @@
 type Account {
   address: Address!
+  isCoinRegistered(coinType: String!): Boolean!
   walletBalances: [Balance!]!
   balances: [Balance!]!
   deposits: [Deposit!]!

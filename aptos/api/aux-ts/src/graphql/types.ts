@@ -1,3 +1,5 @@
+import type { Types } from "aptos";
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -415,6 +417,9 @@ export type MutationCreatePoolArgs = {
   createPoolInput: CreatePoolInput;
 };
 
+export type MutationRegisterCoinArgs = {
+  coinType: Types.MoveStructTag;
+};
 
 export type MutationSwapArgs = {
   swapInput: SwapInput;

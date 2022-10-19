@@ -514,6 +514,7 @@ module aux::amm {
         max_slippage_bps: u64,
     ): coin::Coin<LP<X, Y>> acquires Pool {
         let pool = borrow_global_mut<Pool<X, Y>>(@aux);
+        assert!(!pool.frozen, EPOOL_FROZEN);
         let x_reserve = coin::value(&pool.x_reserve);
         let y_reserve = coin::value(&pool.y_reserve);
         let pool_lp_au = option::get_with_default(
