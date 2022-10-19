@@ -9,6 +9,7 @@ import {
   MutationCreatePoolArgs,
   MutationDepositArgs,
   MutationPlaceOrderArgs,
+  MutationRegisterCoinArgs,
   MutationRemoveLiquidityArgs,
   MutationSwapArgs,
   MutationTransferArgs,
@@ -28,6 +29,15 @@ export const mutation = {
       feeBps: (createPoolInput.feePercent * 100).toString(),
     });
   },
+
+  registerCoin(_parent: any, { coinType }: MutationRegisterCoinArgs) {
+    return {
+      function: `0x1::aptos_framework::managed_coin::register`,
+      type_arguments: [coinType],
+      arguments: [],
+    };
+  },
+
   async swap(_parent: any, { swapInput }: MutationSwapArgs) {
     const { coinTypeX, coinTypeY } = swapInput.poolInput;
     const [coinInfoX, coinInfoY] = await Promise.all([
