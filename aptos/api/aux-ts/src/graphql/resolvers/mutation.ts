@@ -30,10 +30,10 @@ export const mutation = {
     });
   },
 
-  registerCoin(_parent: any, { coinType }: MutationRegisterCoinArgs) {
+  registerCoin(_parent: any, { registerCoinInput }: MutationRegisterCoinArgs) {
     return {
       function: `0x1::managed_coin::register`,
-      type_arguments: [coinType],
+      type_arguments: [registerCoinInput.coinType],
       arguments: [],
     };
   },

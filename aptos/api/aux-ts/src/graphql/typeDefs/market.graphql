@@ -12,6 +12,13 @@ type Market {
   low24h: Float
   volume24h: Float
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
+  barsForRange(
+    resolution: Resolution!, 
+    fromEpochMillisInclusive: String!, 
+    toEpochMillisExclusive: String!, 
+    countBack: String!, 
+    firstDataRequest: Boolean!
+  ): [Bar!]!
   pythRating(price: Float!, side: Side!): PythRating
 }
 
