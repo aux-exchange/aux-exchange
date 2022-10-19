@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge$1, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, F as Fragment, D as DateTime, s as jsxs, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, z as colors_1, N as NavLink, B as ArrowsUpDownIcon, H as HttpLink, E as GraphQLWsLink, I as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, T as useGeoLocation, U as ApolloProvider, V as BrowserRouter, Y as Routes, Z as Route, _ as client$1 } from "./vendor.6f418bc8.js";
+import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, F as Fragment, D as DateTime, s as jsxs, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, z as ArrowsUpDownIcon, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.2dc76dac.js";
 import "./__commonjsHelpers__.5615ff64.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -50,7 +50,7 @@ import "./__commonjsHelpers__.5615ff64.js";
 const tailwind = "";
 const App$1 = "";
 const index$1 = "";
-var se = { exports: {} }, W = {};
+var ie = { exports: {} }, Y = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -60,28 +60,28 @@ var se = { exports: {} }, W = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var Ke;
+var Je;
 function nt() {
-  if (Ke)
-    return W;
-  Ke = 1;
+  if (Je)
+    return Y;
+  Je = 1;
   var e2 = React, t2 = Symbol.for("react.element"), s2 = Symbol.for("react.fragment"), n2 = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, l = { key: true, ref: true, __self: true, __source: true };
   function c(f, d, m) {
-    var p, C = {}, v = null, y = null;
-    m !== void 0 && (v = "" + m), d.key !== void 0 && (v = "" + d.key), d.ref !== void 0 && (y = d.ref);
-    for (p in d)
-      n2.call(d, p) && !l.hasOwnProperty(p) && (C[p] = d[p]);
+    var g, C = {}, v = null, w = null;
+    m !== void 0 && (v = "" + m), d.key !== void 0 && (v = "" + d.key), d.ref !== void 0 && (w = d.ref);
+    for (g in d)
+      n2.call(d, g) && !l.hasOwnProperty(g) && (C[g] = d[g]);
     if (f && f.defaultProps)
-      for (p in d = f.defaultProps, d)
-        C[p] === void 0 && (C[p] = d[p]);
-    return { $$typeof: t2, type: f, key: v, ref: y, props: C, _owner: o2.current };
+      for (g in d = f.defaultProps, d)
+        C[g] === void 0 && (C[g] = d[g]);
+    return { $$typeof: t2, type: f, key: v, ref: w, props: C, _owner: o2.current };
   }
-  return W.Fragment = s2, W.jsx = c, W.jsxs = c, W;
+  return Y.Fragment = s2, Y.jsx = c, Y.jsxs = c, Y;
 }
 (function(e2) {
   e2.exports = nt();
-})(se);
-const oe = se.exports.Fragment, a = se.exports.jsx, h = se.exports.jsxs;
+})(ie);
+const le = ie.exports.Fragment, a = ie.exports.jsx, h = ie.exports.jsxs;
 function st({
   title: e2,
   titleId: t2,
@@ -162,7 +162,7 @@ function dt({
     })]
   });
 }
-const ft = react.exports.forwardRef(dt), sr = ft;
+const ft = react.exports.forwardRef(dt), ir = ft;
 function ht({
   title: e2,
   titleId: t2,
@@ -243,7 +243,7 @@ function Ct({
     })]
   });
 }
-const wt = react.exports.forwardRef(Ct), or = wt;
+const wt = react.exports.forwardRef(Ct), lr = wt;
 function yt({
   title: e2,
   titleId: t2,
@@ -270,7 +270,7 @@ function yt({
     })]
   });
 }
-const xt = react.exports.forwardRef(yt), ir = xt;
+const xt = react.exports.forwardRef(yt), cr = xt;
 function Et({
   title: e2,
   titleId: t2,
@@ -297,7 +297,7 @@ function Et({
     })]
   });
 }
-const Rt = react.exports.forwardRef(Et), lr = Rt;
+const Rt = react.exports.forwardRef(Et), ur = Rt;
 function kt({
   title: e2,
   titleId: t2,
@@ -325,7 +325,7 @@ function kt({
   });
 }
 const St = react.exports.forwardRef(kt), _t = St;
-function cr({
+function dr({
   title: e2,
   message: t2,
   variant: s2,
@@ -341,13 +341,13 @@ function cr({
   return /* @__PURE__ */ h("div", {
     role: "alert",
     className: c,
-    children: [s2 === "error" ? /* @__PURE__ */ a(lr, {
+    children: [s2 === "error" ? /* @__PURE__ */ a(ur, {
       className: "w-10 h-10 text-red-400"
-    }) : s2 === "success" ? /* @__PURE__ */ a(sr, {
+    }) : s2 === "success" ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-green-400"
-    }) : s2 === "warning" ? /* @__PURE__ */ a(or, {
+    }) : s2 === "warning" ? /* @__PURE__ */ a(lr, {
       className: "w-10 h-10 text-orange-400"
-    }) : s2 === "info" ? /* @__PURE__ */ a(ir, {
+    }) : s2 === "info" ? /* @__PURE__ */ a(cr, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col justify-between ml-3 w-full",
@@ -390,7 +390,7 @@ function Ot({}) {
     })]
   });
 }
-function Je({}) {
+function qe({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "w-full animate-pulse px-4",
@@ -473,7 +473,7 @@ function Tt({}) {
     })]
   });
 }
-function ur({
+function fr({
   variant: e2
 }) {
   return (() => {
@@ -481,17 +481,17 @@ function ur({
       case "table":
         return /* @__PURE__ */ a(Ot, {});
       case "list":
-        return /* @__PURE__ */ a(Je, {});
+        return /* @__PURE__ */ a(qe, {});
       case "card":
         return /* @__PURE__ */ a(Nt, {});
       case "tv":
         return /* @__PURE__ */ a(Tt, {});
       default:
-        return /* @__PURE__ */ a(Je, {});
+        return /* @__PURE__ */ a(qe, {});
     }
   })();
 }
-function D(e2, t2) {
+function V(e2, t2) {
   if (Object.is(e2, t2))
     return true;
   if (typeof e2 != "object" || e2 === null || typeof t2 != "object" || t2 === null)
@@ -504,12 +504,12 @@ function D(e2, t2) {
       return false;
   return true;
 }
-let Q;
+let te;
 const Mt = new Uint8Array(16);
 function Ft() {
-  if (!Q && (Q = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Q))
+  if (!te && (te = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !te))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return Q(Mt);
+  return te(Mt);
 }
 const O = [];
 for (let e2 = 0; e2 < 256; ++e2)
@@ -517,12 +517,12 @@ for (let e2 = 0; e2 < 256; ++e2)
 function Pt(e2, t2 = 0) {
   return (O[e2[t2 + 0]] + O[e2[t2 + 1]] + O[e2[t2 + 2]] + O[e2[t2 + 3]] + "-" + O[e2[t2 + 4]] + O[e2[t2 + 5]] + "-" + O[e2[t2 + 6]] + O[e2[t2 + 7]] + "-" + O[e2[t2 + 8]] + O[e2[t2 + 9]] + "-" + O[e2[t2 + 10]] + O[e2[t2 + 11]] + O[e2[t2 + 12]] + O[e2[t2 + 13]] + O[e2[t2 + 14]] + O[e2[t2 + 15]]).toLowerCase();
 }
-const Lt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Ge = {
+const Lt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Qe = {
   randomUUID: Lt
 };
 function $t(e2, t2, s2) {
-  if (Ge.randomUUID && !t2 && !e2)
-    return Ge.randomUUID();
+  if (Qe.randomUUID && !t2 && !e2)
+    return Qe.randomUUID();
   e2 = e2 || {};
   const n2 = e2.random || (e2.rng || Ft)();
   if (n2[6] = n2[6] & 15 | 64, n2[8] = n2[8] & 63 | 128, t2) {
@@ -534,7 +534,7 @@ function $t(e2, t2, s2) {
   return Pt(n2);
 }
 var P = /* @__PURE__ */ ((e2) => (e2.basic = "basic", e2.error = "error", e2.warning = "warning", e2.info = "info", e2.success = "success", e2))(P || {});
-const Ce = create$1((e2) => ({
+const ye = create$1((e2) => ({
   notifications: [],
   addNotification(t2) {
     return e2((s2) => ({
@@ -553,14 +553,14 @@ const Ce = create$1((e2) => ({
   }
 }));
 function jt() {
-  const e2 = Ce((n2) => n2.notifications, D), t2 = Ce((n2) => n2.addNotification, D);
+  const e2 = ye((n2) => n2.notifications, V), t2 = ye((n2) => n2.addNotification, V);
   return {
-    removeNotification: Ce((n2) => n2.removeNotification, D),
+    removeNotification: ye((n2) => n2.removeNotification, V),
     addNotification: t2,
     notifications: e2
   };
 }
-const ee = create$1((e2) => ({
+const ne = create$1((e2) => ({
   params: new URLSearchParams(window.location.search),
   setParams: (t2) => e2((s2) => ({
     params: new URLSearchParams(t2)
@@ -600,7 +600,7 @@ const ee = create$1((e2) => ({
   })
 }));
 function On() {
-  const e2 = useNavigate(), t2 = useLocation(), s2 = ee((c) => c.params, D), n2 = ee((c) => c.setParams, D), o2 = ee((c) => c.addParams, D), l = ee((c) => c.removeParams, D);
+  const e2 = useNavigate(), t2 = useLocation(), s2 = ne((c) => c.params, V), n2 = ne((c) => c.setParams, V), o2 = ne((c) => c.addParams, V), l = ne((c) => c.removeParams, V);
   return react.exports.useEffect(() => {
     const c = `${t2.pathname}?${new URLSearchParams(t2.search).toString()}`;
     `${t2.pathname}?${s2.toString()}` !== c && e2(`${t2.pathname}?${s2.toString()}`);
@@ -611,14 +611,14 @@ function On() {
     removeParams: l
   };
 }
-function dr(e2) {
+function hr(e2) {
   var t2, s2, n2 = "";
   if (typeof e2 == "string" || typeof e2 == "number")
     n2 += e2;
   else if (typeof e2 == "object")
     if (Array.isArray(e2))
       for (t2 = 0; t2 < e2.length; t2++)
-        e2[t2] && (s2 = dr(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
+        e2[t2] && (s2 = hr(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
     else
       for (t2 in e2)
         e2[t2] && (n2 && (n2 += " "), n2 += t2);
@@ -626,7 +626,7 @@ function dr(e2) {
 }
 function It() {
   for (var e2, t2, s2 = 0, n2 = ""; s2 < arguments.length; )
-    (e2 = arguments[s2++]) && (t2 = dr(e2)) && (n2 && (n2 += " "), n2 += t2);
+    (e2 = arguments[s2++]) && (t2 = hr(e2)) && (n2 && (n2 += " "), n2 += t2);
   return n2;
 }
 const Dt = (e2) => typeof e2 == "boolean", Vt = (e2) => Dt(e2) ? String(e2) : e2, At = (e2, t2) => Object.entries(e2).every(([s2, n2]) => t2[s2] === n2);
@@ -646,7 +646,7 @@ function Ut(e2) {
   };
 }
 const Bt = Ut({
-  base: "w-auto h-auto text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer",
+  base: "w-auto h-auto text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer disabled:cursor-auto disabled:opacity-50",
   variants: {
     variant: {
       buy: "border-green-500 hover:border-green-400",
@@ -667,7 +667,7 @@ const Bt = Ut({
   },
   compoundVariants: []
 });
-function qe({
+function er({
   className: e2,
   children: t2,
   variant: s2,
@@ -690,7 +690,7 @@ function qe({
       case "listbox":
         return pt$1.Button;
       default:
-        return "div";
+        return "button";
     }
   })();
   return /* @__PURE__ */ a(m, {
@@ -726,21 +726,21 @@ function Nn() {
   }, [o2]), react.exports.useEffect(() => {
     var v;
     if (t2.length && JSON.stringify(s2.current) !== JSON.stringify(t2[0])) {
-      const y = t2[0];
-      l(y), s2.current = y;
-      const _ = setTimeout(async () => {
+      const w = t2[0];
+      l(w), s2.current = w;
+      const S = setTimeout(async () => {
         await n2.start({
           opacity: [1, 0],
           x: [0, 200],
           transition: d
-        }), e2(y), l(void 0);
-      }, (v = y.dismissAfter) != null ? v : 3e3);
+        }), e2(w), l(void 0);
+      }, (v = w.dismissAfter) != null ? v : 3e3);
       return () => {
-        n2.stop(), m.current || clearTimeout(_);
+        n2.stop(), m.current || clearTimeout(S);
       };
     }
   }, [t2, e2, n2]);
-  const p = react.exports.useCallback(async (v) => {
+  const g = react.exports.useCallback(async (v) => {
     v.preventDefault(), o2 && (e2(o2), await n2.start({
       opacity: [1, 0],
       x: [0, 200],
@@ -753,13 +753,13 @@ function Nn() {
   return /* @__PURE__ */ h(motion.div, {
     className: c + ((o2 == null ? void 0 : o2.type) != null ? f[o2 == null ? void 0 : o2.type] : f.info),
     animate: n2,
-    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(lr, {
+    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(ur, {
       className: "w-10 h-10 text-red-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(sr, {
+    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-green-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(or, {
+    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(lr, {
       className: "w-10 h-10 text-orange-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(ir, {
+    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(cr, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col ml-3 w-full",
@@ -768,11 +768,11 @@ function Nn() {
         children: [/* @__PURE__ */ a("div", {
           className: "mr-auto",
           children: o2 == null ? void 0 : o2.title
-        }), /* @__PURE__ */ a(qe, {
+        }), /* @__PURE__ */ a(er, {
           size: "xs",
           variant: "basic",
           className: "border-0 bg-none",
-          onClick: p,
+          onClick: g,
           children: /* @__PURE__ */ a(_t, {
             className: "w-4 h-4"
           })
@@ -781,9 +781,9 @@ function Nn() {
         className: "text-white",
         children: o2 == null ? void 0 : o2.message
       }), /* @__PURE__ */ a("div", {
-        children: (C = o2 == null ? void 0 : o2.actions) == null ? void 0 : C.map((v, y) => /* @__PURE__ */ a(qe, {
+        children: (C = o2 == null ? void 0 : o2.actions) == null ? void 0 : C.map((v, w) => /* @__PURE__ */ a(er, {
           ...v
-        }, y))
+        }, w))
       })]
     })]
   });
@@ -800,7 +800,7 @@ function Tn({
     children: e2
   });
 }
-function ie({
+function ce({
   children: e2,
   className: t2,
   htmlFor: s2
@@ -830,7 +830,7 @@ const zt = ({
     fill: "black",
     d: "M86.6 37.4h-9.9c-1.1 0-2.2-.5-3-1.3l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.4 3.9c-1.1 1.3-2.8 2-4.5 2H2.9C1.4 41.9.4 46.6 0 51.3h51.2c.9 0 1.8-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4H112c-.4-4.7-1.4-9.4-2.9-13.8H86.6zM53.8 65l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.5 3.9c-1.1 1.3-2.7 2-4.4 2H.8c.9 4.8 2.5 9.5 4.6 14h25.5c.9 0 1.7-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4h56.6c2.1-4.4 3.7-9.1 4.6-14H56.8c-1.2 0-2.3-.5-3-1.4zm19.6-43.6 4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1l4 4.5c.8.9 1.9 1.3 3 1.3h10.8c-18.8-24.8-54.1-29.7-79-11-4.1 3.1-7.8 6.8-11 11H71c1 .2 1.8-.2 2.4-.8zM34.7 94.2c-1.2 0-2.3-.5-3-1.3l-4-4.5c-1.2-1.3-3.2-1.4-4.5-.2l-.2.2-3.5 3.9c-1.1 1.3-2.7 2-4.4 2h-.2C36 116.9 71.7 118 94.4 96.7c.9-.8 1.7-1.7 2.6-2.6H34.7z"
   })]
-}), Qe = ({
+}), rr = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -851,7 +851,7 @@ const zt = ({
       d: "M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z"
     })]
   })
-}), er = ({
+}), tr = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -907,7 +907,7 @@ const zt = ({
       fill: "#FFF"
     })]
   })
-}), we = ({
+}), xe = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   width: e2,
@@ -1091,19 +1091,19 @@ function Jt({
         size: t2
       });
     case "btc":
-      return /* @__PURE__ */ a(Qe, {
+      return /* @__PURE__ */ a(rr, {
         size: t2
       });
     case "wbtc":
-      return /* @__PURE__ */ a(Qe, {
+      return /* @__PURE__ */ a(rr, {
         size: t2
       });
     case "eth":
-      return /* @__PURE__ */ a(er, {
+      return /* @__PURE__ */ a(tr, {
         size: t2
       });
     case "weth":
-      return /* @__PURE__ */ a(er, {
+      return /* @__PURE__ */ a(tr, {
         size: t2
       });
     case "sol":
@@ -1115,15 +1115,15 @@ function Jt({
         size: t2
       });
     case "usdc":
-      return /* @__PURE__ */ a(we, {
+      return /* @__PURE__ */ a(xe, {
         size: t2
       });
     case "usdc (eth)":
-      return /* @__PURE__ */ a(we, {
+      return /* @__PURE__ */ a(xe, {
         size: t2
       });
     case "usdc (sol)":
-      return /* @__PURE__ */ a(we, {
+      return /* @__PURE__ */ a(xe, {
         size: t2
       });
     case "aux":
@@ -1206,8 +1206,8 @@ function Fn({
         return "py-1 px-2 text-md";
     }
   }, d = (() => {
-    const m = "font-semibold rounded shadow-sm", p = c(), C = l();
-    return `${m} ${p} ${C} ${t2 != null ? t2 : ""}`;
+    const m = "font-semibold rounded shadow-sm", g = c(), C = l();
+    return `${m} ${g} ${C} ${t2 != null ? t2 : ""}`;
   })();
   return /* @__PURE__ */ a("span", {
     onClick: o2,
@@ -1257,14 +1257,14 @@ function Pn({
       default:
         return "";
     }
-  }, p = (() => {
+  }, g = (() => {
     const C = "p-3 rounded-lg", v = d();
     return `${C} ${v} ${c != null ? c : ""}`;
   })();
   return /* @__PURE__ */ h("div", {
-    className: p,
+    className: g,
     onClick: f,
-    children: [/* @__PURE__ */ a(ie, {
+    children: [/* @__PURE__ */ a(ce, {
       children: e2
     }), /* @__PURE__ */ a("div", {
       className: "text-2xl",
@@ -1294,10 +1294,10 @@ function Ln({
     onChange: f,
     children: ({
       open: d
-    }) => /* @__PURE__ */ a(oe, {
+    }) => /* @__PURE__ */ a(le, {
       children: /* @__PURE__ */ h("div", {
         className: `relative mt-1 w-56 ${o2}`,
-        children: [s2 && /* @__PURE__ */ a(ie, {
+        children: [s2 && /* @__PURE__ */ a(ce, {
           className: "block",
           children: "label"
         }), /* @__PURE__ */ h(pt$1.Button, {
@@ -1317,8 +1317,8 @@ function Ln({
           children: e2.map((m) => /* @__PURE__ */ a(pt$1.Option, {
             value: m,
             className: ({
-              active: p
-            }) => Qt(p ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+              active: g
+            }) => Qt(g ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
             children: m.label
           }, m.label))
         })]
@@ -1337,12 +1337,12 @@ function $n({
   className: f,
   inputClass: d,
   autoFocus: m = false,
-  ...p
+  ...g
 }) {
   const v = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${l ? "pl-7" : ""} ${c ? "pr-12" : ""} ${d}`)();
   return /* @__PURE__ */ h("div", {
     className: f,
-    children: [o2 && /* @__PURE__ */ a(ie, {
+    children: [o2 && /* @__PURE__ */ a(ce, {
       htmlFor: s2,
       children: o2
     }), /* @__PURE__ */ h("div", {
@@ -1358,9 +1358,9 @@ function $n({
         placeholder: n2,
         onChange: t2,
         className: v,
-        ...p
+        ...g
       }), /* @__PURE__ */ a("div", {
-        className: "absolute inset-y-0 right-3 flex items-center text-gray-300",
+        className: "absolute inset-y-0 right-3 flex items-center text-gray-300 pointer-events-none",
         children: c
       })]
     })]
@@ -1420,9 +1420,9 @@ function In({
     } else
       return `${l} text-primary-300 hover:bg-white/[0.05]`;
   };
-  return /* @__PURE__ */ a(Ge$1.List, {
+  return /* @__PURE__ */ a(Ge.List, {
     className: "flex",
-    children: e2.map((n2) => /* @__PURE__ */ a(Ge$1, {
+    children: e2.map((n2) => /* @__PURE__ */ a(Ge, {
       className: ({
         selected: o2
       }) => s2(o2, n2.variant),
@@ -1468,10 +1468,10 @@ const Vn = ({
   loading: o2,
   error: l,
   onClick: c
-}) => /* @__PURE__ */ a(oe, {
-  children: o2 ? /* @__PURE__ */ a(ur, {
+}) => /* @__PURE__ */ a(le, {
+  children: o2 ? /* @__PURE__ */ a(fr, {
     variant: "card"
-  }) : l ? /* @__PURE__ */ a(cr, {
+  }) : l ? /* @__PURE__ */ a(dr, {
     title: "Error",
     message: "Uh Oh. Please try again.",
     variant: "error",
@@ -1496,7 +1496,7 @@ const An = react.exports.forwardRef(function({
     closeModal() {
       l(false);
     }
-  }), [o2]), /* @__PURE__ */ h(oe, {
+  }), [o2]), /* @__PURE__ */ h(le, {
     children: [s2 ? /* @__PURE__ */ a("div", {
       onClick: () => l(true),
       children: s2
@@ -1562,23 +1562,23 @@ const An = react.exports.forwardRef(function({
  *
  * @license MIT
  */
-function re(e2, t2, s2) {
+function ae(e2, t2, s2) {
   let n2 = [], o2;
   return () => {
     let l;
     s2.key && s2.debug != null && s2.debug() && (l = Date.now());
     const c = e2();
-    if (!(c.length !== n2.length || c.some((m, p) => n2[p] !== m)))
+    if (!(c.length !== n2.length || c.some((m, g) => n2[g] !== m)))
       return o2;
     n2 = c;
     let d;
     if (s2.key && s2.debug != null && s2.debug() && (d = Date.now()), o2 = t2(...c), s2 == null || s2.onChange == null || s2.onChange(o2), s2.key && s2.debug != null && s2.debug()) {
-      const m = Math.round((Date.now() - l) * 100) / 100, p = Math.round((Date.now() - d) * 100) / 100, C = p / 16, v = (y, _) => {
-        for (y = String(y); y.length < _; )
-          y = " " + y;
-        return y;
+      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - d) * 100) / 100, C = g / 16, v = (w, S) => {
+        for (w = String(w); w.length < S; )
+          w = " " + w;
+        return w;
       };
-      console.info("%c\u23F1 " + v(p, 5) + " /" + v(m, 5) + " ms", `
+      console.info("%c\u23F1 " + v(g, 5) + " /" + v(m, 5) + " ms", `
             font-size: .6rem;
             font-weight: bold;
             color: hsl(` + Math.max(0, Math.min(120 - 120 * C, 120)) + "deg 100% 31%);", s2 == null ? void 0 : s2.key);
@@ -1603,20 +1603,20 @@ const en = (e2) => e2, rn = (e2) => {
     return t2(e2.scrollElement.getBoundingClientRect()), s2.observe(e2.scrollElement), () => {
       s2.unobserve(e2.scrollElement);
     };
-}, rr = {
+}, nr = {
   element: ["scrollLeft", "scrollTop"],
   window: ["scrollX", "scrollY"]
 }, nn = (e2) => (t2, s2) => {
   if (!t2.scrollElement)
     return;
-  const n2 = rr[e2][0], o2 = rr[e2][1];
+  const n2 = nr[e2][0], o2 = nr[e2][1];
   let l = t2.scrollElement[n2], c = t2.scrollElement[o2];
   const f = () => {
     s2(t2.scrollElement[t2.options.horizontal ? n2 : o2]);
   };
   f();
   const d = (m) => {
-    const p = m.currentTarget, C = p[n2], v = p[o2];
+    const g = m.currentTarget, C = g[n2], v = g[o2];
     (t2.options.horizontal ? l - C : c - v) && f(), l = C, c = v;
   };
   return t2.scrollElement.addEventListener("scroll", d, {
@@ -1677,25 +1677,25 @@ class ln {
       })), this.unsubs.push(this.options.observeElementOffset(this, (o2) => {
         this.scrollOffset = o2, this.calculateRange();
       })));
-    }, this.getSize = () => this.scrollRect[this.options.horizontal ? "width" : "height"], this.getMeasurements = re(() => [this.options.count, this.options.paddingStart, this.options.getItemKey, this.itemMeasurementsCache], (n2, o2, l, c) => {
+    }, this.getSize = () => this.scrollRect[this.options.horizontal ? "width" : "height"], this.getMeasurements = ae(() => [this.options.count, this.options.paddingStart, this.options.getItemKey, this.itemMeasurementsCache], (n2, o2, l, c) => {
       const f = this.pendingMeasuredCacheIndexes.length > 0 ? Math.min(...this.pendingMeasuredCacheIndexes) : 0;
       this.pendingMeasuredCacheIndexes = [];
       const d = this.measurementsCache.slice(0, f);
       for (let m = f; m < n2; m++) {
-        const p = l(m), C = c[p], v = d[m - 1] ? d[m - 1].end : o2, y = typeof C == "number" ? C : this.options.estimateSize(m), _ = v + y;
+        const g = l(m), C = c[g], v = d[m - 1] ? d[m - 1].end : o2, w = typeof C == "number" ? C : this.options.estimateSize(m), S = v + w;
         d[m] = {
           index: m,
           start: v,
-          size: y,
-          end: _,
-          key: p
+          size: w,
+          end: S,
+          key: g
         };
       }
       return this.measurementsCache = d, d;
     }, {
       key: false,
       debug: () => this.options.debug
-    }), this.calculateRange = re(() => [this.getMeasurements(), this.getSize(), this.scrollOffset], (n2, o2, l) => {
+    }), this.calculateRange = ae(() => [this.getMeasurements(), this.getSize(), this.scrollOffset], (n2, o2, l) => {
       const c = un({
         measurements: n2,
         outerSize: o2,
@@ -1705,32 +1705,32 @@ class ln {
     }, {
       key: false,
       debug: () => this.options.debug
-    }), this.getIndexes = re(() => [this.options.rangeExtractor, this.range, this.options.overscan, this.options.count], (n2, o2, l, c) => n2({
+    }), this.getIndexes = ae(() => [this.options.rangeExtractor, this.range, this.options.overscan, this.options.count], (n2, o2, l, c) => n2({
       ...o2,
       overscan: l,
       count: c
     }), {
       key: false,
       debug: () => this.options.debug
-    }), this.getVirtualItems = re(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (n2, o2, l) => {
-      const c = (p) => (C) => {
+    }), this.getVirtualItems = ae(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (n2, o2, l) => {
+      const c = (g) => (C) => {
         var v;
-        const y = this.measurementsCache[p];
+        const w = this.measurementsCache[g];
         if (!C)
           return;
-        const _ = l(C, this), j = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
-        _ !== j && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (_ - j), false)), this.pendingMeasuredCacheIndexes.push(p), this.itemMeasurementsCache = {
+        const S = l(C, this), I = (v = this.itemMeasurementsCache[w.key]) != null ? v : w.size;
+        S !== I && (w.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (S - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
-          [y.key]: _
+          [w.key]: S
         }, this.notify());
       }, f = [], d = {};
-      for (let p = 0, C = n2.length; p < C; p++) {
+      for (let g = 0, C = n2.length; g < C; g++) {
         var m;
-        const v = n2[p], _ = {
+        const v = n2[g], S = {
           ...o2[v],
           measureElement: d[v] = (m = this.measureElementCache[v]) != null ? m : c(v)
         };
-        f.push(_);
+        f.push(S);
       }
       return this.measureElementCache = d, f;
     }, {
@@ -1749,20 +1749,20 @@ class ln {
         smoothScroll: c = s2.options.enableSmoothScroll,
         ...f
       } = o2 === void 0 ? {} : o2;
-      const d = s2.getMeasurements(), m = s2.scrollOffset, p = s2.getSize(), {
+      const d = s2.getMeasurements(), m = s2.scrollOffset, g = s2.getSize(), {
         count: C
       } = s2.options, v = d[Math.max(0, Math.min(n2, C - 1))];
       if (!v)
         return;
       if (l === "auto")
-        if (v.end >= m + p - s2.options.scrollPaddingEnd)
+        if (v.end >= m + g - s2.options.scrollPaddingEnd)
           l = "end";
         else if (v.start <= m + s2.options.scrollPaddingStart)
           l = "start";
         else
           return;
-      const y = l === "end" ? v.end + s2.options.scrollPaddingEnd : v.start - s2.options.scrollPaddingStart;
-      s2.scrollToOffset(y, {
+      const w = l === "end" ? v.end + s2.options.scrollPaddingEnd : v.start - s2.options.scrollPaddingStart;
+      s2.scrollToOffset(w, {
         align: l,
         smoothScroll: c,
         ...f
@@ -1894,47 +1894,51 @@ function Un({
   className: o2,
   loading: l,
   error: c,
-  noData: f
+  noData: f,
+  initialScrollIdx: d
 }) {
-  const [d, m] = react.exports.useState([]), p = useReactTable({
+  const [m, g] = react.exports.useState([]), C = useReactTable({
     columns: t2,
     data: e2,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: m,
+    onSortingChange: g,
     getSortedRowModel: getSortedRowModel(),
     state: {
-      sorting: d
+      sorting: m
     }
-  }), C = react.exports.useRef(null), {
-    rows: v
-  } = p.getRowModel(), y = hn(n2 != null ? n2 : {
-    getScrollElement: () => C.current,
-    count: v.length,
-    estimateSize: () => v.length,
+  }), v = react.exports.useRef(null), {
+    rows: w
+  } = C.getRowModel(), S = hn(n2 != null ? n2 : {
+    getScrollElement: () => v.current,
+    count: w.length,
+    estimateSize: () => w.length,
     overscan: 10
   }), {
-    getVirtualItems: _,
-    getTotalSize: j
-  } = y, le = _();
-  return j(), /* @__PURE__ */ a(oe, {
-    children: l ? /* @__PURE__ */ a(ur, {
+    getVirtualItems: I,
+    getTotalSize: ue,
+    scrollToIndex: L
+  } = S, _ = I();
+  return react.exports.useEffect(() => {
+    d && L(d);
+  }, [d, L]), ue(), /* @__PURE__ */ a(le, {
+    children: l ? /* @__PURE__ */ a(fr, {
       variant: "table"
-    }) : c ? /* @__PURE__ */ a(cr, {
+    }) : c ? /* @__PURE__ */ a(dr, {
       title: "Error",
       message: "Uh Oh. Please try again.",
       variant: "error",
       details: c
     }) : e2.length === 0 && f ? f : e2.length === 0 ? null : /* @__PURE__ */ h("table", {
       className: `border-collapse table-auto max-w-full w-full text-sm capitalize relative ${o2}`,
-      ref: C,
+      ref: v,
       children: [/* @__PURE__ */ a("thead", {
-        children: p.getHeaderGroups().map((F) => /* @__PURE__ */ a("tr", {
-          children: F.headers.map((R) => /* @__PURE__ */ a("th", {
-            onClick: R.column.getToggleSortingHandler(),
+        children: C.getHeaderGroups().map((A) => /* @__PURE__ */ a("tr", {
+          children: A.headers.map((M) => /* @__PURE__ */ a("th", {
+            onClick: M.column.getToggleSortingHandler(),
             className: "border-b dark:border-primary-600 font-medium pr-2 pl-4 pt-3 pb-3 text-primary-400 dark:text-primary-200 text-left",
-            children: /* @__PURE__ */ h(ie, {
+            children: /* @__PURE__ */ h(ce, {
               className: "mb-0",
-              children: [flexRender(R.column.columnDef.header, R.getContext()), R.column.getIsSorted() ? R.column.getIsSorted() === "desc" ? /* @__PURE__ */ a("span", {
+              children: [flexRender(M.column.columnDef.header, M.getContext()), M.column.getIsSorted() ? M.column.getIsSorted() === "desc" ? /* @__PURE__ */ a("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
                 children: /* @__PURE__ */ a(gn, {})
               }) : /* @__PURE__ */ a("span", {
@@ -1942,18 +1946,18 @@ function Un({
                 children: /* @__PURE__ */ a(Cn, {})
               }) : null]
             })
-          }, R.id))
-        }, F.id))
+          }, M.id))
+        }, A.id))
       }), /* @__PURE__ */ a("tbody", {
-        children: le.map((F) => {
-          var Z;
-          const R = v[F.index];
-          return (Z = s2 == null ? void 0 : s2(R)) != null ? Z : /* @__PURE__ */ a("tr", {
-            children: R.getVisibleCells().map((U) => /* @__PURE__ */ a("td", {
+        children: _.map((A) => {
+          var J;
+          const M = w[A.index];
+          return (J = s2 == null ? void 0 : s2(M)) != null ? J : /* @__PURE__ */ a("tr", {
+            children: M.getVisibleCells().map((z) => /* @__PURE__ */ a("td", {
               className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
-              children: flexRender(U.column.columnDef.cell, U.getContext())
-            }, U.id))
-          }, R.id);
+              children: flexRender(z.column.columnDef.cell, z.getContext())
+            }, z.id))
+          }, M.id);
         })
       })]
     })
@@ -2520,7 +2524,7 @@ function CreateAuxAccountContainer({}) {
       });
     }));
   };
-  return /* @__PURE__ */ jsx(qe, {
+  return /* @__PURE__ */ jsx(er, {
     size: "sm",
     onClick: createAccount,
     children: "Create AUX Account"
@@ -2758,7 +2762,7 @@ function useTradeHistoryTable() {
     return {
       loading: tradeHistoryQuery.loading,
       error: (_a2 = tradeHistoryQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(cr, {
+      noData: /* @__PURE__ */ jsx(dr, {
         message: "No trades found for this market.",
         variant: "basic"
       }),
@@ -2849,7 +2853,7 @@ function usePoolsTable() {
     return {
       loading: poolsQuery.loading,
       error: (_a2 = poolsQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(cr, {
+      noData: /* @__PURE__ */ jsx(dr, {
         message: "You have not added liquidity to any pools.",
         variant: "basic"
       }),
@@ -3047,7 +3051,7 @@ function useBalancesTable() {
     return {
       loading: balancesQuery.loading,
       error: (_a2 = balancesQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(cr, {
+      noData: /* @__PURE__ */ jsx(dr, {
         message: "You have no balances in your wallet. Add some to start trading.",
         variant: "basic"
       }),
@@ -3999,6 +4003,30 @@ const MarketSimpleDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
+              "value": "tickSizeString"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "lotSizeString"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "tickSizeDecimals"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "lotSizeDecimals"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
               "value": "baseCoinInfo"
             },
             "selectionSet": {
@@ -4669,7 +4697,7 @@ function useOpenOrdersTable() {
     return {
       loading: orders.loading,
       error: (_a = orders.error) == null ? void 0 : _a.message,
-      noData: /* @__PURE__ */ jsx(cr, {
+      noData: /* @__PURE__ */ jsx(dr, {
         message: "You have no open orders for this market. Submit one and it will show up here.",
         variant: "basic"
       }),
@@ -4738,7 +4766,7 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(cr, {
+      noData: /* @__PURE__ */ jsx(dr, {
         message: "No past orders. Complete one and check back here.",
         variant: "basic"
       }),
@@ -5207,7 +5235,7 @@ function WithdrawalView({
 }) {
   var _a, _b, _c;
   const [amount, setAmount] = react.exports.useState(0);
-  const [, , connection] = useWallet();
+  const [wallet, , connection] = useWallet();
   const balances = useBalances();
   const fullBalances = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances;
   const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
@@ -5230,7 +5258,7 @@ function WithdrawalView({
   const notifications = jt();
   return /* @__PURE__ */ jsx(An, {
     ref: modalRef,
-    trigger: /* @__PURE__ */ jsx(qe, {
+    trigger: /* @__PURE__ */ jsx(er, {
       size: "sm",
       onClick: () => {
       },
@@ -5242,14 +5270,14 @@ function WithdrawalView({
       children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Withdraw"
-      }), !coins.length && /* @__PURE__ */ jsx(cr, {
+      }), !coins.length && /* @__PURE__ */ jsx(dr, {
         title: "Nothing to withdraw.",
         message: "Cannot find existing balances in your wallet. Please add some money."
       }), /* @__PURE__ */ jsxs("div", {
         className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(ie, {
+          children: [/* @__PURE__ */ jsx(ce, {
             className: "text-primary-300",
             children: "Enter Withdrawal Amount"
           }), /* @__PURE__ */ jsx("div", {
@@ -5277,19 +5305,21 @@ function WithdrawalView({
             placeholder: "0.00"
           })]
         })]
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
         disabled: !coin || Number(balance) < amount,
         onClick: async () => {
-          var _a2;
+          var _a2, _b2;
           if (coin) {
-            if (!((_a2 = isCoinRegistered.data) == null ? void 0 : _a2.account))
-              await registerCoin({
+            if (!((_a2 = isCoinRegistered.data) == null ? void 0 : _a2.account)) {
+              const tx = await registerCoin({
                 variables: {
                   registerCoinInput: {
                     coinType: coin == null ? void 0 : coin.coinType
                   }
                 }
               });
+              await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_b2 = tx.data) == null ? void 0 : _b2.registerCoin));
+            }
             await withdraw({
               amount,
               coinType: coin.coinType,
@@ -5526,7 +5556,7 @@ function DepositView({
   const notifications = jt();
   return /* @__PURE__ */ jsx(An, {
     ref: modalRef,
-    trigger: /* @__PURE__ */ jsx(qe, {
+    trigger: /* @__PURE__ */ jsx(er, {
       size: "sm",
       onClick: () => {
       },
@@ -5538,14 +5568,14 @@ function DepositView({
       children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Deposit"
-      }), !coins.length && /* @__PURE__ */ jsx(cr, {
+      }), !coins.length && /* @__PURE__ */ jsx(dr, {
         title: "Nothing to deposit.",
         message: "Cannot find existing balances in your wallet. Please add some money."
       }), /* @__PURE__ */ jsxs("div", {
         className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(ie, {
+          children: [/* @__PURE__ */ jsx(ce, {
             className: "text-primary-300",
             children: "Enter Deposit Amount"
           }), /* @__PURE__ */ jsx("div", {
@@ -5573,7 +5603,7 @@ function DepositView({
             placeholder: "0.00"
           })]
         })]
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
         disabled: !coin || Number(balance) < amount,
         onClick: () => {
           if (coin)
@@ -5695,7 +5725,7 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
       addressResult += address.slice(address.length - 4, address.length);
       switch (walletType) {
         default:
-          return /* @__PURE__ */ jsxs(qe, {
+          return /* @__PURE__ */ jsxs(er, {
             variant: "basic",
             size: "sm",
             className: "pl-2 mr-3 inline-flex items-center",
@@ -5758,7 +5788,7 @@ function MarketListItem({
   className,
   onMarketSelect
 }) {
-  const baseClasses = "flex justify-between items-center rounded-lg p-4 transition duration-150 ease-in-out hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50";
+  const baseClasses = "flex justify-between items-center rounded-lg p-4 transition duration-150 ease-in-out hover:cursor-pointer hover:bg-secondary-800 active:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50";
   const getPriceTextColor = () => {
     return "text-primary-400";
   };
@@ -6497,7 +6527,7 @@ function PoolsEventTableView({
           children: "Transactions"
         }), /* @__PURE__ */ jsx("div", {
           className: "flex gap-2 mb-4",
-          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(qe, {
+          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(er, {
             onClick: props.onClick,
             size: "sm",
             variant: "basic",
@@ -6619,7 +6649,7 @@ function PoolsEventTableContainer({}) {
       },
       {
         accessorKey: "amountIn",
-        header: ``,
+        header: `Base Coin`,
         cell(c) {
           const value = c.getValue();
           return `${value} ${pool == null ? void 0 : pool.coinInfoX.symbol}`;
@@ -6627,7 +6657,7 @@ function PoolsEventTableContainer({}) {
       },
       {
         accessorKey: "amountOut",
-        header: "",
+        header: "Quote Coin",
         cell(c) {
           const value = c.getValue();
           return `${value} ${pool == null ? void 0 : pool.coinInfoY.symbol}`;
@@ -6654,7 +6684,8 @@ function DepositInput({
       className: "bg-primary-800 focus:outline-none h-[70px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-left pl-3 rounded-2xl",
       placeholder: "0.00",
       onChange,
-      value
+      value,
+      type: "number"
     }), /* @__PURE__ */ jsx(CoinSearchModalContainer, {
       coins,
       trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
@@ -6685,7 +6716,7 @@ function AddLiquidityView({
     children: [/* @__PURE__ */ jsx(Tn, {
       className: "mb-4",
       children: "Add Liquidity"
-    }), /* @__PURE__ */ jsx(ie, {
+    }), /* @__PURE__ */ jsx(ce, {
       className: "mb-4 mt-4",
       children: "Deposit Amounts"
     }), /* @__PURE__ */ jsxs("div", {
@@ -6703,7 +6734,7 @@ function AddLiquidityView({
         onChange: handleChangeSecondCoinAu,
         value: secondCoinAu
       })]
-    }), /* @__PURE__ */ jsx(qe, {
+    }), /* @__PURE__ */ jsx(er, {
       className: "mt-12",
       onClick: addLiquidity,
       children: "Add Liquidity"
@@ -7403,7 +7434,7 @@ function RemoveLiquidityView({
 }) {
   return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(Vn, {
     className: "flex flex-col gap-8 w-[600px] mx-auto self-center",
-    children: [notFoundMsg, /* @__PURE__ */ jsx(qe, {
+    children: [notFoundMsg, /* @__PURE__ */ jsx(er, {
       onClick: goBackToPools,
       children: "Back to pools"
     })]
@@ -7428,7 +7459,7 @@ function RemoveLiquidityView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-4",
-      children: [/* @__PURE__ */ jsx(ie, {
+      children: [/* @__PURE__ */ jsx(ce, {
         children: "Amount To Withdraw"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex flex-row justify-between",
@@ -7437,22 +7468,22 @@ function RemoveLiquidityView({
           children: `${pctVal}%`
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-start items-center gap-2",
-          children: [/* @__PURE__ */ jsx(qe, {
+          children: [/* @__PURE__ */ jsx(er, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(25),
             children: "25%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(50),
             children: "50%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(75),
             children: "75%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(100),
@@ -7481,7 +7512,7 @@ function RemoveLiquidityView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-4 pb-6 items-center",
-      children: [/* @__PURE__ */ jsx(ie, {
+      children: [/* @__PURE__ */ jsx(ce, {
         children: "Amount To Receive"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex flex-row gap-6",
@@ -7505,7 +7536,7 @@ function RemoveLiquidityView({
           })
         })]
       })]
-    }), /* @__PURE__ */ jsx(qe, {
+    }), /* @__PURE__ */ jsx(er, {
       onClick: handleRemoveLiquidity,
       children: "Remove Liquidity"
     })]
@@ -7621,12 +7652,12 @@ function PoolView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex gap-4 mt-6",
-      children: [/* @__PURE__ */ jsx(qe, {
+      children: [/* @__PURE__ */ jsx(er, {
         onClick: () => setAddOpen(true),
         variant: "buy",
         size: "sm",
         children: "Add"
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
         onClick: () => setRemoveOpen(true),
         variant: "sell",
         size: "sm",
@@ -7735,7 +7766,7 @@ function PoolContainer({}) {
     pool
   });
 }
-const connectWalletTrigger = /* @__PURE__ */ jsx(qe, {
+const connectWalletTrigger = /* @__PURE__ */ jsx(er, {
   onClick: () => {
   },
   size: "sm",
@@ -7868,7 +7899,7 @@ function PortfolioView({
     }), /* @__PURE__ */ jsx(Vn, {
       className: "sm:col-span-6",
       padding: 0,
-      children: /* @__PURE__ */ jsxs(Ge$1.Group, {
+      children: /* @__PURE__ */ jsxs(Ge.Group, {
         children: [/* @__PURE__ */ jsx(In, {
           tabs: [
             {
@@ -7884,16 +7915,16 @@ function PortfolioView({
               label: "Order History"
             }
           ]
-        }), /* @__PURE__ */ jsxs(Ge$1.Panels, {
-          children: [/* @__PURE__ */ jsx(Ge$1.Panel, {
+        }), /* @__PURE__ */ jsxs(Ge.Panels, {
+          children: [/* @__PURE__ */ jsx(Ge.Panel, {
             children: /* @__PURE__ */ jsx(BalancesTable, {})
-          }), /* @__PURE__ */ jsx(Ge$1.Panel, {
+          }), /* @__PURE__ */ jsx(Ge.Panel, {
             children: /* @__PURE__ */ jsx(PoolPositionsTable, {})
-          }), /* @__PURE__ */ jsx(Ge$1.Panel, {
+          }), /* @__PURE__ */ jsx(Ge.Panel, {
             children: /* @__PURE__ */ jsx(OrdersTable, {
               variant: "open"
             })
-          }), /* @__PURE__ */ jsx(Ge$1.Panel, {
+          }), /* @__PURE__ */ jsx(Ge.Panel, {
             children: /* @__PURE__ */ jsx(OrdersTable, {})
           })]
         })]
@@ -8441,7 +8472,8 @@ function OrderTable({
       },
       getScrollElement: () => askTableRef.current,
       overscan: 300
-    }
+    },
+    initialScrollIdx: asks.length - 1
   };
   const renderBidRow = react.exports.useCallback((row) => {
     var _a2;
@@ -8470,7 +8502,8 @@ function OrderTable({
         return (_a2 = items == null ? void 0 : items.length) != null ? _a2 : 300;
       },
       getScrollElement: () => bidTableRef.current,
-      overscan: 300
+      overscan: 300,
+      enableSmoothScroll: true
     }
   };
   return /* @__PURE__ */ jsxs("div", {
@@ -8943,48 +8976,53 @@ function useCreateTradingView() {
   const datafeed = useDataFeed();
   const [symbol, setSymbol] = react.exports.useState();
   const [interval, setInterval2] = react.exports.useState("1D");
-  ({
+  const colorPalette = window.tvColorPalette;
+  console.log({
+    colorPalette
+  });
+  const tv_overrides = {
     "paneProperties.backgroundType": "solid",
-    "paneProperties.background": "rgba(15, 23, 42, 0.8)",
-    toolbar_bg: "green",
-    "mainSeriesProperties.candleStyle.upColor": colors_1.green[500],
-    "mainSeriesProperties.candleStyle.downColor": colors_1.red[500],
-    "mainSeriesProperties.candleStyle.borderColor": "var(--secondary-500)",
-    "mainSeriesProperties.candleStyle.borderUpColor": colors_1.green[500],
-    "mainSeriesProperties.candleStyle.borderDownColor": colors_1.red[500],
-    "mainSeriesProperties.candleStyle.wickColor": "var(--secondary-500)",
-    "mainSeriesProperties.candleStyle.wickUpColor": colors_1.green[500],
-    "mainSeriesProperties.candleStyle.wickDownColor": colors_1.red[500],
-    "mainSeriesProperties.hollowCandleStyle.upColor": colors_1.green[500],
-    "mainSeriesProperties.hollowCandleStyle.downColor": colors_1.red[500],
-    "mainSeriesProperties.hollowCandleStyle.borderColor": "var(--secondary-500)",
-    "mainSeriesProperties.hollowCandleStyle.borderUpColor": colors_1.green[500],
-    "mainSeriesProperties.hollowCandleStyle.borderDownColor": colors_1.red[500],
-    "mainSeriesProperties.hollowCandleStyle.wickColor": "var(--secondary-500)",
-    "mainSeriesProperties.hollowCandleStyle.wickUpColor": colors_1.green[500],
-    "mainSeriesProperties.hollowCandleStyle.wickDownColor": colors_1.red[500],
-    "mainSeriesProperties.haStyle.upColor": colors_1.green[500],
-    "mainSeriesProperties.haStyle.downColor": colors_1.red[500],
-    "mainSeriesProperties.haStyle.borderColor": "var(--secondary-500)",
-    "mainSeriesProperties.haStyle.borderUpColor": colors_1.green[500],
-    "mainSeriesProperties.haStyle.borderDownColor": colors_1.red[500],
-    "mainSeriesProperties.haStyle.wickColor": "var(--secondary-500)",
-    "mainSeriesProperties.haStyle.wickUpColor": colors_1.green[500],
-    "mainSeriesProperties.haStyle.wickDownColor": colors_1.red[500],
-    "mainSeriesProperties.barStyle.upColor": colors_1.green[600],
-    "mainSeriesProperties.barStyle.downColor": colors_1.red[600],
-    "mainSeriesProperties.lineStyle.color": "var(--secondary-600)",
+    "paneProperties.background": colorPalette.primary[900],
+    toolbar_bg: colorPalette.primary[900],
+    "mainSeriesProperties.candleStyle.upColor": colorPalette.green[500],
+    "mainSeriesProperties.candleStyle.downColor": colorPalette.red[500],
+    "mainSeriesProperties.candleStyle.borderColor": colorPalette.blue[500],
+    "mainSeriesProperties.candleStyle.borderUpColor": colorPalette.green[500],
+    "mainSeriesProperties.candleStyle.borderDownColor": colorPalette.red[500],
+    "mainSeriesProperties.candleStyle.wickColor": colorPalette.blue[500],
+    "mainSeriesProperties.candleStyle.wickUpColor": colorPalette.green[500],
+    "mainSeriesProperties.candleStyle.wickDownColor": colorPalette.red[500],
+    "mainSeriesProperties.hollowCandleStyle.upColor": colorPalette.green[500],
+    "mainSeriesProperties.hollowCandleStyle.downColor": colorPalette.red[500],
+    "mainSeriesProperties.hollowCandleStyle.borderColor": colorPalette.blue[500],
+    "mainSeriesProperties.hollowCandleStyle.borderUpColor": colorPalette.green[500],
+    "mainSeriesProperties.hollowCandleStyle.borderDownColor": colorPalette.red[500],
+    "mainSeriesProperties.hollowCandleStyle.wickColor": colorPalette.blue[500],
+    "mainSeriesProperties.hollowCandleStyle.wickUpColor": colorPalette.green[500],
+    "mainSeriesProperties.hollowCandleStyle.wickDownColor": colorPalette.red[500],
+    "mainSeriesProperties.haStyle.upColor": colorPalette.green[500],
+    "mainSeriesProperties.haStyle.downColor": colorPalette.red[500],
+    "mainSeriesProperties.haStyle.borderColor": colorPalette.blue[500],
+    "mainSeriesProperties.haStyle.borderUpColor": colorPalette.green[500],
+    "mainSeriesProperties.haStyle.borderDownColor": colorPalette.red[500],
+    "mainSeriesProperties.haStyle.wickColor": colorPalette.blue[500],
+    "mainSeriesProperties.haStyle.wickUpColor": colorPalette.green[500],
+    "mainSeriesProperties.haStyle.wickDownColor": colorPalette.red[500],
+    "mainSeriesProperties.barStyle.upColor": colorPalette.green[600],
+    "mainSeriesProperties.barStyle.downColor": colorPalette.red[600],
+    "mainSeriesProperties.lineStyle.color": colorPalette.blue[600],
     "mainSeriesProperties.areaStyle.color1": "rgba(59,130,246, 0.3)",
-    "mainSeriesProperties.areaStyle.color2": "var(--secondary-600)",
-    "mainSeriesProperties.areaStyle.linecolor": "var(--secondary-600)",
+    "mainSeriesProperties.areaStyle.color2": colorPalette.blue[600],
+    "mainSeriesProperties.areaStyle.linecolor": colorPalette.blue[600],
     "mainSeriesProperties.baselineStyle.topFillColor1": "rgba(34, 197, 94, 0.3)",
     "mainSeriesProperties.baselineStyle.topFillColor2": "rgba(34, 197, 94, 0.05)",
     "mainSeriesProperties.baselineStyle.bottomFillColor1": "rgba(239, 68, 68, 0.3)",
     "mainSeriesProperties.baselineStyle.bottomFillColor2": "rgba(239, 68, 68, 0.05)",
-    "mainSeriesProperties.baselineStyle.topLineColor": colors_1.green[500],
-    "mainSeriesProperties.baselineStyle.bottomLineColor": colors_1.red[500]
-  });
+    "mainSeriesProperties.baselineStyle.topLineColor": colorPalette.green[500],
+    "mainSeriesProperties.baselineStyle.bottomLineColor": colorPalette.red[500]
+  };
   react.exports.useEffect(() => {
+    localStorage.removeItem("tradingview.current_theme.name");
     if (symbol) {
       window.tvWidget = new s({
         symbol,
@@ -8999,10 +9037,11 @@ function useCreateTradingView() {
         library_path: "/charting_library/",
         disabled_features: ["left_toolbar"],
         loading_screen: {
-          backgroundColor: "#000011",
-          foregroundColor: "var(--secondary-600)"
-        }
-      }).applyOverrides(window.tv_overrides);
+          backgroundColor: colorPalette.primary[900],
+          foregroundColor: colorPalette.primary[900]
+        },
+        overrides: tv_overrides
+      }).applyOverrides(tv_overrides);
     }
   }, [symbol, interval]);
   return ({
@@ -9013,8 +9052,41 @@ function useCreateTradingView() {
     setInterval2(interval2);
   };
 }
+const OrderTip = react.exports.memo(function OrderTip2({
+  tip,
+  children
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    style: {
+      cursor: "pointer",
+      zIndex: 9
+    },
+    children: /* @__PURE__ */ jsx(Tooltip, {
+      id: tip,
+      content: /* @__PURE__ */ jsx("span", {
+        className: "opacity-100 font-bold",
+        children: tip
+      }),
+      placement: "right",
+      animation: false,
+      children: /* @__PURE__ */ jsx("div", {
+        style: {
+          width: 24,
+          height: 24,
+          padding: 3,
+          maxWidth: 24,
+          pointerEvents: "none"
+        },
+        children: /* @__PURE__ */ jsx(InformationCircleIcon, {
+          fontSize: 32,
+          color: "white"
+        })
+      })
+    }, tip)
+  });
+});
 function useTradeControls() {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
+  var _a, _b, _c, _d, _e, _f;
   const balances = useBalances();
   const {
     firstCoin,
@@ -9030,6 +9102,7 @@ function useTradeControls() {
   const [cxAmount, setCxAmount] = react.exports.useState(0);
   const [cyAmount, setCyAmount] = react.exports.useState(0);
   const [post, setPost] = react.exports.useState(false);
+  const [pj, setPj] = react.exports.useState(false);
   const [ioc, setIOC] = react.exports.useState(false);
   const [fok, setFok] = react.exports.useState(false);
   const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
@@ -9054,15 +9127,19 @@ function useTradeControls() {
     skip: !firstCoin || !secondCoin
   });
   const pythRating = (_f = (_e = pythRatingQuery.data) == null ? void 0 : _e.market) == null ? void 0 : _f.pythRating;
-  const lotSize = react.exports.useMemo(() => {
+  const step = react.exports.useMemo(() => {
     var _a2, _b2, _c2;
-    return (_c2 = (_b2 = (_a2 = market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSize) != null ? _c2 : 0;
-  }, [(_h = (_g = market.data) == null ? void 0 : _g.market) == null ? void 0 : _h.lotSize]);
-  const dec = react.exports.useMemo(() => {
-    var _a2;
-    return Math.pow(10, ((_a2 = firstCoin == null ? void 0 : firstCoin.decimals) != null ? _a2 : 0) * -1);
-  }, [firstCoin]);
-  const step = react.exports.useMemo(() => lotSize * dec, [lotSize, dec]);
+    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSizeDecimals) != null ? _c2 : 0);
+  }, [market == null ? void 0 : market.data]);
+  const getDecCount = (n2) => {
+    const nStr = n2.toString();
+    const idx = nStr.indexOf(".");
+    const nArr = nStr.split("");
+    const sliced = nArr.slice(idx, nArr.length);
+    const length = sliced.length;
+    return length;
+  };
+  const stepValid = getDecCount(cxAmount) <= getDecCount(step);
   const setPctFactory = (n2) => () => {
     if (quantX)
       setCxAmount(quantX * n2);
@@ -9089,27 +9166,44 @@ function useTradeControls() {
       setPost(false);
     if (fok && val)
       setFok(false);
+    if (pj && val)
+      setPj(false);
     setIOC(val);
     setOrderType(OrderType.ImmediateOrCancel);
-    checkSetLimit([post, fok, val]);
+    checkSetLimit([pj, post, fok, val]);
   };
   const onChangePost = (val) => {
     if (ioc && val)
       setIOC(false);
     if (fok && val)
       setFok(false);
+    if (pj && val)
+      setPj(false);
     setPost(val);
     setOrderType(OrderType.PostOnly);
-    checkSetLimit([ioc, fok, val]);
+    checkSetLimit([pj, ioc, fok, val]);
   };
   const onChangeFok = (val) => {
     if (ioc && val)
       setIOC(false);
     if (post && val)
       setPost(false);
+    if (pj && val)
+      setPj(false);
     setFok(val);
     setOrderType(OrderType.FillOrKill);
-    checkSetLimit([post, ioc, val]);
+    checkSetLimit([pj, post, ioc, val]);
+  };
+  const onChangePassiveJoin = (val) => {
+    if (ioc && val)
+      setIOC(false);
+    if (post && val)
+      setPost(false);
+    if (fok && val)
+      setFok(false);
+    setPj(val);
+    setOrderType(OrderType.PassiveJoin);
+    checkSetLimit([post, ioc, fok, val]);
   };
   const onChangePrice = react.exports.useCallback((e2) => {
     setPrice(Number(e2.currentTarget.value));
@@ -9144,7 +9238,7 @@ function useTradeControls() {
         quantity: cxAmount.toString(),
         sender: connection == null ? void 0 : connection.address,
         side: activeTab === 0 ? Side.Buy : Side.Sell
-      }).then((x) => {
+      }).then(() => {
         resetForm();
         addNotification({
           message: "Trade Submitted",
@@ -9152,7 +9246,7 @@ function useTradeControls() {
           type: "info",
           id: "1"
         });
-      }).catch((err) => {
+      }).catch(() => {
         addNotification({
           title: "Error",
           type: "error",
@@ -9186,7 +9280,10 @@ function useTradeControls() {
     setMax,
     quantX,
     step,
-    pythRating
+    stepValid,
+    pythRating,
+    passiveJoin: pj,
+    onChangePassiveJoin
   };
 }
 function TradingForm() {
@@ -9196,11 +9293,7 @@ function TradingForm() {
     post,
     onChangePost,
     onChangeCxAmount,
-    onChangeCyAmount,
     cxAmount,
-    onChangeOrderType,
-    orderType,
-    cyAmount,
     price: priceInput,
     onChangePrice,
     setActiveTab,
@@ -9213,7 +9306,10 @@ function TradingForm() {
     set75,
     setMax,
     step,
-    pythRating
+    stepValid,
+    pythRating,
+    passiveJoin,
+    onChangePassiveJoin
   } = useTradeControls();
   const {
     firstCoin,
@@ -9228,7 +9324,7 @@ function TradingForm() {
   }];
   return /* @__PURE__ */ jsxs("div", {
     className: "flex flex-col w-full h-full gap-3",
-    children: [/* @__PURE__ */ jsx(Ge$1.Group, {
+    children: [/* @__PURE__ */ jsx(Ge.Group, {
       onChange: setActiveTab,
       selectedIndex: activeTab,
       children: /* @__PURE__ */ jsx(In, {
@@ -9258,24 +9354,27 @@ function TradingForm() {
           inputMode: "decimal",
           type: "number",
           step
+        }), !stepValid && /* @__PURE__ */ jsxs("span", {
+          className: "text-red-400 text-xs",
+          children: [firstCoin.symbol, " must be in increments of ", step.toString()]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex w-full gap-2 pt-2",
-          children: [/* @__PURE__ */ jsx(qe, {
+          children: [/* @__PURE__ */ jsx(er, {
             size: "xs",
             variant: "basic",
             onClick: set25,
             children: "25%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             size: "xs",
             variant: "basic",
             onClick: set50,
             children: "50%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             size: "xs",
             variant: "basic",
             onClick: set75,
             children: "75%"
-          }), /* @__PURE__ */ jsx(qe, {
+          }), /* @__PURE__ */ jsx(er, {
             size: "xs",
             variant: "basic",
             onClick: setMax,
@@ -9289,19 +9388,45 @@ function TradingForm() {
           children: [/* @__PURE__ */ jsx(jn, {
             enabled: ioc,
             onChange: onChangeIOC
-          }), "Immediate Or Cancel"]
+          }), "Immediate Or Cancel", /* @__PURE__ */ jsx(OrderTip, {
+            tip: `
+            Place an aggressive order. The portion of the order that does not fill
+            immediately is cancelled.
+            `
+          })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
           children: [/* @__PURE__ */ jsx(jn, {
             enabled: post,
             onChange: onChangePost
-          }), "Post"]
+          }), "Post", /* @__PURE__ */ jsx(OrderTip, {
+            tip: `
+                Place a passive order. If the order would be aggressive, optionally slide
+                it to become passive. Otherwise, cancel the order.
+            `
+          })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
           children: [/* @__PURE__ */ jsx(jn, {
             enabled: fok,
             onChange: onChangeFok
-          }), "Fill or Kill"]
+          }), "Fill or Kill", /* @__PURE__ */ jsx(OrderTip, {
+            tip: `
+            Place an aggressive order. If the entire order cannot fill immediately,
+            cancel the entire order.
+            `
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex items-center justify-start gap-2",
+          children: [/* @__PURE__ */ jsx(jn, {
+            enabled: passiveJoin,
+            onChange: onChangePassiveJoin
+          }), "Passive Join", /* @__PURE__ */ jsx(OrderTip, {
+            tip: `
+             Join the best bid or best ask level. Optionally place the order more or
+             less aggressive than the best bid or ask up to the limit price.
+            `
+          })]
         })]
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex flex-col pt-3 border-t border-t-primary-700 gap-2",
@@ -9321,7 +9446,7 @@ function TradingForm() {
             children: "Subtotal"
           }), /* @__PURE__ */ jsx("div", {
             className: "font-semibold",
-            children: (priceInput * cxAmount).toLocaleString()
+            children: (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString()
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-between text-primary-400 text-sm",
@@ -9339,10 +9464,11 @@ function TradingForm() {
             children: "Total"
           }), /* @__PURE__ */ jsx("div", {
             className: "font-bold",
-            children: (priceInput * cxAmount).toLocaleString()
+            children: (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString()
           })]
         })]
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
+        disabled: !stepValid,
         onClick: submitTrade,
         size: "sm",
         children: "Submit Trade"
@@ -9504,7 +9630,7 @@ function TradeView({}) {
       children: /* @__PURE__ */ jsx(TradingForm, {})
     }), /* @__PURE__ */ jsxs("div", {
       className: " md:col-span-1 md:row-span-3 h-full md:border-r md:border-t md:border-t-primary-700 md:border-r-primary-700",
-      children: [/* @__PURE__ */ jsx(Ge$1.Group, {
+      children: [/* @__PURE__ */ jsx(Ge.Group, {
         selectedIndex: marketEventTab,
         onChange: setMarketEventTab,
         children: /* @__PURE__ */ jsx(In, {
@@ -9525,7 +9651,7 @@ function TradeView({}) {
       className: "bg-primary-900 min-h-full sm:col-span-1 md:col-span-4 sm:row-span-1 md:row-span-2 h-full min-w-full overflow-hidden md:border-y md:border-y-primary-700"
     }), /* @__PURE__ */ jsxs("div", {
       className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
-      children: [/* @__PURE__ */ jsx(Ge$1.Group, {
+      children: [/* @__PURE__ */ jsx(Ge.Group, {
         selectedIndex: orderTableTab,
         onChange: setOrderTableTab,
         children: /* @__PURE__ */ jsx(In, {
@@ -9734,7 +9860,7 @@ function PoolsView({
       }), /* @__PURE__ */ jsx(Pn, {
         title: "Fee Perecent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
         size: "sm",
         className: "h-auto self-center",
         onClick: () => goToPoolInfo(pool.coinInfoX, pool.coinInfoY),
@@ -9754,7 +9880,7 @@ function PoolsView({
           className: "text-primary-200",
           children: "Earn AUX and a share of the trading fees by providing liquidity to pools!"
         })]
-      }), /* @__PURE__ */ jsx(qe, {
+      }), /* @__PURE__ */ jsx(er, {
         size: "sm",
         onClick: () => goToAddLiquidity(),
         className: "self-center",
@@ -9832,7 +9958,7 @@ const Header$1 = "";
 function Header({}) {
   const connectWallet = () => {
   };
-  const connectEl = /* @__PURE__ */ jsx(qe, {
+  const connectEl = /* @__PURE__ */ jsx(er, {
     className: "my-auto mx-3",
     size: "sm",
     onClick: connectWallet,
@@ -9868,7 +9994,7 @@ function SwapPanel({
     className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex justify-between flex-auto flex-col gap-2",
-      children: [/* @__PURE__ */ jsx(ie, {
+      children: [/* @__PURE__ */ jsx(ce, {
         className: "text-primary-300",
         children: title
       }), /* @__PURE__ */ jsx("div", {
@@ -9945,8 +10071,8 @@ function SwapFormView({
       value: conversion,
       setValue: () => {
       }
-    }), /* @__PURE__ */ jsx(qe, {
-      className: "mt-6",
+    }), /* @__PURE__ */ jsx(er, {
+      className: "mt-6 min-w-full",
       onClick: handleSwap,
       children: "Swap"
     })]
@@ -9995,23 +10121,29 @@ function SwapFormContainer({}) {
   };
   const [swapMutation, swapResult] = useMutation(SwapDocument);
   const handleSwap = react.exports.useCallback(async () => {
-    var _a2, _b2, _c2, _d, _e;
-    if (!((_b2 = (_a2 = isFcRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered))
-      await registerCoin({
+    var _a2, _b2, _c2, _d, _e, _f, _g;
+    if (!((_b2 = (_a2 = isFcRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered)) {
+      const tx = await registerCoin({
         variables: {
           registerCoinInput: {
             coinType: firstCoin == null ? void 0 : firstCoin.coinType
           }
         }
       });
-    if (!((_d = (_c2 = isScRegistered.data) == null ? void 0 : _c2.account) == null ? void 0 : _d.isCoinRegistered))
-      await registerCoin({
+      console.log("first coin not registered", tx);
+      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_c2 = tx.data) == null ? void 0 : _c2.registerCoin));
+    }
+    if (!((_e = (_d = isScRegistered.data) == null ? void 0 : _d.account) == null ? void 0 : _e.isCoinRegistered)) {
+      const tx = await registerCoin({
         variables: {
           registerCoinInput: {
             coinType: secondCoin == null ? void 0 : secondCoin.coinType
           }
         }
       });
+      console.log("second coin not registered", tx);
+      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_f = tx.data) == null ? void 0 : _f.registerCoin));
+    }
     const swapTx = await swapMutation({
       variables: {
         swapInput: {
@@ -10026,7 +10158,7 @@ function SwapFormContainer({}) {
         }
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_e = swapTx.data) == null ? void 0 : _e.swap).then(() => notifications.addNotification({
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_g = swapTx.data) == null ? void 0 : _g.swap).then(() => notifications.addNotification({
       title: "Success",
       type: "success",
       message: "Swap successful"
