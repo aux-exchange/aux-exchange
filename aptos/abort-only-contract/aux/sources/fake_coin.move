@@ -29,8 +29,8 @@ module aux::fake_coin {
         initialize<USDC>(source, 6, b"Fake Coin USDC", b"USDC");
         initialize<USDT>(source, 6, b"Fake Coin USDT", b"USDT");
         initialize<BTC>(source, 8, b"Fake Coin BTC", b"BTC");
-        initialize<ETH>(source, 6, b"Fake Coin ETH", b"ETH");
-        initialize<SOL>(source, 9, b"Fake Coin SOL", b"SOL");
+        initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
+        initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
         initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
     }
 
