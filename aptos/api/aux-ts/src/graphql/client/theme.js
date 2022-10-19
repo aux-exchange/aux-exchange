@@ -40,7 +40,4 @@ tag.innerHTML = `
   }
   `
 
-
-window.tv_overrides = tv_overrides
-
 document.head.appendChild(tag)
