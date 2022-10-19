@@ -11,12 +11,13 @@ import {
   MutationPlaceOrderArgs,
   MutationRegisterCoinArgs,
   MutationRemoveLiquidityArgs,
+  MutationRouterSwapArgs,
   MutationSwapArgs,
   MutationTransferArgs,
   MutationWithdrawArgs,
   OrderType,
   Side,
-} from "../types";
+} from "../generated/types";
 
 export const mutation = {
   createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
@@ -193,6 +194,40 @@ export const mutation = {
         )
         .toString(),
     });
+  },
+  async routerSwap(_parent: any, { swapInput }: MutationRouterSwapArgs) {
+    // const { coinTypeX, coinTypeY } = swapInput.poolInput;
+    const coinInfoIn = await auxClient.getCoinInfo(swapInput.coinTypeIn);
+    const coinInfoOut = await auxClient.getCoinInfo(swapInput.coinTypeIn);
+    if (swapInput.exactIn) {
+      return aux.router.core.mutation.swapExactCoinForCoinPayload(auxClient, {
+        // @ts-ignore
+        sender: undefined,
+        coinTypeIn: swapInput.coinTypeIn,
+        coinTypeOut: swapInput.coinTypeOut,
+        exactAmountAuIn: DU(swapInput.amountIn)
+          .toAtomicUnits(coinInfoIn.decimals)
+          .toString(),
+        // TODO: is this hard-coded slippage? If so 10% is pretty insane
+        minAmountAuOut: DU(0.9 * swapInput.amountOut)
+          .toAtomicUnits(coinInfoOut.decimals)
+          .toString(),
+      });
+    } else {
+      return aux.router.core.mutation.swapCoinForExactCoinPayload(auxClient, {
+        // @ts-ignore
+        sender: undefined,
+        coinTypeIn: swapInput.coinTypeIn,
+        coinTypeOut: swapInput.coinTypeOut,
+        maxAmountAuIn: DU(1.1 * swapInput.amountIn)
+          .toAtomicUnits(coinInfoIn.decimals)
+          .toString(),
+        // TODO: is this hard-coded slippage?
+        exactAmountAuOut: DU(swapInput.amountOut)
+          .toAtomicUnits(coinInfoOut.decimals)
+          .toString(),
+      });
+    }
   },
 };
 
