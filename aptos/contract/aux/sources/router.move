@@ -9,6 +9,7 @@ module aux::router {
     use std::signer;
 
     const MAX_U64: u64 = 18446744073709551615;
+    const CRITBIT_NULL_INDEX: u64 = 1 << 63;
 
 
     const UNSUPPORTED: u64 = 1;
@@ -117,6 +118,197 @@ module aux::router {
     /********************/
     /* PUBLIC FUNCTIONS */
     /********************/
+
+    /// Calculate amount of CoinOut received for au_in of CoinIn
+    /// Returns (amount_in, amount_out)
+    public fun amount_out<CoinIn, CoinOut>(
+        sender_addr: address, // delegatee, see place_order in clob_market for more comments
+        au_in: u64,
+    ): (u64, u64) {
+        if (!fee::fee_exists(sender_addr)) {
+            abort(E_FEE_UNINITIALIZED)
+        };
+
+        // check if pool/market exists
+        let pool_exists_in_out = amm::pool_exists<CoinIn, CoinOut>();
+        let pool_exists_out_in = amm::pool_exists<CoinOut, CoinIn>();
+        let pool_exists = pool_exists_in_out || pool_exists_out_in;
+        // Bid: swap Quote (CoinIn), for Base (CoinOut)
+        let market_exists_quote_in_base_out = clob_market::market_exists<CoinOut, CoinIn>();
+        // Ask: swap Base (CoinIn), for Quote (CoinOut)
+        let market_exists_base_in_quote_out = clob_market::market_exists<CoinIn, CoinOut>();
+
+        let timestamp = timestamp::now_microseconds();
+
+        // There is a pool and a market
+        if (pool_exists && market_exists_base_in_quote_out) {
+            // Pool<CoinIn, CoinOut> && Market<CoinIn, CoinOut>
+
+            let lot_size = clob_market::lot_size<CoinIn, CoinOut>();
+            // let base_decimals = coin::decimals<CoinIn>();
+            let base_unit_au = util::exp(10, (coin::decimals<CoinIn>() as u128));
+
+            let total_input_spent_au = 0;
+            let total_output_received_au = 0;
+
+            let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
+                (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
+            } else {
+                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+            };
+
+            let (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(true, 0, true, timestamp, sender_addr);
+
+            while (total_input_spent_au < au_in) {
+                // user is selling base to receive quote (ASK)
+
+                // if there are no bids, or the remaining quantity is < 1 lot, execute the rest through the pool
+                if (level_idx == CRITBIT_NULL_INDEX || au_in - total_input_spent_au < lot_size) {
+                    let coin_spent_au = au_in - total_input_spent_au;
+                    let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
+                    total_input_spent_au = total_input_spent_au + coin_spent_au;
+                    total_output_received_au = total_output_received_au + coin_received_au;
+                    break
+                };
+                // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
+                // let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
+                let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
+                let remaining = au_in - total_input_spent_au;
+                let max_amount_in = amm::amount_in_limit(
+                    (best_bid_less_fee as u128),
+                    base_unit_au,
+                    reserve_in,
+                    reserve_out,
+                    fee_bps
+                );
+                let (coin_spent_au, coin_received_au) = if (max_amount_in == 0) {
+                    (0, 0)
+                } else {
+                    if (max_amount_in < remaining) {
+                        remaining = max_amount_in
+                    };
+                    (remaining, amm::amount_out(remaining, reserve_in, reserve_out, fee_bps))
+                };
+                reserve_in = reserve_in + coin_spent_au;
+                reserve_out = reserve_out - coin_received_au;
+                total_input_spent_au = total_input_spent_au + coin_spent_au;
+                total_output_received_au = total_output_received_au + coin_received_au;
+
+                // If we're not done, place order through clob
+                if (total_input_spent_au < au_in) {
+                    let remaining_qty_au = (au_in - total_input_spent_au) / lot_size * lot_size;    // round to nearest lot size
+                    let base_spent_au = if (best_bid_qty_au < remaining_qty_au) { best_bid_qty_au } else { remaining_qty_au };
+                    let quote_received_au = fee::subtract_fee(sender_addr, clob_market::quote_qty<CoinIn>(best_bid_price_au, base_spent_au), true);
+                    total_input_spent_au = total_input_spent_au + (base_spent_au as u64);
+                    total_output_received_au = total_output_received_au + (quote_received_au as u64);
+                    // Invariant: we will never fill more than one level at a time.
+                    // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
+                    (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(false, level_idx, true, timestamp, sender_addr);
+                }
+            };
+            assert!(total_input_spent_au == au_in, INTERNAL_ERROR);
+            (total_input_spent_au, total_output_received_au)
+        } else if (pool_exists && market_exists_quote_in_base_out) {
+            // Pool<CoinIn, CoinOut> && Market<CoinOut, CoinIn>
+
+            let lot_size = clob_market::lot_size<CoinOut, CoinIn>();
+            let base_unit_au = util::exp(10, (coin::decimals<CoinOut>() as u128));
+
+            let total_input_spent_au = 0;
+            let total_output_received_au= 0;
+
+            let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
+                (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
+            } else {
+                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+            };
+            let (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(true, 0, false, timestamp, sender_addr);
+
+            while (total_input_spent_au < au_in) {
+                // user is spending quote to receive base (BID)
+
+                // if there are no asks, execute the rest through the pool
+                if (level_idx == CRITBIT_NULL_INDEX) {
+                    let coin_spent_au = au_in - total_input_spent_au;
+                    let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
+                    total_input_spent_au = total_input_spent_au + coin_spent_au;
+                    total_output_received_au = total_output_received_au + coin_received_au;
+                    break
+                };
+                // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
+                let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
+
+                // if we can't purchase at least one lot, execute the rest through the pool
+                let remaining_base_qty_au = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
+                if (remaining_base_qty_au < lot_size) {
+                    let coin_spent_au = au_in - total_input_spent_au;
+                    let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
+                    total_input_spent_au = total_input_spent_au + coin_spent_au;
+                    total_output_received_au = total_output_received_au + coin_received_au;
+                    break
+                };
+
+                // Limit swap
+                let remaining = au_in - total_input_spent_au;
+                let max_amount_in = amm::amount_in_limit(
+                    base_unit_au,
+                    (best_ask_plus_fee as u128),
+                    reserve_in,
+                    reserve_out,
+                    fee_bps
+                );
+                let (coin_spent_au, coin_received_au) = if (max_amount_in == 0) {
+                    (0, 0)
+                } else {
+                    if (max_amount_in < remaining) {
+                        remaining = max_amount_in
+                    };
+                    (remaining, amm::amount_out(remaining, reserve_in, reserve_out, fee_bps))
+                };
+                reserve_in = reserve_in + coin_spent_au;
+                reserve_out = reserve_out - coin_received_au;
+                total_input_spent_au = total_input_spent_au + coin_spent_au;
+                total_output_received_au = total_output_received_au + coin_received_au;
+
+                if (total_input_spent_au < au_in) {
+                    let remaining_base_qty_au = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
+                    remaining_base_qty_au = remaining_base_qty_au / lot_size * lot_size;    // round to nearest lot size
+                    let base_received_au = if (best_ask_qty_au < remaining_base_qty_au) { best_ask_qty_au } else { remaining_base_qty_au };
+                    let quote_spent_au = fee::add_fee(sender_addr, clob_market::quote_qty<CoinOut>(best_ask_price_au, base_received_au), true);
+                    total_input_spent_au = total_input_spent_au + (quote_spent_au as u64);
+                    total_output_received_au = total_output_received_au + (base_received_au as u64);
+                    // Invariant: we will never fill more than one level at a time.
+                    // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
+                    (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(false, level_idx, false, timestamp, sender_addr);
+                }
+            };
+            assert!(total_input_spent_au == au_in, INTERNAL_ERROR);
+            (total_input_spent_au, total_output_received_au)
+        } else if (pool_exists) {
+            let coin_spent = au_in;
+            let coin_received = amm::au_out<CoinIn, CoinOut>(coin_spent);
+            assert!((coin_spent as u64) == au_in, INTERNAL_ERROR);
+            (coin_spent, coin_received)
+        } else if (market_exists_base_in_quote_out) {
+            // TODO: need to simulate taking orders out of book
+            let (base_spent_au, quote_received_au) = clob_market::estimate_fill<CoinIn, CoinOut>(
+                sender_addr,
+                false,
+                0,
+                au_in,
+                timestamp
+            );
+            assert!((base_spent_au as u64) <= au_in, INTERNAL_ERROR);
+            (base_spent_au, quote_received_au)
+        } else {
+            abort(UNSUPPORTED)
+        }
+    }
+
+    // public fun amount_in<CoinIn, CoinOut>(
+    //     sender_addr: address, // delegatee, see place_order in clob_market for more comments
+    //     au_out: u64,
+    // ) {}
 
     public fun swap_exact_coin_for_coin<CoinIn, CoinOut>(
         sender_addr: address, // delegatee, see place_order in clob_market for more comments
@@ -572,6 +764,7 @@ module aux::router {
 
         assert!(signer::address_of(&authority::get_signer(sender)) == @aux, ETEST_FAILED);
 
+        // TODO: test with fees
         if (pool_exists) {
             amm::create_pool<X, Y>(sender, 0);
         };
@@ -592,6 +785,8 @@ module aux::router {
 
         util::mint_coin_for_test<X>(&authority::get_signer(sender), sender_addr, 50000000000);
         util::mint_coin_for_test<Y>(&authority::get_signer(sender), sender_addr, 50000000000);
+
+        fee::initialize_fee_default(sender);
     }
 
 
@@ -651,6 +846,8 @@ module aux::router {
         let btc_t0 = coin::balance<BTC>(sender_addr);
         let usdc_t0 = coin::balance<USDC>(sender_addr);
 
+        let (est_in, est_out) = amount_out<BTC, USDC>(sender_addr, 75000000);
+        assert!(est_in == 75000000, ETEST_FAILED);
         swap_exact_coin_for_coin_with_signer<BTC, USDC>(sender, 75000000, 16000000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
@@ -658,13 +855,14 @@ module aux::router {
 
         assert!(btc_t0 - btc_t1 == 75000000, ETEST_FAILED);
         assert!(usdc_t1 - usdc_t0 >= 16000000000, usdc_t1 - usdc_t0);
+        assert!(est_out == usdc_t1 - usdc_t0, est_out);
 
         let alice_usdc_spent = (alice_initial_usdc as u128) - vault::balance<USDC>(alice_addr);
         let bob_usdc_spent = (bob_initial_usdc as u128) - vault::balance<USDC>(bob_addr);
         let amm_usdc_spent = amm_initial_usdc - amm::y_au<BTC, USDC>();
 
         assert!(alice_usdc_spent > 0, ETEST_FAILED);
-        assert!(bob_usdc_spent > 0, ETEST_FAILED);
+        assert!(bob_usdc_spent == 10750000000, ETEST_FAILED);
         assert!(amm_usdc_spent > 0, ETEST_FAILED);
 
         // sum will not be exact due to fees
@@ -697,13 +895,12 @@ module aux::router {
             lot_size,
             tick_size,
             true,
-            true);
-
-
+            true
+        );
         let sender_addr = signer::address_of(sender);
 
         // Pool balances are base: 1e8 (1.00), quote: 22000e6 (22,000.00), so gives
-        let amm_initial_usdc = 2200000000;
+        let amm_initial_usdc = 21000000000;
         amm::add_exact_liquidity<USDC, BTC>(sender, amm_initial_usdc, 100000000);
 
         let alice_addr = signer::address_of(alice);
@@ -724,12 +921,15 @@ module aux::router {
         let btc_t0 = coin::balance<BTC>(sender_addr);
         let usdc_t0 = coin::balance<USDC>(sender_addr);
 
+        let (est_in, est_out) = amount_out<USDC, BTC>(sender_addr, 17000000000);
+        assert!(est_in == 17000000000, ETEST_FAILED);
         swap_exact_coin_for_coin_with_signer<USDC, BTC>(sender, 17000000000, 75000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
         let usdc_t1 = coin::balance<USDC>(sender_addr);
 
         assert!(btc_t1 - btc_t0 >= 75000000, ETEST_FAILED);
+        assert!(btc_t1 - btc_t0 == est_out, est_out);
         assert!(usdc_t0 - usdc_t1 == 17000000000, usdc_t0 - usdc_t1);
 
         let alice_usdc_received = vault::balance<USDC>(alice_addr);
@@ -737,7 +937,7 @@ module aux::router {
         let amm_usdc_received = amm::x_au<USDC, BTC>() - amm_initial_usdc;
 
         assert!(alice_usdc_received > 0, ETEST_FAILED);
-        assert!(bob_usdc_received > 0, ETEST_FAILED);
+        assert!(bob_usdc_received == 11250000000, ETEST_FAILED);
         assert!(amm_usdc_received > 0, ETEST_FAILED);
 
         // sum will not be exact due to fees
@@ -794,6 +994,9 @@ module aux::router {
 
         coin::register<BTC>(&authority::get_signer_self());
 
+
+        let (est_in, est_out) = amount_out<BTC, USDC>(sender_addr, 75000000);
+        assert!(est_in == 75000000, ETEST_FAILED);
         swap_exact_coin_for_coin_with_signer<BTC, USDC>(sender, 75000000, 15000000000);
 
         // all orders should have been matched
@@ -803,18 +1006,15 @@ module aux::router {
         let usdc_t1 = coin::balance<USDC>(sender_addr);
 
         assert!(btc_t0 - btc_t1 == 75000000, btc_t0 - btc_t1);
-        assert!(usdc_t1 - usdc_t0 >= 15900000000, usdc_t1 - usdc_t0);
+        assert!(usdc_t1 - usdc_t0 == fee::subtract_fee(sender_addr, 15975000000, true), usdc_t1 - usdc_t0);
+        assert!(est_out == usdc_t1 - usdc_t0, est_out);
 
         let alice_usdc_spent = (alice_initial_usdc as u128) - vault::balance<USDC>(alice_addr);
         let bob_usdc_spent = (bob_initial_usdc as u128) - vault::balance<USDC>(bob_addr);
         // let amm_usdc_spent = amm_initial_usdc - amm::y_au<USDC, BTC>();
 
-        assert!(alice_usdc_spent > 0, ETEST_FAILED);
-        assert!(bob_usdc_spent > 0, ETEST_FAILED);
-        // assert!(amm_usdc_spent > 0, ETEST_FAILED);
-
-        // sum will not be exact due to fees
-        assert!(alice_usdc_spent + bob_usdc_spent >= 15898410000, ETEST_FAILED);
+        assert!(alice_usdc_spent == (fee::add_fee(alice_addr, 5225000000, false) as u128), ETEST_FAILED);
+        assert!(bob_usdc_spent == (fee::add_fee(bob_addr, 10750000000, false) as u128), ETEST_FAILED);
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
@@ -856,6 +1056,8 @@ module aux::router {
 
         let predicted_btc_out = amm::au_out<USDC, BTC>(17500000000);
         // std::debug::print<u128>(&predicted_btc_out);
+        let (est_in, est_out) = amount_out<USDC, BTC>(sender_addr, 17500000000);
+        assert!(est_in == 17500000000, ETEST_FAILED);
         swap_exact_coin_for_coin_with_signer<USDC, BTC>(sender, 17500000000, 40000000);
 
         let btc_t1 = coin::balance<BTC>(sender_addr);
@@ -863,6 +1065,7 @@ module aux::router {
 
         assert!(btc_t1 - btc_t0 >= 40000000, ETEST_FAILED);
         assert!(btc_t1 - btc_t0 == (predicted_btc_out as u64), ETEST_FAILED);
+        assert!(btc_t1 - btc_t0 == (est_out as u64), est_out);
         assert!(usdc_t0 - usdc_t1 == 17500000000, usdc_t0 - usdc_t1);
 
         let amm_usdc_received = amm::y_au<BTC, USDC>() - amm_initial_usdc;
