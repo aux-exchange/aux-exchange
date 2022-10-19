@@ -1,33 +1,35 @@
-import { parseTypeArgs } from "../../client";
 import * as aux from "../../";
 import { AU } from "../../";
 import AuxAccount from "../../account";
+import { parseTypeArgs } from "../../client";
 import { auxClient } from "../connection";
 import {
   Account,
-  AccountPoolPositionsArgs,
+  AccountIsCoinRegisteredArgs,
   AccountOpenOrdersArgs,
   AccountOrderHistoryArgs,
+  AccountPoolPositionsArgs,
   AccountTradeHistoryArgs,
   Balance,
   Deposit,
   Order,
   OrderStatus,
   OrderType,
+  Position,
   Side,
+  Trade,
   Transfer,
   Withdrawal,
-  Position,
-  Trade,
 } from "../types";
-import type { Types } from "aptos";
 
 export const account = {
-
-  async isCoinRegistered(parent: Account, coinType: Types.MoveStructTag): Promise<boolean> {
+  async isCoinRegistered(
+    parent: Account,
+    { coinType }: AccountIsCoinRegisteredArgs
+  ): Promise<boolean> {
     const coinStore = await auxClient.getAccountResourceOptional(
       parent.address,
-      `0x1::coin::CoinStore<${coinType}>`,
+      `0x1::coin::CoinStore<${coinType}>`
     );
     return coinStore !== undefined;
   },
