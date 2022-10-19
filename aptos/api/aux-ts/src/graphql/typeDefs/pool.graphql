@@ -33,7 +33,7 @@ type Position {
 
 input CreatePoolInput {
   poolInput: PoolInput!
-  feePercent: Float!
+  feeBasisPoints: String!
 }
 
 input AddLiquidityInput {

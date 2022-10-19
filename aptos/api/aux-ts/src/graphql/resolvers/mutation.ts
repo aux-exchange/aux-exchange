@@ -26,7 +26,7 @@ export const mutation = {
       sender: undefined,
       coinTypeX,
       coinTypeY,
-      feeBps: (createPoolInput.feePercent * 100).toString(),
+      feeBps: createPoolInput.feeBasisPoints,
     });
   },
 
