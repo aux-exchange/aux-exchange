@@ -5091,13 +5091,16 @@ function WithdrawalView({
   });
 }
 function WithdrawalContainer({}) {
+  const [wallet] = useWallet();
   const [withdrawMutation] = useMutation(WithdrawDocument);
   const withdraw = async (withdrawInput) => {
-    await withdrawMutation({
+    var _a;
+    const tx = await withdrawMutation({
       variables: {
         withdrawInput
       }
     });
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.withdraw));
   };
   return /* @__PURE__ */ jsx(WithdrawalView, {
     withdraw
