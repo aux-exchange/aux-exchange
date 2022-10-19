@@ -11,6 +11,7 @@ import type {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
+  QueryRouterQuoteArgs,
 } from "../generated/types";
 
 const APT = "0x1::aptos_coin::AptosCoin";
@@ -211,5 +212,32 @@ export const query = {
       address: owner,
       isAUXAccountCreated: auxAccount !== undefined,
     };
+  },
+  async routerQuote(
+    _parent: any,
+    { input }: QueryRouterQuoteArgs
+  ): Promise<Maybe<number>> {
+    const r = new aux.Router({ client: auxClient });
+    let res;
+    console.log(input.exactIn);
+    if (input.exactIn) {
+      console.log("exactIn");
+      res = await r.getQuoteExactCoinForCoin({
+        exactAmountIn: aux.DU(input.amount),
+        coinTypeIn: input.coinTypeIn,
+        coinTypeOut: input.coinTypeOut,
+      });
+    } else {
+      console.log("exactOut");
+      res = await r.getQuoteCoinForExactCoin({
+        exactAmountOut: aux.DU(input.amount),
+        coinTypeIn: input.coinTypeIn,
+        coinTypeOut: input.coinTypeOut,
+      });
+    }
+    const coinInfo = await auxClient.getCoinInfo(input.coinTypeOut);
+    return !!res.payload
+      ? res.payload.amount.toDecimalUnits(coinInfo.decimals).toNumber()
+      : null;
   },
 };
