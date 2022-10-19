@@ -5212,9 +5212,9 @@ function DepositContainer({}) {
     deposit
   });
 }
-new MartianWalletAdapter();
+const martian = new MartianWalletAdapter();
 const petra = new PetraWalletAdapter();
-const WALLETS = [petra];
+const WALLETS = [martian, petra];
 const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
   trigger
 }, _ref) {
@@ -5225,16 +5225,6 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
   const suggestedBadge = /* @__PURE__ */ jsx(Fn, {
     size: "xs",
     children: "Recommended"
-  });
-  const connectedBadge = /* @__PURE__ */ jsx(Fn, {
-    size: "xs",
-    variant: "success",
-    children: "Connected"
-  });
-  const detectedBadge = /* @__PURE__ */ jsx(Fn, {
-    size: "xs",
-    variant: "basic",
-    children: "Detected"
   });
   const walletOptions = WALLETS.map((w) => ({
     name: w.walletType,
@@ -5339,9 +5329,9 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
                 className: "font-semibold",
                 children: wallet.name
               }), wallet.link]
-            }), /* @__PURE__ */ jsxs("div", {
+            }), /* @__PURE__ */ jsx("div", {
               className: "inline-flex gap-2",
-              children: [!wallet.connected && wallet.suggested ? suggestedBadge : null, wallet.connected ? connectedBadge : null, !wallet.connected && wallet.detected ? detectedBadge : null]
+              children: wallet.suggested ? suggestedBadge : null
             })]
           })
         }, wallet.name))]
@@ -8092,13 +8082,13 @@ function OrderTable({
       header: "Price"
     }],
     virtualizeOptions: {
-      count: (_a = items == null ? void 0 : items.length) != null ? _a : 10,
+      count: (_a = items == null ? void 0 : items.length) != null ? _a : 100,
       estimateSize: () => {
         var _a2;
-        return (_a2 = items == null ? void 0 : items.length) != null ? _a2 : 10;
+        return (_a2 = items == null ? void 0 : items.length) != null ? _a2 : 300;
       },
       getScrollElement: () => askTableRef.current,
-      overscan: 10
+      overscan: 300
     }
   };
   const renderBidRow = react.exports.useCallback((row) => {
@@ -8122,13 +8112,13 @@ function OrderTable({
       maxSize: 150
     }],
     virtualizeOptions: {
-      count: (_b = items == null ? void 0 : items.length) != null ? _b : 10,
+      count: (_b = items == null ? void 0 : items.length) != null ? _b : 300,
       estimateSize: () => {
         var _a2;
-        return (_a2 = items == null ? void 0 : items.length) != null ? _a2 : 10;
+        return (_a2 = items == null ? void 0 : items.length) != null ? _a2 : 300;
       },
       getScrollElement: () => bidTableRef.current,
-      overscan: 10
+      overscan: 300
     }
   };
   return /* @__PURE__ */ jsxs("div", {
@@ -8258,132 +8248,11 @@ const OrderbookDocument = {
     }
   }]
 };
-const OrderBookQueryDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "OrderBookQuery"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "marketInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "MarketInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "market"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "marketInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "marketInput"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "orderbook"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "bids"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "price"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "quantity"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "asks"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "price"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "quantity"
-                    }
-                  }]
-                }
-              }]
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
 function OrderBookView(props) {
   const {
     firstCoin,
     secondCoin
   } = useCoinXYParamState();
-  useQuery(OrderBookQueryDocument, {
-    variables: {
-      marketInput: {
-        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      }
-    }
-  });
   const orderBookSubscription = useSubscription(OrderbookDocument, {
     variables: {
       marketInputs: [{
@@ -9777,7 +9646,7 @@ function SwapFormContainer({}) {
       }
     });
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap).then(() => notifications.addNotification({
-      title: "Succes",
+      title: "Success",
       type: "success",
       message: "Swap successful"
     })).catch((err) => {
