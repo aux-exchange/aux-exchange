@@ -5347,7 +5347,7 @@ function WithdrawalView({
   });
 }
 function WithdrawalContainer({}) {
-  const [wallet] = useWallet();
+  const [wallet, , connection] = useWallet();
   const [withdrawMutation] = useMutation(WithdrawDocument);
   const withdraw = async (withdrawInput) => {
     var _a;
@@ -5357,6 +5357,11 @@ function WithdrawalContainer({}) {
       }
     });
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.withdraw));
+    await new Promise((res) => setTimeout(async () => await client.refetchQueries({
+      include: ["Balances"]
+    }).then((x) => {
+      res(x);
+    }), 1e3));
   };
   return /* @__PURE__ */ jsx(WithdrawalView, {
     withdraw
@@ -5644,6 +5649,11 @@ function DepositContainer({}) {
       }
     });
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.deposit));
+    await new Promise((res) => setTimeout(async () => await client.refetchQueries({
+      include: ["Balances"]
+    }).then((x) => {
+      res(x);
+    }), 1e3));
   };
   return /* @__PURE__ */ jsx(DepositView, {
     deposit
@@ -9131,7 +9141,13 @@ function useTradeControls() {
     var _a2, _b2, _c2;
     return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSizeDecimals) != null ? _c2 : 0);
   }, [market == null ? void 0 : market.data]);
+  const tick = react.exports.useMemo(() => {
+    var _a2, _b2, _c2;
+    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.tickSizeDecimals) != null ? _c2 : 0);
+  }, [market == null ? void 0 : market.data]);
   const getDecCount = (n2) => {
+    if (!n2)
+      return 0;
     const nStr = n2.toString();
     const idx = nStr.indexOf(".");
     const nArr = nStr.split("");
@@ -9139,6 +9155,7 @@ function useTradeControls() {
     const length = sliced.length;
     return length;
   };
+  const tickValid = getDecCount(price) <= getDecCount(tick);
   const stepValid = getDecCount(cxAmount) <= getDecCount(step);
   const setPctFactory = (n2) => () => {
     if (quantX)
@@ -9283,7 +9300,9 @@ function useTradeControls() {
     stepValid,
     pythRating,
     passiveJoin: pj,
-    onChangePassiveJoin
+    onChangePassiveJoin,
+    tick,
+    tickValid
   };
 }
 function TradingForm() {
@@ -9309,7 +9328,9 @@ function TradingForm() {
     stepValid,
     pythRating,
     passiveJoin,
-    onChangePassiveJoin
+    onChangePassiveJoin,
+    tick,
+    tickValid
   } = useTradeControls();
   const {
     firstCoin,
@@ -9332,8 +9353,8 @@ function TradingForm() {
       })
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-3 px-4",
-      children: [/* @__PURE__ */ jsx("div", {
-        children: /* @__PURE__ */ jsx($n, {
+      children: [/* @__PURE__ */ jsxs("div", {
+        children: [/* @__PURE__ */ jsx($n, {
           className: "w-full",
           value: priceInput,
           onChange: onChangePrice,
@@ -9342,7 +9363,10 @@ function TradingForm() {
           suffix: secondCoin == null ? void 0 : secondCoin.symbol,
           inputMode: "decimal",
           type: "number"
-        })
+        }), !tickValid && /* @__PURE__ */ jsxs("span", {
+          className: "text-red-400 text-xs",
+          children: [secondCoin == null ? void 0 : secondCoin.symbol, " must be in increments of ", tick.toString()]
+        })]
       }), /* @__PURE__ */ jsxs("div", {
         children: [/* @__PURE__ */ jsx($n, {
           value: cxAmount,
