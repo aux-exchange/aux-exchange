@@ -47,12 +47,6 @@ module aux::router {
     // Self-trading prevention (STP) action type
     // This order agrees on the specification that when a self-trading occur, cancel the passive one (the maker order)
 
-    // Cancel passive side
-    const CANCEL_PASSIVE: u64 = 200;
-    // Cancel aggressive side
-    const CANCEL_AGGRESSIVE: u64 = 201;
-    // Cancel both sides
-    const CANCEL_BOTH: u64 = 202;
 
     // Order Event Types
     const ORDER_FILL_EVENT: u64 = 1;
@@ -515,6 +509,15 @@ module aux::router {
     /*********/
     /* TESTS */
     /*********/
+    // Cancel passive side
+    #[test_only]
+    const CANCEL_PASSIVE: u64 = 200;
+    // Cancel aggressive side
+    #[test_only]
+    const CANCEL_AGGRESSIVE: u64 = 201;
+    // Cancel both sides
+    #[test_only]
+    const CANCEL_BOTH: u64 = 202;
 
     #[test_only]
     use aptos_framework::account;

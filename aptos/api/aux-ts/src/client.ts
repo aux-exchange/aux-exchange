@@ -295,7 +295,7 @@ export class AuxClient {
       getAuxAuthorityAndAddressFromEnvironment();
     return [
       AuxClient.createFromEnv({
-        moduleAddress,
+        moduleAddress: new HexString(moduleAddress).toShortString(),
         transactionOptions,
       }),
       moduleAuthority,
@@ -354,7 +354,9 @@ export class AuxClient {
     );
 
     const rawTxn = await this.aptosClient.generateTransaction(
-      simulatorAccount?.address.toString() || this.simulatorAddress!,
+      !!simulatorAccount
+        ? new HexString(simulatorAccount!.address.toString()).toShortString()
+        : this.simulatorAddress!,
       payload,
       options
     );
