@@ -1,4 +1,4 @@
-import { Types } from "aptos";
+import type { Types } from "aptos";
 
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

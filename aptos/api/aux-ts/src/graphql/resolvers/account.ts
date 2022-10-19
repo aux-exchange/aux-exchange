@@ -20,7 +20,7 @@ import {
   Position,
   Trade,
 } from "../types";
-import { Types } from "aptos";
+import type { Types } from "aptos";
 
 export const account = {
 
