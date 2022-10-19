@@ -4994,6 +4994,214 @@ function CoinSelectButton({
     })
   });
 }
+const SwapDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Swap"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "swapInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "SwapInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "swap"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "swapInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "swapInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const IsCoinRegisteredDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "isCoinRegistered"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "coinType"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "String"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "isCoinRegistered"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinType"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }
+            }]
+          }]
+        }
+      }]
+    }
+  }]
+};
+const RegisterCoinDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "RegisterCoin"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "registerCoinInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "RegisterCoinInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "registerCoin"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "registerCoinInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "registerCoinInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
 function WithdrawalView({
   withdraw
 }) {
@@ -5005,6 +5213,14 @@ function WithdrawalView({
   const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
   const [coin, selectCoin] = react.exports.useState();
   const [balance, setBalance] = react.exports.useState("-");
+  const isCoinRegistered = useQuery(IsCoinRegisteredDocument, {
+    variables: {
+      coinType: coin == null ? void 0 : coin.coinType,
+      owner: connection == null ? void 0 : connection.address
+    },
+    skip: !(coin == null ? void 0 : coin.coinType)
+  });
+  const [registerCoin] = useMutation(RegisterCoinDocument);
   const modalRef = react.exports.useRef(null);
   react.exports.useEffect(() => {
     const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
@@ -5063,15 +5279,24 @@ function WithdrawalView({
         })]
       }), /* @__PURE__ */ jsx(qe, {
         disabled: !coin || Number(balance) < amount,
-        onClick: () => {
-          if (coin)
-            withdraw({
+        onClick: async () => {
+          var _a2;
+          if (coin) {
+            if (!((_a2 = isCoinRegistered.data) == null ? void 0 : _a2.account))
+              await registerCoin({
+                variables: {
+                  registerCoinInput: {
+                    coinType: coin == null ? void 0 : coin.coinType
+                  }
+                }
+              });
+            await withdraw({
               amount,
               coinType: coin.coinType,
               from: connection == null ? void 0 : connection.address
             }).then(() => {
-              var _a2;
-              (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
+              var _a3;
+              (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
               notifications.addNotification({
                 title: "Success",
                 type: "success",
@@ -5084,6 +5309,7 @@ function WithdrawalView({
                 message: "Failed to withdraw balance!"
               });
             });
+          }
         },
         children: "Submit Withdrawal"
       })]
@@ -5872,13 +6098,13 @@ function MarketSelector({
               coins: [firstCoin == null ? void 0 : firstCoin.symbol, secondCoin == null ? void 0 : secondCoin.symbol],
               size: 32
             }), /* @__PURE__ */ jsx("div", {
-              className: "text-xl ml-3 mr-auto text-left",
+              className: "text-xl ml-3 mr-3 text-left",
               children: (_e = `${(_b = (_a2 = selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) == null ? void 0 : _a2.symbol) != null ? _b : "..."}/${(_d = (_c = selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) == null ? void 0 : _c.symbol) != null ? _d : "..."}`) != null ? _e : null
             }), open ? /* @__PURE__ */ jsx(ChevronUpIcon, {
-              className: "h-5 w-5 text-primary-400",
+              className: "h-5 w-5 text-primary-400 ml-auto",
               "aria-hidden": "true"
             }) : /* @__PURE__ */ jsx(ChevronDownIcon, {
-              className: "h-5 w-5 text-primary-400",
+              className: "h-5 w-5 text-primary-400 ml-auto",
               "aria-hidden": "true"
             })]
           }), /* @__PURE__ */ jsx(We, {
@@ -7157,61 +7383,6 @@ const RlPoolPositionDocument = {
             }
           }]
         }
-      }]
-    }
-  }]
-};
-const SwapDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "Swap"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "swapInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "SwapInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "swap"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "swapInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "swapInput"
-            }
-          }
-        }]
       }]
     }
   }]
@@ -9056,129 +9227,126 @@ function TradingForm() {
     variant: "sell"
   }];
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col w-full h-full gap-3 px-4",
+    className: "flex flex-col w-full h-full gap-3",
     children: [/* @__PURE__ */ jsx(Ge$1.Group, {
       onChange: setActiveTab,
       selectedIndex: activeTab,
       children: /* @__PURE__ */ jsx(In, {
         tabs
       })
-    }), /* @__PURE__ */ jsx("div", {
-      children: /* @__PURE__ */ jsx($n, {
-        className: "w-full",
-        value: priceInput,
-        onChange: onChangePrice,
-        name: "price",
-        label: "Price",
-        suffix: /* @__PURE__ */ jsx("div", {
-          className: "mr-[60px]",
-          children: secondCoin == null ? void 0 : secondCoin.symbol
-        }),
-        inputMode: "decimal",
-        type: "number"
-      })
     }), /* @__PURE__ */ jsxs("div", {
-      children: [/* @__PURE__ */ jsx($n, {
-        value: cxAmount,
-        onChange: onChangeCxAmount,
-        name: "coinx",
-        label: "Amount",
-        suffix: /* @__PURE__ */ jsx("div", {
-          className: "mr-[60px]",
-          children: firstCoin == null ? void 0 : firstCoin.symbol
-        }),
-        className: "w-full",
-        inputMode: "decimal",
-        type: "number",
-        step
+      className: "flex flex-col gap-3 px-4",
+      children: [/* @__PURE__ */ jsx("div", {
+        children: /* @__PURE__ */ jsx($n, {
+          className: "w-full",
+          value: priceInput,
+          onChange: onChangePrice,
+          name: "price",
+          label: "Price",
+          suffix: secondCoin == null ? void 0 : secondCoin.symbol,
+          inputMode: "decimal",
+          type: "number"
+        })
       }), /* @__PURE__ */ jsxs("div", {
-        className: "flex w-full gap-2 pt-2",
-        children: [/* @__PURE__ */ jsx(qe, {
-          size: "xs",
-          variant: "basic",
-          onClick: set25,
-          children: "25%"
-        }), /* @__PURE__ */ jsx(qe, {
-          size: "xs",
-          variant: "basic",
-          onClick: set50,
-          children: "50%"
-        }), /* @__PURE__ */ jsx(qe, {
-          size: "xs",
-          variant: "basic",
-          onClick: set75,
-          children: "75%"
-        }), /* @__PURE__ */ jsx(qe, {
-          size: "xs",
-          variant: "basic",
-          onClick: setMax,
-          children: "Max"
+        children: [/* @__PURE__ */ jsx($n, {
+          value: cxAmount,
+          onChange: onChangeCxAmount,
+          name: "coinx",
+          label: "Amount",
+          suffix: firstCoin == null ? void 0 : firstCoin.symbol,
+          className: "w-full",
+          inputMode: "decimal",
+          type: "number",
+          step
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex w-full gap-2 pt-2",
+          children: [/* @__PURE__ */ jsx(qe, {
+            size: "xs",
+            variant: "basic",
+            onClick: set25,
+            children: "25%"
+          }), /* @__PURE__ */ jsx(qe, {
+            size: "xs",
+            variant: "basic",
+            onClick: set50,
+            children: "50%"
+          }), /* @__PURE__ */ jsx(qe, {
+            size: "xs",
+            variant: "basic",
+            onClick: set75,
+            children: "75%"
+          }), /* @__PURE__ */ jsx(qe, {
+            size: "xs",
+            variant: "basic",
+            onClick: setMax,
+            children: "Max"
+          })]
         })]
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "grid gap-6 my-2 grid-row-2 grid-col-2",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex items-center justify-start gap-2",
+          children: [/* @__PURE__ */ jsx(jn, {
+            enabled: ioc,
+            onChange: onChangeIOC
+          }), "Immediate Or Cancel"]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex items-center justify-start gap-2",
+          children: [/* @__PURE__ */ jsx(jn, {
+            enabled: post,
+            onChange: onChangePost
+          }), "Post"]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex items-center justify-start gap-2",
+          children: [/* @__PURE__ */ jsx(jn, {
+            enabled: fok,
+            onChange: onChangeFok
+          }), "Fill or Kill"]
+        })]
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "flex flex-col pt-3 border-t border-t-primary-700 gap-2",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between text-primary-400 text-sm",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "font-medium",
+            children: "Price Protection by Pyth:"
+          }), /* @__PURE__ */ jsx("div", {
+            className: `font-medium ${(pythRating == null ? void 0 : pythRating.color) === "GREEN" ? "text-green-300" : (pythRating == null ? void 0 : pythRating.color) === "YELLOW" ? "text-yellow-300" : (pythRating == null ? void 0 : pythRating.color) === "RED" ? "text-red-300" : ""}`,
+            children: (pythRating == null ? void 0 : pythRating.color) === "GREEN" ? "Good Price" : (pythRating == null ? void 0 : pythRating.color) === "YELLOW" ? "High Price" : (pythRating == null ? void 0 : pythRating.color) === "RED" ? "High Price" : ""
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between text-primary-400 text-sm",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "font-medium",
+            children: "Subtotal"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "font-semibold",
+            children: (priceInput * cxAmount).toLocaleString()
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between text-primary-400 text-sm",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "font-medium",
+            children: "Fee"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "font-semibold",
+            children: "Zero! \u263A"
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between text-lg border-t border-t-primary-700 pt-3",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "font-medium",
+            children: "Total"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "font-bold",
+            children: (priceInput * cxAmount).toLocaleString()
+          })]
+        })]
+      }), /* @__PURE__ */ jsx(qe, {
+        onClick: submitTrade,
+        size: "sm",
+        children: "Submit Trade"
       })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "grid gap-6 my-2 grid-row-2 grid-col-2",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex items-center justify-start gap-2",
-        children: [/* @__PURE__ */ jsx(jn, {
-          enabled: ioc,
-          onChange: onChangeIOC
-        }), "Immediate Or Cancel"]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center justify-start gap-2",
-        children: [/* @__PURE__ */ jsx(jn, {
-          enabled: post,
-          onChange: onChangePost
-        }), "Post"]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center justify-start gap-2",
-        children: [/* @__PURE__ */ jsx(jn, {
-          enabled: fok,
-          onChange: onChangeFok
-        }), "Fill or Kill"]
-      })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex flex-col py-3 border-t border-t-primary-700 gap-2",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-primary-400 text-sm",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-medium",
-          children: "Price Protection by Pyth:"
-        }), /* @__PURE__ */ jsx("div", {
-          className: `font-medium ${(pythRating == null ? void 0 : pythRating.color) === "GREEN" ? "text-green-300" : (pythRating == null ? void 0 : pythRating.color) === "YELLOW" ? "text-yellow-300" : (pythRating == null ? void 0 : pythRating.color) === "RED" ? "text-red-300" : ""}`,
-          children: (pythRating == null ? void 0 : pythRating.color) === "GREEN" ? "Good Price" : (pythRating == null ? void 0 : pythRating.color) === "YELLOW" ? "High Price" : (pythRating == null ? void 0 : pythRating.color) === "RED" ? "High Price" : ""
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-primary-400 text-sm",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-medium",
-          children: "Subtotal"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "font-semibold",
-          children: (priceInput * cxAmount).toLocaleString()
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-primary-400 text-sm",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-medium",
-          children: "Fee"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "font-semibold",
-          children: "Zero! \u263A"
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex justify-between text-lg border-t border-t-primary-700 pt-3",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-medium",
-          children: "Total"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "font-bold",
-          children: (priceInput * cxAmount).toLocaleString()
-        })]
-      })]
-    }), /* @__PURE__ */ jsx(qe, {
-      onClick: submitTrade,
-      size: "sm",
-      children: "Submit Trade"
     })]
   });
 }
@@ -9307,7 +9475,7 @@ function TradeView({}) {
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex items-center md:col-span-6",
       children: [/* @__PURE__ */ jsx("div", {
-        className: "flex px-4 py-2.5 w-[400px]",
+        className: "flex px-4 py-2.5 w-[380px]",
         children: /* @__PURE__ */ jsx(MarketSelector, {
           onSelectMarket
         })
@@ -9793,6 +9961,20 @@ function SwapFormContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
+  const [wallet, , connection] = useWallet();
+  const isFcRegistered = useQuery(IsCoinRegisteredDocument, {
+    variables: {
+      coinType: firstCoin == null ? void 0 : firstCoin.coinType,
+      owner: connection == null ? void 0 : connection.address
+    }
+  });
+  const isScRegistered = useQuery(IsCoinRegisteredDocument, {
+    variables: {
+      coinType: secondCoin == null ? void 0 : secondCoin.coinType,
+      owner: connection == null ? void 0 : connection.address
+    }
+  });
+  const [registerCoin] = useMutation(RegisterCoinDocument);
   const notifications = jt();
   const [value, setValue] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
@@ -9811,10 +9993,25 @@ function SwapFormContainer({}) {
     onSecondCoinSelect(pc);
     setValue(1);
   };
-  const [wallet] = useWallet();
   const [swapMutation, swapResult] = useMutation(SwapDocument);
   const handleSwap = react.exports.useCallback(async () => {
-    var _a2;
+    var _a2, _b2, _c2, _d, _e;
+    if (!((_b2 = (_a2 = isFcRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered))
+      await registerCoin({
+        variables: {
+          registerCoinInput: {
+            coinType: firstCoin == null ? void 0 : firstCoin.coinType
+          }
+        }
+      });
+    if (!((_d = (_c2 = isScRegistered.data) == null ? void 0 : _c2.account) == null ? void 0 : _d.isCoinRegistered))
+      await registerCoin({
+        variables: {
+          registerCoinInput: {
+            coinType: secondCoin == null ? void 0 : secondCoin.coinType
+          }
+        }
+      });
     const swapTx = await swapMutation({
       variables: {
         swapInput: {
@@ -9829,7 +10026,7 @@ function SwapFormContainer({}) {
         }
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap).then(() => notifications.addNotification({
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_e = swapTx.data) == null ? void 0 : _e.swap).then(() => notifications.addNotification({
       title: "Success",
       type: "success",
       message: "Swap successful"
