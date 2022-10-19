@@ -17,6 +17,7 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   address: Scalars['Address'];
+  walletBalances: Array<Balance>;
   balances: Array<Balance>;
   deposits: Array<Deposit>;
   withdrawals: Array<Withdrawal>;
@@ -62,7 +63,7 @@ export type Market = {
   low24h?: Maybe<Scalars['Float']>;
   volume24h?: Maybe<Scalars['Float']>;
   bars: Array<Bar>;
-  pythRating: PythRating;
+  pythRating?: Maybe<PythRating>;
 };
 
 
@@ -93,7 +94,13 @@ export type MarketPythRatingArgs = {
   side: Side;
 };
 
-export enum PythRating {
+export type PythRating = {
+  __typename?: 'PythRating';
+  price: Scalars['Float'];
+  color: PythRatingColor;
+};
+
+export enum PythRatingColor {
   Red = 'RED',
   Yellow = 'YELLOW',
   Green = 'GREEN'
@@ -222,8 +229,8 @@ export type PlaceOrderInput = {
   marketInput: MarketInput;
   sender: Scalars['Address'];
   side: Side;
-  limitPrice: Scalars['Float'];
-  quantity: Scalars['Float'];
+  limitPrice: Scalars['String'];
+  quantity: Scalars['String'];
   auxToBurn: Scalars['Float'];
   clientOrderId: Scalars['Int'];
   orderType: OrderType;
@@ -499,6 +506,11 @@ export type CoinInfo = {
   decimals: Scalars['Float'];
   name: Scalars['String'];
   symbol: Scalars['String'];
+};
+
+export type Wallet = {
+  __typename?: 'Wallet';
+  balances: Array<Balance>;
 };
 
 export type Balance = {

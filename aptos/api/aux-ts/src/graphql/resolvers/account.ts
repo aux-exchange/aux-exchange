@@ -22,11 +22,32 @@ import {
 } from "../types";
 
 export const account = {
+  async walletBalances(parent: Account): Promise<Balance[]> {
+    const resources = await auxClient.aptosClient.getAccountResources(
+      parent.address
+    );
+    const coinStores = resources.filter((resource) =>
+      resource.type.includes("CoinStore<") && !resource.type.includes("LP")
+    );
+    return Promise.all(
+      coinStores.map(async (coinStore) => {
+        const coinType = parseTypeArgs(coinStore.type)[0]!;
+        console.log(coinType);
+        const coinInfo = await auxClient.getCoinInfo(coinType);
+        // @ts-ignore
+        const balance = coinStore.data.coin.value;
+        return {
+          balance,
+          availableBalance: balance,
+          coinInfo,
+        };
+      })
+    );
+  },
   async balances(parent: Account): Promise<Balance[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const balances = await account.balances();
 
-    console.log(balances.balances);
     return await Promise.all(
       balances.balances.map(async (e) => {
         const [coinType] = parseTypeArgs(e.key.name);
@@ -44,7 +65,6 @@ export const account = {
   async deposits(parent: Account): Promise<Deposit[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const deposits = await account.deposits();
-    // console.log(deposits);
     return deposits.map((deposit) => ({
       // @ts-ignore
       coinType: deposit.data.coinType,

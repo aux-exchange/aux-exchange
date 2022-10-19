@@ -15,7 +15,12 @@ type Market {
   pythRating(price: Float!, side: Side!): PythRating
 }
 
-enum PythRating {
+type PythRating {
+  price: Float!
+  color: PythRatingColor!
+}
+
+enum PythRatingColor {
   RED
   YELLOW
   GREEN
@@ -127,8 +132,8 @@ input PlaceOrderInput {
   marketInput: MarketInput!
   sender: Address!
   side: Side!
-  limitPrice: Float!
-  quantity: Float!
+  limitPrice: String!
+  quantity: String!
   auxToBurn: Float!
   clientOrderId: Int!
   orderType: OrderType!
