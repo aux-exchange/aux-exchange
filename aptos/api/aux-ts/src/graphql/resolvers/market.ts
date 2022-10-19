@@ -24,6 +24,20 @@ import fs from "fs";
 import readline from "readline";
 import { FakeCoin } from "../../../src/client";
 
+/**
+ * Returns the symbol name in the data feed corresponding to the symbol name in
+ * the UI.
+ */
+function getDataSymbolFromUISymbol(uiSymbol: string): string {
+  return uiSymbol
+    .replace("WBTC", "BTC")
+    .replace("WETH", "ETH")
+    .replace("USDC", "USD")
+    .replace("(sol)", "")
+    .replace("(eth)", "")
+    .trim();
+}
+
 export const market = {
   async openOrders(
     parent: Market,
@@ -164,10 +178,8 @@ export const market = {
       WEEKS_1: "1w",
     };
 
-    const base = parent.baseCoinInfo.symbol
-      .replace("WBTC", "BTC")
-      .replace("WETH", "ETH");
-    const quote = parent.quoteCoinInfo.symbol.replace("USDC", "USD");
+    const base = getDataSymbolFromUISymbol(parent.baseCoinInfo.symbol);
+    const quote = getDataSymbolFromUISymbol(parent.quoteCoinInfo.symbol);
     const filename = `${base}-${quote}_${convert[resolution]}.json`;
     const path = `${process.cwd()}/src/indexer/data/${filename}`;
     const rl = readline.createInterface({
@@ -213,10 +225,8 @@ export const market = {
       WEEKS_1: "1w",
     };
 
-    const base = parent.baseCoinInfo.symbol
-      .replace("WBTC", "BTC")
-      .replace("WETH", "ETH");
-    const quote = parent.quoteCoinInfo.symbol.replace("USDC", "USD");
+    const base = getDataSymbolFromUISymbol(parent.baseCoinInfo.symbol);
+    const quote = getDataSymbolFromUISymbol(parent.quoteCoinInfo.symbol);
     const filename = `${base}-${quote}_${convert[resolution]}.json`;
     const path = `${process.cwd()}/src/indexer/data/${filename}`;
     const rl = readline.createInterface({
