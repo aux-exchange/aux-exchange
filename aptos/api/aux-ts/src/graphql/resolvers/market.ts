@@ -1,5 +1,8 @@
-import { getBar } from "../../../src/indexer/analytics";
+import fs from "fs";
+import readline from "readline";
 import * as aux from "../../";
+import { FakeCoin } from "../../../src/client";
+import { getBar } from "../../../src/indexer/analytics";
 import { auxClient, pythClient } from "../connection";
 import {
   Bar,
@@ -21,10 +24,6 @@ import {
   Side,
   Trade,
 } from "../generated/types";
-import _ from "lodash";
-import fs from "fs";
-import readline from "readline";
-import { FakeCoin } from "../../../src/client";
 
 /**
  * Returns the symbol name in the data feed corresponding to the symbol name in

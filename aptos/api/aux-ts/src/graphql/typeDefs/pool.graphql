@@ -58,16 +58,19 @@ type Swap {
   coinInfoOut: CoinInfo!
   amountIn: Float!
   amountOut: Float!
+  time: String!
 }
 
 type AddLiquidity {
   amountAddedX: Float!
   amountAddedY: Float!
   amountMintedLP: Float!
+  time: String!
 }
 
 type RemoveLiquidity {
   amountRemovedX: Float!
   amountRemovedY: Float!
   amountBurnedLP: Float!
+  time: String!
 }
