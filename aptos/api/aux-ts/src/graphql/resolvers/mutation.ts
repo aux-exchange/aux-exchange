@@ -146,6 +146,9 @@ export const mutation = {
       orderId: cancelOrderInput.orderId,
     });
   },
+  createAuxAccount() {
+    return aux.vault.core.mutation.createAuxAccountPayload(auxClient);
+  },
   async deposit(_parent: any, { depositInput }: MutationDepositArgs) {
     return aux.vault.core.mutation.depositPayload(auxClient, {
       coinType: depositInput.coinType,

@@ -19,6 +19,7 @@ type Mutation {
   placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!
   cancelOrder(cancelOrderInput: CancelOrderInput!): EntryFunctionPayload!
 
+  createAuxAccount: EntryFunctionPayload!
   deposit(depositInput: DepositInput!): EntryFunctionPayload!
   withdraw(withdrawInput: WithdrawInput!): EntryFunctionPayload!
   transfer(transferInput: TransferInput!): EntryFunctionPayload!
