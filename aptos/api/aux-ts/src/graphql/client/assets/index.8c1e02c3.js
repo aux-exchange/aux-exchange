@@ -61,7 +61,7 @@ var se = { exports: {} }, W = {};
  * LICENSE file in the root directory of this source tree.
  */
 var Ze;
-function rt() {
+function tt() {
   if (Ze)
     return W;
   Ze = 1;
@@ -79,10 +79,10 @@ function rt() {
   return W.Fragment = s2, W.jsx = c, W.jsxs = c, W;
 }
 (function(e2) {
-  e2.exports = rt();
+  e2.exports = tt();
 })(se);
 const oe = se.exports.Fragment, a = se.exports.jsx, h = se.exports.jsxs;
-function nt({
+function at({
   title: e2,
   titleId: t2,
   ...s2
@@ -108,8 +108,8 @@ function nt({
     })]
   });
 }
-const at = react.exports.forwardRef(nt), st = at;
-function ot({
+const st = react.exports.forwardRef(at), ot = st;
+function it({
   title: e2,
   titleId: t2,
   ...s2
@@ -135,8 +135,8 @@ function ot({
     })]
   });
 }
-const it = react.exports.forwardRef(ot), lt = it;
-function ct({
+const lt = react.exports.forwardRef(it), ct = lt;
+function ut({
   title: e2,
   titleId: t2,
   ...s2
@@ -162,8 +162,8 @@ function ct({
     })]
   });
 }
-const ut = react.exports.forwardRef(ct), nr = ut;
-function dt({
+const dt = react.exports.forwardRef(ut), ar = dt;
+function ft({
   title: e2,
   titleId: t2,
   ...s2
@@ -189,8 +189,8 @@ function dt({
     })]
   });
 }
-const ft = react.exports.forwardRef(dt), ht = ft;
-function mt({
+const ht = react.exports.forwardRef(ft), mt = ht;
+function pt({
   title: e2,
   titleId: t2,
   ...s2
@@ -216,8 +216,8 @@ function mt({
     })]
   });
 }
-const pt = react.exports.forwardRef(mt), gt = pt;
-function vt({
+const gt = react.exports.forwardRef(pt), vt = gt;
+function bt({
   title: e2,
   titleId: t2,
   ...s2
@@ -243,8 +243,8 @@ function vt({
     })]
   });
 }
-const bt = react.exports.forwardRef(vt), ar = bt;
-function Ct({
+const Ct = react.exports.forwardRef(bt), sr = Ct;
+function wt({
   title: e2,
   titleId: t2,
   ...s2
@@ -270,8 +270,8 @@ function Ct({
     })]
   });
 }
-const wt = react.exports.forwardRef(Ct), sr = wt;
-function yt({
+const yt = react.exports.forwardRef(wt), or = yt;
+function xt({
   title: e2,
   titleId: t2,
   ...s2
@@ -297,8 +297,8 @@ function yt({
     })]
   });
 }
-const xt = react.exports.forwardRef(yt), or = xt;
-function Et({
+const Et = react.exports.forwardRef(xt), ir = Et;
+function Rt({
   title: e2,
   titleId: t2,
   ...s2
@@ -324,8 +324,8 @@ function Et({
     })]
   });
 }
-const Rt = react.exports.forwardRef(Et), kt = Rt;
-function ir({
+const kt = react.exports.forwardRef(Rt), St = kt;
+function lr({
   title: e2,
   message: t2,
   variant: s2,
@@ -341,13 +341,13 @@ function ir({
   return /* @__PURE__ */ h("div", {
     role: "alert",
     className: c,
-    children: [s2 === "error" ? /* @__PURE__ */ a(or, {
+    children: [s2 === "error" ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-red-400"
-    }) : s2 === "success" ? /* @__PURE__ */ a(nr, {
+    }) : s2 === "success" ? /* @__PURE__ */ a(ar, {
       className: "w-10 h-10 text-green-400"
-    }) : s2 === "warning" ? /* @__PURE__ */ a(ar, {
+    }) : s2 === "warning" ? /* @__PURE__ */ a(sr, {
       className: "w-10 h-10 text-orange-400"
-    }) : s2 === "info" ? /* @__PURE__ */ a(sr, {
+    }) : s2 === "info" ? /* @__PURE__ */ a(or, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col justify-between ml-3 w-full",
@@ -364,7 +364,7 @@ function ir({
     })]
   });
 }
-function St({}) {
+function _t({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
@@ -412,7 +412,7 @@ function Xe({}) {
     })]
   });
 }
-function _t({}) {
+function Ot({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700",
@@ -442,7 +442,7 @@ function _t({}) {
     })]
   });
 }
-function Ot({}) {
+function Nt({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-primary-200 shadow animate-pulse md:p-6 dark:border-primary-700",
@@ -473,19 +473,19 @@ function Ot({}) {
     })]
   });
 }
-function lr({
+function cr({
   variant: e2
 }) {
   return (() => {
     switch (e2) {
       case "table":
-        return /* @__PURE__ */ a(St, {});
+        return /* @__PURE__ */ a(_t, {});
       case "list":
         return /* @__PURE__ */ a(Xe, {});
       case "card":
-        return /* @__PURE__ */ a(_t, {});
-      case "tv":
         return /* @__PURE__ */ a(Ot, {});
+      case "tv":
+        return /* @__PURE__ */ a(Nt, {});
       default:
         return /* @__PURE__ */ a(Xe, {});
     }
@@ -505,33 +505,33 @@ function D(e2, t2) {
   return true;
 }
 let Q;
-const Nt = new Uint8Array(16);
-function Tt() {
+const Tt = new Uint8Array(16);
+function Mt() {
   if (!Q && (Q = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Q))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return Q(Nt);
+  return Q(Tt);
 }
 const O = [];
 for (let e2 = 0; e2 < 256; ++e2)
   O.push((e2 + 256).toString(16).slice(1));
-function Mt(e2, t2 = 0) {
+function Ft(e2, t2 = 0) {
   return (O[e2[t2 + 0]] + O[e2[t2 + 1]] + O[e2[t2 + 2]] + O[e2[t2 + 3]] + "-" + O[e2[t2 + 4]] + O[e2[t2 + 5]] + "-" + O[e2[t2 + 6]] + O[e2[t2 + 7]] + "-" + O[e2[t2 + 8]] + O[e2[t2 + 9]] + "-" + O[e2[t2 + 10]] + O[e2[t2 + 11]] + O[e2[t2 + 12]] + O[e2[t2 + 13]] + O[e2[t2 + 14]] + O[e2[t2 + 15]]).toLowerCase();
 }
-const Ft = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Je = {
-  randomUUID: Ft
+const Pt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Je = {
+  randomUUID: Pt
 };
-function Pt(e2, t2, s2) {
+function Lt(e2, t2, s2) {
   if (Je.randomUUID && !t2 && !e2)
     return Je.randomUUID();
   e2 = e2 || {};
-  const n2 = e2.random || (e2.rng || Tt)();
+  const n2 = e2.random || (e2.rng || Mt)();
   if (n2[6] = n2[6] & 15 | 64, n2[8] = n2[8] & 63 | 128, t2) {
     s2 = s2 || 0;
     for (let o2 = 0; o2 < 16; ++o2)
       t2[s2 + o2] = n2[o2];
     return t2;
   }
-  return Mt(n2);
+  return Ft(n2);
 }
 var P = /* @__PURE__ */ ((e2) => (e2.basic = "basic", e2.error = "error", e2.warning = "warning", e2.info = "info", e2.success = "success", e2))(P || {});
 const Ce = create$1((e2) => ({
@@ -541,7 +541,7 @@ const Ce = create$1((e2) => ({
       ...s2,
       notifications: s2.notifications.concat({
         ...t2,
-        id: Pt()
+        id: Lt()
       })
     }));
   },
@@ -552,7 +552,7 @@ const Ce = create$1((e2) => ({
     }));
   }
 }));
-function Lt() {
+function $t() {
   const e2 = Ce((n2) => n2.notifications, D), t2 = Ce((n2) => n2.addNotification, D);
   return {
     removeNotification: Ce((n2) => n2.removeNotification, D),
@@ -611,26 +611,26 @@ function On() {
     removeParams: l
   };
 }
-function cr(e2) {
+function ur(e2) {
   var t2, s2, n2 = "";
   if (typeof e2 == "string" || typeof e2 == "number")
     n2 += e2;
   else if (typeof e2 == "object")
     if (Array.isArray(e2))
       for (t2 = 0; t2 < e2.length; t2++)
-        e2[t2] && (s2 = cr(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
+        e2[t2] && (s2 = ur(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
     else
       for (t2 in e2)
         e2[t2] && (n2 && (n2 += " "), n2 += t2);
   return n2;
 }
-function $t() {
+function jt() {
   for (var e2, t2, s2 = 0, n2 = ""; s2 < arguments.length; )
-    (e2 = arguments[s2++]) && (t2 = cr(e2)) && (n2 && (n2 += " "), n2 += t2);
+    (e2 = arguments[s2++]) && (t2 = ur(e2)) && (n2 && (n2 += " "), n2 += t2);
   return n2;
 }
-const jt = (e2) => typeof e2 == "boolean", It = (e2) => jt(e2) ? String(e2) : e2, Dt = (e2, t2) => Object.entries(e2).every(([s2, n2]) => t2[s2] === n2);
-function Vt(e2) {
+const It = (e2) => typeof e2 == "boolean", Dt = (e2) => It(e2) ? String(e2) : e2, Vt = (e2, t2) => Object.entries(e2).every(([s2, n2]) => t2[s2] === n2);
+function At(e2) {
   return (t2, s2) => {
     const n2 = Object.entries(t2).reduce((f, [d, m]) => m === void 0 ? f : {
       ...f,
@@ -638,14 +638,14 @@ function Vt(e2) {
     }, {}), o2 = {
       ...e2.defaultVariants,
       ...n2
-    }, l = Object.keys(e2.variants).map((f) => e2.variants[f][It(t2[f]) || e2.defaultVariants[f]]), c = e2.compoundVariants.reduce((f, {
+    }, l = Object.keys(e2.variants).map((f) => e2.variants[f][Dt(t2[f]) || e2.defaultVariants[f]]), c = e2.compoundVariants.reduce((f, {
       classes: d,
       ...m
-    }) => (Dt(m, o2) && d && f.push(d), f), []);
-    return $t([e2.base, l, c, s2]);
+    }) => (Vt(m, o2) && d && f.push(d), f), []);
+    return jt([e2.base, l, c, s2]);
   };
 }
-const At = Vt({
+const Ut = At({
   base: "w-auto h-auto text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer",
   variants: {
     variant: {
@@ -676,7 +676,7 @@ function Ge({
   onClick: l,
   disabled: c
 }) {
-  const f = At({
+  const f = Ut({
     size: n2,
     variant: s2
   }, e2), m = (() => {
@@ -705,7 +705,7 @@ function Nn() {
   const {
     removeNotification: e2,
     notifications: t2
-  } = Lt(), s2 = react.exports.useRef(t2[0]), n2 = useAnimationControls(), [o2, l] = react.exports.useState(t2[0]), c = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", f = {
+  } = $t(), s2 = react.exports.useRef(t2[0]), n2 = useAnimationControls(), [o2, l] = react.exports.useState(t2[0]), c = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", f = {
     [P.basic]: " border-l-secondary-400",
     [P.error]: " border-l-red-400",
     [P.success]: " border-l-green-400",
@@ -753,13 +753,13 @@ function Nn() {
   return /* @__PURE__ */ h(motion.div, {
     className: c + ((o2 == null ? void 0 : o2.type) != null ? f[o2 == null ? void 0 : o2.type] : f.info),
     animate: n2,
-    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(or, {
+    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-red-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(nr, {
+    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(ar, {
       className: "w-10 h-10 text-green-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(ar, {
+    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(sr, {
       className: "w-10 h-10 text-orange-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(sr, {
+    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(or, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col ml-3 w-full",
@@ -773,7 +773,7 @@ function Nn() {
           variant: "basic",
           className: "border-0 bg-none",
           onClick: p,
-          children: /* @__PURE__ */ a(kt, {
+          children: /* @__PURE__ */ a(St, {
             className: "w-4 h-4"
           })
         })]
@@ -812,7 +812,7 @@ function ie({
     children: e2
   });
 }
-const Ut = ({
+const Bt = ({
   size: e2
 }) => /* @__PURE__ */ h("svg", {
   width: e2,
@@ -830,7 +830,7 @@ const Ut = ({
     fill: "black",
     d: "M86.6 37.4h-9.9c-1.1 0-2.2-.5-3-1.3l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.4 3.9c-1.1 1.3-2.8 2-4.5 2H2.9C1.4 41.9.4 46.6 0 51.3h51.2c.9 0 1.8-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4H112c-.4-4.7-1.4-9.4-2.9-13.8H86.6zM53.8 65l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.5 3.9c-1.1 1.3-2.7 2-4.4 2H.8c.9 4.8 2.5 9.5 4.6 14h25.5c.9 0 1.7-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4h56.6c2.1-4.4 3.7-9.1 4.6-14H56.8c-1.2 0-2.3-.5-3-1.4zm19.6-43.6 4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1l4 4.5c.8.9 1.9 1.3 3 1.3h10.8c-18.8-24.8-54.1-29.7-79-11-4.1 3.1-7.8 6.8-11 11H71c1 .2 1.8-.2 2.4-.8zM34.7 94.2c-1.2 0-2.3-.5-3-1.3l-4-4.5c-1.2-1.3-3.2-1.4-4.5-.2l-.2.2-3.5 3.9c-1.1 1.3-2.7 2-4.4 2h-.2C36 116.9 71.7 118 94.4 96.7c.9-.8 1.7-1.7 2.6-2.6H34.7z"
   })]
-}), Bt = ({
+}), qe = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -851,7 +851,7 @@ const Ut = ({
       d: "M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z"
     })]
   })
-}), qe = ({
+}), Qe = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1087,19 +1087,23 @@ function Jt({
 }) {
   switch (e2) {
     case "apt":
-      return /* @__PURE__ */ a(Ut, {
-        size: t2
-      });
-    case "btc":
       return /* @__PURE__ */ a(Bt, {
         size: t2
       });
-    case "eth":
+    case "btc":
       return /* @__PURE__ */ a(qe, {
         size: t2
       });
-    case "weth":
+    case "wbtc":
       return /* @__PURE__ */ a(qe, {
+        size: t2
+      });
+    case "eth":
+      return /* @__PURE__ */ a(Qe, {
+        size: t2
+      });
+    case "weth":
+      return /* @__PURE__ */ a(Qe, {
         size: t2
       });
     case "sol":
@@ -1214,9 +1218,9 @@ function qt({
   })();
   return /* @__PURE__ */ h("div", {
     className: o2,
-    children: [s2 && s2 === "up" ? /* @__PURE__ */ a(lt, {
+    children: [s2 && s2 === "up" ? /* @__PURE__ */ a(ct, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : s2 && s2 === "down" ? /* @__PURE__ */ a(st, {
+    }) : s2 && s2 === "down" ? /* @__PURE__ */ a(ot, {
       className: "w-[14px] h-[14px] mr-1"
     }) : null, t2 && /* @__PURE__ */ h("div", {
       className: "mr-2",
@@ -1292,10 +1296,10 @@ function Ln({
           className: " text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm",
           children: [l.label, /* @__PURE__ */ a("span", {
             className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-            children: d ? /* @__PURE__ */ a(gt, {
+            children: d ? /* @__PURE__ */ a(vt, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
-            }) : /* @__PURE__ */ a(ht, {
+            }) : /* @__PURE__ */ a(mt, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
             })
@@ -1457,9 +1461,9 @@ const Vn = ({
   error: l,
   onClick: c
 }) => /* @__PURE__ */ a(oe, {
-  children: o2 ? /* @__PURE__ */ a(lr, {
+  children: o2 ? /* @__PURE__ */ a(cr, {
     variant: "card"
-  }) : l ? /* @__PURE__ */ a(ir, {
+  }) : l ? /* @__PURE__ */ a(lr, {
     title: "Error",
     message: "Uh Oh. Please try again.",
     variant: "error",
@@ -1591,13 +1595,13 @@ const en = (e2) => e2, rn = (e2) => {
     return t2(e2.scrollElement.getBoundingClientRect()), s2.observe(e2.scrollElement), () => {
       s2.unobserve(e2.scrollElement);
     };
-}, Qe = {
+}, er = {
   element: ["scrollLeft", "scrollTop"],
   window: ["scrollX", "scrollY"]
 }, nn = (e2) => (t2, s2) => {
   if (!t2.scrollElement)
     return;
-  const n2 = Qe[e2][0], o2 = Qe[e2][1];
+  const n2 = er[e2][0], o2 = er[e2][1];
   let l = t2.scrollElement[n2], c = t2.scrollElement[o2];
   const f = () => {
     s2(t2.scrollElement[t2.options.horizontal ? n2 : o2]);
@@ -1905,9 +1909,9 @@ function Un({
     getTotalSize: j
   } = y, le = _();
   return j(), /* @__PURE__ */ a(oe, {
-    children: l ? /* @__PURE__ */ a(lr, {
+    children: l ? /* @__PURE__ */ a(cr, {
       variant: "table"
-    }) : c ? /* @__PURE__ */ a(ir, {
+    }) : c ? /* @__PURE__ */ a(lr, {
       title: "Error",
       message: "Uh Oh. Please try again.",
       variant: "error",
@@ -2481,7 +2485,7 @@ const CreateAuxAccountDocument = {
 };
 function CreateAuxAccountContainer({}) {
   const [wallet] = useWallet();
-  const notifications = Lt();
+  const notifications = $t();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const createAccount = async () => {
     const tx = await createAuxAccount().catch((err) => {
@@ -2743,7 +2747,7 @@ function useTradeHistoryTable() {
     return {
       loading: tradeHistoryQuery.loading,
       error: (_a2 = tradeHistoryQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(ir, {
+      noData: /* @__PURE__ */ jsx(lr, {
         message: "No trades found for this market.",
         variant: "basic"
       }),
@@ -2834,7 +2838,7 @@ function usePoolsTable() {
     return {
       loading: poolsQuery.loading,
       error: (_a2 = poolsQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(ir, {
+      noData: /* @__PURE__ */ jsx(lr, {
         message: "You have not added liquidity to any pools.",
         variant: "basic"
       }),
@@ -3032,7 +3036,7 @@ function useBalancesTable() {
     return {
       loading: balancesQuery.loading,
       error: (_a2 = balancesQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(ir, {
+      noData: /* @__PURE__ */ jsx(lr, {
         message: "You have no balances in your wallet. Add some to start trading.",
         variant: "basic"
       }),
@@ -4654,7 +4658,7 @@ function useOpenOrdersTable() {
     return {
       loading: orders.loading,
       error: (_a = orders.error) == null ? void 0 : _a.message,
-      noData: /* @__PURE__ */ jsx(ir, {
+      noData: /* @__PURE__ */ jsx(lr, {
         message: "You have no open orders for this market. Submit one and it will show up here.",
         variant: "basic"
       }),
@@ -4723,7 +4727,7 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(ir, {
+      noData: /* @__PURE__ */ jsx(lr, {
         message: "No past orders. Complete one and check back here.",
         variant: "basic"
       }),
@@ -5115,7 +5119,7 @@ function DepositView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = Lt();
+  const notifications = $t();
   return /* @__PURE__ */ jsx(An, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(Ge, {
@@ -5130,7 +5134,7 @@ function DepositView({
       children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Deposit"
-      }), !coins.length && /* @__PURE__ */ jsx(ir, {
+      }), !coins.length && /* @__PURE__ */ jsx(lr, {
         title: "Nothing to deposit.",
         message: "Cannot find existing balances in your wallet. Please add some money."
       }), /* @__PURE__ */ jsxs("div", {
@@ -6615,7 +6619,7 @@ function AddLiquidityContainer({}) {
   }, poolNoAmount);
   const conversionIn = (_e = (_d = (_c = firstCoinPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.priceIn) != null ? _e : 0;
   const conversionOut = (_h = (_g = (_f = secondCoinPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.priceIn) != null ? _h : 0;
-  const notifications = Lt();
+  const notifications = $t();
   async function addLiquidityHandler() {
     return await addLiquidity({
       variables: {
@@ -8901,7 +8905,7 @@ function useTradeControls() {
   };
   const {
     addNotification
-  } = Lt();
+  } = $t();
   const submitTrade = async () => {
     if (firstCoin && secondCoin && connection) {
       await placeOrder({
@@ -9736,7 +9740,7 @@ function SwapFormContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
-  const notifications = Lt();
+  const notifications = $t();
   const [value, setValue] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
     amount: value,
