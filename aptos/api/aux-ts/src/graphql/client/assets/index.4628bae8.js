@@ -4,13 +4,8 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-<<<<<<< HEAD
 import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge$1, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, F as Fragment, D as DateTime, s as jsxs, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, z as colors_1, N as NavLink, B as ArrowsUpDownIcon, H as HttpLink, E as GraphQLWsLink, I as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, T as useGeoLocation, U as ApolloProvider, V as BrowserRouter, Y as Routes, Z as Route, _ as client$1 } from "./vendor.6f418bc8.js";
 import "./__commonjsHelpers__.5615ff64.js";
-=======
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.1f3da2ea.js";
-import "./__commonjsHelpers__.4516dc8a.js";
->>>>>>> b8eb8d0 (resolve conflicts)
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -65,11 +60,11 @@ var se = { exports: {} }, W = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var Ze;
+var Ke;
 function nt() {
-  if (Ze)
+  if (Ke)
     return W;
-  Ze = 1;
+  Ke = 1;
   var e2 = React, t2 = Symbol.for("react.element"), s2 = Symbol.for("react.fragment"), n2 = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, l = { key: true, ref: true, __self: true, __source: true };
   function c(f, d, m) {
     var p, C = {}, v = null, y = null;
@@ -395,7 +390,7 @@ function Ot({}) {
     })]
   });
 }
-function Xe({}) {
+function Je({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "w-full animate-pulse px-4",
@@ -486,13 +481,13 @@ function ur({
       case "table":
         return /* @__PURE__ */ a(Ot, {});
       case "list":
-        return /* @__PURE__ */ a(Xe, {});
+        return /* @__PURE__ */ a(Je, {});
       case "card":
         return /* @__PURE__ */ a(Nt, {});
       case "tv":
         return /* @__PURE__ */ a(Tt, {});
       default:
-        return /* @__PURE__ */ a(Xe, {});
+        return /* @__PURE__ */ a(Je, {});
     }
   })();
 }
@@ -522,12 +517,12 @@ for (let e2 = 0; e2 < 256; ++e2)
 function Pt(e2, t2 = 0) {
   return (O[e2[t2 + 0]] + O[e2[t2 + 1]] + O[e2[t2 + 2]] + O[e2[t2 + 3]] + "-" + O[e2[t2 + 4]] + O[e2[t2 + 5]] + "-" + O[e2[t2 + 6]] + O[e2[t2 + 7]] + "-" + O[e2[t2 + 8]] + O[e2[t2 + 9]] + "-" + O[e2[t2 + 10]] + O[e2[t2 + 11]] + O[e2[t2 + 12]] + O[e2[t2 + 13]] + O[e2[t2 + 14]] + O[e2[t2 + 15]]).toLowerCase();
 }
-const Lt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Je = {
+const Lt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Ge = {
   randomUUID: Lt
 };
 function $t(e2, t2, s2) {
-  if (Je.randomUUID && !t2 && !e2)
-    return Je.randomUUID();
+  if (Ge.randomUUID && !t2 && !e2)
+    return Ge.randomUUID();
   e2 = e2 || {};
   const n2 = e2.random || (e2.rng || Ft)();
   if (n2[6] = n2[6] & 15 | 64, n2[8] = n2[8] & 63 | 128, t2) {
@@ -672,7 +667,7 @@ const Bt = Ut({
   },
   compoundVariants: []
 });
-function Ge({
+function qe({
   className: e2,
   children: t2,
   variant: s2,
@@ -773,7 +768,7 @@ function Nn() {
         children: [/* @__PURE__ */ a("div", {
           className: "mr-auto",
           children: o2 == null ? void 0 : o2.title
-        }), /* @__PURE__ */ a(Ge, {
+        }), /* @__PURE__ */ a(qe, {
           size: "xs",
           variant: "basic",
           className: "border-0 bg-none",
@@ -786,7 +781,7 @@ function Nn() {
         className: "text-white",
         children: o2 == null ? void 0 : o2.message
       }), /* @__PURE__ */ a("div", {
-        children: (C = o2 == null ? void 0 : o2.actions) == null ? void 0 : C.map((v, y) => /* @__PURE__ */ a(Ge, {
+        children: (C = o2 == null ? void 0 : o2.actions) == null ? void 0 : C.map((v, y) => /* @__PURE__ */ a(qe, {
           ...v
         }, y))
       })]
@@ -835,7 +830,7 @@ const zt = ({
     fill: "black",
     d: "M86.6 37.4h-9.9c-1.1 0-2.2-.5-3-1.3l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.4 3.9c-1.1 1.3-2.8 2-4.5 2H2.9C1.4 41.9.4 46.6 0 51.3h51.2c.9 0 1.8-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4H112c-.4-4.7-1.4-9.4-2.9-13.8H86.6zM53.8 65l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.5 3.9c-1.1 1.3-2.7 2-4.4 2H.8c.9 4.8 2.5 9.5 4.6 14h25.5c.9 0 1.7-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4h56.6c2.1-4.4 3.7-9.1 4.6-14H56.8c-1.2 0-2.3-.5-3-1.4zm19.6-43.6 4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1l4 4.5c.8.9 1.9 1.3 3 1.3h10.8c-18.8-24.8-54.1-29.7-79-11-4.1 3.1-7.8 6.8-11 11H71c1 .2 1.8-.2 2.4-.8zM34.7 94.2c-1.2 0-2.3-.5-3-1.3l-4-4.5c-1.2-1.3-3.2-1.4-4.5-.2l-.2.2-3.5 3.9c-1.1 1.3-2.7 2-4.4 2h-.2C36 116.9 71.7 118 94.4 96.7c.9-.8 1.7-1.7 2.6-2.6H34.7z"
   })]
-}), qe = ({
+}), Qe = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -856,7 +851,7 @@ const zt = ({
       d: "M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z"
     })]
   })
-}), Qe = ({
+}), er = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -912,7 +907,7 @@ const zt = ({
       fill: "#FFF"
     })]
   })
-}), er = ({
+}), we = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   width: e2,
@@ -1090,25 +1085,25 @@ function Jt({
   symbol: e2,
   size: t2
 }) {
-  switch (e2) {
+  switch (console.log(e2), e2) {
     case "apt":
       return /* @__PURE__ */ a(zt, {
         size: t2
       });
     case "btc":
-      return /* @__PURE__ */ a(qe, {
+      return /* @__PURE__ */ a(Qe, {
         size: t2
       });
     case "wbtc":
-      return /* @__PURE__ */ a(qe, {
+      return /* @__PURE__ */ a(Qe, {
         size: t2
       });
     case "eth":
-      return /* @__PURE__ */ a(Qe, {
+      return /* @__PURE__ */ a(er, {
         size: t2
       });
     case "weth":
-      return /* @__PURE__ */ a(Qe, {
+      return /* @__PURE__ */ a(er, {
         size: t2
       });
     case "sol":
@@ -1120,11 +1115,15 @@ function Jt({
         size: t2
       });
     case "usdc":
-      return /* @__PURE__ */ a(er, {
+      return /* @__PURE__ */ a(we, {
         size: t2
       });
     case "usdc (eth)":
-      return /* @__PURE__ */ a(er, {
+      return /* @__PURE__ */ a(we, {
+        size: t2
+      });
+    case "usdc (sol)":
+      return /* @__PURE__ */ a(we, {
         size: t2
       });
     case "aux":
@@ -1960,7 +1959,6 @@ function Un({
     })
   });
 }
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.3cc7b823.js
 var Wallets = /* @__PURE__ */ ((Wallets2) => {
   Wallets2["Petra"] = "Petra";
   Wallets2["Martian"] = "Martian";
@@ -2048,61 +2046,6 @@ const WalletContextProvider = ({
           const adapter = new PetraWalletAdapter();
           if (adapter.isDetected())
             setActiveWallet(new PetraWalletAdapter());
-=======
-function useTradeHistoryTable() {
-  var _a, _b;
-  const tradeHistoryQuery = useTradeHistory();
-  const tableRef = react.exports.useRef(null);
-  const marketCoins = useMarketCoins();
-  const getMarketCoinByType = (coinType) => marketCoins.find((mc) => mc.coinType === coinType);
-  const tradeHistory = (_b = (_a = tradeHistoryQuery.data) == null ? void 0 : _a.account) == null ? void 0 : _b.tradeHistory;
-  const tableProps = react.exports.useMemo(() => {
-    var _a2, _b2, _c;
-    return {
-      loading: tradeHistoryQuery.loading,
-      error: (_a2 = tradeHistoryQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(or, {
-        message: "No trades found for this market.",
-        variant: "basic"
-      }),
-      data: (_b2 = tradeHistory == null ? void 0 : tradeHistory.map(({
-        time,
-        ...trade
-      }) => {
-        var _a3;
-        return {
-          ...trade,
-          time: (_a3 = DateTime.fromJSDate(new Date(Number(time))).toRelative()) != null ? _a3 : ""
-        };
-      })) != null ? _b2 : [],
-      columns: [{
-        accessorKey: "side",
-        header: "Side",
-        cell: (cell) => {
-          const value = cell.getValue();
-          return /* @__PURE__ */ jsx("span", {
-            className: value === "BUY" ? "text-green-500" : "text-red-500",
-            children: value
-          });
-        }
-      }, {
-        accessorKey: "baseCoinType",
-        header: "Base",
-        cell(cell) {
-          var _a3;
-          const val = cell.getValue();
-          const name = (_a3 = getMarketCoinByType(val)) == null ? void 0 : _a3.name;
-          return name != null ? name : "-";
-        }
-      }, {
-        accessorKey: "quoteCoinType",
-        header: "Quote",
-        cell(cell) {
-          var _a3;
-          const val = cell.getValue();
-          const name = (_a3 = getMarketCoinByType(val)) == null ? void 0 : _a3.name;
-          return name != null ? name : "-";
->>>>>>> 4fe75ae (chore(aux-graphql): bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.f6452830.js
         }
         default:
           return;
@@ -2553,7 +2496,10 @@ function CreateAuxAccountContainer({}) {
   const notifications = jt();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const createAccount = async () => {
-    const tx = await createAuxAccount().catch((err) => {
+    const tx = await createAuxAccount().then((x) => {
+      var _a;
+      return (_a = x.data) == null ? void 0 : _a.createAuxAccount;
+    }).catch((err) => {
       notifications.addNotification({
         title: "Error",
         message: "Failed to create AUX account!",
@@ -2574,7 +2520,7 @@ function CreateAuxAccountContainer({}) {
       });
     }));
   };
-  return /* @__PURE__ */ jsx(Ge, {
+  return /* @__PURE__ */ jsx(qe, {
     size: "sm",
     onClick: createAccount,
     children: "Create AUX Account"
@@ -4792,11 +4738,7 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
-<<<<<<< HEAD
       noData: /* @__PURE__ */ jsx(cr, {
-=======
-      noData: /* @__PURE__ */ jsx(or, {
->>>>>>> b8eb8d0 (resolve conflicts)
         message: "No past orders. Complete one and check back here.",
         variant: "basic"
       }),
@@ -4843,6 +4785,322 @@ function OrdersTable({
     virtualizeOptions: orderTableProps.virtualizeOptions,
     customRowRender: orderTableProps.customRowRender,
     className: orderTableProps.className
+  });
+}
+const WithdrawDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Withdraw"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "withdrawInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "WithdrawInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "withdraw"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "withdrawInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "withdrawInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const CoinList = "";
+function CoinListItem({
+  onCoinSelect,
+  ...coinInfo
+}) {
+  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
+  return /* @__PURE__ */ jsxs(Do.Option, {
+    value: coinInfo,
+    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
+    children: [/* @__PURE__ */ jsx(Gt, {
+      coin: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xl font-medium text-primary-100",
+      children: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xs text-primary-200",
+      children: coinInfo.name
+    })]
+  }, coinInfo.symbol);
+}
+function CoinListView({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(Do.Options, {
+    className: "bg-transparent",
+    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
+      onCoinSelect,
+      ...info
+    }, info.symbol))
+  });
+}
+function CoinListContainer({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(CoinListView, {
+    onCoinSelect,
+    coins
+  });
+}
+const CoinSearchModal = "";
+function CoinSearchModalView({
+  onCoinSelect,
+  trigger,
+  onQueryChange,
+  query,
+  coins
+}) {
+  var _a;
+  const modalRef = react.exports.useRef(null);
+  react.exports.useRef(null);
+  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
+    var _a2;
+    onCoinSelect(coin);
+    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
+  }, []);
+  return /* @__PURE__ */ jsx(An, {
+    trigger,
+    ref: modalRef,
+    children: /* @__PURE__ */ jsx(ModalContents, {
+      coins,
+      onQueryChange,
+      query,
+      selectCoinAndCloseModal,
+      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
+    })
+  });
+}
+function ModalContents({
+  coins,
+  onQueryChange,
+  query,
+  selectCoinAndCloseModal,
+  modalOpen
+}) {
+  const buttonRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    const interval = setInterval(() => {
+      var _a;
+      if (buttonRef.current) {
+        (_a = buttonRef.current) == null ? void 0 : _a.click();
+        clearInterval(interval);
+      }
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+  return /* @__PURE__ */ jsxs(Vn, {
+    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
+    children: [/* @__PURE__ */ jsx(Tn, {
+      id: "headlessui-dialog-title-:rh:",
+      children: "Select Token"
+    }), /* @__PURE__ */ jsxs(Do, {
+      onChange: selectCoinAndCloseModal,
+      children: [/* @__PURE__ */ jsx(Do.Input, {
+        placeholder: "Search Tokens",
+        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
+        value: query,
+        tabIndex: 0,
+        onChange: onQueryChange
+      }), /* @__PURE__ */ jsx(Do.Button, {
+        ref: buttonRef,
+        className: "hidden"
+      }), /* @__PURE__ */ jsx(Do.Options, {
+        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
+          onCoinSelect: selectCoinAndCloseModal,
+          coins
+        }) : null
+      })]
+    })]
+  });
+}
+function CoinSearchModalContainer({
+  onCoinSelect,
+  trigger,
+  coins
+}) {
+  const [query, setQuery] = react.exports.useState("");
+  const filteredCoins = coins.filter((c) => {
+    var _a;
+    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
+  });
+  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
+  return /* @__PURE__ */ jsx(CoinSearchModalView, {
+    onCoinSelect,
+    trigger,
+    onQueryChange,
+    query,
+    coins: filteredCoins
+  });
+}
+function CoinSelectButton({
+  coin,
+  className
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    className,
+    children: /* @__PURE__ */ jsxs("button", {
+      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
+      children: [coin ? /* @__PURE__ */ jsx(Gt, {
+        coin: coin.symbol,
+        size: 24
+      }) : null, /* @__PURE__ */ jsx("span", {
+        className: "ml-2 mr-7",
+        children: coin == null ? void 0 : coin.symbol
+      }), /* @__PURE__ */ jsx("div", {
+        className: "absolute w-4 right-4",
+        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
+      })]
+    })
+  });
+}
+function WithdrawalView({
+  withdraw
+}) {
+  var _a, _b, _c;
+  const [amount, setAmount] = react.exports.useState(0);
+  const [, , connection] = useWallet();
+  const balances = useBalances();
+  const fullBalances = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances;
+  const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
+  const [coin, selectCoin] = react.exports.useState();
+  const [balance, setBalance] = react.exports.useState("-");
+  const modalRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
+    if (currentCoin)
+      setBalance(currentCoin.availableBalance.toString());
+  }, [coin, fullBalances]);
+  const notifications = jt();
+  return /* @__PURE__ */ jsx(An, {
+    ref: modalRef,
+    trigger: /* @__PURE__ */ jsx(qe, {
+      size: "sm",
+      onClick: () => {
+      },
+      children: "Withdraw"
+    }),
+    children: /* @__PURE__ */ jsxs(Vn, {
+      className: "w-[700px] mx-auto gap-4 flex flex-col",
+      padding: 6,
+      children: [/* @__PURE__ */ jsx(Tn, {
+        className: "mb-4",
+        children: "Withdraw"
+      }), !coins.length && /* @__PURE__ */ jsx(cr, {
+        title: "Nothing to withdraw.",
+        message: "Cannot find existing balances in your wallet. Please add some money."
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-2",
+          children: [/* @__PURE__ */ jsx(ie, {
+            className: "text-primary-300",
+            children: "Enter Withdrawal Amount"
+          }), /* @__PURE__ */ jsx("div", {
+            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
+              coins,
+              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
+                coin
+              }),
+              onCoinSelect: (c) => selectCoin(c)
+            })
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-4",
+          children: [/* @__PURE__ */ jsxs("div", {
+            className: "text-sm text-right",
+            children: ["Available Balance: ", balance]
+          }), /* @__PURE__ */ jsx("input", {
+            disabled: false,
+            inputMode: "decimal",
+            min: "0",
+            type: "number",
+            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
+            value: amount,
+            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
+            placeholder: "0.00"
+          })]
+        })]
+      }), /* @__PURE__ */ jsx(qe, {
+        disabled: !coin || Number(balance) < amount,
+        onClick: () => {
+          if (coin)
+            withdraw({
+              amount,
+              coinType: coin.coinType,
+              from: connection == null ? void 0 : connection.address
+            }).then(() => {
+              var _a2;
+              (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
+              notifications.addNotification({
+                title: "Success",
+                type: "success",
+                message: "Successfully withdrew balance!"
+              });
+            }).catch((err) => {
+              notifications.addNotification({
+                title: "Error",
+                type: "error",
+                message: "Failed to withdraw balance!"
+              });
+            });
+        },
+        children: "Submit Withdrawal"
+      })]
+    })
+  });
+}
+function WithdrawalContainer({}) {
+  const [withdrawMutation] = useMutation(WithdrawDocument);
+  const withdraw = async (withdrawInput) => {
+    await withdrawMutation({
+      variables: {
+        withdrawInput
+      }
+    });
+  };
+  return /* @__PURE__ */ jsx(WithdrawalView, {
+    withdraw
   });
 }
 const DepositDocument = {
@@ -5015,281 +5273,6 @@ const WalletBalancesDocument = {
     }
   }]
 };
-const CoinList = "";
-function CoinListItem({
-  onCoinSelect,
-  ...coinInfo
-}) {
-  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
-  return /* @__PURE__ */ jsxs(Do.Option, {
-    value: coinInfo,
-    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(Gt, {
-      coin: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xl font-medium text-primary-100",
-      children: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xs text-primary-200",
-      children: coinInfo.name
-    })]
-  }, coinInfo.symbol);
-}
-function CoinListView({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(Do.Options, {
-    className: "bg-transparent",
-    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
-      onCoinSelect,
-      ...info
-    }, info.symbol))
-  });
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.3cc7b823.js
-}
-function CoinListContainer({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(CoinListView, {
-    onCoinSelect,
-    coins
-=======
-  const pool = (_c = poolQuery == null ? void 0 : poolQuery.data) == null ? void 0 : _c.pool;
-  const [filterBy, setFilterBy] = react.exports.useState(3);
-  const swapTableData = ((_d = pool == null ? void 0 : pool.swaps) != null ? _d : []).map(({
-    amountIn,
-    amountOut,
-    coinInfoIn,
-    coinInfoOut
-  }) => {
-    var _a2, _b2, _c2;
-    return {
-      lpCoinType: (_a2 = pool == null ? void 0 : pool.coinInfoLP.coinType) != null ? _a2 : "",
-      amountIn,
-      amountOut,
-      time: (_b2 = DateTime.fromJSDate(randRecentDate()).toRelative()) != null ? _b2 : "-",
-      totalValue: (_c2 = pool == null ? void 0 : pool.amountLP) != null ? _c2 : 0,
-      symbolIn: coinInfoIn.symbol,
-      symbolOut: coinInfoOut.symbol,
-      type: `Swap ${coinInfoIn.symbol} for ${coinInfoOut.symbol}`
-    };
-  });
-  const addLiquidityTableData = ((_e = pool == null ? void 0 : pool.adds) != null ? _e : []).map(({
-    amountAddedX,
-    amountAddedY,
-    amountMintedLP
-  }) => {
-    var _a2, _b2, _c2, _d2, _e2, _f2;
-    return {
-      lpCoinType: (_a2 = pool == null ? void 0 : pool.coinInfoLP.coinType) != null ? _a2 : "",
-      amountIn: amountAddedX,
-      amountOut: amountAddedY,
-      time: (_b2 = DateTime.fromJSDate(randRecentDate()).toRelative()) != null ? _b2 : "-",
-      totalValue: amountMintedLP != null ? amountMintedLP : "-",
-      symbolIn: (_c2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _c2 : "-",
-      symbolOut: (_d2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _d2 : "-",
-      type: `Add ${(_e2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _e2 : ""} and ${(_f2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _f2 : ""}`
-    };
-  });
-  const removeLiquidityTableData = ((_f = pool == null ? void 0 : pool.removes) != null ? _f : []).map(({
-    amountBurnedLP,
-    amountRemovedX,
-    amountRemovedY
-  }) => {
-    var _a2, _b2, _c2, _d2, _e2, _f2;
-    return {
-      lpCoinType: (_a2 = pool == null ? void 0 : pool.coinInfoLP.coinType) != null ? _a2 : "",
-      amountIn: amountRemovedX,
-      amountOut: amountRemovedY,
-      time: (_b2 = DateTime.fromJSDate(randRecentDate()).toRelative()) != null ? _b2 : "-",
-      totalValue: amountBurnedLP != null ? amountBurnedLP : "-",
-      symbolIn: (_c2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _c2 : "-",
-      symbolOut: (_d2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _d2 : "-",
-      type: `Remove ${(_e2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _e2 : ""} and ${(_f2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _f2 : ""}`
-    };
-  });
-  const tableData = react.exports.useMemo(() => {
-    if (filterBy === 0)
-      return swapTableData;
-    if (filterBy === 2)
-      return removeLiquidityTableData;
-    if (filterBy === 1)
-      return addLiquidityTableData;
-    return [...swapTableData, ...addLiquidityTableData, ...removeLiquidityTableData];
-  }, [swapTableData, addLiquidityTableData, removeLiquidityTableData, filterBy]);
-  const actionButtonProps = [{
-    children: "All",
-    onClick() {
-      setFilterBy(3);
-    }
-  }, {
-    children: "Swaps",
-    onClick() {
-      setFilterBy(0);
-    }
-  }, {
-    children: "Adds",
-    onClick() {
-      setFilterBy(1);
-    }
-  }, {
-    children: "Removes",
-    onClick() {
-      setFilterBy(2);
-    }
-  }];
-  const poolTableProps = {
-    data: tableData,
-    columns: [
-      {
-        accessorKey: "type",
-        header: "Event Type"
-      },
-      {
-        accessorKey: "totalValue",
-        header: "Total Value"
-      },
-      {
-        accessorKey: "amountIn",
-        header: ``,
-        cell(c) {
-          const value = c.getValue();
-          return `${value} ${pool == null ? void 0 : pool.coinInfoX.symbol}`;
-        }
-      },
-      {
-        accessorKey: "amountOut",
-        header: "",
-        cell(c) {
-          const value = c.getValue();
-          return `${value} ${pool == null ? void 0 : pool.coinInfoY.symbol}`;
-        }
-      },
-      {
-        accessorKey: "time",
-        header: "Time"
-      }
-    ]
-  };
-  return /* @__PURE__ */ jsx(PoolsEventTableView, {
-    tableProps: poolTableProps,
-    actionButtonProps
->>>>>>> 4fe75ae (chore(aux-graphql): bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.f6452830.js
-  });
-}
-const CoinSearchModal = "";
-function CoinSearchModalView({
-  onCoinSelect,
-  trigger,
-  onQueryChange,
-  query,
-  coins
-}) {
-  var _a;
-  const modalRef = react.exports.useRef(null);
-  react.exports.useRef(null);
-  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
-    var _a2;
-    onCoinSelect(coin);
-    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
-  }, []);
-  return /* @__PURE__ */ jsx(An, {
-    trigger,
-    ref: modalRef,
-    children: /* @__PURE__ */ jsx(ModalContents, {
-      coins,
-      onQueryChange,
-      query,
-      selectCoinAndCloseModal,
-      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
-    })
-  });
-}
-function ModalContents({
-  coins,
-  onQueryChange,
-  query,
-  selectCoinAndCloseModal,
-  modalOpen
-}) {
-  const buttonRef = react.exports.useRef(null);
-  react.exports.useEffect(() => {
-    const interval = setInterval(() => {
-      var _a;
-      if (buttonRef.current) {
-        (_a = buttonRef.current) == null ? void 0 : _a.click();
-        clearInterval(interval);
-      }
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
-  return /* @__PURE__ */ jsxs(Vn, {
-    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
-    children: [/* @__PURE__ */ jsx(Tn, {
-      id: "headlessui-dialog-title-:rh:",
-      children: "Select Token"
-    }), /* @__PURE__ */ jsxs(Do, {
-      onChange: selectCoinAndCloseModal,
-      children: [/* @__PURE__ */ jsx(Do.Input, {
-        placeholder: "Search Tokens",
-        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
-        value: query,
-        tabIndex: 0,
-        onChange: onQueryChange
-      }), /* @__PURE__ */ jsx(Do.Button, {
-        ref: buttonRef,
-        className: "hidden"
-      }), /* @__PURE__ */ jsx(Do.Options, {
-        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
-          onCoinSelect: selectCoinAndCloseModal,
-          coins
-        }) : null
-      })]
-    })]
-  });
-}
-function CoinSearchModalContainer({
-  onCoinSelect,
-  trigger,
-  coins
-}) {
-  const [query, setQuery] = react.exports.useState("");
-  const filteredCoins = coins.filter((c) => {
-    var _a;
-    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
-  });
-  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
-  return /* @__PURE__ */ jsx(CoinSearchModalView, {
-    onCoinSelect,
-    trigger,
-    onQueryChange,
-    query,
-    coins: filteredCoins
-  });
-}
-function CoinSelectButton({
-  coin,
-  className
-}) {
-  return /* @__PURE__ */ jsx("div", {
-    className,
-    children: /* @__PURE__ */ jsxs("button", {
-      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(Gt, {
-        coin: coin.symbol,
-        size: 24
-      }) : null, /* @__PURE__ */ jsx("span", {
-        className: "ml-2 mr-7",
-        children: coin == null ? void 0 : coin.symbol
-      }), /* @__PURE__ */ jsx("div", {
-        className: "absolute w-4 right-4",
-        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
-      })]
-    })
-  });
-}
 function DepositView({
   deposit
 }) {
@@ -5314,7 +5297,7 @@ function DepositView({
   const notifications = jt();
   return /* @__PURE__ */ jsx(An, {
     ref: modalRef,
-    trigger: /* @__PURE__ */ jsx(Ge, {
+    trigger: /* @__PURE__ */ jsx(qe, {
       size: "sm",
       onClick: () => {
       },
@@ -5361,7 +5344,7 @@ function DepositView({
             placeholder: "0.00"
           })]
         })]
-      }), /* @__PURE__ */ jsx(Ge, {
+      }), /* @__PURE__ */ jsx(qe, {
         disabled: !coin || Number(balance) < amount,
         onClick: () => {
           if (coin)
@@ -5392,13 +5375,16 @@ function DepositView({
   });
 }
 function DepositContainer({}) {
+  const [wallet] = useWallet();
   const [depositMutation] = useMutation(DepositDocument);
   const deposit = async (depositInput) => {
-    await depositMutation({
+    var _a;
+    const tx = await depositMutation({
       variables: {
         depositInput
       }
     });
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.deposit));
   };
   return /* @__PURE__ */ jsx(DepositView, {
     deposit
@@ -5480,7 +5466,7 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
       addressResult += address.slice(address.length - 4, address.length);
       switch (walletType) {
         default:
-          return /* @__PURE__ */ jsxs(Ge, {
+          return /* @__PURE__ */ jsxs(qe, {
             variant: "basic",
             size: "sm",
             className: "pl-2 mr-3 inline-flex items-center",
@@ -6282,7 +6268,7 @@ function PoolsEventTableView({
           children: "Transactions"
         }), /* @__PURE__ */ jsx("div", {
           className: "flex gap-2 mb-4",
-          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(Ge, {
+          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(qe, {
             onClick: props.onClick,
             size: "sm",
             variant: "basic",
@@ -6488,7 +6474,7 @@ function AddLiquidityView({
         onChange: handleChangeSecondCoinAu,
         value: secondCoinAu
       })]
-    }), /* @__PURE__ */ jsx(Ge, {
+    }), /* @__PURE__ */ jsx(qe, {
       className: "mt-12",
       onClick: addLiquidity,
       children: "Add Liquidity"
@@ -6550,7 +6536,6 @@ const AddLiquidityDocument = {
     }
   }]
 };
-<<<<<<< HEAD
 const SimplePoolDocument = {
   "kind": "Document",
   "definitions": [{
@@ -6622,8 +6607,6 @@ const SimplePoolDocument = {
     }
   }]
 };
-=======
->>>>>>> b8eb8d0 (resolve conflicts)
 const PoolPriceInDocument = {
   "kind": "Document",
   "definitions": [{
@@ -7246,7 +7229,7 @@ function RemoveLiquidityView({
 }) {
   return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(Vn, {
     className: "flex flex-col gap-8 w-[600px] mx-auto self-center",
-    children: [notFoundMsg, /* @__PURE__ */ jsx(Ge, {
+    children: [notFoundMsg, /* @__PURE__ */ jsx(qe, {
       onClick: goBackToPools,
       children: "Back to pools"
     })]
@@ -7280,22 +7263,22 @@ function RemoveLiquidityView({
           children: `${pctVal}%`
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-start items-center gap-2",
-          children: [/* @__PURE__ */ jsx(Ge, {
+          children: [/* @__PURE__ */ jsx(qe, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(25),
             children: "25%"
-          }), /* @__PURE__ */ jsx(Ge, {
+          }), /* @__PURE__ */ jsx(qe, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(50),
             children: "50%"
-          }), /* @__PURE__ */ jsx(Ge, {
+          }), /* @__PURE__ */ jsx(qe, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(75),
             children: "75%"
-          }), /* @__PURE__ */ jsx(Ge, {
+          }), /* @__PURE__ */ jsx(qe, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(100),
@@ -7348,7 +7331,7 @@ function RemoveLiquidityView({
           })
         })]
       })]
-    }), /* @__PURE__ */ jsx(Ge, {
+    }), /* @__PURE__ */ jsx(qe, {
       onClick: handleRemoveLiquidity,
       children: "Remove Liquidity"
     })]
@@ -7464,12 +7447,12 @@ function PoolView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex gap-4 mt-6",
-      children: [/* @__PURE__ */ jsx(Ge, {
+      children: [/* @__PURE__ */ jsx(qe, {
         onClick: () => setAddOpen(true),
         variant: "buy",
         size: "sm",
         children: "Add"
-      }), /* @__PURE__ */ jsx(Ge, {
+      }), /* @__PURE__ */ jsx(qe, {
         onClick: () => setRemoveOpen(true),
         variant: "sell",
         size: "sm",
@@ -7578,7 +7561,7 @@ function PoolContainer({}) {
     pool
   });
 }
-const connectWalletTrigger = /* @__PURE__ */ jsx(Ge, {
+const connectWalletTrigger = /* @__PURE__ */ jsx(qe, {
   onClick: () => {
   },
   size: "sm",
@@ -7612,7 +7595,7 @@ function PortfolioView({
           children: "My Portfolio"
         }), /* @__PURE__ */ jsxs("div", {
           className: "items-end flex gap-4",
-          children: [/* @__PURE__ */ jsx(CreateAuxAccountContainer, {}), /* @__PURE__ */ jsx(DepositContainer, {})]
+          children: [/* @__PURE__ */ jsx(CreateAuxAccountContainer, {}), /* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {})]
         })]
       })
     }), /* @__PURE__ */ jsxs(Vn, {
@@ -8873,7 +8856,6 @@ function useTradeControls() {
   const [ioc, setIOC] = react.exports.useState(false);
   const [fok, setFok] = react.exports.useState(false);
   const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
-<<<<<<< HEAD:aptos/api/aux-ts/src/graphql/client/assets/index.3cc7b823.js
   const market = useQuery(MarketSimpleDocument, {
     variables: {
       marketInput: {
@@ -8904,8 +8886,6 @@ function useTradeControls() {
     return Math.pow(10, ((_a2 = firstCoin == null ? void 0 : firstCoin.decimals) != null ? _a2 : 0) * -1);
   }, [firstCoin]);
   const step = react.exports.useMemo(() => lotSize * dec, [lotSize, dec]);
-=======
->>>>>>> 4fe75ae (chore(aux-graphql): bump ui):aptos/api/aux-ts/src/graphql/client/assets/index.f6452830.js
   const setPctFactory = (n2) => () => {
     if (quantX)
       setCxAmount(quantX * n2);
@@ -9107,22 +9087,22 @@ function TradingForm() {
         step
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex w-full gap-2 pt-2",
-        children: [/* @__PURE__ */ jsx(Ge, {
+        children: [/* @__PURE__ */ jsx(qe, {
           size: "xs",
           variant: "basic",
           onClick: set25,
           children: "25%"
-        }), /* @__PURE__ */ jsx(Ge, {
+        }), /* @__PURE__ */ jsx(qe, {
           size: "xs",
           variant: "basic",
           onClick: set50,
           children: "50%"
-        }), /* @__PURE__ */ jsx(Ge, {
+        }), /* @__PURE__ */ jsx(qe, {
           size: "xs",
           variant: "basic",
           onClick: set75,
           children: "75%"
-        }), /* @__PURE__ */ jsx(Ge, {
+        }), /* @__PURE__ */ jsx(qe, {
           size: "xs",
           variant: "basic",
           onClick: setMax,
@@ -9189,7 +9169,7 @@ function TradingForm() {
           children: (priceInput * cxAmount).toLocaleString()
         })]
       })]
-    }), /* @__PURE__ */ jsx(Ge, {
+    }), /* @__PURE__ */ jsx(qe, {
       onClick: submitTrade,
       size: "sm",
       children: "Submit Trade"
@@ -9319,16 +9299,13 @@ function TradeView({}) {
   return /* @__PURE__ */ jsxs("div", {
     className: " bg-primary-900 w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[76px_1fr_1fr_300px] md:grid-cols-[275px_275px_1fr_1fr_1fr_1fr] overflow-hidden",
     children: [/* @__PURE__ */ jsxs("div", {
-      className: " sm:col-span-1 md:col-span-1 sm:row-span-1 md:row-span-4 h-full md:border-r md:border-r-primary-700",
+      className: "flex items-center md:col-span-6",
       children: [/* @__PURE__ */ jsx("div", {
-        className: "flex px-4 py-2.5 w-full",
+        className: "flex px-4 py-2.5 w-[400px]",
         children: /* @__PURE__ */ jsx(MarketSelector, {
           onSelectMarket
         })
-      }), /* @__PURE__ */ jsx(TradingForm, {})]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex items-center md:col-span-5",
-      children: [/* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx(Pn, {
         title: "",
         value: lastTradePrice,
         priceDirection,
@@ -9348,8 +9325,11 @@ function TradeView({}) {
         value: (_i = (_h = (_g = marketQuery.data) == null ? void 0 : _g.market) == null ? void 0 : _h.volume24h) != null ? _i : "-",
         className: "ml-1"
       })]
+    }), /* @__PURE__ */ jsx("div", {
+      className: " sm:col-span-1 md:col-span-1 sm:row-span-1 md:row-span-4 h-full md:border-t md:border-t-primary-700 md:border-r md:border-r-primary-700",
+      children: /* @__PURE__ */ jsx(TradingForm, {})
     }), /* @__PURE__ */ jsxs("div", {
-      className: " md:col-span-1 md:row-span-4 h-full md:border-r md:border-t md:border-t-primary-700 md:border-r-primary-700",
+      className: " md:col-span-1 md:row-span-3 h-full md:border-r md:border-t md:border-t-primary-700 md:border-r-primary-700",
       children: [/* @__PURE__ */ jsx(Ge$1.Group, {
         selectedIndex: marketEventTab,
         onChange: setMarketEventTab,
@@ -9580,7 +9560,7 @@ function PoolsView({
       }), /* @__PURE__ */ jsx(Pn, {
         title: "Fee Perecent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
-      }), /* @__PURE__ */ jsx(Ge, {
+      }), /* @__PURE__ */ jsx(qe, {
         size: "sm",
         className: "h-auto self-center",
         onClick: () => goToPoolInfo(pool.coinInfoX, pool.coinInfoY),
@@ -9600,7 +9580,7 @@ function PoolsView({
           className: "text-primary-200",
           children: "Earn AUX and a share of the trading fees by providing liquidity to pools!"
         })]
-      }), /* @__PURE__ */ jsx(Ge, {
+      }), /* @__PURE__ */ jsx(qe, {
         size: "sm",
         onClick: () => goToAddLiquidity(),
         className: "self-center",
@@ -9678,7 +9658,7 @@ const Header$1 = "";
 function Header({}) {
   const connectWallet = () => {
   };
-  const connectEl = /* @__PURE__ */ jsx(Ge, {
+  const connectEl = /* @__PURE__ */ jsx(qe, {
     className: "my-auto mx-3",
     size: "sm",
     onClick: connectWallet,
@@ -9791,7 +9771,7 @@ function SwapFormView({
       value: conversion,
       setValue: () => {
       }
-    }), /* @__PURE__ */ jsx(Ge, {
+    }), /* @__PURE__ */ jsx(qe, {
       className: "mt-6",
       onClick: handleSwap,
       children: "Swap"

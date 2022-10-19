@@ -1940,14 +1940,14 @@ video {
   .md\:col-span-1 {
     grid-column: span 1 / span 1;
   }
-  .md\:col-span-5 {
-    grid-column: span 5 / span 5;
-  }
   .md\:col-span-4 {
     grid-column: span 4 / span 4;
   }
   .md\:row-span-4 {
     grid-row: span 4 / span 4;
+  }
+  .md\:row-span-3 {
+    grid-row: span 3 / span 3;
   }
   .md\:row-span-2 {
     grid-row: span 2 / span 2;
@@ -1981,21 +1981,21 @@ video {
     border-top-width: 1px;
     border-bottom-width: 1px;
   }
-  .md\:border-r {
-    border-right-width: 1px;
-  }
   .md\:border-t {
     border-top-width: 1px;
+  }
+  .md\:border-r {
+    border-right-width: 1px;
   }
   .md\:border-y-primary-700 {
     border-top-color: var(--primary-700);
     border-bottom-color: var(--primary-700);
   }
-  .md\:border-r-primary-700 {
-    border-right-color: var(--primary-700);
-  }
   .md\:border-t-primary-700 {
     border-top-color: var(--primary-700);
+  }
+  .md\:border-r-primary-700 {
+    border-right-color: var(--primary-700);
   }
   .md\:p-6 {
     padding: 1.5rem;
