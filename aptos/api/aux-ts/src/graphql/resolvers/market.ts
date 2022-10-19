@@ -5,6 +5,7 @@ import {
   Bar,
   Market,
   MarketBarsArgs,
+  MarketBarsForRangeArgs,
   MarketOpenOrdersArgs,
   MarketOrderHistoryArgs,
   MarketPythRatingArgs,
@@ -191,6 +192,55 @@ export const market = {
 
     return bars;
   },
+  async barsForRange(
+    parent: Market,
+    {
+      resolution,
+      fromEpochMillisInclusive,
+      toEpochMillisExclusive,
+      countBack,
+      firstDataRequest,
+    }: MarketBarsForRangeArgs
+  ): Promise<Array<Bar>> {
+    const convert = {
+      SECONDS_15: "15s",
+      MINUTES_1: "1m",
+      MINUTES_5: "5m",
+      MINUTES_15: "15m",
+      HOURS_1: "1h",
+      HOURS_4: "4h",
+      DAYS_1: "1d",
+      WEEKS_1: "1w",
+    };
+
+    const base = parent.baseCoinInfo.symbol
+      .replace("WBTC", "BTC")
+      .replace("WETH", "ETH");
+    const quote = parent.quoteCoinInfo.symbol.replace("USDC", "USD");
+    const filename = `${base}-${quote}_${convert[resolution]}.json`;
+    const path = `${process.cwd()}/src/indexer/data/${filename}`;
+    const rl = readline.createInterface({
+      input: fs.createReadStream(path),
+    });
+
+    // TODO: Perform actual indexing. For small numbers of bars this should be okay.
+    const startTime = parseFloat(fromEpochMillisInclusive);
+    const endTime = parseFloat(toEpochMillisExclusive);
+    const bars: Bar[] = [];
+    for await (const line of rl) {
+      const bar = JSON.parse(line);
+      if (bar.time >= startTime && (firstDataRequest || bar.time < endTime)) {
+        bars.push({
+          ohlcv: bar,
+          time: bar.time,
+        });
+      }
+    }
+
+    const firstIndex = bars.length - parseInt(countBack);
+    return bars.slice(firstIndex >= 0 ? firstIndex : 0);
+  },
+
   async pythRating(
     parent: Market,
     { price, side }: MarketPythRatingArgs

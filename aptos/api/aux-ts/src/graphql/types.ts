@@ -1,5 +1,3 @@
-import type { Types } from "aptos";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -19,6 +17,7 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   address: Scalars['Address'];
+  isCoinRegistered: Scalars['Boolean'];
   walletBalances: Array<Balance>;
   balances: Array<Balance>;
   deposits: Array<Deposit>;
@@ -28,6 +27,11 @@ export type Account = {
   openOrders: Array<Order>;
   orderHistory: Array<Order>;
   tradeHistory: Array<Trade>;
+};
+
+
+export type AccountIsCoinRegisteredArgs = {
+  coinType: Scalars['String'];
 };
 
 
@@ -65,6 +69,7 @@ export type Market = {
   low24h?: Maybe<Scalars['Float']>;
   volume24h?: Maybe<Scalars['Float']>;
   bars: Array<Bar>;
+  barsForRange: Array<Bar>;
   pythRating?: Maybe<PythRating>;
 };
 
@@ -88,6 +93,15 @@ export type MarketBarsArgs = {
   resolution: Resolution;
   first?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MarketBarsForRangeArgs = {
+  resolution: Resolution;
+  fromEpochMillisInclusive: Scalars['String'];
+  toEpochMillisExclusive: Scalars['String'];
+  countBack: Scalars['String'];
+  firstDataRequest: Scalars['Boolean'];
 };
 
 
@@ -398,8 +412,13 @@ export type QueryAccountArgs = {
   owner: Scalars['Address'];
 };
 
+export type RegisterCoinInput = {
+  coinType: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  registerCoin: Scalars['EntryFunctionPayload'];
   createPool: Scalars['EntryFunctionPayload'];
   swap: Scalars['EntryFunctionPayload'];
   addLiquidity: Scalars['EntryFunctionPayload'];
@@ -407,9 +426,15 @@ export type Mutation = {
   createMarket: Scalars['EntryFunctionPayload'];
   placeOrder: Scalars['EntryFunctionPayload'];
   cancelOrder: Scalars['EntryFunctionPayload'];
+  createAuxAccount: Scalars['EntryFunctionPayload'];
   deposit: Scalars['EntryFunctionPayload'];
   withdraw: Scalars['EntryFunctionPayload'];
   transfer: Scalars['EntryFunctionPayload'];
+};
+
+
+export type MutationRegisterCoinArgs = {
+  registerCoinInput: RegisterCoinInput;
 };
 
 
@@ -417,9 +442,6 @@ export type MutationCreatePoolArgs = {
   createPoolInput: CreatePoolInput;
 };
 
-export type MutationRegisterCoinArgs = {
-  coinType: Types.MoveStructTag;
-};
 
 export type MutationSwapArgs = {
   swapInput: SwapInput;
