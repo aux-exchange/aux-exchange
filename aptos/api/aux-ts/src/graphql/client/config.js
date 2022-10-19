@@ -20,4 +20,4 @@ function getConfig() {
 
 getConfig()
 
-document.title = "DEX"
+document.title = "AUX DEX"
