@@ -1,14 +1,14 @@
-import { AptosAccount } from "aptos";
 import * as aux from "../../";
-import { DU } from "../../";
 import { auxClient } from "../connection";
 import type {
+  AddLiquidity,
   Maybe,
   Pool,
   PoolPositionArgs,
   PoolPriceInArgs,
   PoolPriceOutArgs,
   Position,
+  RemoveLiquidity,
   Swap,
 } from "../generated/types";
 
@@ -33,10 +33,11 @@ export const pool = {
         coinInfoOut,
         amountIn: swap.in.toDecimalUnits(coinInfoIn.decimals).toNumber(),
         amountOut: swap.out.toDecimalUnits(coinInfoOut.decimals).toNumber(),
+        time: swap.timestamp.toString(),
       };
     });
   },
-  async adds(parent: Pool) {
+  async adds(parent: Pool): Promise<AddLiquidity[]> {
     const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
       auxClient,
       {
@@ -55,9 +56,10 @@ export const pool = {
       amountMintedLP: addLiquidity.lpMinted
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
+      time: addLiquidity.timestamp.toString(),
     }));
   },
-  async removes(parent: Pool) {
+  async removes(parent: Pool): Promise<RemoveLiquidity[]> {
     const removeLiquiditys = await aux.amm.core.query.removeLiquidityEvents(
       auxClient,
       {
@@ -76,6 +78,7 @@ export const pool = {
       amountBurnedLP: removeLiquidity.lpBurned
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
+      time: removeLiquidity.timestamp.toString(),
     }));
   },
   async position(
@@ -109,8 +112,6 @@ export const pool = {
     parent: Pool,
     { coinTypeOut, amount }: PoolPriceOutArgs
   ): Promise<Maybe<number>> {
-    DU;
-    AptosAccount;
     const ratio =
       coinTypeOut === parent.coinInfoY.coinType
         ? parent.amountY / parent.amountX

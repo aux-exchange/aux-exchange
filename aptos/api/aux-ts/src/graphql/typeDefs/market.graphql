@@ -19,10 +19,10 @@ type Market {
   isRoundTick(quantity: String!): Boolean!
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
   barsForRange(
-    resolution: Resolution!, 
-    fromEpochMillisInclusive: String!, 
-    toEpochMillisExclusive: String!, 
-    countBack: String!, 
+    resolution: Resolution!
+    fromEpochMillisInclusive: String!
+    toEpochMillisExclusive: String!
+    countBack: String!
     firstDataRequest: Boolean!
   ): [Bar!]!
   pythRating(price: Float!, side: Side!): PythRating
