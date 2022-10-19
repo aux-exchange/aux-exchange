@@ -1,0 +1,11 @@
+input RouterInput {
+  coinTypeX: String!
+  coinTypeY: String!
+}
+
+type Router {
+  coinInfoX: CoinInfo!
+  coinInfoY: CoinInfo!
+  priceIn(coinTypeIn: String!, amount: Float!): Float
+  priceOut(coinTypeOut: String!, amount: Float!): Float
+}

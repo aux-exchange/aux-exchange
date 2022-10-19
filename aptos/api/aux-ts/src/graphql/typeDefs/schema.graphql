@@ -7,6 +7,7 @@ type Query {
   markets(marketInputs: [MarketInput!]): [Market!]!
   marketCoins: [CoinInfo!]!
   account(owner: Address!): Account
+  router(routerInput: RouterInput!): Router
 }
 
 input RegisterCoinInput {
@@ -18,7 +19,9 @@ type Mutation {
   createPool(createPoolInput: CreatePoolInput!): EntryFunctionPayload!
   swap(swapInput: SwapInput!): EntryFunctionPayload!
   addLiquidity(addLiquidityInput: AddLiquidityInput!): EntryFunctionPayload!
-  removeLiquidity(removeLiquidityInput: RemoveLiquidityInput!): EntryFunctionPayload!
+  removeLiquidity(
+    removeLiquidityInput: RemoveLiquidityInput!
+  ): EntryFunctionPayload!
 
   createMarket(createMarketInput: CreateMarketInput!): EntryFunctionPayload!
   placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!

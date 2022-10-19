@@ -10,7 +10,7 @@ import type {
   PoolPriceOutArgs,
   Position,
   Swap,
-} from "../types";
+} from "../generated/types";
 
 export const pool = {
   async swaps(parent: Pool): Promise<Swap[]> {

@@ -20,7 +20,8 @@
     "start:devnet-clob-trader": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-trader.ts",
     "start:devnet-clob-orders": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-orders.ts",
     "start:graphql": "ts-node src/graphql/index.ts",
-    "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts"
+    "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@graphql-tools/load-files": "^6.6.1",
@@ -44,6 +45,10 @@
     "yaml": "^2.1.1"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.13.7",
+    "@graphql-codegen/introspection": "2.2.1",
+    "@graphql-codegen/typescript": "2.7.4",
+    "@graphql-codegen/typescript-resolvers": "2.7.4",
     "@tsconfig/node18-strictest": "^1.0.0",
     "@types/bn.js": "^5.1.1",
     "@types/express": "^4.17.14",

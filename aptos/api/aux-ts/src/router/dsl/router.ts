@@ -1,12 +1,14 @@
 import { AptosAccount, CoinClient, Types } from "aptos";
-import { assert } from "console";
 import type { TransactionResult } from "../..//transaction";
 import { AnyUnits, AU } from "../..//units";
 import type { AuxClient, TransactionOptions } from "../../client";
 import {
+  parseRouterEvents,
   RouterEvent,
   swapCoinForExactCoin,
+  swapCoinForExactCoinPayload,
   swapExactCoinForCoin,
+  swapExactCoinForCoinPayload,
 } from "../core/mutation";
 import { getRouterQuote, RouterQuote } from "./router_quote";
 
@@ -102,29 +104,22 @@ export default class Router {
     coinTypeIn: Types.MoveStructTag;
     coinTypeOut: Types.MoveStructTag;
   }): Promise<TransactionResult<RouterQuote | undefined>> {
-    const sender = this.sender;
-    if (sender === undefined) {
-      throw new Error("Router swap must have sender");
-    }
-    assert(sender !== undefined);
-    const result = swapExactCoinForCoin(
-      this.client,
-      {
-        sender,
-        coinTypeIn,
-        coinTypeOut,
-        exactAmountAuIn: (
-          await this.client.toAtomicUnits(coinTypeIn, exactAmountIn)
-        ).toU64(),
-        minAmountAuOut: AU(0).toU64(),
-      },
-      { simulate: true }
-    );
+    const sender = this.sender || new AptosAccount();
+    const payload = swapExactCoinForCoinPayload(this.client, {
+      sender,
+      coinTypeIn,
+      coinTypeOut,
+      exactAmountAuIn: (
+        await this.client.toAtomicUnits(coinTypeIn, exactAmountIn)
+      ).toU64(),
+      minAmountAuOut: "0",
+    });
+    const result = this.client.dataSimulate({ payload });
     return result.then((r) => {
       return getRouterQuote(
         this.client,
         "ExactIn",
-        r,
+        parseRouterEvents(this.client, r),
         true,
         coinTypeIn,
         coinTypeOut
@@ -141,32 +136,30 @@ export default class Router {
     coinTypeIn: Types.MoveStructTag;
     coinTypeOut: Types.MoveStructTag;
   }): Promise<TransactionResult<RouterQuote | undefined>> {
-    const result = swapCoinForExactCoin(
-      this.client,
-      {
-        // @ts-ignore
-        sender: this.sender,
-        coinTypeIn,
-        coinTypeOut,
-        exactAmountAuOut: (
-          await this.client.toAtomicUnits(coinTypeOut, exactAmountOut)
-        ).toU64(),
-        maxAmountAuIn: AU(
-          Number(
-            await new CoinClient(this.client.aptosClient).checkBalance(
-              this.sender!,
-              { coinType: coinTypeIn }
-            )
+    const sender = this.sender || new AptosAccount();
+    const payload = swapCoinForExactCoinPayload(this.client, {
+      // @ts-ignore
+      sender,
+      coinTypeIn,
+      coinTypeOut,
+      exactAmountAuOut: (
+        await this.client.toAtomicUnits(coinTypeOut, exactAmountOut)
+      ).toU64(),
+      maxAmountAuIn: AU(
+        Number(
+          await new CoinClient(this.client.aptosClient).checkBalance(
+            this.sender!,
+            { coinType: coinTypeIn }
           )
-        ).toU64(),
-      },
-      { simulate: true }
-    );
+        )
+      ).toU64(),
+    });
+    const result = this.client.dataSimulate({ payload });
     return result.then((r) => {
       return getRouterQuote(
         this.client,
         "ExactOut",
-        r,
+        parseRouterEvents(this.client, r),
         true,
         coinTypeIn,
         coinTypeOut
