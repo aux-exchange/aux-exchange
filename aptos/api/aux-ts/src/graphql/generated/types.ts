@@ -150,7 +150,11 @@ export type Market = {
   barsForRange: Array<Bar>;
   baseCoinInfo: CoinInfo;
   high24h?: Maybe<Scalars['Float']>;
+  isRoundLot: Scalars['Boolean'];
+  isRoundTick: Scalars['Boolean'];
   lotSize: Scalars['Float'];
+  lotSizeDecimals: Scalars['String'];
+  lotSizeString: Scalars['String'];
   low24h?: Maybe<Scalars['Float']>;
   name: Scalars['String'];
   openOrders: Array<Order>;
@@ -159,6 +163,8 @@ export type Market = {
   pythRating?: Maybe<PythRating>;
   quoteCoinInfo: CoinInfo;
   tickSize: Scalars['Float'];
+  tickSizeDecimals: Scalars['String'];
+  tickSizeString: Scalars['String'];
   tradeHistory: Array<Trade>;
   volume24h?: Maybe<Scalars['Float']>;
 };
@@ -177,6 +183,16 @@ export type MarketBarsForRangeArgs = {
   fromEpochMillisInclusive: Scalars['String'];
   resolution: Resolution;
   toEpochMillisExclusive: Scalars['String'];
+};
+
+
+export type MarketIsRoundLotArgs = {
+  quantity: Scalars['String'];
+};
+
+
+export type MarketIsRoundTickArgs = {
+  quantity: Scalars['String'];
 };
 
 
@@ -424,7 +440,6 @@ export type Query = {
   pool?: Maybe<Pool>;
   poolCoins: Array<CoinInfo>;
   pools: Array<Pool>;
-  router?: Maybe<Router>;
 };
 
 
@@ -452,9 +467,10 @@ export type QueryPoolsArgs = {
   poolInputs?: InputMaybe<Array<PoolInput>>;
 };
 
-
-export type QueryRouterArgs = {
-  routerInput: RouterInput;
+export type QuoteInput = {
+  amount: Scalars['Float'];
+  coinTypeIn: Scalars['String'];
+  coinTypeOut: Scalars['String'];
 };
 
 export type RegisterCoinInput = {
@@ -483,31 +499,6 @@ export enum Resolution {
   Seconds_15 = 'SECONDS_15',
   Weeks_1 = 'WEEKS_1'
 }
-
-export type Router = {
-  __typename?: 'Router';
-  coinInfoX: CoinInfo;
-  coinInfoY: CoinInfo;
-  priceIn?: Maybe<Scalars['Float']>;
-  priceOut?: Maybe<Scalars['Float']>;
-};
-
-
-export type RouterPriceInArgs = {
-  amount: Scalars['Float'];
-  coinTypeIn: Scalars['String'];
-};
-
-
-export type RouterPriceOutArgs = {
-  amount: Scalars['Float'];
-  coinTypeOut: Scalars['String'];
-};
-
-export type RouterInput = {
-  coinTypeX: Scalars['String'];
-  coinTypeY: Scalars['String'];
-};
 
 export enum StpActionType {
   CancelAggressive = 'CANCEL_AGGRESSIVE',
@@ -726,12 +717,11 @@ export type ResolversTypes = {
   PythRating: ResolverTypeWrapper<PythRating>;
   PythRatingColor: PythRatingColor;
   Query: ResolverTypeWrapper<{}>;
+  QuoteInput: QuoteInput;
   RegisterCoinInput: RegisterCoinInput;
   RemoveLiquidity: ResolverTypeWrapper<RemoveLiquidity>;
   RemoveLiquidityInput: RemoveLiquidityInput;
   Resolution: Resolution;
-  Router: ResolverTypeWrapper<Router>;
-  RouterInput: RouterInput;
   STPActionType: StpActionType;
   Side: Side;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -779,11 +769,10 @@ export type ResolversParentTypes = {
   Position: Position;
   PythRating: PythRating;
   Query: {};
+  QuoteInput: QuoteInput;
   RegisterCoinInput: RegisterCoinInput;
   RemoveLiquidity: RemoveLiquidity;
   RemoveLiquidityInput: RemoveLiquidityInput;
-  Router: Router;
-  RouterInput: RouterInput;
   String: Scalars['String'];
   Subscription: {};
   Swap: Swap;
@@ -872,7 +861,11 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
   barsForRange?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsForRangeArgs, 'countBack' | 'firstDataRequest' | 'fromEpochMillisInclusive' | 'resolution' | 'toEpochMillisExclusive'>>;
   baseCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   high24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  isRoundLot?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MarketIsRoundLotArgs, 'quantity'>>;
+  isRoundTick?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MarketIsRoundTickArgs, 'quantity'>>;
   lotSize?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  lotSizeDecimals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lotSizeString?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   low24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   openOrders?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<MarketOpenOrdersArgs>>;
@@ -881,6 +874,8 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
   pythRating?: Resolver<Maybe<ResolversTypes['PythRating']>, ParentType, ContextType, RequireFields<MarketPythRatingArgs, 'price' | 'side'>>;
   quoteCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   tickSize?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tickSizeDecimals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tickSizeString?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tradeHistory?: Resolver<Array<ResolversTypes['Trade']>, ParentType, ContextType, Partial<MarketTradeHistoryArgs>>;
   volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -974,21 +969,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   pool?: Resolver<Maybe<ResolversTypes['Pool']>, ParentType, ContextType, RequireFields<QueryPoolArgs, 'poolInput'>>;
   poolCoins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
-  router?: Resolver<Maybe<ResolversTypes['Router']>, ParentType, ContextType, RequireFields<QueryRouterArgs, 'routerInput'>>;
 };
 
 export type RemoveLiquidityResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveLiquidity'] = ResolversParentTypes['RemoveLiquidity']> = {
   amountBurnedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountRemovedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountRemovedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type RouterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Router'] = ResolversParentTypes['Router']> = {
-  coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  priceIn?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<RouterPriceInArgs, 'amount' | 'coinTypeIn'>>;
-  priceOut?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<RouterPriceOutArgs, 'amount' | 'coinTypeOut'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1064,7 +1050,6 @@ export type Resolvers<ContextType = any> = {
   PythRating?: PythRatingResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RemoveLiquidity?: RemoveLiquidityResolvers<ContextType>;
-  Router?: RouterResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Trade?: TradeResolvers<ContextType>;

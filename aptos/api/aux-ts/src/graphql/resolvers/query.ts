@@ -11,7 +11,8 @@ import type {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
-} from "../types";
+  QuoteInput,
+} from "../generated/types";
 
 const APT = "0x1::aptos_coin::AptosCoin";
 const USDC =
@@ -202,5 +203,13 @@ export const query = {
     return {
       address: owner,
     };
+  },
+  async routerQuoteExactIn(_parent: any, input: QuoteInput) {
+    const r = new aux.Router({ client: auxClient });
+    r.getQuoteExactCoinForCoin({
+      exactAmountIn: aux.DU(input.amount),
+      coinTypeIn: input.coinTypeIn,
+      coinTypeOut: input.coinTypeOut,
+    });
   },
 };
