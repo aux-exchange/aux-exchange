@@ -1085,7 +1085,7 @@ function Jt({
   symbol: e2,
   size: t2
 }) {
-  switch (console.log(e2), e2) {
+  switch (e2) {
     case "apt":
       return /* @__PURE__ */ a(zt, {
         size: t2
@@ -8850,7 +8850,10 @@ function useTradeControls() {
     secondCoin,
     lastTradePrice
   } = useCoinXYParamState();
-  const quantX = (_d = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances) == null ? void 0 : _c.find((b) => b.coinInfo.symbol === firstCoin.symbol)) == null ? void 0 : _d.availableBalance;
+  const quantX = (_d = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances) == null ? void 0 : _c.find((b) => {
+    var _a2;
+    return ((_a2 = b.coinInfo) == null ? void 0 : _a2.symbol) === (firstCoin == null ? void 0 : firstCoin.symbol);
+  })) == null ? void 0 : _d.availableBalance;
   const [activeTab, setActiveTab] = react.exports.useState(0);
   const [price, setPrice] = react.exports.useState(lastTradePrice);
   const [cxAmount, setCxAmount] = react.exports.useState(0);
