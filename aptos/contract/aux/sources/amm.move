@@ -531,13 +531,16 @@ module aux::amm {
             0, // Allow any quantity of LP. Enforce slippage below.
         );
 
-        // Compute LP amount implied by only dx or dy.
-        // lp = dx * pool_lp_au / x_reserve
-        let lp_dx = to128(div128(mul256((dx as u128), pool_lp_au), (x_reserve as u128)));
-        let lp_dy = to128(div128(mul256((dy as u128), pool_lp_au), (y_reserve as u128)));
-        // lp >= (1 - slippage) * {lp_dx, lp_dy}
-        assert!((lp as u128) * 10000 >= (lp_dx as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
-        assert!((lp as u128) * 10000 >= (lp_dy as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+        // check slippage only if pool is not empty
+        if (x_reserve != 0 || y_reserve != 0) {
+            // Compute LP amount implied by only dx or dy.
+            // lp = dx * pool_lp_au / x_reserve
+            let lp_dx = to128(div128(mul256((dx as u128), pool_lp_au), (x_reserve as u128)));
+            let lp_dy = to128(div128(mul256((dy as u128), pool_lp_au), (y_reserve as u128)));
+            // lp >= (1 - slippage) * {lp_dx, lp_dy}
+            assert!((lp as u128) * 10000 >= (lp_dx as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+            assert!((lp as u128) * 10000 >= (lp_dy as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+        };
 
         let user_dx = coin::extract(user_x, dx);
         let user_dy = coin::extract(user_y, dy);
@@ -1608,7 +1611,7 @@ module aux::amm {
 
         register_and_mint<BTC>(sender, 200000000);
 
-        create_pool<AuxCoin, FakeCoin<BTC>>(sender, 0);
+        create_pool<AuxCoin, FakeCoin<BTC>>(sender, 10);
 
         {
             let pool = borrow_global<Pool<AuxCoin, FakeCoin<BTC>>>(@aux);
