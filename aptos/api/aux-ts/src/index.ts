@@ -4,6 +4,7 @@ export * as client from "./client";
 export * as clob from "./clob";
 export * as units from "./units";
 export * as vault from "./vault";
+export * as router from "./router";
 export { Account, Market, MarketSubscriber, Pool, Router, Vault };
 export { AU, DU };
 
