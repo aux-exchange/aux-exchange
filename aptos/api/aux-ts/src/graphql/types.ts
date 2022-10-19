@@ -61,6 +61,10 @@ export type Market = {
   quoteCoinInfo: CoinInfo;
   lotSize: Scalars['Float'];
   tickSize: Scalars['Float'];
+  lotSizeDecimals: Scalars['String'];
+  tickSizeDecimals: Scalars['String'];
+  lotSizeString: Scalars['String'];
+  tickSizeString: Scalars['String'];
   orderbook: Orderbook;
   openOrders: Array<Order>;
   orderHistory: Array<Order>;
@@ -68,6 +72,8 @@ export type Market = {
   high24h?: Maybe<Scalars['Float']>;
   low24h?: Maybe<Scalars['Float']>;
   volume24h?: Maybe<Scalars['Float']>;
+  isRoundLot: Scalars['Boolean'];
+  isRoundTick: Scalars['Boolean'];
   bars: Array<Bar>;
   barsForRange: Array<Bar>;
   pythRating?: Maybe<PythRating>;
@@ -86,6 +92,16 @@ export type MarketOrderHistoryArgs = {
 
 export type MarketTradeHistoryArgs = {
   owner?: InputMaybe<Scalars['Address']>;
+};
+
+
+export type MarketIsRoundLotArgs = {
+  quantity: Scalars['String'];
+};
+
+
+export type MarketIsRoundTickArgs = {
+  quantity: Scalars['String'];
 };
 
 

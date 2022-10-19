@@ -6,6 +6,8 @@ import {
   Market,
   MarketBarsArgs,
   MarketBarsForRangeArgs,
+  MarketIsRoundLotArgs,
+  MarketIsRoundTickArgs,
   MarketOpenOrdersArgs,
   MarketOrderHistoryArgs,
   MarketPythRatingArgs,
@@ -249,6 +251,24 @@ export const market = {
 
     const firstIndex = bars.length - parseInt(countBack);
     return bars.slice(firstIndex >= 0 ? firstIndex : 0);
+  },
+
+  isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
+    return aux
+      .DU(quantity)
+      .toAtomicUnits(parent.baseCoinInfo.decimals)
+      .toBN()
+      .mod(aux.AU(parent.lotSizeString).toBN())
+      .eqn(0);
+  },
+
+  isRoundTick(parent: Market, { quantity }: MarketIsRoundTickArgs): boolean {
+    return aux
+      .DU(quantity)
+      .toAtomicUnits(parent.quoteCoinInfo.decimals)
+      .toBN()
+      .mod(aux.AU(parent.tickSizeString).toBN())
+      .eqn(0);
   },
 
   async pythRating(
