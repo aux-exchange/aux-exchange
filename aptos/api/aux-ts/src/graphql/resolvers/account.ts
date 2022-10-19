@@ -22,10 +22,12 @@ import {
 } from "../types";
 
 export const account = {
+  
   async walletBalances(parent: Account): Promise<Balance[]> {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
     );
+    
     const coinStores = resources.filter((resource) =>
       resource.type.includes("CoinStore<") && !resource.type.includes("LP")
     );

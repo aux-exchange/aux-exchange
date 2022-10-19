@@ -9721,7 +9721,7 @@ function SwapPanel({
         disabled: !!disabled,
         inputMode: "decimal",
         min: "0",
-        type: "text",
+        type: "number",
         onChange,
         value: Number(value.toFixed(coin == null ? void 0 : coin.decimals)),
         className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
