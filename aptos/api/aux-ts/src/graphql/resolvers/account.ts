@@ -19,15 +19,17 @@ import {
   Withdrawal,
   Position,
   Trade,
+  AccountIsCoinRegisteredArgs,
 } from "../types";
-import type { Types } from "aptos";
 
 export const account = {
-
-  async isCoinRegistered(parent: Account, coinType: Types.MoveStructTag): Promise<boolean> {
+  async isCoinRegistered(
+    parent: Account,
+    { coinType }: AccountIsCoinRegisteredArgs
+  ): Promise<boolean> {
     const coinStore = await auxClient.getAccountResourceOptional(
       parent.address,
-      `0x1::coin::CoinStore<${coinType}>`,
+      `0x1::coin::CoinStore<${coinType}>`
     );
     return coinStore !== undefined;
   },
