@@ -20,7 +20,7 @@ import {
   PythRatingColor,
   Side,
   Trade,
-} from "../types";
+} from "../generated/types";
 import _ from "lodash";
 import fs from "fs";
 import readline from "readline";

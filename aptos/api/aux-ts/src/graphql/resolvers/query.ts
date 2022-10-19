@@ -11,7 +11,7 @@ import type {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
-} from "../types";
+} from "../generated/types";
 
 const APT = "0x1::aptos_coin::AptosCoin";
 const USDC =
