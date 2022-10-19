@@ -2124,7 +2124,7 @@ const CoinXYParamCtxProvider = ({
   const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
   const defaultCoinX = (_c = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("eth"))) == null ? void 0 : _c.coinType;
+  }) => coinType.toLowerCase().match("weth"))) == null ? void 0 : _c.coinType;
   const defaultCoinY = (_d = coins.find(({
     coinType
   }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _d.coinType;
@@ -2460,7 +2460,7 @@ function NetworkToggle({}) {
     value: "http://localhost:5173"
   }];
   const currentNetwork = networkOptions.find((n2) => location.origin === n2.value);
-  const onNetworkChange = (e2) => window.location.assign(e2 + location.pathname + location.search);
+  const onNetworkChange = (e2) => location.assign(e2 + location.pathname);
   return /* @__PURE__ */ jsx(Fragment, {
     children: currentNetwork && /* @__PURE__ */ jsx(Ln, {
       label: "",
@@ -6523,8 +6523,8 @@ function AddLiquidityContainer({}) {
   const poolQuery = useQuery(SimplePoolDocument, {
     variables: {
       poolInput: {
-        coinTypeX: firstCoin.coinType,
-        coinTypeY: secondCoin.coinType
+        coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+        coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
       }
     },
     skip: !firstCoin || !secondCoin
