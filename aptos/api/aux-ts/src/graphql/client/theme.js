@@ -5,6 +5,14 @@ function createPalletteValues(key, baseColor) {
   }, ``)
 }
 
+// TV Color Palette
+window.tvColorPalette = {
+  primary: colors.zinc,
+  blue: colors.blue,
+  green: colors.emerald,
+  red: colors.red,
+}
+
 const primary = createPalletteValues('primary', colors.zinc)
 const secondary = createPalletteValues('secondary', colors.emerald)
 const accent = createPalletteValues('accent', colors.emerald)
@@ -21,7 +29,7 @@ document.head.appendChild(linkEl)
 document.title = 'Mojito'
 
 const tag = document.createElement('style')
-tag.setAttribute('type', 'text/css')
+tag.setAttribute('type', 'text/css') 
 tag.innerHTML = `
   :root {
     ${primary}
