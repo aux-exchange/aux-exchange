@@ -32,7 +32,7 @@ export const mutation = {
 
   registerCoin(_parent: any, { coinType }: MutationRegisterCoinArgs) {
     return {
-      function: `0x1::aptos_framework::managed_coin::register`,
+      function: `0x1::managed_coin::register`,
       type_arguments: [coinType],
       arguments: [],
     };
