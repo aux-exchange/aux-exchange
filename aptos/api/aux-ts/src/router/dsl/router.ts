@@ -114,8 +114,10 @@ export default class Router {
       ).toU64(),
       minAmountAuOut: "0",
     });
+    console.log(payload);
     const result = this.client.dataSimulate({ payload });
     return result.then((r) => {
+      console.dir(r, { depth: null });
       return getRouterQuote(
         this.client,
         "ExactIn",

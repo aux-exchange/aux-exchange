@@ -1,4 +1,5 @@
-input QuoteInput {
+input RouterQuoteInput {
+  exactIn: Boolean!
   coinTypeIn: String!
   coinTypeOut: String!
   amount: Float!
