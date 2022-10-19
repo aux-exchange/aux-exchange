@@ -1,5 +1,6 @@
 type Account {
   address: Address!
+  walletBalances: [Balance!]!
   balances: [Balance!]!
   deposits: [Deposit!]!
   withdrawals: [Withdrawal!]!
