@@ -20,6 +20,7 @@ function createPalletteValues(key, baseColor) {
   linkEl.setAttribute('rel', 'stylesheet')
   linkEl.setAttribute('href', `https://fonts.googleapis.com/css?family=${font}`)
   document.head.appendChild(linkEl)
+  document.title = "Mojito"
   
   const tag = document.createElement('style')
   tag.setAttribute('type', 'text/css') 
