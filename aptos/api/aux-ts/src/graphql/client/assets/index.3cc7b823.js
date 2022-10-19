@@ -61,7 +61,7 @@ var se = { exports: {} }, W = {};
  * LICENSE file in the root directory of this source tree.
  */
 var Ze;
-function tt() {
+function nt() {
   if (Ze)
     return W;
   Ze = 1;
@@ -79,10 +79,10 @@ function tt() {
   return W.Fragment = s2, W.jsx = c, W.jsxs = c, W;
 }
 (function(e2) {
-  e2.exports = tt();
+  e2.exports = nt();
 })(se);
 const oe = se.exports.Fragment, a = se.exports.jsx, h = se.exports.jsxs;
-function at({
+function st({
   title: e2,
   titleId: t2,
   ...s2
@@ -108,8 +108,8 @@ function at({
     })]
   });
 }
-const st = react.exports.forwardRef(at), ot = st;
-function it({
+const ot = react.exports.forwardRef(st), it = ot;
+function lt({
   title: e2,
   titleId: t2,
   ...s2
@@ -135,8 +135,8 @@ function it({
     })]
   });
 }
-const lt = react.exports.forwardRef(it), ct = lt;
-function ut({
+const ct = react.exports.forwardRef(lt), ut = ct;
+function dt({
   title: e2,
   titleId: t2,
   ...s2
@@ -162,8 +162,8 @@ function ut({
     })]
   });
 }
-const dt = react.exports.forwardRef(ut), ar = dt;
-function ft({
+const ft = react.exports.forwardRef(dt), sr = ft;
+function ht({
   title: e2,
   titleId: t2,
   ...s2
@@ -189,8 +189,8 @@ function ft({
     })]
   });
 }
-const ht = react.exports.forwardRef(ft), mt = ht;
-function pt({
+const mt = react.exports.forwardRef(ht), pt = mt;
+function gt({
   title: e2,
   titleId: t2,
   ...s2
@@ -216,8 +216,8 @@ function pt({
     })]
   });
 }
-const gt = react.exports.forwardRef(pt), vt = gt;
-function bt({
+const vt = react.exports.forwardRef(gt), bt = vt;
+function Ct({
   title: e2,
   titleId: t2,
   ...s2
@@ -243,8 +243,8 @@ function bt({
     })]
   });
 }
-const Ct = react.exports.forwardRef(bt), sr = Ct;
-function wt({
+const wt = react.exports.forwardRef(Ct), or = wt;
+function yt({
   title: e2,
   titleId: t2,
   ...s2
@@ -270,8 +270,8 @@ function wt({
     })]
   });
 }
-const yt = react.exports.forwardRef(wt), or = yt;
-function xt({
+const xt = react.exports.forwardRef(yt), ir = xt;
+function Et({
   title: e2,
   titleId: t2,
   ...s2
@@ -297,8 +297,8 @@ function xt({
     })]
   });
 }
-const Et = react.exports.forwardRef(xt), ir = Et;
-function Rt({
+const Rt = react.exports.forwardRef(Et), lr = Rt;
+function kt({
   title: e2,
   titleId: t2,
   ...s2
@@ -324,8 +324,8 @@ function Rt({
     })]
   });
 }
-const kt = react.exports.forwardRef(Rt), St = kt;
-function lr({
+const St = react.exports.forwardRef(kt), _t = St;
+function cr({
   title: e2,
   message: t2,
   variant: s2,
@@ -341,13 +341,13 @@ function lr({
   return /* @__PURE__ */ h("div", {
     role: "alert",
     className: c,
-    children: [s2 === "error" ? /* @__PURE__ */ a(ir, {
+    children: [s2 === "error" ? /* @__PURE__ */ a(lr, {
       className: "w-10 h-10 text-red-400"
-    }) : s2 === "success" ? /* @__PURE__ */ a(ar, {
+    }) : s2 === "success" ? /* @__PURE__ */ a(sr, {
       className: "w-10 h-10 text-green-400"
-    }) : s2 === "warning" ? /* @__PURE__ */ a(sr, {
+    }) : s2 === "warning" ? /* @__PURE__ */ a(or, {
       className: "w-10 h-10 text-orange-400"
-    }) : s2 === "info" ? /* @__PURE__ */ a(or, {
+    }) : s2 === "info" ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col justify-between ml-3 w-full",
@@ -364,7 +364,7 @@ function lr({
     })]
   });
 }
-function _t({}) {
+function Ot({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
@@ -412,7 +412,7 @@ function Xe({}) {
     })]
   });
 }
-function Ot({}) {
+function Nt({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700",
@@ -442,7 +442,7 @@ function Ot({}) {
     })]
   });
 }
-function Nt({}) {
+function Tt({}) {
   return /* @__PURE__ */ h("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-primary-200 shadow animate-pulse md:p-6 dark:border-primary-700",
@@ -473,19 +473,19 @@ function Nt({}) {
     })]
   });
 }
-function cr({
+function ur({
   variant: e2
 }) {
   return (() => {
     switch (e2) {
       case "table":
-        return /* @__PURE__ */ a(_t, {});
+        return /* @__PURE__ */ a(Ot, {});
       case "list":
         return /* @__PURE__ */ a(Xe, {});
       case "card":
-        return /* @__PURE__ */ a(Ot, {});
-      case "tv":
         return /* @__PURE__ */ a(Nt, {});
+      case "tv":
+        return /* @__PURE__ */ a(Tt, {});
       default:
         return /* @__PURE__ */ a(Xe, {});
     }
@@ -505,33 +505,33 @@ function D(e2, t2) {
   return true;
 }
 let Q;
-const Tt = new Uint8Array(16);
-function Mt() {
+const Mt = new Uint8Array(16);
+function Ft() {
   if (!Q && (Q = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Q))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return Q(Tt);
+  return Q(Mt);
 }
 const O = [];
 for (let e2 = 0; e2 < 256; ++e2)
   O.push((e2 + 256).toString(16).slice(1));
-function Ft(e2, t2 = 0) {
+function Pt(e2, t2 = 0) {
   return (O[e2[t2 + 0]] + O[e2[t2 + 1]] + O[e2[t2 + 2]] + O[e2[t2 + 3]] + "-" + O[e2[t2 + 4]] + O[e2[t2 + 5]] + "-" + O[e2[t2 + 6]] + O[e2[t2 + 7]] + "-" + O[e2[t2 + 8]] + O[e2[t2 + 9]] + "-" + O[e2[t2 + 10]] + O[e2[t2 + 11]] + O[e2[t2 + 12]] + O[e2[t2 + 13]] + O[e2[t2 + 14]] + O[e2[t2 + 15]]).toLowerCase();
 }
-const Pt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Je = {
-  randomUUID: Pt
+const Lt = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Je = {
+  randomUUID: Lt
 };
-function Lt(e2, t2, s2) {
+function $t(e2, t2, s2) {
   if (Je.randomUUID && !t2 && !e2)
     return Je.randomUUID();
   e2 = e2 || {};
-  const n2 = e2.random || (e2.rng || Mt)();
+  const n2 = e2.random || (e2.rng || Ft)();
   if (n2[6] = n2[6] & 15 | 64, n2[8] = n2[8] & 63 | 128, t2) {
     s2 = s2 || 0;
     for (let o2 = 0; o2 < 16; ++o2)
       t2[s2 + o2] = n2[o2];
     return t2;
   }
-  return Ft(n2);
+  return Pt(n2);
 }
 var P = /* @__PURE__ */ ((e2) => (e2.basic = "basic", e2.error = "error", e2.warning = "warning", e2.info = "info", e2.success = "success", e2))(P || {});
 const Ce = create$1((e2) => ({
@@ -541,7 +541,7 @@ const Ce = create$1((e2) => ({
       ...s2,
       notifications: s2.notifications.concat({
         ...t2,
-        id: Lt()
+        id: $t()
       })
     }));
   },
@@ -552,7 +552,7 @@ const Ce = create$1((e2) => ({
     }));
   }
 }));
-function $t() {
+function jt() {
   const e2 = Ce((n2) => n2.notifications, D), t2 = Ce((n2) => n2.addNotification, D);
   return {
     removeNotification: Ce((n2) => n2.removeNotification, D),
@@ -611,26 +611,26 @@ function On() {
     removeParams: l
   };
 }
-function ur(e2) {
+function dr(e2) {
   var t2, s2, n2 = "";
   if (typeof e2 == "string" || typeof e2 == "number")
     n2 += e2;
   else if (typeof e2 == "object")
     if (Array.isArray(e2))
       for (t2 = 0; t2 < e2.length; t2++)
-        e2[t2] && (s2 = ur(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
+        e2[t2] && (s2 = dr(e2[t2])) && (n2 && (n2 += " "), n2 += s2);
     else
       for (t2 in e2)
         e2[t2] && (n2 && (n2 += " "), n2 += t2);
   return n2;
 }
-function jt() {
+function It() {
   for (var e2, t2, s2 = 0, n2 = ""; s2 < arguments.length; )
-    (e2 = arguments[s2++]) && (t2 = ur(e2)) && (n2 && (n2 += " "), n2 += t2);
+    (e2 = arguments[s2++]) && (t2 = dr(e2)) && (n2 && (n2 += " "), n2 += t2);
   return n2;
 }
-const It = (e2) => typeof e2 == "boolean", Dt = (e2) => It(e2) ? String(e2) : e2, Vt = (e2, t2) => Object.entries(e2).every(([s2, n2]) => t2[s2] === n2);
-function At(e2) {
+const Dt = (e2) => typeof e2 == "boolean", Vt = (e2) => Dt(e2) ? String(e2) : e2, At = (e2, t2) => Object.entries(e2).every(([s2, n2]) => t2[s2] === n2);
+function Ut(e2) {
   return (t2, s2) => {
     const n2 = Object.entries(t2).reduce((f, [d, m]) => m === void 0 ? f : {
       ...f,
@@ -638,14 +638,14 @@ function At(e2) {
     }, {}), o2 = {
       ...e2.defaultVariants,
       ...n2
-    }, l = Object.keys(e2.variants).map((f) => e2.variants[f][Dt(t2[f]) || e2.defaultVariants[f]]), c = e2.compoundVariants.reduce((f, {
+    }, l = Object.keys(e2.variants).map((f) => e2.variants[f][Vt(t2[f]) || e2.defaultVariants[f]]), c = e2.compoundVariants.reduce((f, {
       classes: d,
       ...m
-    }) => (Vt(m, o2) && d && f.push(d), f), []);
-    return jt([e2.base, l, c, s2]);
+    }) => (At(m, o2) && d && f.push(d), f), []);
+    return It([e2.base, l, c, s2]);
   };
 }
-const Ut = At({
+const Bt = Ut({
   base: "w-auto h-auto text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer",
   variants: {
     variant: {
@@ -676,7 +676,7 @@ function Ge({
   onClick: l,
   disabled: c
 }) {
-  const f = Ut({
+  const f = Bt({
     size: n2,
     variant: s2
   }, e2), m = (() => {
@@ -705,7 +705,7 @@ function Nn() {
   const {
     removeNotification: e2,
     notifications: t2
-  } = $t(), s2 = react.exports.useRef(t2[0]), n2 = useAnimationControls(), [o2, l] = react.exports.useState(t2[0]), c = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", f = {
+  } = jt(), s2 = react.exports.useRef(t2[0]), n2 = useAnimationControls(), [o2, l] = react.exports.useState(t2[0]), c = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", f = {
     [P.basic]: " border-l-secondary-400",
     [P.error]: " border-l-red-400",
     [P.success]: " border-l-green-400",
@@ -753,13 +753,13 @@ function Nn() {
   return /* @__PURE__ */ h(motion.div, {
     className: c + ((o2 == null ? void 0 : o2.type) != null ? f[o2 == null ? void 0 : o2.type] : f.info),
     animate: n2,
-    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(ir, {
+    children: [(o2 == null ? void 0 : o2.type) === P.error ? /* @__PURE__ */ a(lr, {
       className: "w-10 h-10 text-red-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(ar, {
+    }) : (o2 == null ? void 0 : o2.type) === P.success ? /* @__PURE__ */ a(sr, {
       className: "w-10 h-10 text-green-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(sr, {
+    }) : (o2 == null ? void 0 : o2.type) === P.warning ? /* @__PURE__ */ a(or, {
       className: "w-10 h-10 text-orange-400"
-    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(or, {
+    }) : (o2 == null ? void 0 : o2.type) === P.info ? /* @__PURE__ */ a(ir, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ h("div", {
       className: "flex flex-col ml-3 w-full",
@@ -773,7 +773,7 @@ function Nn() {
           variant: "basic",
           className: "border-0 bg-none",
           onClick: p,
-          children: /* @__PURE__ */ a(St, {
+          children: /* @__PURE__ */ a(_t, {
             className: "w-4 h-4"
           })
         })]
@@ -812,7 +812,7 @@ function ie({
     children: e2
   });
 }
-const Bt = ({
+const zt = ({
   size: e2
 }) => /* @__PURE__ */ h("svg", {
   width: e2,
@@ -888,7 +888,7 @@ const Bt = ({
       })]
     })]
   })
-}), zt = ({
+}), Wt = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   width: e2,
@@ -907,7 +907,7 @@ const Bt = ({
       fill: "#FFF"
     })]
   })
-}), Wt = ({
+}), er = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   width: e2,
@@ -1087,7 +1087,7 @@ function Jt({
 }) {
   switch (e2) {
     case "apt":
-      return /* @__PURE__ */ a(Bt, {
+      return /* @__PURE__ */ a(zt, {
         size: t2
       });
     case "btc":
@@ -1107,7 +1107,7 @@ function Jt({
         size: t2
       });
     case "sol":
-      return /* @__PURE__ */ a(zt, {
+      return /* @__PURE__ */ a(Wt, {
         size: t2
       });
     case "usdt":
@@ -1115,7 +1115,11 @@ function Jt({
         size: t2
       });
     case "usdc":
-      return /* @__PURE__ */ a(Wt, {
+      return /* @__PURE__ */ a(er, {
+        size: t2
+      });
+    case "usdc (eth)":
+      return /* @__PURE__ */ a(er, {
         size: t2
       });
     case "aux":
@@ -1218,9 +1222,9 @@ function qt({
   })();
   return /* @__PURE__ */ h("div", {
     className: o2,
-    children: [s2 && s2 === "up" ? /* @__PURE__ */ a(ct, {
+    children: [s2 && s2 === "up" ? /* @__PURE__ */ a(ut, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : s2 && s2 === "down" ? /* @__PURE__ */ a(ot, {
+    }) : s2 && s2 === "down" ? /* @__PURE__ */ a(it, {
       className: "w-[14px] h-[14px] mr-1"
     }) : null, t2 && /* @__PURE__ */ h("div", {
       className: "mr-2",
@@ -1296,10 +1300,10 @@ function Ln({
           className: " text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm",
           children: [l.label, /* @__PURE__ */ a("span", {
             className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-            children: d ? /* @__PURE__ */ a(vt, {
+            children: d ? /* @__PURE__ */ a(bt, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
-            }) : /* @__PURE__ */ a(mt, {
+            }) : /* @__PURE__ */ a(pt, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
             })
@@ -1461,9 +1465,9 @@ const Vn = ({
   error: l,
   onClick: c
 }) => /* @__PURE__ */ a(oe, {
-  children: o2 ? /* @__PURE__ */ a(cr, {
+  children: o2 ? /* @__PURE__ */ a(ur, {
     variant: "card"
-  }) : l ? /* @__PURE__ */ a(lr, {
+  }) : l ? /* @__PURE__ */ a(cr, {
     title: "Error",
     message: "Uh Oh. Please try again.",
     variant: "error",
@@ -1595,13 +1599,13 @@ const en = (e2) => e2, rn = (e2) => {
     return t2(e2.scrollElement.getBoundingClientRect()), s2.observe(e2.scrollElement), () => {
       s2.unobserve(e2.scrollElement);
     };
-}, er = {
+}, rr = {
   element: ["scrollLeft", "scrollTop"],
   window: ["scrollX", "scrollY"]
 }, nn = (e2) => (t2, s2) => {
   if (!t2.scrollElement)
     return;
-  const n2 = er[e2][0], o2 = er[e2][1];
+  const n2 = rr[e2][0], o2 = rr[e2][1];
   let l = t2.scrollElement[n2], c = t2.scrollElement[o2];
   const f = () => {
     s2(t2.scrollElement[t2.options.horizontal ? n2 : o2]);
@@ -1909,9 +1913,9 @@ function Un({
     getTotalSize: j
   } = y, le = _();
   return j(), /* @__PURE__ */ a(oe, {
-    children: l ? /* @__PURE__ */ a(cr, {
+    children: l ? /* @__PURE__ */ a(ur, {
       variant: "table"
-    }) : c ? /* @__PURE__ */ a(lr, {
+    }) : c ? /* @__PURE__ */ a(cr, {
       title: "Error",
       message: "Uh Oh. Please try again.",
       variant: "error",
@@ -2485,7 +2489,7 @@ const CreateAuxAccountDocument = {
 };
 function CreateAuxAccountContainer({}) {
   const [wallet] = useWallet();
-  const notifications = $t();
+  const notifications = jt();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const createAccount = async () => {
     const tx = await createAuxAccount().catch((err) => {
@@ -2747,7 +2751,7 @@ function useTradeHistoryTable() {
     return {
       loading: tradeHistoryQuery.loading,
       error: (_a2 = tradeHistoryQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(lr, {
+      noData: /* @__PURE__ */ jsx(cr, {
         message: "No trades found for this market.",
         variant: "basic"
       }),
@@ -2838,7 +2842,7 @@ function usePoolsTable() {
     return {
       loading: poolsQuery.loading,
       error: (_a2 = poolsQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(lr, {
+      noData: /* @__PURE__ */ jsx(cr, {
         message: "You have not added liquidity to any pools.",
         variant: "basic"
       }),
@@ -3036,7 +3040,7 @@ function useBalancesTable() {
     return {
       loading: balancesQuery.loading,
       error: (_a2 = balancesQuery.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(lr, {
+      noData: /* @__PURE__ */ jsx(cr, {
         message: "You have no balances in your wallet. Add some to start trading.",
         variant: "basic"
       }),
@@ -4658,7 +4662,7 @@ function useOpenOrdersTable() {
     return {
       loading: orders.loading,
       error: (_a = orders.error) == null ? void 0 : _a.message,
-      noData: /* @__PURE__ */ jsx(lr, {
+      noData: /* @__PURE__ */ jsx(cr, {
         message: "You have no open orders for this market. Submit one and it will show up here.",
         variant: "basic"
       }),
@@ -4727,7 +4731,7 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a2 = orders.error) == null ? void 0 : _a2.message,
-      noData: /* @__PURE__ */ jsx(lr, {
+      noData: /* @__PURE__ */ jsx(cr, {
         message: "No past orders. Complete one and check back here.",
         variant: "basic"
       }),
@@ -5119,7 +5123,7 @@ function DepositView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = $t();
+  const notifications = jt();
   return /* @__PURE__ */ jsx(An, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(Ge, {
@@ -5134,7 +5138,7 @@ function DepositView({
       children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Deposit"
-      }), !coins.length && /* @__PURE__ */ jsx(lr, {
+      }), !coins.length && /* @__PURE__ */ jsx(cr, {
         title: "Nothing to deposit.",
         message: "Cannot find existing balances in your wallet. Please add some money."
       }), /* @__PURE__ */ jsxs("div", {
@@ -6609,7 +6613,7 @@ function AddLiquidityContainer({}) {
   }, poolNoAmount);
   const conversionIn = (_e = (_d = (_c = firstCoinPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.priceIn) != null ? _e : 0;
   const conversionOut = (_h = (_g = (_f = secondCoinPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.priceIn) != null ? _h : 0;
-  const notifications = $t();
+  const notifications = jt();
   async function addLiquidityHandler() {
     return await addLiquidity({
       variables: {
@@ -8774,7 +8778,7 @@ function useTradeControls() {
   };
   const {
     addNotification
-  } = $t();
+  } = jt();
   const submitTrade = async () => {
     if (firstCoin && secondCoin && connection) {
       await placeOrder({
@@ -9609,7 +9613,7 @@ function SwapFormContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
-  const notifications = $t();
+  const notifications = jt();
   const [value, setValue] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
     amount: value,
