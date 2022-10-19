@@ -76,11 +76,11 @@ export const market = {
     parent: Market,
     { owner }: MarketOrderHistoryArgs
   ): Promise<Order[]> {
-    const account = new aux.Account(auxClient, owner);
-    const orders = await account.orderHistory({
+    const market = await aux.Market.read(auxClient, {
       baseCoinType: parent.baseCoinInfo.coinType,
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
+    const orders = await market.orderHistory(owner);
     return orders.map((order) => {
       return {
         baseCoinType: parent.baseCoinInfo.coinType,
@@ -94,7 +94,7 @@ export const market = {
         // FIXME
         auxBurned: 0,
         // FIXME
-        time: "0",
+        time: order.timestamp.toString(),
         price: order.price
           .toDecimalUnits(parent.quoteCoinInfo.decimals)
           .toNumber(),
@@ -108,11 +108,11 @@ export const market = {
     parent: Market,
     { owner }: MarketTradeHistoryArgs
   ): Promise<Trade[]> {
-    const account = new aux.Account(auxClient, owner);
-    const fills = await account.tradeHistory({
+    const market = await aux.Market.read(auxClient, {
       baseCoinType: parent.baseCoinInfo.coinType,
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
+    const fills = await market.tradeHistory(owner);
     return fills.map((fill) => {
       const price = fill.price
         .toDecimalUnits(parent.quoteCoinInfo.decimals)
@@ -133,7 +133,7 @@ export const market = {
         // FIXME
         auxBurned: 0,
         // FIXME
-        time: "0",
+        time: fill.timestamp.toString(),
       };
     });
   },

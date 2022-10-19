@@ -1,5 +1,6 @@
 import { AptosAccount, HexString, Types } from "aptos";
 import BN from "bn.js";
+import _ from "lodash";
 import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
 import {
@@ -383,9 +384,9 @@ export async function orderHistory(
 
 export async function tradeHistory(
   auxClient: AuxClient,
-  owner: Types.Address,
   baseCoinType: Types.MoveStructTag,
-  quoteCoinType: Types.MoveStructTag
+  quoteCoinType: Types.MoveStructTag,
+  owner?: Types.Address
 ): Promise<OrderFillEvent[]> {
   return (
     await orderFillEvents(
@@ -393,7 +394,10 @@ export async function tradeHistory(
       auxClient.moduleAddress,
       await market(auxClient, baseCoinType, quoteCoinType)
     )
-  ).filter((orderFillEvent) => orderFillEvent.owner.hex() === owner);
+  ).filter(
+    (orderFillEvent) =>
+      _.isUndefined(owner) || orderFillEvent.owner.hex() === owner
+  );
 }
 
 export async function markets(
