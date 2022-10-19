@@ -17,6 +17,7 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   address: Scalars['Address'];
+  walletBalances: Array<Balance>;
   balances: Array<Balance>;
   deposits: Array<Deposit>;
   withdrawals: Array<Withdrawal>;
@@ -62,6 +63,7 @@ export type Market = {
   low24h?: Maybe<Scalars['Float']>;
   volume24h?: Maybe<Scalars['Float']>;
   bars: Array<Bar>;
+  pythRating?: Maybe<PythRating>;
 };
 
 
@@ -85,6 +87,24 @@ export type MarketBarsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
 };
+
+
+export type MarketPythRatingArgs = {
+  price: Scalars['Float'];
+  side: Side;
+};
+
+export type PythRating = {
+  __typename?: 'PythRating';
+  price: Scalars['Float'];
+  color: PythRatingColor;
+};
+
+export enum PythRatingColor {
+  Red = 'RED',
+  Yellow = 'YELLOW',
+  Green = 'GREEN'
+}
 
 export type Orderbook = {
   __typename?: 'Orderbook';
@@ -209,8 +229,8 @@ export type PlaceOrderInput = {
   marketInput: MarketInput;
   sender: Scalars['Address'];
   side: Side;
-  limitPrice: Scalars['Float'];
-  quantity: Scalars['Float'];
+  limitPrice: Scalars['String'];
+  quantity: Scalars['String'];
   auxToBurn: Scalars['Float'];
   clientOrderId: Scalars['Int'];
   orderType: OrderType;
@@ -237,11 +257,32 @@ export type Pool = {
   amountLP: Scalars['Float'];
   feePercent: Scalars['Float'];
   swaps: Array<Swap>;
-  addLiquiditys: Array<AddLiquidity>;
-  removeLiquiditys: Array<RemoveLiquidity>;
+  adds: Array<AddLiquidity>;
+  removes: Array<RemoveLiquidity>;
   position?: Maybe<Position>;
   priceIn?: Maybe<Scalars['Float']>;
   priceOut?: Maybe<Scalars['Float']>;
+};
+
+
+export type PoolSwapsArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type PoolAddsArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type PoolRemovesArgs = {
+  owner?: InputMaybe<Scalars['Address']>;
+  first?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -465,6 +506,11 @@ export type CoinInfo = {
   decimals: Scalars['Float'];
   name: Scalars['String'];
   symbol: Scalars['String'];
+};
+
+export type Wallet = {
+  __typename?: 'Wallet';
+  balances: Array<Balance>;
 };
 
 export type Balance = {

@@ -88,6 +88,11 @@ const networkConfigs: Record<Network, NetworkConfig> = {
     fullnode: "https://fullnode.mainnet.aptoslabs.com/v1",
     moduleAddress:
       "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541",
+    simulatorAddress:
+      "0x73daac91bd205cec351524974cfae156985f947e07d55f2acfcb38981fdb8898",
+    simulatorPublicKey: mustEd25519PublicKey(
+      "0xa257c3a9f8c0316326681fc525c038886e39b3495c99bb28e1bca01ff6216634"
+    ),
   },
 };
 
@@ -316,9 +321,11 @@ export class AuxClient {
    */
   async dataSimulate({
     payload,
+    simulatorAccount,
     transactionOptions,
   }: {
     payload: Types.EntryFunctionPayload;
+    simulatorAccount?: AptosAccount | undefined;
     transactionOptions?: TransactionOptions | undefined;
   }): Promise<Types.UserTransaction> {
     transactionOptions =
@@ -339,13 +346,15 @@ export class AuxClient {
     );
 
     const rawTxn = await this.aptosClient.generateTransaction(
-      this.simulatorAddress!,
+      simulatorAccount?.address.toString() || this.simulatorAddress!,
       payload,
       options
     );
 
     const simTxn = await this.aptosClient.simulateTransaction(
-      this.simulatorPublicKey!,
+      !!simulatorAccount
+        ? mustEd25519PublicKey(simulatorAccount.pubKey.toString())
+        : this.simulatorPublicKey!,
       rawTxn,
       {
         estimateGasUnitPrice: true,

@@ -435,6 +435,57 @@ describe("CLOB Core tests", function () {
       400_000 - Math.floor(100_000) - Math.floor(100_000)
     );
   });
+  it("getOrderbook", async function () {
+    const market = await clob.query.market(auxClient, baseCoin, quoteCoin);
+    let book = await clob.query.orderbook(auxClient, baseCoin, quoteCoin);
+    const initBidsLen = book.bids.length;
+    const initAsksLen = book.asks.length;
+    await clob.mutation.placeOrder(auxClient, {
+      sender: alice,
+      delegator: aliceAddr,
+      market,
+      isBid: true,
+      limitPriceAu: (50_000).toString(),
+      quantityAu: (1_000_000).toString(),
+      auxToBurnAu: "0",
+      clientOrderId: "100",
+      orderType: OrderType.LIMIT_ORDER,
+      stpActionType: STPActionType.CANCEL_PASSIVE,
+    });
+    book = await clob.query.orderbook(auxClient, baseCoin, quoteCoin);
+    assert.equal(book.bids.length, initBidsLen + 1);
+    await clob.mutation.placeOrder(auxClient, {
+      sender: bob,
+      delegator: bobAddr,
+      market,
+      isBid: false,
+      limitPriceAu: (200_000).toString(),
+      quantityAu: (1_000_000).toString(),
+      auxToBurnAu: "0",
+      clientOrderId: "200",
+      orderType: OrderType.LIMIT_ORDER,
+      stpActionType: STPActionType.CANCEL_PASSIVE,
+    });
+
+    book = await clob.query.orderbook(auxClient, baseCoin, quoteCoin);
+    assert.equal(book.asks.length, initAsksLen + 1);
+    assert.equal(
+      book.asks
+        .find((level) => {
+          return level.price.toNumber() == 200_000;
+        })
+        ?.orders.at(-1)!.clientId,
+      200
+    );
+    assert.equal(
+      book.bids
+        .find((level) => {
+          return level.price.toNumber() == 50_000;
+        })
+        ?.orders.at(-1)!.clientId,
+      100
+    );
+  });
 
   it("cancelOrder", async function () {
     const market = await clob.query.market(auxClient, baseCoin, quoteCoin);
@@ -448,7 +499,7 @@ describe("CLOB Core tests", function () {
     });
     assert.equal(
       await vault.query.availableBalance(auxClient, aliceAddr, quoteCoin),
-      400_000 - 100_000
+      400_000 - 200_000
     );
   });
 

@@ -143,16 +143,6 @@ export interface Order {
   quantity: DecimalUnits;
 }
 
-export interface Level2 {
-  bids: Level[];
-  asks: Level[];
-}
-
-interface Level {
-  price: DecimalUnits;
-  quantity: DecimalUnits;
-}
-
 /**
  * Primary interface to a central limit order book market.
  */
@@ -167,9 +157,6 @@ export default class Market implements core.query.Market {
   type: Types.MoveStructTag;
   baseCoinInfo: CoinInfo;
   quoteCoinInfo: CoinInfo;
-  bids: core.query.Level[];
-  asks: core.query.Level[];
-  level2: Level2;
   l2: L2;
 
   static async index(auxClient: AuxClient): Promise<ReadParams[]> {
@@ -213,10 +200,6 @@ export default class Market implements core.query.Market {
     return new Market({
       auxClient,
       clobAddress,
-      level2: {
-        bids: market.l2.bids,
-        asks: market.l2.asks,
-      },
       ...market,
     });
   }
@@ -232,9 +215,6 @@ export default class Market implements core.query.Market {
     type: Types.MoveStructTag;
     baseCoinInfo: CoinInfo;
     quoteCoinInfo: CoinInfo;
-    bids: core.query.Level[];
-    asks: core.query.Level[];
-    level2: Level2;
     l2: L2;
   }) {
     this.auxClient = kwargs.auxClient;
@@ -247,9 +227,6 @@ export default class Market implements core.query.Market {
     this.type = kwargs.type;
     this.baseCoinInfo = kwargs.baseCoinInfo;
     this.quoteCoinInfo = kwargs.quoteCoinInfo;
-    this.bids = kwargs.bids;
-    this.asks = kwargs.asks;
-    this.level2 = kwargs.level2;
     this.l2 = kwargs.l2;
   }
 
@@ -384,15 +361,9 @@ export default class Market implements core.query.Market {
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType
     );
-    this.bids = market.bids;
-    this.asks = market.asks;
     this.lotSize = market.lotSize;
     this.tickSize = market.tickSize;
     this.nextOrderId = market.nextOrderId;
-    this.level2 = {
-      bids: Market.l2(market, market.bids),
-      asks: Market.l2(market, market.asks),
-    };
     this.l2 = market.l2;
   }
 
@@ -436,6 +407,22 @@ export default class Market implements core.query.Market {
       owner,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType
+    );
+  }
+
+  /**
+   * Returns the full orderbook.
+   * @param owner
+   * @returns
+   */
+  async orderbook(
+    simulatorAccount?: AptosAccount
+  ): Promise<{ bids: core.query.Level[]; asks: core.query.Level[] }> {
+    return core.query.orderbook(
+      this.auxClient,
+      this.baseCoinInfo.coinType,
+      this.quoteCoinInfo.coinType,
+      simulatorAccount
     );
   }
 

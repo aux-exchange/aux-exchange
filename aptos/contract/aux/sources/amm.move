@@ -531,13 +531,16 @@ module aux::amm {
             0, // Allow any quantity of LP. Enforce slippage below.
         );
 
-        // Compute LP amount implied by only dx or dy.
-        // lp = dx * pool_lp_au / x_reserve
-        let lp_dx = to128(div128(mul256((dx as u128), pool_lp_au), (x_reserve as u128)));
-        let lp_dy = to128(div128(mul256((dy as u128), pool_lp_au), (y_reserve as u128)));
-        // lp >= (1 - slippage) * {lp_dx, lp_dy}
-        assert!((lp as u128) * 10000 >= (lp_dx as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
-        assert!((lp as u128) * 10000 >= (lp_dy as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+        // check slippage only if pool is not empty
+        if (x_reserve != 0 || y_reserve != 0) {
+            // Compute LP amount implied by only dx or dy.
+            // lp = dx * pool_lp_au / x_reserve
+            let lp_dx = to128(div128(mul256((dx as u128), pool_lp_au), (x_reserve as u128)));
+            let lp_dy = to128(div128(mul256((dy as u128), pool_lp_au), (y_reserve as u128)));
+            // lp >= (1 - slippage) * {lp_dx, lp_dy}
+            assert!((lp as u128) * 10000 >= (lp_dx as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+            assert!((lp as u128) * 10000 >= (lp_dy as u128) * ((10000 - max_slippage_bps) as u128), EVIOLATED_LIMIT_PRICE);
+        };
 
         let user_dx = coin::extract(user_x, dx);
         let user_dy = coin::extract(user_y, dy);
@@ -1556,7 +1559,7 @@ module aux::amm {
     use aux::fake_coin::{init_module_for_testing, register_and_mint, BTC, FakeCoin, USDC};
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    public fun test_add_initial_liquidity(sender: &signer, aptos_framework: &signer) acquires Pool {
+    public fun test_add_initial_liquidity_exact(sender: &signer, aptos_framework: &signer) acquires Pool {
         timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
@@ -1587,6 +1590,40 @@ module aux::amm {
         };
         let _ = sender_addr;
         add_exact_liquidity<AuxCoin, FakeCoin<BTC>>(sender, 200000, 200000000);
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_add_initial_liquidity_approximate(sender: &signer, aptos_framework: &signer) acquires Pool {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+
+        let sender_addr = signer::address_of(sender);
+        if (!account::exists_at(sender_addr)) {
+            account::create_account_for_test(sender_addr);
+        };
+        init_module_for_testing(sender);
+        assert!(signer::address_of(&authority::get_signer(sender)) == @aux, ETEST_FAILED);
+        aux::aux_coin::initialize_aux_coin(sender);
+
+        util::maybe_register_coin<AuxCoin>(sender);
+        assert!(coin::is_account_registered<AuxCoin>(sender_addr), ETEST_FAILED);
+
+        managed_coin::mint<AuxCoin>(&authority::get_signer(sender), sender_addr, 1000000000);
+
+        register_and_mint<BTC>(sender, 200000000);
+
+        create_pool<AuxCoin, FakeCoin<BTC>>(sender, 10);
+
+        {
+            let pool = borrow_global<Pool<AuxCoin, FakeCoin<BTC>>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, FakeCoin<BTC>>>(), 0);
+            assert!(x_reserve == 0, ETEST_FAILED);
+            assert!(y_reserve == 0, ETEST_FAILED);
+            assert!(pool_lp_au == 0, ETEST_FAILED);
+        };
+        let _ = sender_addr;
+        add_liquidity<AuxCoin, FakeCoin<BTC>>(sender, 200000, 200000000, 0);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
@@ -2725,4 +2762,5 @@ module aux::amm {
         let in2 = amount_in_limit(max_u128, max_u128, 70000, 100000, 30);
         assert!(in1 == in2, in1);
     }
+
 }

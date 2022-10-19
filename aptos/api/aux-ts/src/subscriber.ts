@@ -5,7 +5,7 @@ import type {
   OrderPlacedEvent,
 } from "./clob/core/events";
 import type Market from "./clob/dsl/market";
-import type { Level2 } from "./clob/dsl/market";
+import type { L2 } from "./clob/core/query";
 
 /**
  * Provides a callback-driven API to subscribe to market information.
@@ -39,7 +39,7 @@ export default class MarketSubscriber {
   /// TODO perhaps level2 should be its own event on clob_market
   /// right now it has to redundantly load fill/cancel/place, see if there's any change, then
   /// update the entire market
-  async onLevel2(callback: (level2: Level2, market: Market) => void) {
+  async onL2(callback: (l2: L2, market: Market) => void) {
     while (true) {
       const [fills, cancels, orders] = await Promise.all([
         this.market.fills(),
@@ -58,7 +58,7 @@ export default class MarketSubscriber {
         )
       ) {
         this.market.update();
-        callback(this.market.level2, this.market);
+        callback(this.market.l2, this.market);
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
     }

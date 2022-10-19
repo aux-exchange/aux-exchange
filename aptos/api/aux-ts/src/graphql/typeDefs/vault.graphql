@@ -1,3 +1,7 @@
+type Wallet {
+  balances: [Balance!]!
+}
+
 type Balance {
   coinInfo: CoinInfo!
   balance: Float!

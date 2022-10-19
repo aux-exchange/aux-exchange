@@ -12,6 +12,18 @@ type Market {
   low24h: Float
   volume24h: Float
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
+  pythRating(price: Float!, side: Side!): PythRating
+}
+
+type PythRating {
+  price: Float!
+  color: PythRatingColor!
+}
+
+enum PythRatingColor {
+  RED
+  YELLOW
+  GREEN
 }
 
 type Orderbook {
@@ -120,8 +132,8 @@ input PlaceOrderInput {
   marketInput: MarketInput!
   sender: Address!
   side: Side!
-  limitPrice: Float!
-  quantity: Float!
+  limitPrice: String!
+  quantity: String!
   auxToBurn: Float!
   clientOrderId: Int!
   orderType: OrderType!

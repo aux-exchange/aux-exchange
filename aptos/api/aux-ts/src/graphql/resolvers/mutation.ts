@@ -146,11 +146,14 @@ export const mutation = {
       orderId: cancelOrderInput.orderId,
     });
   },
+  createAuxAccount() {
+    return aux.vault.core.mutation.createAuxAccountPayload(auxClient);
+  },
   async deposit(_parent: any, { depositInput }: MutationDepositArgs) {
     return aux.vault.core.mutation.depositPayload(auxClient, {
       coinType: depositInput.coinType,
-      // @ts-ignore
-      sender: { address: () => depositInput.sender },
+      sender: depositInput.from,
+      to: depositInput.to,
       amountAu: DU(depositInput.amount)
         .toAtomicUnits(
           (await auxClient.getCoinInfo(depositInput.coinType)).decimals
@@ -159,10 +162,9 @@ export const mutation = {
     });
   },
   async withdraw(_parent: any, { withdrawInput }: MutationWithdrawArgs) {
-    return aux.vault.core.mutation.depositPayload(auxClient, {
+    return aux.vault.core.mutation.withdrawPayload(auxClient, {
       coinType: withdrawInput.coinType,
-      // @ts-ignore
-      sender: { address: () => withdrawInput.sender },
+      sender: withdrawInput.from,
       amountAu: DU(withdrawInput.amount)
         .toAtomicUnits(
           (await auxClient.getCoinInfo(withdrawInput.coinType)).decimals
@@ -172,8 +174,7 @@ export const mutation = {
   },
   async transfer(_parent: any, { transferInput }: MutationTransferArgs) {
     return aux.vault.core.mutation.transferPayload(auxClient, {
-      // @ts-ignore
-      sender: { address: () => transferInput.from },
+      sender: transferInput.from,
       recipient: transferInput.to,
       coinType: transferInput.coinType,
       amountAu: DU(transferInput.amount)

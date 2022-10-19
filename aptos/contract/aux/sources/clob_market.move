@@ -1402,7 +1402,7 @@ module aux::clob_market {
             0,
             false,
             MAX_U64,
-            CANCEL_PASSIVE,
+            CANCEL_AGGRESSIVE,
         );
 
         // Transfer coins

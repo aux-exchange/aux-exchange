@@ -68,6 +68,19 @@ describe("AMM DSL tests", function () {
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
+  it("checkPoolSymmetricRead", async function () {
+    const maybePool = await Pool.read(auxClient, {
+      coinTypeX: btcCoin,
+      coinTypeY: auxCoin,
+    });
+
+    assert.ok(maybePool !== undefined);
+
+    assert.equal(maybePool.amountX.toNumber(), 2);
+    assert.equal(maybePool.amountY.toNumber(), 2);
+    assert.equal(maybePool.amountLP.toNumber(), 0.2);
+  });
+
   it("position", async function () {
     await pool.update();
     const position = await pool.position(sender.address().toString())!;

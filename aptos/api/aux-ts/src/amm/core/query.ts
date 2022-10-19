@@ -45,20 +45,33 @@ export interface PoolInput {
 
 export async function pool(
   auxClient: AuxClient,
-  poolInput: PoolInput
+  { coinTypeX, coinTypeY }: PoolInput
 ): Promise<Pool | undefined> {
-  const type = poolType(auxClient.moduleAddress, poolInput);
-  const coinTypeLP = `${auxClient.moduleAddress}::amm::LP<${poolInput.coinTypeX}, ${poolInput.coinTypeY}>`;
-  const resource = await auxClient.getAccountResourceOptional(
+  let type = poolType(auxClient.moduleAddress, { coinTypeX, coinTypeY });
+  let resource = await auxClient.getAccountResourceOptional(
     auxClient.moduleAddress,
     type
   );
   if (!resource) {
+    let t = coinTypeX;
+    coinTypeX = coinTypeY;
+    coinTypeY = t;
+    type = poolType(auxClient.moduleAddress, { coinTypeX, coinTypeY });
+    resource = await auxClient.getAccountResourceOptional(
+      auxClient.moduleAddress,
+      type
+    );
+  }
+
+  if (!resource) {
     return undefined;
   }
+
+  const coinTypeLP = `${auxClient.moduleAddress}::amm::LP<${coinTypeX}, ${coinTypeY}>`;
+
   const [coinInfoX, coinInfoY, coinInfoLP] = await Promise.all([
-    auxClient.getCoinInfo(poolInput.coinTypeX),
-    auxClient.getCoinInfo(poolInput.coinTypeY),
+    auxClient.getCoinInfo(coinTypeX),
+    auxClient.getCoinInfo(coinTypeY),
 
     // Refresh the LP supply.
     auxClient.getCoinInfo(coinTypeLP, true),

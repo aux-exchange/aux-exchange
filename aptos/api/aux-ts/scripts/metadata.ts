@@ -71,7 +71,7 @@ async function main() {
           },
         },
         poolInput: ethUsdcPool,
-        marketInput: ethUsdcPool,
+        marketInput: ethUsdcMarket,
         coinTypeIn: eth,
       },
       undefined,

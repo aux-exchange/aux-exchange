@@ -1,4 +1,4 @@
-import { HexString, Types } from "aptos";
+import { AptosAccount, HexString, Types } from "aptos";
 import BN from "bn.js";
 import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
@@ -59,6 +59,15 @@ interface RawOpenOrdersEvent {
   };
 }
 
+interface RawAllOrdersEvent {
+  sequence_number: string;
+  type: string;
+  data: {
+    bids: RawOrder[][];
+    asks: RawOrder[][];
+  };
+}
+
 interface TreeEntry<T> {
   key: Types.U128;
   value: T;
@@ -105,8 +114,6 @@ export interface Market {
   type: Types.MoveStructTag;
   baseCoinInfo: CoinInfo;
   quoteCoinInfo: CoinInfo;
-  bids: Level[];
-  asks: Level[];
   l2: L2;
 }
 
@@ -256,13 +263,71 @@ export async function market(
     quoteDecimals: rawMarket.data.quote_decimals,
     lotSize: new AtomicUnits(rawMarket.data.lot_size),
     tickSize,
-    bids: [],
-    asks: [],
     l2: {
       bids,
       asks,
     },
   };
+}
+
+export async function orderbook(
+  auxClient: AuxClient,
+  baseCoinType: Types.MoveStructTag,
+  quoteCoinType: Types.MoveStructTag,
+  simulatorAccount?: AptosAccount
+): Promise<{ bids: Level[]; asks: Level[] }> {
+  const payload = {
+    function: `${auxClient.moduleAddress}::clob_market::load_all_orders_into_event`,
+    type_arguments: [baseCoinType, quoteCoinType],
+    arguments: [],
+  };
+  const txResult = await auxClient.dataSimulate({
+    payload,
+    simulatorAccount,
+  });
+  const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
+  const bids: Level[] = event.data.bids.map((level) => {
+    return {
+      price: AU(level[0]!.price!),
+      orders: level.map((order) => {
+        const auxBurned = order.aux_au_to_burn_per_lot;
+        const time = order.timestamp;
+        return {
+          id: new BN(order.id),
+          side: order.is_bid ? "bid" : "ask",
+          auxBurned: new AtomicUnits(auxBurned),
+          timestamp: new BN(time),
+          price: AU(order.price),
+          quantity: AU(order.quantity),
+          ownerId: new HexString(order.owner_id),
+          clientId: new BN(order.client_order_id),
+          orderType: Number(order.order_type),
+        };
+      }),
+    };
+  });
+  const asks: Level[] = event.data.asks.map((level) => {
+    return {
+      price: AU(level[0]!.price!),
+      orders: level.map((order) => {
+        const auxBurned = order.aux_au_to_burn_per_lot;
+        const time = order.timestamp;
+        return {
+          id: new BN(order.id),
+          side: order.is_bid ? "bid" : "ask",
+          auxBurned: new AtomicUnits(auxBurned),
+          timestamp: new BN(time),
+          price: AU(order.price),
+          quantity: AU(order.quantity),
+          ownerId: new HexString(order.owner_id),
+          clientId: new BN(order.client_order_id),
+          orderType: Number(order.order_type),
+        };
+      }),
+    };
+  });
+
+  return { bids, asks };
 }
 
 export async function openOrders(
