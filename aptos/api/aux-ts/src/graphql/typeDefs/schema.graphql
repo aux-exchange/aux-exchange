@@ -30,6 +30,8 @@ type Mutation {
   deposit(depositInput: DepositInput!): EntryFunctionPayload!
   withdraw(withdrawInput: WithdrawInput!): EntryFunctionPayload!
   transfer(transferInput: TransferInput!): EntryFunctionPayload!
+
+  routerSwap(swapInput: RouterSwapInput!): EntryFunctionPayload!
 }
 
 type Subscription {

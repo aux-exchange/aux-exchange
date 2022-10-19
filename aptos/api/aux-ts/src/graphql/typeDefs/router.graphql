@@ -3,3 +3,11 @@ input QuoteInput {
   coinTypeOut: String!
   amount: Float!
 }
+
+input RouterSwapInput {
+  exactIn: Boolean!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountIn: Float!
+  amountOut: Float!
+}

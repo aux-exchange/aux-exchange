@@ -232,6 +232,7 @@ export type Mutation = {
   placeOrder: Scalars['EntryFunctionPayload'];
   registerCoin: Scalars['EntryFunctionPayload'];
   removeLiquidity: Scalars['EntryFunctionPayload'];
+  routerSwap: Scalars['EntryFunctionPayload'];
   swap: Scalars['EntryFunctionPayload'];
   transfer: Scalars['EntryFunctionPayload'];
   withdraw: Scalars['EntryFunctionPayload'];
@@ -275,6 +276,11 @@ export type MutationRegisterCoinArgs = {
 
 export type MutationRemoveLiquidityArgs = {
   removeLiquidityInput: RemoveLiquidityInput;
+};
+
+
+export type MutationRouterSwapArgs = {
+  swapInput: RouterSwapInput;
 };
 
 
@@ -500,6 +506,14 @@ export enum Resolution {
   Weeks_1 = 'WEEKS_1'
 }
 
+export type RouterSwapInput = {
+  amountIn: Scalars['Float'];
+  amountOut: Scalars['Float'];
+  coinTypeIn: Scalars['String'];
+  coinTypeOut: Scalars['String'];
+  exactIn: Scalars['Boolean'];
+};
+
 export enum StpActionType {
   CancelAggressive = 'CANCEL_AGGRESSIVE',
   CancelBoth = 'CANCEL_BOTH',
@@ -722,6 +736,7 @@ export type ResolversTypes = {
   RemoveLiquidity: ResolverTypeWrapper<RemoveLiquidity>;
   RemoveLiquidityInput: RemoveLiquidityInput;
   Resolution: Resolution;
+  RouterSwapInput: RouterSwapInput;
   STPActionType: StpActionType;
   Side: Side;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -773,6 +788,7 @@ export type ResolversParentTypes = {
   RegisterCoinInput: RegisterCoinInput;
   RemoveLiquidity: RemoveLiquidity;
   RemoveLiquidityInput: RemoveLiquidityInput;
+  RouterSwapInput: RouterSwapInput;
   String: Scalars['String'];
   Subscription: {};
   Swap: Swap;
@@ -891,6 +907,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   placeOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationPlaceOrderArgs, 'placeOrderInput'>>;
   registerCoin?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRegisterCoinArgs, 'registerCoinInput'>>;
   removeLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRemoveLiquidityArgs, 'removeLiquidityInput'>>;
+  routerSwap?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRouterSwapArgs, 'swapInput'>>;
   swap?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapArgs, 'swapInput'>>;
   transfer?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationTransferArgs, 'transferInput'>>;
   withdraw?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationWithdrawArgs, 'withdrawInput'>>;
