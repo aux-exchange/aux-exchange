@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { u as useQuery, r as react, j as jsx, c as create$1, W as We, g as gt$1, R as React, p as pt, m as mt, q as qe$1, O as Oe, a as useAnimationControls, b as motion, d as useNavigate, e as useLocation, f as be, G as Ge$1, S as Slider, h as useReactTable, i as flexRender, k as getCoreRowModel, l as getSortedRowModel, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as Do, C as ChevronDownIcon, F as Fragment, t as useSubscription, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.d4906bac.js";
+import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge$1, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, F as Fragment, l as useQuery, D as DateTime, n as jsxs, L as Link, o as useMutation, X as XMarkIcon, s as useSubscription, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as randRecentDate, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, B as colors_1, N as NavLink, E as ArrowsUpDownIcon, H as HttpLink, I as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, T as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.30b6f654.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -50,311 +50,6 @@ import "./__commonjsHelpers__.4516dc8a.js";
 const tailwind = "";
 const App$1 = "";
 const index$1 = "";
-const MarketCoinsDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "MarketCoins"
-    },
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "marketCoins"
-        },
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "coinType"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "decimals"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "name"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "symbol"
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function useMarketCoins() {
-  var _a, _b;
-  const marketCoins = useQuery(MarketCoinsDocument);
-  return (_b = (_a = marketCoins.data) == null ? void 0 : _a.marketCoins) != null ? _b : [];
-}
-var Wallets = /* @__PURE__ */ ((Wallets2) => {
-  Wallets2["Petra"] = "Petra";
-  Wallets2["Martian"] = "Martian";
-  return Wallets2;
-})(Wallets || {});
-class WalletAdapterCore {
-  constructor(wallet_namespace, walletType) {
-    __publicField(this, "__wallet_namespace");
-    __publicField(this, "walletType");
-    this.walletType = walletType;
-    this.__wallet_namespace = wallet_namespace;
-    this.getWallet = this.getWallet.bind(this);
-    this.isConnected = this.isConnected.bind(this);
-    this.connect = this.connect.bind(this);
-    this.isDetected = this.isDetected.bind(this);
-    this.swap = this.swap.bind(this);
-    this.addLiquidity = this.addLiquidity.bind(this);
-    this.removeLiquidity = this.removeLiquidity.bind(this);
-    this.signAndSubmitTransaction = this.signAndSubmitTransaction.bind(this);
-    this.signTransaction = this.signTransaction.bind(this);
-    this.disconnect = this.disconnect.bind(this);
-  }
-  getWallet() {
-    return window[this.__wallet_namespace];
-  }
-  isConnected() {
-    var _a;
-    return (_a = this.getWallet()) == null ? void 0 : _a.isConnected();
-  }
-  isDetected() {
-    if (this.__wallet_namespace in window)
-      return true;
-    return false;
-  }
-  async connect() {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
-  }
-  async disconnect() {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.disconnect());
-  }
-  async signAndSubmitTransaction(transaction) {
-    var _a;
-    await ((_a = this.getWallet()) == null ? void 0 : _a.signAndSubmitTransaction(transaction));
-  }
-  async signTransaction(transaction) {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.signTransaction(transaction));
-  }
-  async swap(coinX, coinY) {
-  }
-  async addLiquidity(coinX, coinY) {
-  }
-  async removeLiquidity(coinX, coinY) {
-  }
-}
-class MartianWalletAdapter extends WalletAdapterCore {
-  constructor() {
-    super("martian", Wallets.Martian);
-  }
-}
-class PetraWalletAdapter extends WalletAdapterCore {
-  constructor() {
-    super("aptos", Wallets.Petra);
-  }
-}
-const WalletContext = react.exports.createContext([null, () => {
-}, null]);
-const WalletContextProvider = ({
-  children
-}) => {
-  const [activeWallet, setActiveWallet] = react.exports.useState(null);
-  const [connection, setConnection] = react.exports.useState(null);
-  react.exports.useEffect(() => {
-    if (!connection && !activeWallet) {
-      const lastWallet = localStorage.getItem("aux_last_wallet");
-      switch (lastWallet) {
-        case Wallets.Martian: {
-          const adapter = new MartianWalletAdapter();
-          if (adapter.isDetected())
-            setActiveWallet(new MartianWalletAdapter());
-        }
-        case Wallets.Petra: {
-          const adapter = new PetraWalletAdapter();
-          if (adapter.isDetected())
-            setActiveWallet(new PetraWalletAdapter());
-        }
-        default:
-          return;
-      }
-    }
-  }, []);
-  react.exports.useEffect(() => {
-    activeWallet == null ? void 0 : activeWallet.connect().then((c) => {
-      setConnection(c);
-      localStorage.setItem("aux_last_wallet", activeWallet.walletType);
-    });
-    return () => {
-      activeWallet == null ? void 0 : activeWallet.disconnect();
-    };
-  }, [activeWallet]);
-  return /* @__PURE__ */ jsx(WalletContext.Provider, {
-    value: [activeWallet, setActiveWallet, connection],
-    children
-  });
-};
-const WalletProvider = WalletContextProvider;
-function useWallet() {
-  const wallet = react.exports.useContext(WalletContext);
-  return wallet;
-}
-const TradeHistoryDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "TradeHistory"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "tradeHistory"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "baseCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quoteCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "side"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quantity"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "price"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "value"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "time"
-                }
-              }]
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function useTradeHistory() {
-  const [, , connection] = useWallet();
-  const tradeHistoryQuery = useQuery(TradeHistoryDocument, {
-    variables: {
-      owner: connection == null ? void 0 : connection.address
-    },
-    skip: !(connection == null ? void 0 : connection.address)
-  });
-  return tradeHistoryQuery;
-}
 var se = { exports: {} }, W = {};
 /**
  * @license React
@@ -494,7 +189,7 @@ function ut({
     })]
   });
 }
-react.exports.forwardRef(ut);
+const dt = react.exports.forwardRef(ut), ft = dt;
 function ht({
   title: e2,
   titleId: t2,
@@ -521,7 +216,7 @@ function ht({
     })]
   });
 }
-react.exports.forwardRef(ht);
+const mt = react.exports.forwardRef(ht), pt = mt;
 function gt({
   title: e2,
   titleId: t2,
@@ -978,28 +673,30 @@ function qe({
   variant: s2,
   size: n2,
   element: o2,
-  onClick: l
+  onClick: l,
+  disabled: c
 }) {
-  const c = Vt({
+  const f = Vt({
     size: n2,
     variant: s2
-  }, e2), d = (() => {
+  }, e2), h = (() => {
     switch (o2) {
       case "disclosure":
         return Oe.Button;
       case "menu":
         return qe$1.Button;
       case "popover":
-        return mt.Button;
+        return mt$1.Button;
       case "listbox":
-        return pt.Button;
+        return pt$1.Button;
       default:
         return "div";
     }
   })();
-  return /* @__PURE__ */ a(d, {
+  return /* @__PURE__ */ a(h, {
+    disabled: c,
     onClick: l,
-    className: c,
+    className: f,
     children: t2
   });
 }
@@ -1498,6 +1195,56 @@ function Pn({
       valueChange: s2,
       priceDirection: o2
     }) : null]
+  });
+}
+function Gt(...e2) {
+  return e2.filter(Boolean).join(" ");
+}
+function Ln({
+  options: e2,
+  onChange: t2,
+  label: s2,
+  value: n2,
+  className: o2
+}) {
+  const [l, c] = react.exports.useState(n2), f = react.exports.useCallback((d) => {
+    t2 == null || t2(d.value), c(d);
+  }, [t2]);
+  return /* @__PURE__ */ a(pt$1, {
+    value: l,
+    onChange: f,
+    children: ({
+      open: d
+    }) => /* @__PURE__ */ a(oe, {
+      children: /* @__PURE__ */ g("div", {
+        className: `relative mt-1 w-56 ${o2}`,
+        children: [s2 && /* @__PURE__ */ a(ie, {
+          className: "block",
+          children: "label"
+        }), /* @__PURE__ */ g(pt$1.Button, {
+          className: " text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm",
+          children: [l.label, /* @__PURE__ */ a("span", {
+            className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+            children: d ? /* @__PURE__ */ a(pt, {
+              className: "h-4 w-4 text-primary-400",
+              "aria-hidden": "true"
+            }) : /* @__PURE__ */ a(ft, {
+              className: "h-4 w-4 text-primary-400",
+              "aria-hidden": "true"
+            })
+          })]
+        }), /* @__PURE__ */ a(pt$1.Options, {
+          className: " absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-primary-700 py-1 text-white shadow-lg ring-1 border-none ring-black ring-opacity-5 outline-none sm:text-sm ",
+          children: e2.map((h) => /* @__PURE__ */ a(pt$1.Option, {
+            value: h,
+            className: ({
+              active: m
+            }) => Gt(m ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+            children: h.label
+          }, h.label))
+        })]
+      })
+    })
   });
 }
 function $n({
@@ -2132,6 +1879,338 @@ function An({
       })]
     })
   });
+}
+function NetworkToggle({}) {
+  const location = window.location;
+  const networkOptions = [{
+    label: "Mainnet",
+    value: "https://mainnet.aux.exchange"
+  }, {
+    label: "Testnet",
+    value: "https://testnet.aux.exchange"
+  }, {
+    label: "Devnet",
+    value: "https://devnet.aux.exchange"
+  }, {
+    label: "Localnet",
+    value: "http://localhost:5173"
+  }];
+  const currentNetwork = networkOptions.find((n2) => location.origin === n2.value);
+  const onNetworkChange = (e2) => window.location.assign(e2 + location.pathname + location.search);
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: currentNetwork && /* @__PURE__ */ jsx(Ln, {
+      label: "",
+      className: "w-[120px] mt-0 mr-3",
+      value: currentNetwork,
+      onChange: onNetworkChange,
+      options: networkOptions
+    })
+  });
+}
+const MarketCoinsDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "MarketCoins"
+    },
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "marketCoins"
+        },
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "coinType"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "decimals"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "name"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "symbol"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function useMarketCoins() {
+  var _a, _b;
+  const marketCoins = useQuery(MarketCoinsDocument);
+  return (_b = (_a = marketCoins.data) == null ? void 0 : _a.marketCoins) != null ? _b : [];
+}
+var Wallets = /* @__PURE__ */ ((Wallets2) => {
+  Wallets2["Petra"] = "Petra";
+  Wallets2["Martian"] = "Martian";
+  return Wallets2;
+})(Wallets || {});
+class WalletAdapterCore {
+  constructor(wallet_namespace, walletType) {
+    __publicField(this, "__wallet_namespace");
+    __publicField(this, "walletType");
+    this.walletType = walletType;
+    this.__wallet_namespace = wallet_namespace;
+    this.getWallet = this.getWallet.bind(this);
+    this.isConnected = this.isConnected.bind(this);
+    this.connect = this.connect.bind(this);
+    this.isDetected = this.isDetected.bind(this);
+    this.swap = this.swap.bind(this);
+    this.addLiquidity = this.addLiquidity.bind(this);
+    this.removeLiquidity = this.removeLiquidity.bind(this);
+    this.signAndSubmitTransaction = this.signAndSubmitTransaction.bind(this);
+    this.signTransaction = this.signTransaction.bind(this);
+    this.disconnect = this.disconnect.bind(this);
+  }
+  getWallet() {
+    return window[this.__wallet_namespace];
+  }
+  isConnected() {
+    var _a;
+    return (_a = this.getWallet()) == null ? void 0 : _a.isConnected();
+  }
+  isDetected() {
+    if (this.__wallet_namespace in window)
+      return true;
+    return false;
+  }
+  async connect() {
+    var _a;
+    return await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
+  }
+  async disconnect() {
+    var _a;
+    return await ((_a = this.getWallet()) == null ? void 0 : _a.disconnect());
+  }
+  async signAndSubmitTransaction(transaction) {
+    var _a;
+    await ((_a = this.getWallet()) == null ? void 0 : _a.signAndSubmitTransaction(transaction));
+  }
+  async signTransaction(transaction) {
+    var _a;
+    return await ((_a = this.getWallet()) == null ? void 0 : _a.signTransaction(transaction));
+  }
+  async swap(coinX, coinY) {
+  }
+  async addLiquidity(coinX, coinY) {
+  }
+  async removeLiquidity(coinX, coinY) {
+  }
+}
+class MartianWalletAdapter extends WalletAdapterCore {
+  constructor() {
+    super("martian", Wallets.Martian);
+  }
+}
+class PetraWalletAdapter extends WalletAdapterCore {
+  constructor() {
+    super("aptos", Wallets.Petra);
+  }
+}
+const WalletContext = react.exports.createContext([null, () => {
+}, null]);
+const WalletContextProvider = ({
+  children
+}) => {
+  const [activeWallet, setActiveWallet] = react.exports.useState(null);
+  const [connection, setConnection] = react.exports.useState(null);
+  react.exports.useEffect(() => {
+    if (!connection && !activeWallet) {
+      const lastWallet = localStorage.getItem("aux_last_wallet");
+      switch (lastWallet) {
+        case Wallets.Martian: {
+          const adapter = new MartianWalletAdapter();
+          if (adapter.isDetected())
+            setActiveWallet(new MartianWalletAdapter());
+        }
+        case Wallets.Petra: {
+          const adapter = new PetraWalletAdapter();
+          if (adapter.isDetected())
+            setActiveWallet(new PetraWalletAdapter());
+        }
+        default:
+          return;
+      }
+    }
+  }, []);
+  react.exports.useEffect(() => {
+    activeWallet == null ? void 0 : activeWallet.connect().then((c) => {
+      setConnection(c);
+      localStorage.setItem("aux_last_wallet", activeWallet.walletType);
+    });
+    return () => {
+      activeWallet == null ? void 0 : activeWallet.disconnect();
+    };
+  }, [activeWallet]);
+  return /* @__PURE__ */ jsx(WalletContext.Provider, {
+    value: [activeWallet, setActiveWallet, connection],
+    children
+  });
+};
+const WalletProvider = WalletContextProvider;
+function useWallet() {
+  const wallet = react.exports.useContext(WalletContext);
+  return wallet;
+}
+const TradeHistoryDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "TradeHistory"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "tradeHistory"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "baseCoinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "quoteCoinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "orderId"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "owner"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "side"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "quantity"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "price"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "value"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "auxBurned"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "time"
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function useTradeHistory() {
+  const [, , connection] = useWallet();
+  const tradeHistoryQuery = useQuery(TradeHistoryDocument, {
+    variables: {
+      owner: connection == null ? void 0 : connection.address
+    },
+    skip: !(connection == null ? void 0 : connection.address)
+  });
+  return tradeHistoryQuery;
 }
 function useTradeHistoryTable() {
   var _a, _b;
@@ -3448,6 +3527,219 @@ const MarketDocument = {
     }
   }]
 };
+const MarketSimpleDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "MarketSimple"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "marketInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "MarketInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "market"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "marketInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "marketInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "name"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "baseCoinInfo"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "quoteCoinInfo"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "lotSize"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "tickSize"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "baseCoinInfo"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "quoteCoinInfo"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "decimals"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "name"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
 const PlaceOrderDocument = {
   "kind": "Document",
   "definitions": [{
@@ -4075,418 +4367,121 @@ const DepositDocument = {
     }
   }]
 };
-const CoinList = "";
-function CoinListItem({
-  onCoinSelect,
-  ...coinInfo
-}) {
-  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
-  return /* @__PURE__ */ jsxs(Do.Option, {
-    value: coinInfo,
-    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(Jt, {
-      coin: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xl font-medium text-primary-100",
-      children: coinInfo.symbol
-    }), /* @__PURE__ */ jsx("p", {
-      className: "text-xs text-primary-200",
-      children: coinInfo.name
-    })]
-  }, coinInfo.symbol);
-}
-function CoinListView({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(Do.Options, {
-    className: "bg-transparent",
-    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
-      onCoinSelect,
-      ...info
-    }, info.symbol))
-  });
-}
-function CoinListContainer({
-  onCoinSelect,
-  coins
-}) {
-  return /* @__PURE__ */ jsx(CoinListView, {
-    onCoinSelect,
-    coins
-  });
-}
-const CoinSearchModal = "";
-function CoinSearchModalView({
-  onCoinSelect,
-  trigger,
-  onQueryChange,
-  query,
-  coins
-}) {
-  var _a;
-  const modalRef = react.exports.useRef(null);
-  react.exports.useRef(null);
-  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
-    var _a2;
-    onCoinSelect(coin);
-    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
-  }, []);
-  return /* @__PURE__ */ jsx(Vn, {
-    trigger,
-    ref: modalRef,
-    children: /* @__PURE__ */ jsx(ModalContents, {
-      coins,
-      onQueryChange,
-      query,
-      selectCoinAndCloseModal,
-      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
-    })
-  });
-}
-function ModalContents({
-  coins,
-  onQueryChange,
-  query,
-  selectCoinAndCloseModal,
-  modalOpen
-}) {
-  const buttonRef = react.exports.useRef(null);
-  react.exports.useEffect(() => {
-    const interval = setInterval(() => {
-      var _a;
-      if (buttonRef.current) {
-        (_a = buttonRef.current) == null ? void 0 : _a.click();
-        clearInterval(interval);
-      }
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
-  return /* @__PURE__ */ jsxs(Dn, {
-    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
-    children: [/* @__PURE__ */ jsx(_n, {
-      id: "headlessui-dialog-title-:rh:",
-      children: "Select Token"
-    }), /* @__PURE__ */ jsxs(Do, {
-      onChange: selectCoinAndCloseModal,
-      children: [/* @__PURE__ */ jsx(Do.Input, {
-        placeholder: "Search Tokens",
-        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
-        value: query,
-        tabIndex: 0,
-        onChange: onQueryChange
-      }), /* @__PURE__ */ jsx(Do.Button, {
-        ref: buttonRef,
-        className: "hidden"
-      }), /* @__PURE__ */ jsx(Do.Options, {
-        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
-          onCoinSelect: selectCoinAndCloseModal,
-          coins
-        }) : null
-      })]
-    })]
-  });
-}
-function CoinSearchModalContainer({
-  onCoinSelect,
-  trigger,
-  coins
-}) {
-  const [query, setQuery] = react.exports.useState("");
-  const filteredCoins = coins.filter((c) => {
-    var _a;
-    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
-  });
-  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
-  return /* @__PURE__ */ jsx(CoinSearchModalView, {
-    onCoinSelect,
-    trigger,
-    onQueryChange,
-    query,
-    coins: filteredCoins
-  });
-}
-function CoinSelectButton({
-  coin,
-  className
-}) {
-  return /* @__PURE__ */ jsx("div", {
-    className,
-    children: /* @__PURE__ */ jsxs("button", {
-      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(Jt, {
-        coin: coin.symbol,
-        size: 24
-      }) : null, /* @__PURE__ */ jsx("span", {
-        className: "ml-2 mr-7",
-        children: coin == null ? void 0 : coin.symbol
-      }), /* @__PURE__ */ jsx("div", {
-        className: "absolute w-4 right-4",
-        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
-      })]
-    })
-  });
-}
-function DepositView({}) {
-  var _a, _b, _c;
-  const [amount, setAmount] = react.exports.useState(0);
-  const balances = useBalances();
-  const coins = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances.map((b) => b.coinInfo)) != null ? _c : [];
-  const [coin, selectCoin] = react.exports.useState();
-  return /* @__PURE__ */ jsx(Vn, {
-    trigger: /* @__PURE__ */ jsx(qe, {
-      size: "sm",
-      onClick: () => {
+const WalletBalancesDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "WalletBalances"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
       },
-      children: "Deposit"
-    }),
-    children: /* @__PURE__ */ jsxs(Dn, {
-      className: "w-[700px] mx-auto gap-4 flex flex-col",
-      padding: 6,
-      children: [/* @__PURE__ */ jsx(_n, {
-        className: "mb-4",
-        children: "Deposit"
-      }), !coins.length && /* @__PURE__ */ jsx(or, {
-        title: "Nothing to deposit.",
-        message: "Cannot find existing balances in your wallet. Please add some money."
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
-        children: [/* @__PURE__ */ jsxs("div", {
-          className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(ie, {
-            className: "text-primary-300",
-            children: "Enter Deposit Amount"
-          }), /* @__PURE__ */ jsx("div", {
-            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
-              coins,
-              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
-                coin
-              }),
-              onCoinSelect: (c) => selectCoin(c)
-            })
-          })]
-        }), /* @__PURE__ */ jsxs("div", {
-          className: "flex justify-between flex-auto flex-col gap-4",
-          children: [/* @__PURE__ */ jsx("div", {
-            className: "text-sm text-right",
-            children: "Balance: -"
-          }), /* @__PURE__ */ jsx("input", {
-            disabled: false,
-            inputMode: "decimal",
-            min: "0",
-            type: "text",
-            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
-            value: amount,
-            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
-            placeholder: "0.00"
-          })]
-        })]
-      }), /* @__PURE__ */ jsx(qe, {
-        onClick: () => {
-        },
-        children: "Submit Deposit"
-      })]
-    })
-  });
-}
-function DepositContainer({}) {
-  useMutation(DepositDocument);
-  return /* @__PURE__ */ jsx(DepositView, {});
-}
-const martian = new MartianWalletAdapter();
-const petra = new PetraWalletAdapter();
-const WALLETS = [martian, petra];
-const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
-  trigger
-}, _ref) {
-  const backupRef = react.exports.useRef();
-  const ref = _ref != null ? _ref : backupRef;
-  const [options, setOptions] = react.exports.useState([]);
-  const [activeWallet, setActiveWallet, connection] = useWallet();
-  const suggestedBadge = /* @__PURE__ */ jsx(Mn, {
-    size: "xs",
-    children: "Recommended"
-  });
-  const connectedBadge = /* @__PURE__ */ jsx(Mn, {
-    size: "xs",
-    variant: "success",
-    children: "Connected"
-  });
-  const detectedBadge = /* @__PURE__ */ jsx(Mn, {
-    size: "xs",
-    variant: "basic",
-    children: "Detected"
-  });
-  const walletOptions = WALLETS.map((w) => ({
-    name: w.walletType,
-    checkDetected: w.isDetected,
-    checkConnected: w.isConnected,
-    async onClick() {
-      var _a;
-      await (activeWallet == null ? void 0 : activeWallet.disconnect());
-      setActiveWallet(w);
-      await w.connect();
-      await getOptions();
-      (_a = ref == null ? void 0 : ref.current) == null ? void 0 : _a.closeModal();
-    }
-  }));
-  async function getOptions() {
-    const _options = await Promise.all(walletOptions.map(async ({
-      name,
-      checkConnected,
-      checkDetected,
-      onClick
-    }) => {
-      const connected = Boolean(checkConnected());
-      const detected = Boolean(checkDetected());
-      const suggested = name === Wallets.Martian;
-      const suggestedLink = /* @__PURE__ */ jsx("a", {
-        href: "https://martianwallet.xyz/",
-        target: "_blank",
-        rel: "noreferrer",
-        title: "Learn More About Martian Wallet",
-        className: "text-xs inline-flex items-center",
-        children: "martianwallet.xyz"
-      });
-      return {
-        name,
-        onClick,
-        link: suggested ? suggestedLink : null,
-        suggested,
-        connected,
-        detected
-      };
-    }));
-    const result = _options.sort((a2, b) => {
-      if (a2.connected)
-        return -1;
-      if (a2.suggested)
-        return 1;
-      if (a2.detected)
-        return 1;
-      return 1;
-    });
-    setOptions(result);
-  }
-  react.exports.useEffect(() => {
-    getOptions();
-  }, []);
-  const renderTrigger = (defaultTrigger, walletType, address) => {
-    if (walletType && address) {
-      let addressResult = "";
-      addressResult += address.slice(0, 4);
-      addressResult += "...";
-      addressResult += address.slice(address.length - 4, address.length);
-      switch (walletType) {
-        default:
-          return /* @__PURE__ */ jsxs(qe, {
-            variant: "basic",
-            size: "sm",
-            className: "pl-2 mr-3 inline-flex items-center",
-            onClick: () => {
-            },
-            children: [walletType === "martian" ? /* @__PURE__ */ jsx(Jt, {
-              coin: "Martian",
-              size: 24
-            }) : null, /* @__PURE__ */ jsxs("div", {
-              className: "ml-2",
-              children: [walletType, ": ", addressResult]
-            })]
-          });
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
       }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "walletBalances"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "balance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "availableBalance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfo"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }]
+            }
+          }]
+        }
+      }]
     }
-    return defaultTrigger;
-  };
-  return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(Vn, {
-      trigger: renderTrigger(trigger, activeWallet == null ? void 0 : activeWallet.walletType, connection == null ? void 0 : connection.address),
-      ref,
-      children: /* @__PURE__ */ jsxs(Dn, {
-        className: "h-[400px] bg-primary-800 border border-primary-700",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "pb-3 text-xl bg-stripes-secondary",
-          children: "Select Wallet"
-        }), options.map((wallet) => /* @__PURE__ */ jsx("div", {
-          onClick: wallet.onClick,
-          className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
-          children: /* @__PURE__ */ jsxs("div", {
-            className: "flex items-center",
-            children: [/* @__PURE__ */ jsx(Jt, {
-              coin: wallet.name,
-              size: 48
-            }), /* @__PURE__ */ jsxs("div", {
-              className: "ml-3 mr-auto flex flex-col",
-              children: [/* @__PURE__ */ jsx("div", {
-                className: "font-semibold",
-                children: wallet.name
-              }), wallet.link]
-            }), /* @__PURE__ */ jsxs("div", {
-              className: "inline-flex gap-2",
-              children: [!wallet.connected && wallet.suggested ? suggestedBadge : null, wallet.connected ? connectedBadge : null, !wallet.connected && wallet.detected ? detectedBadge : null]
-            })]
-          })
-        }, wallet.name))]
-      })
-    })
-  });
-});
-function ConnectWalletContainer({
-  trigger
-}) {
-  return /* @__PURE__ */ jsx(ConnectWalletView, {
-    trigger
-  });
-}
-function MarketListItem({
-  market,
-  className,
-  onMarketSelect
-}) {
-  const baseClasses = "flex justify-between items-center rounded-lg p-4 transition duration-150 ease-in-out hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50";
-  const getPriceTextColor = () => {
-    return "text-primary-400";
-  };
-  const priceTextColor = getPriceTextColor();
-  const metaClasses = `text-xs font-bold flex flex-row justify-end w-full ${priceTextColor}`;
-  const onMarketSelectHandler = react.exports.useCallback(() => onMarketSelect == null ? void 0 : onMarketSelect(market), [market, onMarketSelect]);
-  return /* @__PURE__ */ jsxs("div", {
-    className: `${baseClasses} ${className}`,
-    onClick: onMarketSelectHandler,
-    children: [/* @__PURE__ */ jsxs("div", {
-      className: "flex shrink-0 items-center justify-center",
-      children: [/* @__PURE__ */ jsx(Tn, {
-        coins: [market.baseCoinInfo.symbol, market.quoteCoinInfo.symbol],
-        size: 32
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "ml-3",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "text-xl font-medium text-white mb-1",
-          children: market.name
-        }), /* @__PURE__ */ jsx("div", {
-          className: "text-xs font-bold text-primary-400 uppercase"
-        })]
-      })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex flex-col items-center text-right",
-      children: [/* @__PURE__ */ jsx("div", {
-        className: "text-xl text-primary-200 mb-1"
-      }), /* @__PURE__ */ jsx("div", {
-        className: metaClasses
-      })]
-    })]
-  });
-}
-function MarketList({
-  markets,
-  onMarketSelect
-}) {
-  return /* @__PURE__ */ jsx(Fragment, {
-    children: markets == null ? void 0 : markets.map((item, index2) => /* @__PURE__ */ jsx(MarketListItem, {
-      market: item,
-      onMarketSelect
-    }, `${item.name}-${index2}`))
-  });
-}
+  }]
+};
 const LastTradePriceDocument = {
   "kind": "Document",
   "definitions": [{
@@ -4680,6 +4675,449 @@ const CoinXYParamCtxProvider = ({
 function useCoinXYParamState() {
   const ctx = react.exports.useContext(CoinXYParamCtx);
   return ctx;
+}
+const CoinList = "";
+function CoinListItem({
+  onCoinSelect,
+  ...coinInfo
+}) {
+  react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
+  return /* @__PURE__ */ jsxs(Do.Option, {
+    value: coinInfo,
+    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
+    children: [/* @__PURE__ */ jsx(Jt, {
+      coin: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xl font-medium text-primary-100",
+      children: coinInfo.symbol
+    }), /* @__PURE__ */ jsx("p", {
+      className: "text-xs text-primary-200",
+      children: coinInfo.name
+    })]
+  }, coinInfo.symbol);
+}
+function CoinListView({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(Do.Options, {
+    className: "bg-transparent",
+    children: coins.map((info) => /* @__PURE__ */ jsx(CoinListItem, {
+      onCoinSelect,
+      ...info
+    }, info.symbol))
+  });
+}
+function CoinListContainer({
+  onCoinSelect,
+  coins
+}) {
+  return /* @__PURE__ */ jsx(CoinListView, {
+    onCoinSelect,
+    coins
+  });
+}
+const CoinSearchModal = "";
+function CoinSearchModalView({
+  onCoinSelect,
+  trigger,
+  onQueryChange,
+  query,
+  coins
+}) {
+  var _a;
+  const modalRef = react.exports.useRef(null);
+  react.exports.useRef(null);
+  const selectCoinAndCloseModal = react.exports.useCallback((coin) => {
+    var _a2;
+    onCoinSelect(coin);
+    (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
+  }, []);
+  return /* @__PURE__ */ jsx(Vn, {
+    trigger,
+    ref: modalRef,
+    children: /* @__PURE__ */ jsx(ModalContents, {
+      coins,
+      onQueryChange,
+      query,
+      selectCoinAndCloseModal,
+      modalOpen: Boolean((_a = modalRef.current) == null ? void 0 : _a.isOpen)
+    })
+  });
+}
+function ModalContents({
+  coins,
+  onQueryChange,
+  query,
+  selectCoinAndCloseModal,
+  modalOpen
+}) {
+  const buttonRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    const interval = setInterval(() => {
+      var _a;
+      if (buttonRef.current) {
+        (_a = buttonRef.current) == null ? void 0 : _a.click();
+        clearInterval(interval);
+      }
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+  return /* @__PURE__ */ jsxs(Dn, {
+    className: "bg-primary-700 min-w-[400px] min-h-[200px]",
+    children: [/* @__PURE__ */ jsx(_n, {
+      id: "headlessui-dialog-title-:rh:",
+      children: "Select Token"
+    }), /* @__PURE__ */ jsxs(Do, {
+      onChange: selectCoinAndCloseModal,
+      children: [/* @__PURE__ */ jsx(Do.Input, {
+        placeholder: "Search Tokens",
+        className: "w-full h-[56px] rounded-[16px] p-3 bg-primary-800 text-white font-azeret my-4 outline-brand",
+        value: query,
+        tabIndex: 0,
+        onChange: onQueryChange
+      }), /* @__PURE__ */ jsx(Do.Button, {
+        ref: buttonRef,
+        className: "hidden"
+      }), /* @__PURE__ */ jsx(Do.Options, {
+        children: coins ? /* @__PURE__ */ jsx(CoinListContainer, {
+          onCoinSelect: selectCoinAndCloseModal,
+          coins
+        }) : null
+      })]
+    })]
+  });
+}
+function CoinSearchModalContainer({
+  onCoinSelect,
+  trigger,
+  coins
+}) {
+  const [query, setQuery] = react.exports.useState("");
+  const filteredCoins = coins.filter((c) => {
+    var _a;
+    return query === "" ? true : (_a = c.name.toLowerCase().match(query.toLowerCase())) != null ? _a : c.symbol.toLowerCase().match(query.toLowerCase());
+  });
+  const onQueryChange = react.exports.useCallback((e2) => setQuery(e2.currentTarget.value), []);
+  return /* @__PURE__ */ jsx(CoinSearchModalView, {
+    onCoinSelect,
+    trigger,
+    onQueryChange,
+    query,
+    coins: filteredCoins
+  });
+}
+function CoinSelectButton({
+  coin,
+  className
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    className,
+    children: /* @__PURE__ */ jsxs("button", {
+      className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
+      children: [coin ? /* @__PURE__ */ jsx(Jt, {
+        coin: coin.symbol,
+        size: 24
+      }) : null, /* @__PURE__ */ jsx("span", {
+        className: "ml-2 mr-7",
+        children: coin == null ? void 0 : coin.symbol
+      }), /* @__PURE__ */ jsx("div", {
+        className: "absolute w-4 right-4",
+        children: /* @__PURE__ */ jsx(ChevronDownIcon, {})
+      })]
+    })
+  });
+}
+function DepositView({
+  deposit
+}) {
+  var _a, _b, _c;
+  const [amount, setAmount] = react.exports.useState(0);
+  const [, , connection] = useWallet();
+  const balances = useQuery(WalletBalancesDocument, {
+    variables: {
+      owner: connection == null ? void 0 : connection.address
+    }
+  });
+  const fullBalances = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.walletBalances;
+  const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
+  const [coin, selectCoin] = react.exports.useState();
+  const [balance, setBalance] = react.exports.useState("-");
+  react.exports.useEffect(() => {
+    const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
+    if (currentCoin)
+      setBalance(currentCoin.availableBalance.toString());
+  }, [coin, fullBalances]);
+  return /* @__PURE__ */ jsx(Vn, {
+    trigger: /* @__PURE__ */ jsx(qe, {
+      size: "sm",
+      onClick: () => {
+      },
+      children: "Deposit"
+    }),
+    children: /* @__PURE__ */ jsxs(Dn, {
+      className: "w-[700px] mx-auto gap-4 flex flex-col",
+      padding: 6,
+      children: [/* @__PURE__ */ jsx(_n, {
+        className: "mb-4",
+        children: "Deposit"
+      }), !coins.length && /* @__PURE__ */ jsx(or, {
+        title: "Nothing to deposit.",
+        message: "Cannot find existing balances in your wallet. Please add some money."
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-2",
+          children: [/* @__PURE__ */ jsx(ie, {
+            className: "text-primary-300",
+            children: "Enter Deposit Amount"
+          }), /* @__PURE__ */ jsx("div", {
+            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
+              coins,
+              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
+                coin
+              }),
+              onCoinSelect: (c) => selectCoin(c)
+            })
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-4",
+          children: [/* @__PURE__ */ jsxs("div", {
+            className: "text-sm text-right",
+            children: ["Available Balance: ", balance]
+          }), /* @__PURE__ */ jsx("input", {
+            disabled: false,
+            inputMode: "decimal",
+            min: "0",
+            type: "text",
+            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
+            value: amount,
+            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
+            placeholder: "0.00"
+          })]
+        })]
+      }), /* @__PURE__ */ jsx(qe, {
+        disabled: !coin || Number(balance) < amount,
+        onClick: () => {
+          if (coin)
+            deposit({
+              amount,
+              coinType: coin.coinType,
+              from: connection == null ? void 0 : connection.address,
+              to: connection == null ? void 0 : connection.address
+            });
+        },
+        children: "Submit Deposit"
+      })]
+    })
+  });
+}
+function DepositContainer({}) {
+  const [depositMutation] = useMutation(DepositDocument);
+  const deposit = async (depositInput) => {
+    await depositMutation({
+      variables: {
+        depositInput
+      }
+    });
+  };
+  return /* @__PURE__ */ jsx(DepositView, {
+    deposit
+  });
+}
+new MartianWalletAdapter();
+const petra = new PetraWalletAdapter();
+const WALLETS = [petra];
+const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
+  trigger
+}, _ref) {
+  const backupRef = react.exports.useRef();
+  const ref = _ref != null ? _ref : backupRef;
+  const [options, setOptions] = react.exports.useState([]);
+  const [activeWallet, setActiveWallet, connection] = useWallet();
+  const suggestedBadge = /* @__PURE__ */ jsx(Mn, {
+    size: "xs",
+    children: "Recommended"
+  });
+  const connectedBadge = /* @__PURE__ */ jsx(Mn, {
+    size: "xs",
+    variant: "success",
+    children: "Connected"
+  });
+  const detectedBadge = /* @__PURE__ */ jsx(Mn, {
+    size: "xs",
+    variant: "basic",
+    children: "Detected"
+  });
+  const walletOptions = WALLETS.map((w) => ({
+    name: w.walletType,
+    checkDetected: w.isDetected,
+    checkConnected: w.isConnected,
+    async onClick() {
+      var _a;
+      await (activeWallet == null ? void 0 : activeWallet.disconnect());
+      setActiveWallet(w);
+      await w.connect();
+      await getOptions();
+      (_a = ref == null ? void 0 : ref.current) == null ? void 0 : _a.closeModal();
+    }
+  }));
+  async function getOptions() {
+    const _options = await Promise.all(walletOptions.map(async ({
+      name,
+      checkConnected,
+      checkDetected,
+      onClick
+    }) => {
+      const connected = Boolean(checkConnected());
+      const detected = Boolean(checkDetected());
+      const suggested = name === Wallets.Martian;
+      const suggestedLink = /* @__PURE__ */ jsx("a", {
+        href: "https://martianwallet.xyz/",
+        target: "_blank",
+        rel: "noreferrer",
+        title: "Learn More About Martian Wallet",
+        className: "text-xs inline-flex items-center",
+        children: "martianwallet.xyz"
+      });
+      return {
+        name,
+        onClick,
+        link: suggested ? suggestedLink : null,
+        suggested,
+        connected,
+        detected
+      };
+    }));
+    const result = _options.sort((a2, b) => {
+      if (a2.connected)
+        return -1;
+      if (a2.suggested)
+        return 1;
+      if (a2.detected)
+        return 1;
+      return 1;
+    });
+    setOptions(result);
+  }
+  react.exports.useEffect(() => {
+    getOptions();
+  }, []);
+  const renderTrigger = (defaultTrigger, walletType, address) => {
+    if (walletType && address) {
+      let addressResult = "";
+      addressResult += address.slice(0, 4);
+      addressResult += "...";
+      addressResult += address.slice(address.length - 4, address.length);
+      switch (walletType) {
+        default:
+          return /* @__PURE__ */ jsxs(qe, {
+            variant: "basic",
+            size: "sm",
+            className: "pl-2 mr-3 inline-flex items-center",
+            onClick: () => {
+            },
+            children: [walletType === "martian" ? /* @__PURE__ */ jsx(Jt, {
+              coin: "Martian",
+              size: 24
+            }) : null, /* @__PURE__ */ jsxs("div", {
+              className: "ml-2",
+              children: [walletType, ": ", addressResult]
+            })]
+          });
+      }
+    }
+    return defaultTrigger;
+  };
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: /* @__PURE__ */ jsx(Vn, {
+      trigger: renderTrigger(trigger, activeWallet == null ? void 0 : activeWallet.walletType, connection == null ? void 0 : connection.address),
+      ref,
+      children: /* @__PURE__ */ jsxs(Dn, {
+        className: "h-[400px] bg-primary-800 border border-primary-700",
+        children: [/* @__PURE__ */ jsx("div", {
+          className: "pb-3 text-xl bg-stripes-secondary",
+          children: "Select Wallet"
+        }), options.map((wallet) => /* @__PURE__ */ jsx("div", {
+          onClick: wallet.onClick,
+          className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center",
+            children: [/* @__PURE__ */ jsx(Jt, {
+              coin: wallet.name,
+              size: 48
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "ml-3 mr-auto flex flex-col",
+              children: [/* @__PURE__ */ jsx("div", {
+                className: "font-semibold",
+                children: wallet.name
+              }), wallet.link]
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "inline-flex gap-2",
+              children: [!wallet.connected && wallet.suggested ? suggestedBadge : null, wallet.connected ? connectedBadge : null, !wallet.connected && wallet.detected ? detectedBadge : null]
+            })]
+          })
+        }, wallet.name))]
+      })
+    })
+  });
+});
+function ConnectWalletContainer({
+  trigger
+}) {
+  return /* @__PURE__ */ jsx(ConnectWalletView, {
+    trigger
+  });
+}
+function MarketListItem({
+  market,
+  className,
+  onMarketSelect
+}) {
+  const baseClasses = "flex justify-between items-center rounded-lg p-4 transition duration-150 ease-in-out hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50";
+  const getPriceTextColor = () => {
+    return "text-primary-400";
+  };
+  const priceTextColor = getPriceTextColor();
+  const metaClasses = `text-xs font-bold flex flex-row justify-end w-full ${priceTextColor}`;
+  const onMarketSelectHandler = react.exports.useCallback(() => onMarketSelect == null ? void 0 : onMarketSelect(market), [market, onMarketSelect]);
+  return /* @__PURE__ */ jsxs("div", {
+    className: `${baseClasses} ${className}`,
+    onClick: onMarketSelectHandler,
+    children: [/* @__PURE__ */ jsxs("div", {
+      className: "flex shrink-0 items-center justify-center",
+      children: [/* @__PURE__ */ jsx(Tn, {
+        coins: [market.baseCoinInfo.symbol, market.quoteCoinInfo.symbol],
+        size: 32
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "ml-3",
+        children: [/* @__PURE__ */ jsx("div", {
+          className: "text-xl font-medium text-white mb-1",
+          children: market.name
+        }), /* @__PURE__ */ jsx("div", {
+          className: "text-xs font-bold text-primary-400 uppercase"
+        })]
+      })]
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col items-center text-right",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-xl text-primary-200 mb-1"
+      }), /* @__PURE__ */ jsx("div", {
+        className: metaClasses
+      })]
+    })]
+  });
+}
+function MarketList({
+  markets,
+  onMarketSelect
+}) {
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: markets == null ? void 0 : markets.map((item, index2) => /* @__PURE__ */ jsx(MarketListItem, {
+      market: item,
+      onMarketSelect
+    }, `${item.name}-${index2}`))
+  });
 }
 const GetMarketNameDocument = {
   "kind": "Document",
@@ -4961,7 +5399,7 @@ function MarketSelector({
   const baseButtonClasses = "flex items-center w-full p-3 bg-primary-800 rounded-md outline-none drop-shadow-lg hover:bg-primary-700 hover:cursor-pointer hover:drop-shadow-xl";
   return /* @__PURE__ */ jsx("div", {
     className: "w-full",
-    children: /* @__PURE__ */ jsx(mt, {
+    children: /* @__PURE__ */ jsx(mt$1, {
       className: "relative",
       ref: popoverRef,
       children: ({
@@ -4970,7 +5408,7 @@ function MarketSelector({
       }) => {
         var _a2, _b, _c, _d, _e;
         return /* @__PURE__ */ jsxs(Fragment, {
-          children: [/* @__PURE__ */ jsxs(mt.Button, {
+          children: [/* @__PURE__ */ jsxs(mt$1.Button, {
             className: `${open ? "" : "hover:bg-primary-700"} ${baseButtonClasses}`,
             children: [/* @__PURE__ */ jsx(Tn, {
               coins: [firstCoin == null ? void 0 : firstCoin.symbol, secondCoin == null ? void 0 : secondCoin.symbol],
@@ -4993,7 +5431,7 @@ function MarketSelector({
             leave: "transition ease-in duration-150",
             leaveFrom: "opacity-100 translate-y-0",
             leaveTo: "opacity-0 translate-y-1",
-            children: /* @__PURE__ */ jsx(mt.Panel, {
+            children: /* @__PURE__ */ jsx(mt$1.Panel, {
               className: "absolute left-0 z-10 mt-1 w-[500px] transform px-4 sm:px-0",
               children: /* @__PURE__ */ jsx("div", {
                 className: "overflow-hidden rounded-lg shadow-xl ring-1 ring-black ring-opacity-5",
@@ -5650,6 +6088,77 @@ const AddLiquidityDocument = {
     }
   }]
 };
+const SimplePoolDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "SimplePool"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountX"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "amountY"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
 const PoolPriceInDocument = {
   "kind": "Document",
   "definitions": [{
@@ -5780,14 +6289,16 @@ const PoolPriceInDocument = {
     }
   }]
 };
-function usePoolPriceIn(input) {
+function usePoolPriceIn(input, skip) {
   const poolPrice = useQuery(PoolPriceInDocument, {
-    variables: input
+    variables: input,
+    fetchPolicy: "network-only",
+    skip
   });
   return poolPrice;
 }
 function AddLiquidityContainer({}) {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
   const [wallet] = useWallet();
   const navigate = useNavigate();
@@ -5800,6 +6311,16 @@ function AddLiquidityContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
+  const poolQuery = useQuery(SimplePoolDocument, {
+    variables: {
+      poolInput: {
+        coinTypeX: firstCoin.coinType,
+        coinTypeY: secondCoin.coinType
+      }
+    },
+    skip: !firstCoin || !secondCoin
+  });
+  const poolNoAmount = !((_b = (_a = poolQuery.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.amountX);
   const firstCoinPrice = usePoolPriceIn({
     amount: firstCoinAu,
     coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
@@ -5807,7 +6328,7 @@ function AddLiquidityContainer({}) {
       coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
-  });
+  }, poolNoAmount);
   const secondCoinPrice = usePoolPriceIn({
     amount: secondCoinAu,
     coinTypeIn: secondCoin == null ? void 0 : secondCoin.coinType,
@@ -5815,9 +6336,9 @@ function AddLiquidityContainer({}) {
       coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
-  });
-  const conversionIn = (_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.priceIn) != null ? _c : 0;
-  const conversionOut = (_f = (_e = (_d = secondCoinPrice.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.priceIn) != null ? _f : 0;
+  }, poolNoAmount);
+  const conversionIn = (_e = (_d = (_c = firstCoinPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.priceIn) != null ? _e : 0;
+  const conversionOut = (_h = (_g = (_f = secondCoinPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.priceIn) != null ? _h : 0;
   const notifications = Lt();
   async function addLiquidityHandler() {
     return await addLiquidity({
@@ -5857,11 +6378,11 @@ function AddLiquidityContainer({}) {
   };
   const [touched, setTouched] = react.exports.useState("first");
   react.exports.useEffect(() => {
-    if (touched === "first")
+    if (touched === "first" && !poolNoAmount)
       setSecondCoinAu(conversionIn != null ? conversionIn : 0);
   }, [conversionIn, firstCoinAu, touched]);
   react.exports.useEffect(() => {
-    if (touched === "second")
+    if (touched === "second" && !poolNoAmount)
       setFirstCoinAu(conversionOut != null ? conversionOut : 0);
   }, [conversionOut, secondCoinAu, touched]);
   const handleChangeFirstCoinAu = (e2) => {
@@ -6963,115 +7484,14 @@ function useDataFeed() {
   return react.exports.useContext(DataFeedCtx);
 }
 const MarketTrades = "";
-const MarketTradesDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "subscription",
-    "name": {
-      "kind": "Name",
-      "value": "MarketTrades"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "marketInputs"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "ListType",
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "MarketInput"
-              }
-            }
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "trade"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "marketInputs"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "marketInputs"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "orderId"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "time"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "quantity"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "price"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "value"
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-const MarketQueryDocument = {
+const SimpleMarketQueryDocument = {
   "kind": "Document",
   "definitions": [{
     "kind": "OperationDefinition",
     "operation": "query",
     "name": {
       "kind": "Name",
-      "value": "MarketQuery"
+      "value": "SimpleMarketQuery"
     },
     "variableDefinitions": [{
       "kind": "VariableDefinition",
@@ -7089,44 +7509,6 @@ const MarketQueryDocument = {
           "name": {
             "kind": "Name",
             "value": "MarketInput"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "resolution"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Resolution"
           }
         }
       }
@@ -7159,342 +7541,8 @@ const MarketQueryDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
-              "value": "name"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "baseCoinInfo"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "decimals"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "name"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "symbol"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "quoteCoinInfo"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "decimals"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "name"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "symbol"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "lotSize"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "tickSize"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "orderbook"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "bids"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "price"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "quantity"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "asks"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "price"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "quantity"
-                    }
-                  }]
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "openOrders"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "owner"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }
-            }],
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "baseCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quoteCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderStatus"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "side"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quantity"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "price"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "time"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "orderHistory"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "owner"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }
-            }],
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "baseCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quoteCoinType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderType"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "orderStatus"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "side"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quantity"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "price"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "time"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
               "value": "tradeHistory"
             },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "owner"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }
-            }],
             "selectionSet": {
               "kind": "SelectionSet",
               "selections": [{
@@ -7559,94 +7607,6 @@ const MarketQueryDocument = {
                 }
               }]
             }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "high24h"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "low24h"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "volume24h"
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "bars"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "resolution"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "resolution"
-                }
-              }
-            }],
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "time"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "ohlcv"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "open"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "high"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "low"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "close"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "volume"
-                    }
-                  }]
-                }
-              }]
-            }
           }]
         }
       }]
@@ -7659,39 +7619,28 @@ function MarketTradesView({}) {
     firstCoin,
     secondCoin
   } = useCoinXYParamState();
-  const [wallet, , connection] = useWallet();
-  useQuery(MarketQueryDocument, {
+  const marketTradesSubscription = useQuery(SimpleMarketQueryDocument, {
     variables: {
-      owner: connection == null ? void 0 : connection.address,
       marketInput: {
         baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
         quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      },
-      resolution: Resolution.Days_1
+      }
     },
-    skip: !firstCoin || !secondCoin
-  });
-  const marketTradesSubscription = useSubscription(MarketTradesDocument, {
-    variables: {
-      marketInputs: [{
-        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      }]
-    },
+    pollInterval: 5e3,
     skip: !firstCoin || !secondCoin
   });
   const [marketTrades, setMarketTrades] = react.exports.useState([]);
   React.useEffect(() => {
     setMarketTrades((prev) => {
-      var _a2, _b, _c;
-      if ((_a2 = marketTradesSubscription.data) == null ? void 0 : _a2.trade) {
-        if (prev.length === 50)
-          prev.pop();
-        const item = (_b = marketTradesSubscription.data) == null ? void 0 : _b.trade;
-        if (item) {
-          item.time = (_c = DateTime.fromJSDate(randRecentDate()).toRelative()) != null ? _c : "";
-          return [item, ...prev];
-        }
+      var _a2, _b, _c, _d;
+      if ((_b = (_a2 = marketTradesSubscription.data) == null ? void 0 : _a2.market) == null ? void 0 : _b.tradeHistory) {
+        return (_d = (_c = marketTradesSubscription.data) == null ? void 0 : _c.market) == null ? void 0 : _d.tradeHistory.map((item) => {
+          var _a3;
+          if (item) {
+            item.time = (_a3 = DateTime.fromJSDate(randRecentDate()).toRelative()) != null ? _a3 : "";
+          }
+          return item;
+        });
       }
       return prev;
     });
@@ -8563,7 +8512,7 @@ function useCreateTradingView() {
   };
 }
 function useTradeControls() {
-  var _a, _b, _c, _d;
+  var _a, _b, _c, _d, _e, _f;
   const balances = useBalances();
   const {
     firstCoin,
@@ -8579,6 +8528,24 @@ function useTradeControls() {
   const [ioc, setIOC] = react.exports.useState(false);
   const [fok, setFok] = react.exports.useState(false);
   const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
+  const market = useQuery(MarketSimpleDocument, {
+    variables: {
+      marketInput: {
+        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
+        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
+      }
+    },
+    skip: !firstCoin || !secondCoin
+  });
+  const lotSize = react.exports.useMemo(() => {
+    var _a2, _b2, _c2;
+    return (_c2 = (_b2 = (_a2 = market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSize) != null ? _c2 : 0;
+  }, [(_f = (_e = market.data) == null ? void 0 : _e.market) == null ? void 0 : _f.lotSize]);
+  const dec = react.exports.useMemo(() => {
+    var _a2;
+    return Math.pow(10, ((_a2 = firstCoin == null ? void 0 : firstCoin.decimals) != null ? _a2 : 0) * -1);
+  }, [firstCoin]);
+  const step = react.exports.useMemo(() => lotSize * dec, [lotSize, dec]);
   const setPctFactory = (n2) => () => {
     if (quantX)
       setCxAmount(quantX * n2);
@@ -8652,14 +8619,14 @@ function useTradeControls() {
         auxToBurn: 0,
         clientOrderId: 0,
         orderType,
-        limitPrice: price,
+        limitPrice: price.toString(),
         marketInput: {
           baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
           quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
         },
-        quantity: cxAmount,
+        quantity: cxAmount.toString(),
         sender: connection == null ? void 0 : connection.address,
-        side: activeTab === 1 ? Side.Buy : Side.Sell
+        side: activeTab === 0 ? Side.Buy : Side.Sell
       }).then((x) => {
         resetForm();
         addNotification({
@@ -8700,7 +8667,8 @@ function useTradeControls() {
     set50,
     set75,
     setMax,
-    quantX
+    quantX,
+    step
   };
 }
 function TradingForm() {
@@ -8725,9 +8693,9 @@ function TradingForm() {
     set25,
     set50,
     set75,
-    setMax
+    setMax,
+    step
   } = useTradeControls();
-  useWallet();
   const {
     firstCoin,
     secondCoin
@@ -8773,7 +8741,8 @@ function TradingForm() {
         }),
         className: "w-full",
         inputMode: "decimal",
-        type: "number"
+        type: "number",
+        step
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex w-full gap-2 pt-2",
         children: [/* @__PURE__ */ jsx(qe, {
@@ -9356,7 +9325,7 @@ function Header({}) {
       })
     }), /* @__PURE__ */ jsx(Nav, {}), /* @__PURE__ */ jsx(ConnectWalletContainer, {
       trigger: connectEl
-    })]
+    }), /* @__PURE__ */ jsx(NetworkToggle, {})]
   });
 }
 const SwapForm = "";

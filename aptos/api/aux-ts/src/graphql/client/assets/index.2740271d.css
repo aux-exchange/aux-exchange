@@ -628,6 +628,9 @@ video {
 .ml-2 {
   margin-left: 0.5rem;
 }
+.mt-0 {
+  margin-top: 0px;
+}
 .ml-4 {
   margin-left: 1rem;
 }
@@ -858,6 +861,9 @@ video {
 }
 .w-\[500px\] {
   width: 500px;
+}
+.w-\[120px\] {
+  width: 120px;
 }
 .w-\[960px\] {
   width: 960px;
