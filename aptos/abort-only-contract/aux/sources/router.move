@@ -23,6 +23,8 @@ module aux::router {
     const VOLUME_TRACKER_UNREGISTERED: u64 = 6;
     const E_FEE_UNINITIALIZED: u64 = 7;
 
+    const ZERO_FEES: bool = true;
+
     //////////////////////////////////////////////////////////////////
     // !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
     // Order type
@@ -130,7 +132,7 @@ module aux::router {
         min_au_out: u64,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
-        if (!fee::fee_exists(sender_addr)) {
+        if (!fee::fee_exists(sender_addr) && !ZERO_FEES) {
             abort(E_FEE_UNINITIALIZED)
         };
 
@@ -173,7 +175,7 @@ module aux::router {
                 };
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
-                let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
+                let best_bid_less_fee = if (!ZERO_FEES) { fee::subtract_fee(sender_addr, best_bid_price_au, true) } else { best_bid_price_au };
                 let (y_received_au, x_spent_au) = amm::swap_exact_coin_for_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,
@@ -236,7 +238,7 @@ module aux::router {
                 };
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
                 let best_ask_price_au = clob_market::best_ask_au<CoinOut, CoinIn>();
-                let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
+                let best_ask_plus_fee = if (!ZERO_FEES) {fee::add_fee(sender_addr, best_ask_price_au, true) } else {best_ask_price_au };
 
                 // if we can't purchase at least one lot, execute the rest through the pool
                 let base_au_for_level = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64) ;  // how many au of base can we buy at the best ask with our remaining quote?
@@ -332,7 +334,7 @@ module aux::router {
         au_out: u64,
     ): (coin::Coin<CoinOut>, coin::Coin<CoinIn>) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
-        if (!fee::fee_exists(sender_addr)) {
+        if (!fee::fee_exists(sender_addr) && !ZERO_FEES) {
             abort(E_FEE_UNINITIALIZED)
         };
         // check if pool/market exists
@@ -373,7 +375,7 @@ module aux::router {
                 };
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
                 let best_bid_price_au = clob_market::best_bid_au<CoinIn, CoinOut>();
-                let best_bid_less_fee = fee::subtract_fee(sender_addr, best_bid_price_au, true);
+                let best_bid_less_fee = if (!ZERO_FEES) {fee::subtract_fee(sender_addr, best_bid_price_au, true)} else {best_bid_price_au};
                 let base_au_for_level = (((au_out - total_output_received_au) as u128) * (base_unit_au as u128) / (best_bid_less_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                 if (base_au_for_level < lot_size) {
                     let (coin_received_au, coin_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
@@ -455,7 +457,7 @@ module aux::router {
                 };
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
                 let best_ask_price_au = clob_market::best_ask_au<CoinOut, CoinIn>();
-                let best_ask_plus_fee = fee::add_fee(sender_addr, best_ask_price_au, true);
+                let best_ask_plus_fee = if (!ZERO_FEES) {fee::add_fee(sender_addr, best_ask_price_au, true) } else {best_ask_price_au };
                 let (y_received_au, x_spent_au) = amm::swap_coin_for_exact_coin_mut<CoinIn, CoinOut>(
                     sender_addr,
                     &mut coin_in,

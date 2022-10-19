@@ -546,7 +546,7 @@ describe("CLOB Core tests", function () {
     assert.ok(placedOrderEvents.length >= 1);
     const last = placedOrderEvents[placedOrderEvents.length - 1]!;
     assert.equal(last.owner.toShortString(), bob.address().toShortString());
-    assert.ok(last.isBid);
+    assert.ok(last.isBid == false);
     assert.equal(
       last.quantity.toDecimalUnits(market.baseCoinInfo.decimals).toNumber(),
       2
