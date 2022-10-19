@@ -13,6 +13,20 @@ import type {
   QueryPoolsArgs,
 } from "../types";
 
+const APT = "0x1::aptos_coin::AptosCoin";
+const USDC =
+  "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T";
+const SOL =
+  "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13::coin::T";
+const WETH =
+  "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T";
+const WBTC =
+  "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T";
+const USDA =
+  "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA";
+
+const MAINNET_COINS = [APT, USDC, SOL, WETH, WBTC, USDA];
+
 export const query = {
   address() {
     return auxClient.moduleAddress;
@@ -56,6 +70,11 @@ export const query = {
       }));
   },
   async poolCoins(parent: any) {
+    if (process.env["APTOS_PROFILE"] === "mainnet") {
+      return Promise.all(
+        MAINNET_COINS.map((coinType) => auxClient.getCoinInfo(coinType))
+      );
+    }
     const pools = await this.pools(parent, {});
     const coinInfos = pools.flatMap((pool) => [pool.coinInfoX, pool.coinInfoY]);
     return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
@@ -158,6 +177,11 @@ export const query = {
     }
   },
   async marketCoins(parent: any) {
+    if (process.env["APTOS_PROFILE"] === "mainnet") {
+      return Promise.all(
+        MAINNET_COINS.map((coinType) => auxClient.getCoinInfo(coinType))
+      );
+    }
     const markets = await this.markets(parent, {});
     const coinInfos = markets.flatMap((market) => [
       market.baseCoinInfo,
