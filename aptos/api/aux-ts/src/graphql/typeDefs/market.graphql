@@ -4,6 +4,10 @@ type Market {
   quoteCoinInfo: CoinInfo!
   lotSize: Float!
   tickSize: Float!
+  lotSizeDecimals: String!
+  tickSizeDecimals: String!
+  lotSizeString: String!
+  tickSizeString: String!
   orderbook: Orderbook!
   openOrders(owner: Address): [Order!]!
   orderHistory(owner: Address): [Order!]!
@@ -11,6 +15,8 @@ type Market {
   high24h: Float
   low24h: Float
   volume24h: Float
+  isRoundLot(quantity: String!): Boolean!
+  isRoundTick(quantity: String!): Boolean!
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
   barsForRange(
     resolution: Resolution!, 

@@ -93,6 +93,14 @@ export const query = {
       quoteCoinInfo: market.quoteCoinInfo,
       lotSize: market.lotSize.toNumber(),
       tickSize: market.tickSize.toNumber(),
+      lotSizeDecimals: market.lotSize
+        .toDecimalUnits(market.baseCoinInfo.decimals)
+        .toString(),
+      tickSizeDecimals: market.tickSize
+        .toDecimalUnits(market.quoteCoinInfo.decimals)
+        .toString(),
+      lotSizeString: market.lotSize.toString(),
+      tickSizeString: market.tickSize.toString(),
       orderbook: {
         bids: market.l2.bids.map((l2Quote) => ({
           price: l2Quote.price.toNumber(),
