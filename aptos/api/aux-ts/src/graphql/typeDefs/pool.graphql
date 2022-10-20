@@ -18,6 +18,7 @@ type Pool {
   priceIn(coinTypeIn: String!, amount: Float!): Float
   priceOut(coinTypeOut: String!, amount: Float!): Float
   decimalUnitsOut(coinTypeOut: String!, decimalUnitsIn: Float!): Float!
+  decimalUnitsIn(coinTypeIn: String!, decimalUnitsOut: Float!): Float!
 }
 
 type Position {

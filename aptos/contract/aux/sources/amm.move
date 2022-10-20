@@ -1359,9 +1359,11 @@ module aux::amm {
         // dx_f = dx(1-fee)
         //
         // (x + dx_f)*(y - dy) = x*y
-        // dx_f = x * dy / (y + dy)
-        //
-        // dx = x * dy / ((y + dy)*(1-f))
+        // (x + dx_f) = x*y / (y - dy)
+        // dx_f = x * y / (y - dy) - x(y - dy)/(y- dy)
+        // dx_f = (xy - xy + x dy)/(y - dy)
+        // dx_f = (x * dy) / (y - dy)
+        // dx = x * dy / ((y - dy)*(1-f))
         assert!(amount_out > 0, EINSUFFICIENT_OUTPUT_AMOUNT);
         assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
         let numerator = (reserve_in as u128) * (amount_out as u128) * 10000;
