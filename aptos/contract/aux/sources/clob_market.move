@@ -1442,13 +1442,15 @@ module aux::clob_market {
 
         // round quantity down (router may submit un-quantized quantities)
         let lot_size = market.lot_size;
+        let tick_size = market.lot_size;
         let rounded_quantity = quantity / lot_size * lot_size;
+        let rounded_price = limit_price / tick_size * tick_size;
 
         let (base_au, quote_au) = new_order<B, Q>(
             market,
             sender_addr,
             is_bid,
-            limit_price,
+            rounded_price,
             rounded_quantity,
             0,
             order_type,
@@ -1466,12 +1468,18 @@ module aux::clob_market {
             if (is_bid) {
                 // taker pays quote, receives base
                 let quote = coin::extract<Q>(quote_coin, (quote_au as u64));
+                if (!coin::is_account_registered<Q>(@aux)) {
+                    coin::register<Q>(module_signer);
+                };
                 coin::deposit<Q>(vault_addr, quote);
                 let base = coin::withdraw<B>(module_signer, (base_au as u64));
                 coin::merge<B>(base_coin, base);
             } else {
                 // taker receives quote, pays base
                 let base = coin::extract<B>(base_coin, (base_au as u64));
+                if (!coin::is_account_registered<B>(@aux)) {
+                    coin::register<B>(module_signer);
+                };
                 coin::deposit<B>(vault_addr, base);
                 let quote = coin::withdraw<Q>(module_signer, (quote_au as u64));
                 coin::merge<Q>(quote_coin, quote);
@@ -1487,6 +1495,13 @@ module aux::clob_market {
     /// returns (base_qty_filled, quote_qty_filled) (includes fees)
     public fun estimate_fill<B, Q>(order_owner: address, is_bid: bool, limit_price: u64, quantity: u64, timestamp: u64): (u64, u64) acquires Market {
         let market = borrow_global<Market<B, Q>>(@aux);
+        let tick_size = market.tick_size;
+        let lot_size = market.lot_size;
+        if (quantity % lot_size != 0) {
+            abort(E_INVALID_QUANTITY)
+        } else if (limit_price % tick_size != 0) {
+            abort(E_INVALID_PRICE)
+        };
         let filled = 0u64;
         let quote_quantity = 0;
         let side = if (is_bid) { &market.asks } else { &market.bids };
