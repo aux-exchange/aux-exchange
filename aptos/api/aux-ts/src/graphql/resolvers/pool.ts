@@ -33,7 +33,7 @@ export const pool = {
         coinInfoOut,
         amountIn: swap.in.toDecimalUnits(coinInfoIn.decimals).toNumber(),
         amountOut: swap.out.toDecimalUnits(coinInfoOut.decimals).toNumber(),
-        time: swap.timestamp.toString(),
+        time: swap.timestamp.divn(1000).toString(), // microseconds => milliseconds
       };
     });
   },
@@ -56,7 +56,7 @@ export const pool = {
       amountMintedLP: addLiquidity.lpMinted
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
-      time: addLiquidity.timestamp.toString(),
+      time: addLiquidity.timestamp.divn(1000).toString(), // microseconds => milliseconds
     }));
   },
   async removes(parent: Pool): Promise<RemoveLiquidity[]> {
@@ -78,7 +78,7 @@ export const pool = {
       amountBurnedLP: removeLiquidity.lpBurned
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
-      time: removeLiquidity.timestamp.toString(),
+      time: removeLiquidity.timestamp.divn(1000).toString(), // microseconds => milliseconds
     }));
   },
   async position(

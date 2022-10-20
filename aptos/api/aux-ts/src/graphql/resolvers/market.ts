@@ -62,7 +62,7 @@ export const market = {
         auxBurned: order.auxBurned
           .toDecimalUnits(6) // FIXME
           .toNumber(),
-        time: order.timestamp.toString(),
+        time: order.timestamp.divn(1000).toString(), // microseconds => milliseconds
         price: order.price
           .toDecimalUnits(parent.quoteCoinInfo.decimals)
           .toNumber(),
@@ -94,7 +94,7 @@ export const market = {
         // FIXME
         auxBurned: 0,
         // FIXME
-        time: order.timestamp.toString(),
+        time: order.timestamp.divn(1000).toString(), // microseconds => milliseconds
         price: order.price
           .toDecimalUnits(parent.quoteCoinInfo.decimals)
           .toNumber(),
@@ -132,8 +132,7 @@ export const market = {
         value: price * quantity,
         // FIXME
         auxBurned: 0,
-        // FIXME
-        time: fill.timestamp.toString(),
+        time: fill.timestamp.divn(1000).toString(),
       };
     });
   },
