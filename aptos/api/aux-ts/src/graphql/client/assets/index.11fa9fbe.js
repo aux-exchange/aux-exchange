@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, F as Fragment, D as DateTime, s as jsxs, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, z as ArrowsUpDownIcon, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.2dc76dac.js";
+import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, s as useLatest, t as jsxs, F as Fragment, D as DateTime, L as Link, X as XMarkIcon, v as Do, C as ChevronDownIcon, w as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, B as ArrowsUpDownIcon, H as HttpLink, E as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, U as InMemoryCache, V as useGeoLocation, Y as ApolloProvider, Z as BrowserRouter, _ as Routes, $ as Route, a0 as client$1 } from "./vendor.8e528a0a.js";
 import "./__commonjsHelpers__.5615ff64.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -2534,6 +2534,333 @@ function usePositions() {
   });
   return positionQuery;
 }
+const SwapDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Swap"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "swapInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "SwapInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "swap"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "swapInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "swapInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const IsCoinRegisteredDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "isCoinRegistered"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "coinType"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "String"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "isCoinRegistered"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinType"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinType"
+                }
+              }
+            }]
+          }]
+        }
+      }]
+    }
+  }]
+};
+const RegisterCoinDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "RegisterCoin"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "registerCoinInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "RegisterCoinInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "registerCoin"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "registerCoinInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "registerCoinInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+function RegisterCoinModalView({
+  coins,
+  trigger,
+  executeSwap
+}) {
+  const [registerCoin] = useMutation(RegisterCoinDocument);
+  const [wallet] = useWallet();
+  const notifications = jt();
+  const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
+  const refCoins = useLatest(coins);
+  const clearRegistered = (_coins) => {
+    const state = /* @__PURE__ */ new Map();
+    _coins == null ? void 0 : _coins.forEach((c) => state.set(c == null ? void 0 : c.symbol, false));
+    setRegistered(state);
+  };
+  react.exports.useEffect(() => {
+    if (JSON.stringify(refCoins.current) !== JSON.stringify(coins))
+      clearRegistered(coins);
+  }, [coins, clearRegistered]);
+  const allRegistered = react.exports.useMemo(() => {
+    let res = true;
+    registered.forEach((x) => {
+      if (!x)
+        res = false;
+      return;
+    });
+    return res;
+  }, [registered]);
+  console.log({
+    allRegistered
+  });
+  const modalRef = react.exports.useRef(null);
+  const handleRegister = async (c) => {
+    var _a;
+    const tx = (_a = (await registerCoin({
+      variables: {
+        registerCoinInput: {
+          coinType: c == null ? void 0 : c.coinType
+        }
+      }
+    })).data) == null ? void 0 : _a.registerCoin;
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then((x) => {
+      setRegistered((prev) => {
+        prev.set(c == null ? void 0 : c.symbol, true);
+        return new Map(prev);
+      });
+      notifications.addNotification({
+        title: "Success",
+        type: "success",
+        message: "Coin successfully registered."
+      });
+    }).catch((e2) => {
+      notifications.addNotification({
+        title: "Error",
+        type: "error",
+        message: "Failed to register coin."
+      });
+    }));
+  };
+  const submitSwap = async () => {
+    await executeSwap().then(() => {
+      clearRegistered(coins);
+      modalRef.current.closeModal();
+    }).catch((err) => {
+      notifications.addNotification({
+        title: "Error",
+        type: "error",
+        message: "Failed to execute swap."
+      });
+    });
+  };
+  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(Bn, {
+    trigger,
+    ref: modalRef,
+    children: /* @__PURE__ */ jsx("div", {
+      className: "w-full flex justify-center items-center",
+      children: /* @__PURE__ */ jsxs(An, {
+        className: "flex flex-col gap-4 w-[600px] max-w-[600px]",
+        children: [/* @__PURE__ */ jsx(Mn, {
+          children: /* @__PURE__ */ jsx("span", {
+            className: "font-bold",
+            children: "Coin Registration"
+          })
+        }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
+          className: " flex gap-4 items-center font-semibold text-2xl bg-primary-800 p-6 rounded-lg text-primary-300",
+          children: [/* @__PURE__ */ jsx(Jt, {
+            coin: c == null ? void 0 : c.symbol
+          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(Fn, {
+            size: "xs",
+            variant: "basic",
+            children: "Registered"
+          }) : /* @__PURE__ */ jsxs(er, {
+            size: "xs",
+            variant: "basic",
+            onClick: () => handleRegister(c),
+            children: ["Register ", c == null ? void 0 : c.symbol]
+          })]
+        })), /* @__PURE__ */ jsx("p", {
+          children: "Please register your coin(s) to transact within the DEX."
+        }), allRegistered ? /* @__PURE__ */ jsx(er, {
+          onClick: submitSwap,
+          children: "Submit Swap"
+        }) : null]
+      })
+    })
+  });
+}
+const RegisterCoinModalView$1 = react.exports.memo(RegisterCoinModalView);
+function RegisterCoinModalContainer({
+  coins,
+  trigger,
+  executeSwap
+}) {
+  return /* @__PURE__ */ jsx(RegisterCoinModalView$1, {
+    coins,
+    trigger,
+    executeSwap
+  });
+}
 const CreateAuxAccountDocument = {
   "kind": "Document",
   "definitions": [{
@@ -4875,6 +5202,13 @@ function OrdersTable({
     className: orderTableProps.className
   });
 }
+async function delayRefetchQuery(delay, queries) {
+  return await new Promise((res) => setTimeout(async () => await client.refetchQueries({
+    include: queries
+  }).then((x) => {
+    res(x);
+  }), delay));
+}
 const WithdrawDocument = {
   "kind": "Document",
   "definitions": [{
@@ -5082,214 +5416,6 @@ function CoinSelectButton({
     })
   });
 }
-const SwapDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "Swap"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "swapInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "SwapInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "swap"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "swapInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "swapInput"
-            }
-          }
-        }]
-      }]
-    }
-  }]
-};
-const IsCoinRegisteredDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "isCoinRegistered"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "coinType"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "String"
-          }
-        }
-      }
-    }, {
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "isCoinRegistered"
-            },
-            "arguments": [{
-              "kind": "Argument",
-              "name": {
-                "kind": "Name",
-                "value": "coinType"
-              },
-              "value": {
-                "kind": "Variable",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinType"
-                }
-              }
-            }]
-          }]
-        }
-      }]
-    }
-  }]
-};
-const RegisterCoinDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "RegisterCoin"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "registerCoinInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "RegisterCoinInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "registerCoin"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "registerCoinInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "registerCoinInput"
-            }
-          }
-        }]
-      }]
-    }
-  }]
-};
 function WithdrawalView({
   withdraw
 }) {
@@ -5417,11 +5543,7 @@ function WithdrawalContainer({}) {
       }
     });
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.withdraw));
-    await new Promise((res) => setTimeout(async () => await client.refetchQueries({
-      include: ["Balances"]
-    }).then((x) => {
-      res(x);
-    }), 1e3));
+    await delayRefetchQuery(1e3, ["Balances"]);
   };
   return /* @__PURE__ */ jsx(WithdrawalView, {
     withdraw
@@ -5709,11 +5831,7 @@ function DepositContainer({}) {
       }
     });
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a = tx.data) == null ? void 0 : _a.deposit));
-    await new Promise((res) => setTimeout(async () => await client.refetchQueries({
-      include: ["Balances"]
-    }).then((x) => {
-      res(x);
-    }), 1e3));
+    await delayRefetchQuery(1e3, ["Balances"]);
   };
   return /* @__PURE__ */ jsx(DepositView, {
     deposit
@@ -5787,7 +5905,7 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
   react.exports.useEffect(() => {
     getOptions();
   }, []);
-  const renderTrigger = (defaultTrigger, walletType, address) => {
+  const renderTrigger = (defaultTrigger, walletType, address, isConnected) => {
     if (walletType && address) {
       let addressResult = "";
       addressResult += address.slice(0, 4);
@@ -5823,7 +5941,11 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
           className: "pb-3 text-xl bg-stripes-secondary",
           children: "Select Wallet"
         }), options.map((wallet) => /* @__PURE__ */ jsx("div", {
-          onClick: wallet.onClick,
+          onClick: () => {
+            var _a;
+            wallet.onClick();
+            (_a = ref.current) == null ? void 0 : _a.closeModal();
+          },
           className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex items-center",
@@ -6231,8 +6353,8 @@ function MarketSelector({
                       autoFocus: true,
                       inputClass: "bg-primary-900 pl-10",
                       prefix: /* @__PURE__ */ jsx(MagnifyingGlassIcon, {
-                        width: 24,
-                        height: 24
+                        width: 20,
+                        height: 20
                       }),
                       onChange: onSearchChange
                     })
@@ -8033,6 +8155,229 @@ var Side = /* @__PURE__ */ ((Side2) => {
   Side2["Sell"] = "SELL";
   return Side2;
 })(Side || {});
+const TradeControlCtx = react.exports.createContext(null);
+const TradeControlsProvider = function TradeControlProvider({
+  children
+}) {
+  var _a, _b, _c, _d, _e, _f;
+  const balances = useBalances();
+  const {
+    firstCoin,
+    secondCoin,
+    lastTradePrice
+  } = useCoinXYParamState();
+  const quantX = (_d = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances) == null ? void 0 : _c.find((b) => {
+    var _a2;
+    return ((_a2 = b.coinInfo) == null ? void 0 : _a2.symbol) === (firstCoin == null ? void 0 : firstCoin.symbol);
+  })) == null ? void 0 : _d.availableBalance;
+  const [activeTab, setActiveTab] = react.exports.useState(0);
+  const [price, setPrice] = react.exports.useState(lastTradePrice);
+  const [cxAmount, setCxAmount] = react.exports.useState(0);
+  const [cyAmount, setCyAmount] = react.exports.useState(0);
+  const [post, setPost] = react.exports.useState(false);
+  const [pj, setPj] = react.exports.useState(false);
+  const [ioc, setIOC] = react.exports.useState(false);
+  const [fok, setFok] = react.exports.useState(false);
+  const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
+  const market = useQuery(MarketSimpleDocument, {
+    variables: {
+      marketInput: {
+        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
+        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
+      }
+    },
+    skip: !firstCoin || !secondCoin
+  });
+  const pythRatingQuery = useQuery(PythRatingDocument, {
+    variables: {
+      marketInput: {
+        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
+        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
+      },
+      price,
+      side: !activeTab ? Side.Buy : Side.Sell
+    },
+    skip: !firstCoin || !secondCoin
+  });
+  const pythRating = (_f = (_e = pythRatingQuery.data) == null ? void 0 : _e.market) == null ? void 0 : _f.pythRating;
+  const step = react.exports.useMemo(() => {
+    var _a2, _b2, _c2;
+    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSizeDecimals) != null ? _c2 : 0);
+  }, [market == null ? void 0 : market.data]);
+  const tick = react.exports.useMemo(() => {
+    var _a2, _b2, _c2;
+    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.tickSizeDecimals) != null ? _c2 : 0);
+  }, [market == null ? void 0 : market.data]);
+  const getDecCount = (n2) => {
+    if (!n2)
+      return 0;
+    const nStr = n2.toString();
+    const idx = nStr.indexOf(".");
+    const nArr = nStr.split("");
+    const sliced = nArr.slice(idx, nArr.length);
+    const length = sliced.length;
+    return length;
+  };
+  const tickValid = getDecCount(price) <= getDecCount(tick);
+  const stepValid = getDecCount(cxAmount) <= getDecCount(step);
+  const setPctFactory = (n2) => () => {
+    if (quantX)
+      setCxAmount(quantX * n2);
+  };
+  const set25 = setPctFactory(0.25);
+  const set50 = setPctFactory(0.5);
+  const set75 = setPctFactory(0.75);
+  const setMax = setPctFactory(1);
+  const resetForm = () => {
+    setActiveTab(0);
+    setPrice(0);
+    setCxAmount(0);
+    setCyAmount(0);
+    setPost(false);
+    setIOC(false);
+    setOrderType(OrderType.Limit);
+  };
+  const checkSetLimit = (switchVals) => {
+    if (!switchVals.filter(Boolean).length)
+      setOrderType(OrderType.Limit);
+  };
+  const onChangeIOC = (val) => {
+    if (post && val)
+      setPost(false);
+    if (fok && val)
+      setFok(false);
+    if (pj && val)
+      setPj(false);
+    setIOC(val);
+    setOrderType(OrderType.ImmediateOrCancel);
+    checkSetLimit([pj, post, fok, val]);
+  };
+  const onChangePost = (val) => {
+    if (ioc && val)
+      setIOC(false);
+    if (fok && val)
+      setFok(false);
+    if (pj && val)
+      setPj(false);
+    setPost(val);
+    setOrderType(OrderType.PostOnly);
+    checkSetLimit([pj, ioc, fok, val]);
+  };
+  const onChangeFok = (val) => {
+    if (ioc && val)
+      setIOC(false);
+    if (post && val)
+      setPost(false);
+    if (pj && val)
+      setPj(false);
+    setFok(val);
+    setOrderType(OrderType.FillOrKill);
+    checkSetLimit([pj, post, ioc, val]);
+  };
+  const onChangePassiveJoin = (val) => {
+    if (ioc && val)
+      setIOC(false);
+    if (post && val)
+      setPost(false);
+    if (fok && val)
+      setFok(false);
+    setPj(val);
+    setOrderType(OrderType.PassiveJoin);
+    checkSetLimit([post, ioc, fok, val]);
+  };
+  const onChangePrice = react.exports.useCallback((e2) => {
+    setPrice(Number(e2.currentTarget.value));
+  }, []);
+  const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(Number(e2.currentTarget.value)), []);
+  const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(Number(e2.currentTarget.value)), []);
+  const [placeOrderMutation] = useMutation(PlaceOrderDocument);
+  const [wallet, , connection] = useWallet();
+  const placeOrder = async (placeOrderInput) => {
+    var _a2;
+    const tx = await placeOrderMutation({
+      variables: {
+        placeOrderInput
+      }
+    });
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = tx.data) == null ? void 0 : _a2.placeOrder));
+  };
+  const {
+    addNotification
+  } = jt();
+  const submitTrade = async () => {
+    if (firstCoin && secondCoin && connection) {
+      await placeOrder({
+        auxToBurn: 0,
+        clientOrderId: 0,
+        orderType,
+        limitPrice: price.toString(),
+        marketInput: {
+          baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
+          quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
+        },
+        quantity: cxAmount.toString(),
+        sender: connection == null ? void 0 : connection.address,
+        side: activeTab === 0 ? Side.Buy : Side.Sell
+      }).then(() => {
+        resetForm();
+        addNotification({
+          message: "Trade Submitted",
+          title: "Success",
+          type: "info",
+          id: "1"
+        });
+      }).catch(() => {
+        addNotification({
+          title: "Error",
+          type: "error",
+          id: "1",
+          message: "There was an issue processing your trade"
+        });
+      });
+    }
+  };
+  const tc = {
+    cxAmount,
+    onChangeCxAmount,
+    price,
+    onChangePrice,
+    post,
+    onChangePost,
+    ioc,
+    onChangeIOC,
+    cyAmount,
+    onChangeCyAmount,
+    activeTab,
+    submitTrade,
+    onChangeOrderType: setOrderType,
+    orderType,
+    setActiveTab,
+    fok,
+    onChangeFok,
+    set25,
+    set50,
+    set75,
+    setMax,
+    quantX,
+    step,
+    stepValid,
+    pythRating,
+    passiveJoin: pj,
+    onChangePassiveJoin,
+    tick,
+    tickValid,
+    setPrice,
+    setCxAmount
+  };
+  return /* @__PURE__ */ jsx(TradeControlCtx.Provider, {
+    value: tc,
+    children
+  });
+};
+function useTradeControls() {
+  const ctx = react.exports.useContext(TradeControlCtx);
+  return ctx;
+}
 const configurationData = {
   supported_resolutions: ["1D"],
   exchanges: [{
@@ -8360,7 +8705,11 @@ function MarketTradesView({}) {
         return (_d = (_c = marketTradesSubscription.data) == null ? void 0 : _c.market) == null ? void 0 : _d.tradeHistory.map((item) => {
           var _a3;
           if (item) {
-            item.time = (_a3 = DateTime.fromJSDate(new Date(item.time)).toRelative()) != null ? _a3 : "";
+            const time = (_a3 = DateTime.fromJSDate(new Date(item.time)).toRelative()) != null ? _a3 : "";
+            return {
+              ...item,
+              time
+            };
           }
           return item;
         });
@@ -8429,7 +8778,8 @@ function MarketTradesContainer({}) {
 const OrderRow = react.exports.memo(function OrderRow2({
   order,
   scale,
-  side
+  side,
+  onClick
 }) {
   var _a, _b, _c;
   const controls = useAnimationControls();
@@ -8457,12 +8807,15 @@ const OrderRow = react.exports.memo(function OrderRow2({
     width: barWidth,
     left: 0
   };
+  const handleClick = react.exports.useCallback(() => onClick(order, side), [order, side]);
   return /* @__PURE__ */ jsxs(Fragment, {
     children: [/* @__PURE__ */ jsx(motion.tr, {
+      onClick: handleClick,
       style: barStyles
     }), /* @__PURE__ */ jsx(motion.tr, {
       ref,
-      className: "border-b border-primary-100 dark:border-primary-700 text-primary-500 dark:text-primary-400",
+      className: "border-b border-primary-100 dark:border-primary-700 text-primary-500 dark:text-primary-400 hover:bg-primary-800 hover:cursor-pointer",
+      onClick: handleClick,
       children: side === "bid" ? /* @__PURE__ */ jsxs(Fragment, {
         children: [/* @__PURE__ */ jsx(motion.td, {
           animate: controls,
@@ -8490,7 +8843,8 @@ const OrderRow = react.exports.memo(function OrderRow2({
 function OrderTable({
   items,
   loading,
-  error
+  error,
+  onOrderClick
 }) {
   var _a, _b;
   const askTotals = items.map((i2) => {
@@ -8528,7 +8882,8 @@ function OrderTable({
     return /* @__PURE__ */ jsx(OrderRow, {
       order: asks[row.index],
       scale: scaleAsk,
-      side: "ask"
+      side: "ask",
+      onClick: onOrderClick
     }, (_a2 = asks[row.index]) == null ? void 0 : _a2.price);
   }, [scaleAsk, asks]);
   const askOrderTableProps = {
@@ -8562,7 +8917,8 @@ function OrderTable({
     return /* @__PURE__ */ jsx(OrderRow, {
       order: bids[row.index],
       scale: scaleBid,
-      side: "bid"
+      side: "bid",
+      onClick: onOrderClick
     }, (_a2 = bids[row.index]) == null ? void 0 : _a2.price);
   }, [scaleBid, bids]);
   const bidOrderTableProps = {
@@ -8590,16 +8946,16 @@ function OrderTable({
     }
   };
   return /* @__PURE__ */ jsxs("div", {
-    className: "h-full grid grid-rows-2 grid-cols-1",
+    className: "h-full flex flex-col justify-start",
     children: [/* @__PURE__ */ jsx("div", {
       ref: askTableRef,
-      className: "relative overflow-y-scroll h-full max-h-full",
+      className: "relative overflow-y-scroll max-h-full",
       children: /* @__PURE__ */ jsx(Un, {
         ...askOrderTableProps
       })
     }), /* @__PURE__ */ jsx("div", {
       ref: bidTableRef,
-      className: "relative overflow-y-scroll h-full max-h-full",
+      className: "relative overflow-y-scroll max-h-full",
       children: /* @__PURE__ */ jsx(Un, {
         ...bidOrderTableProps
       })
@@ -8758,7 +9114,8 @@ function OrderBookView(props) {
   return /* @__PURE__ */ jsx(OrderTable, {
     loading: orderBookQuery.loading,
     error: (_a = orderBookQuery.error) == null ? void 0 : _a.message,
-    items: orderItems
+    items: orderItems,
+    onOrderClick: props.onOrderClick
   });
 }
 function OrderBookContainer(props) {
@@ -9071,9 +9428,6 @@ function useCreateTradingView() {
   const [symbol, setSymbol] = react.exports.useState();
   const [interval, setInterval2] = react.exports.useState("1D");
   const colorPalette = window.tvColorPalette;
-  console.log({
-    colorPalette
-  });
   const tv_overrides = {
     "paneProperties.backgroundType": "solid",
     "paneProperties.background": colorPalette.primary[900],
@@ -9179,216 +9533,6 @@ const OrderTip = react.exports.memo(function OrderTip2({
     }, tip)
   });
 });
-function useTradeControls() {
-  var _a, _b, _c, _d, _e, _f;
-  const balances = useBalances();
-  const {
-    firstCoin,
-    secondCoin,
-    lastTradePrice
-  } = useCoinXYParamState();
-  const quantX = (_d = (_c = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances) == null ? void 0 : _c.find((b) => {
-    var _a2;
-    return ((_a2 = b.coinInfo) == null ? void 0 : _a2.symbol) === (firstCoin == null ? void 0 : firstCoin.symbol);
-  })) == null ? void 0 : _d.availableBalance;
-  const [activeTab, setActiveTab] = react.exports.useState(0);
-  const [price, setPrice] = react.exports.useState(lastTradePrice);
-  const [cxAmount, setCxAmount] = react.exports.useState(0);
-  const [cyAmount, setCyAmount] = react.exports.useState(0);
-  const [post, setPost] = react.exports.useState(false);
-  const [pj, setPj] = react.exports.useState(false);
-  const [ioc, setIOC] = react.exports.useState(false);
-  const [fok, setFok] = react.exports.useState(false);
-  const [orderType, setOrderType] = react.exports.useState(OrderType.Limit);
-  const market = useQuery(MarketSimpleDocument, {
-    variables: {
-      marketInput: {
-        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      }
-    },
-    skip: !firstCoin || !secondCoin
-  });
-  const pythRatingQuery = useQuery(PythRatingDocument, {
-    variables: {
-      marketInput: {
-        baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-        quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      },
-      price,
-      side: !activeTab ? Side.Buy : Side.Sell
-    },
-    skip: !firstCoin || !secondCoin
-  });
-  const pythRating = (_f = (_e = pythRatingQuery.data) == null ? void 0 : _e.market) == null ? void 0 : _f.pythRating;
-  const step = react.exports.useMemo(() => {
-    var _a2, _b2, _c2;
-    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.lotSizeDecimals) != null ? _c2 : 0);
-  }, [market == null ? void 0 : market.data]);
-  const tick = react.exports.useMemo(() => {
-    var _a2, _b2, _c2;
-    return Number((_c2 = (_b2 = (_a2 = market == null ? void 0 : market.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.tickSizeDecimals) != null ? _c2 : 0);
-  }, [market == null ? void 0 : market.data]);
-  const getDecCount = (n2) => {
-    if (!n2)
-      return 0;
-    const nStr = n2.toString();
-    const idx = nStr.indexOf(".");
-    const nArr = nStr.split("");
-    const sliced = nArr.slice(idx, nArr.length);
-    const length = sliced.length;
-    return length;
-  };
-  const tickValid = getDecCount(price) <= getDecCount(tick);
-  const stepValid = getDecCount(cxAmount) <= getDecCount(step);
-  const setPctFactory = (n2) => () => {
-    if (quantX)
-      setCxAmount(quantX * n2);
-  };
-  const set25 = setPctFactory(0.25);
-  const set50 = setPctFactory(0.5);
-  const set75 = setPctFactory(0.75);
-  const setMax = setPctFactory(1);
-  const resetForm = () => {
-    setActiveTab(0);
-    setPrice(0);
-    setCxAmount(0);
-    setCyAmount(0);
-    setPost(false);
-    setIOC(false);
-    setOrderType(OrderType.Limit);
-  };
-  const checkSetLimit = (switchVals) => {
-    if (!switchVals.filter(Boolean).length)
-      setOrderType(OrderType.Limit);
-  };
-  const onChangeIOC = (val) => {
-    if (post && val)
-      setPost(false);
-    if (fok && val)
-      setFok(false);
-    if (pj && val)
-      setPj(false);
-    setIOC(val);
-    setOrderType(OrderType.ImmediateOrCancel);
-    checkSetLimit([pj, post, fok, val]);
-  };
-  const onChangePost = (val) => {
-    if (ioc && val)
-      setIOC(false);
-    if (fok && val)
-      setFok(false);
-    if (pj && val)
-      setPj(false);
-    setPost(val);
-    setOrderType(OrderType.PostOnly);
-    checkSetLimit([pj, ioc, fok, val]);
-  };
-  const onChangeFok = (val) => {
-    if (ioc && val)
-      setIOC(false);
-    if (post && val)
-      setPost(false);
-    if (pj && val)
-      setPj(false);
-    setFok(val);
-    setOrderType(OrderType.FillOrKill);
-    checkSetLimit([pj, post, ioc, val]);
-  };
-  const onChangePassiveJoin = (val) => {
-    if (ioc && val)
-      setIOC(false);
-    if (post && val)
-      setPost(false);
-    if (fok && val)
-      setFok(false);
-    setPj(val);
-    setOrderType(OrderType.PassiveJoin);
-    checkSetLimit([post, ioc, fok, val]);
-  };
-  const onChangePrice = react.exports.useCallback((e2) => {
-    setPrice(Number(e2.currentTarget.value));
-  }, []);
-  const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(Number(e2.currentTarget.value)), []);
-  const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(Number(e2.currentTarget.value)), []);
-  const [placeOrderMutation] = useMutation(PlaceOrderDocument);
-  const [wallet, , connection] = useWallet();
-  const placeOrder = async (placeOrderInput) => {
-    var _a2;
-    const tx = await placeOrderMutation({
-      variables: {
-        placeOrderInput
-      }
-    });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = tx.data) == null ? void 0 : _a2.placeOrder));
-  };
-  const {
-    addNotification
-  } = jt();
-  const submitTrade = async () => {
-    if (firstCoin && secondCoin && connection) {
-      await placeOrder({
-        auxToBurn: 0,
-        clientOrderId: 0,
-        orderType,
-        limitPrice: price.toString(),
-        marketInput: {
-          baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
-          quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-        },
-        quantity: cxAmount.toString(),
-        sender: connection == null ? void 0 : connection.address,
-        side: activeTab === 0 ? Side.Buy : Side.Sell
-      }).then(() => {
-        resetForm();
-        addNotification({
-          message: "Trade Submitted",
-          title: "Success",
-          type: "info",
-          id: "1"
-        });
-      }).catch(() => {
-        addNotification({
-          title: "Error",
-          type: "error",
-          id: "1",
-          message: "There was an issue processing your trade"
-        });
-      });
-    }
-  };
-  return {
-    cxAmount,
-    onChangeCxAmount,
-    price,
-    onChangePrice,
-    post,
-    onChangePost,
-    ioc,
-    onChangeIOC,
-    cyAmount,
-    onChangeCyAmount,
-    activeTab,
-    submitTrade,
-    onChangeOrderType: setOrderType,
-    orderType,
-    setActiveTab,
-    fok,
-    onChangeFok,
-    set25,
-    set50,
-    set75,
-    setMax,
-    quantX,
-    step,
-    stepValid,
-    pythRating,
-    passiveJoin: pj,
-    onChangePassiveJoin,
-    tick,
-    tickValid
-  };
-}
 function TradingForm() {
   const {
     ioc,
@@ -9704,6 +9848,11 @@ function TradeView({}) {
         return balanceTableRef;
     }
   }
+  const {
+    setActiveTab,
+    setPrice,
+    setCxAmount
+  } = useTradeControls();
   return /* @__PURE__ */ jsxs("div", {
     className: " bg-primary-900 w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[76px_1fr_1fr_300px] md:grid-cols-[275px_275px_1fr_1fr_1fr_1fr] overflow-hidden",
     children: [/* @__PURE__ */ jsxs("div", {
@@ -9749,7 +9898,15 @@ function TradeView({}) {
         priceDirection,
         symbol: "BTC-USD",
         baseCoinType: (_j = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _j : "",
-        quoteCoinType: (_k = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _k : ""
+        quoteCoinType: (_k = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _k : "",
+        onOrderClick: (v, s2) => {
+          if (s2 === "ask")
+            setActiveTab(0);
+          if (s2 === "bid")
+            setActiveTab(1);
+          setCxAmount(v.quantity);
+          setPrice(v.price);
+        }
       }) : null, marketEventTab === 1 ? /* @__PURE__ */ jsx(MarketTradesContainer, {}) : null]
     }), /* @__PURE__ */ jsx("div", {
       id: "tv_chart_container",
@@ -9777,7 +9934,9 @@ function TradeView({}) {
 }
 function TradeContainer({}) {
   return /* @__PURE__ */ jsx(DataFeedProvider, {
-    children: /* @__PURE__ */ jsx(TradeView, {})
+    children: /* @__PURE__ */ jsx(TradeControlsProvider, {
+      children: /* @__PURE__ */ jsx(TradeView, {})
+    })
   });
 }
 const AllPoolsDocument = {
@@ -9934,16 +10093,21 @@ const AllPoolsDocument = {
 const Pools = "";
 function PoolsView({
   pools,
+  loading,
   goToAddLiquidity,
   goToRemoveLiquidity,
   goToPoolInfo
 }) {
-  var _a;
+  const [searchQuery, setSearchQuery] = react.exports.useState("");
+  const filteredPools = pools == null ? void 0 : pools.filter((p) => {
+    return searchQuery.length > 1 ? p.coinInfoX.name.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoY.name.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoX.symbol.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoY.symbol.toLowerCase().match(searchQuery.toLowerCase()) : true;
+  });
+  const onSearchChange = (c) => setSearchQuery(c.currentTarget.value);
   const NO_POOLS_UI = /* @__PURE__ */ jsx(An, {
     className: "text-center mt-[200px] max-w-[400px] self-center border-primary-700 border",
     children: "No Pools Available"
   });
-  const renderLiquidityItem = (pool) => {
+  const renderLiquidityItem = (pool, idx) => {
     return /* @__PURE__ */ jsxs(An, {
       className: "flex justify-between hover:bg-primary-900/70 hover:cursor-pointer border-primary-700 border",
       onClick: () => goToPoolInfo(pool.coinInfoX, pool.coinInfoY),
@@ -9974,12 +10138,12 @@ function PoolsView({
         onClick: () => goToPoolInfo(pool.coinInfoX, pool.coinInfoY),
         children: "View Pool"
       })]
-    });
+    }, idx);
   };
   return /* @__PURE__ */ jsxs("div", {
     className: "flex flex-col items-center gap-4 w-full",
     children: [/* @__PURE__ */ jsxs("div", {
-      className: "flex w-full justify-between max-w-[1280px] my-8",
+      className: "flex w-full justify-between items-center max-w-[1280px] my-8",
       children: [/* @__PURE__ */ jsxs("div", {
         children: [/* @__PURE__ */ jsx("h2", {
           className: "text-4xl mb-2",
@@ -9988,6 +10152,19 @@ function PoolsView({
           className: "text-primary-200",
           children: "Earn AUX and a share of the trading fees by providing liquidity to pools!"
         })]
+      }), /* @__PURE__ */ jsx(Ln, {
+        value: searchQuery,
+        name: "marketSearch",
+        placeholder: "Search Pools",
+        className: "ml-auto mr-3",
+        label: "",
+        autoFocus: true,
+        inputClass: "bg-primary-900 pl-10",
+        prefix: /* @__PURE__ */ jsx(MagnifyingGlassIcon, {
+          width: 20,
+          height: 20
+        }),
+        onChange: onSearchChange
       }), /* @__PURE__ */ jsx(er, {
         size: "sm",
         onClick: () => goToAddLiquidity(),
@@ -9996,7 +10173,9 @@ function PoolsView({
       })]
     }), /* @__PURE__ */ jsx("div", {
       className: "flex flex-col gap-4 max-w-[1280px] w-full pb-12",
-      children: (_a = pools == null ? void 0 : pools.map(renderLiquidityItem)) != null ? _a : NO_POOLS_UI
+      children: loading ? /* @__PURE__ */ jsx(fr, {
+        variant: "list"
+      }) : !filteredPools || (filteredPools == null ? void 0 : filteredPools.length) === 0 ? NO_POOLS_UI : filteredPools == null ? void 0 : filteredPools.map(renderLiquidityItem)
     })]
   });
 }
@@ -10009,6 +10188,7 @@ function PoolsContainer({}) {
   } = useCoinXYParamState();
   const poolsQuery = useQuery(AllPoolsDocument);
   return /* @__PURE__ */ jsx(PoolsView, {
+    loading: poolsQuery.loading,
     pools: (_c = (_b = (_a = poolsQuery.data) == null ? void 0 : _a.pools) == null ? void 0 : _b.filter(Boolean)) != null ? _c : null,
     goToAddLiquidity: (coinx, coiny) => {
       if (coinx && coiny) {
@@ -10156,8 +10336,10 @@ function SwapFormView({
   primaryCoin,
   secondaryCoin,
   setValue,
-  loading
+  loading,
+  unregisteredCoins
 }) {
+  const [wallet] = useWallet();
   return /* @__PURE__ */ jsxs(An, {
     className: "w-[700px] mx-auto self-center justify-self-center",
     children: [/* @__PURE__ */ jsx(Mn, {
@@ -10180,7 +10362,23 @@ function SwapFormView({
       value: conversion,
       setValue: () => {
       }
-    }), /* @__PURE__ */ jsx(er, {
+    }), !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
+      trigger: /* @__PURE__ */ jsx(er, {
+        className: "mt-6 min-w-full",
+        onClick: () => {
+        },
+        children: "Connect Wallet To Swap"
+      })
+    }) : (unregisteredCoins == null ? void 0 : unregisteredCoins.length) ? /* @__PURE__ */ jsx(RegisterCoinModalContainer, {
+      executeSwap: handleSwap,
+      coins: unregisteredCoins,
+      trigger: /* @__PURE__ */ jsx(er, {
+        className: "mt-6 min-w-full",
+        onClick: () => {
+        },
+        children: "Register Coins To Swap"
+      })
+    }) : /* @__PURE__ */ jsx(er, {
       disabled: loading,
       className: "mt-6 min-w-full",
       onClick: handleSwap,
@@ -10197,6 +10395,7 @@ function SwapFormContainer({}) {
     onSecondCoinSelect,
     coins
   } = useCoinXYParamState();
+  const [unregisteredCoins, setUnregisteredCoins] = react.exports.useState([]);
   const [wallet, , connection] = useWallet();
   const isFcRegistered = useQuery(IsCoinRegisteredDocument, {
     variables: {
@@ -10210,7 +10409,16 @@ function SwapFormContainer({}) {
       owner: connection == null ? void 0 : connection.address
     }
   });
-  const [registerCoin] = useMutation(RegisterCoinDocument);
+  react.exports.useEffect(() => {
+    var _a2, _b2, _c2, _d;
+    const unregistered = [];
+    if (((_b2 = (_a2 = isScRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered) === false)
+      unregistered.push(secondCoin);
+    if (((_d = (_c2 = isFcRegistered.data) == null ? void 0 : _c2.account) == null ? void 0 : _d.isCoinRegistered) === false)
+      unregistered.push(firstCoin);
+    setUnregisteredCoins(unregistered);
+  }, [isScRegistered, isFcRegistered, firstCoin, secondCoin]);
+  useMutation(RegisterCoinDocument);
   const notifications = jt();
   const [value, setValue] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
@@ -10231,27 +10439,7 @@ function SwapFormContainer({}) {
   };
   const [swapMutation, swapResult] = useMutation(SwapDocument);
   const handleSwap = async () => {
-    var _a2, _b2, _c2, _d, _e, _f, _g;
-    if (!((_b2 = (_a2 = isFcRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered)) {
-      const tx = await registerCoin({
-        variables: {
-          registerCoinInput: {
-            coinType: firstCoin == null ? void 0 : firstCoin.coinType
-          }
-        }
-      });
-      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_c2 = tx.data) == null ? void 0 : _c2.registerCoin));
-    }
-    if (!((_e = (_d = isScRegistered.data) == null ? void 0 : _d.account) == null ? void 0 : _e.isCoinRegistered)) {
-      const tx = await registerCoin({
-        variables: {
-          registerCoinInput: {
-            coinType: secondCoin == null ? void 0 : secondCoin.coinType
-          }
-        }
-      });
-      await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_f = tx.data) == null ? void 0 : _f.registerCoin));
-    }
+    var _a2;
     const swapTx = await swapMutation({
       variables: {
         swapInput: {
@@ -10266,11 +10454,14 @@ function SwapFormContainer({}) {
         }
       }
     });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_g = swapTx.data) == null ? void 0 : _g.swap).then(() => notifications.addNotification({
-      title: "Success",
-      type: "success",
-      message: "Swap successful"
-    })).catch((err) => {
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swap).then(() => {
+      notifications.addNotification({
+        title: "Success",
+        type: "success",
+        message: "Swap successful"
+      });
+      delayRefetchQuery(1e3, ["Balances"]);
+    }).catch((err) => {
       notifications.addNotification({
         title: "Error",
         type: "error",
@@ -10297,7 +10488,8 @@ function SwapFormContainer({}) {
     secondaryCoin: secondCoin,
     setValue,
     value,
-    loading: firstCoinPrice.loading || isFcRegistered.loading || isScRegistered.loading
+    loading: firstCoinPrice.loading || isFcRegistered.loading || isScRegistered.loading,
+    unregisteredCoins
   });
 }
 const httpLink = new HttpLink({
