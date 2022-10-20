@@ -298,9 +298,7 @@ export class AuxClient {
    * Same as createFromEnv, but reads the private key from the specified profile
    * to use as the module address. Returns the client along with the module authority.
    */
-  static createFromEnvForTesting({
-    transactionOptions,
-  }: {
+  static createFromEnvForTesting(transactionOptions?: {
     transactionOptions?: TransactionOptions;
   }): [AuxClient, AptosAccount] {
     const [moduleAuthority, moduleAddress] =
@@ -308,7 +306,7 @@ export class AuxClient {
     return [
       AuxClient.createFromEnv({
         moduleAddress,
-        transactionOptions,
+        transactionOptions: transactionOptions?.transactionOptions,
       }),
       moduleAuthority,
     ];
