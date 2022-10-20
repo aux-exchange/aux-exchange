@@ -1,5 +1,6 @@
 type Account {
   address: Address!
+  isAUXAccountCreated: Boolean!
   isCoinRegistered(coinType: String!): Boolean!
   walletBalances: [Balance!]!
   balances: [Balance!]!
