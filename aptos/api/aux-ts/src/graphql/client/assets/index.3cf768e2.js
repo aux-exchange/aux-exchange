@@ -8277,7 +8277,7 @@ const SimpleMarketQueryDocument = {
   }]
 };
 function MarketTradesView({}) {
-  var _a;
+  var _a, _b;
   const {
     firstCoin,
     secondCoin
@@ -8295,8 +8295,8 @@ function MarketTradesView({}) {
   const [marketTrades, setMarketTrades] = react.exports.useState([]);
   React.useEffect(() => {
     setMarketTrades((prev) => {
-      var _a2, _b, _c, _d;
-      if ((_b = (_a2 = marketTradesSubscription.data) == null ? void 0 : _a2.market) == null ? void 0 : _b.tradeHistory) {
+      var _a2, _b2, _c, _d;
+      if ((_b2 = (_a2 = marketTradesSubscription.data) == null ? void 0 : _a2.market) == null ? void 0 : _b2.tradeHistory) {
         return (_d = (_c = marketTradesSubscription.data) == null ? void 0 : _c.market) == null ? void 0 : _d.tradeHistory.map((item) => {
           var _a3;
           if (item) {
@@ -8321,6 +8321,11 @@ function MarketTradesView({}) {
     });
   };
   const props = {
+    loading: marketTradesSubscription.loading,
+    error: (_a = marketTradesSubscription.error) == null ? void 0 : _a.message,
+    noData: /* @__PURE__ */ jsx(dr, {
+      message: "No recent trades."
+    }),
     data: marketTrades,
     columns: [{
       accessorKey: "price",
@@ -8336,7 +8341,7 @@ function MarketTradesView({}) {
       cell: cellRendererFactory(false)
     }],
     virtualizeOptions: {
-      count: (_a = marketTrades == null ? void 0 : marketTrades.length) != null ? _a : 30,
+      count: (_b = marketTrades == null ? void 0 : marketTrades.length) != null ? _b : 30,
       estimateSize: () => {
         var _a2;
         return (_a2 = marketTrades == null ? void 0 : marketTrades.length) != null ? _a2 : 30;
@@ -8423,7 +8428,9 @@ const OrderRow = react.exports.memo(function OrderRow2({
   });
 });
 function OrderTable({
-  items
+  items,
+  loading,
+  error
 }) {
   var _a, _b;
   const askTotals = items.map((i2) => {
@@ -8465,6 +8472,11 @@ function OrderTable({
     }, (_a2 = asks[row.index]) == null ? void 0 : _a2.price);
   }, [scaleAsk, asks]);
   const askOrderTableProps = {
+    loading,
+    noData: /* @__PURE__ */ jsx(dr, {
+      message: "No open orders."
+    }),
+    error,
     data: asks,
     customRowRender: renderAskRow,
     columns: [{
@@ -8494,6 +8506,7 @@ function OrderTable({
     }, (_a2 = bids[row.index]) == null ? void 0 : _a2.price);
   }, [scaleBid, bids]);
   const bidOrderTableProps = {
+    loading,
     data: bids,
     customRowRender: renderBidRow,
     columns: [{
@@ -8648,6 +8661,7 @@ const OrderBookQueryDocument = {
   }]
 };
 function OrderBookView(props) {
+  var _a;
   const {
     firstCoin,
     secondCoin
@@ -8663,8 +8677,8 @@ function OrderBookView(props) {
   });
   const [orderItems, setOrderItems] = react.exports.useState([]);
   react.exports.useEffect(() => {
-    var _a, _b, _c, _d;
-    const obd = (_b = (_a = orderBookQuery.data) == null ? void 0 : _a.market) == null ? void 0 : _b.orderbook;
+    var _a2, _b, _c, _d;
+    const obd = (_b = (_a2 = orderBookQuery.data) == null ? void 0 : _a2.market) == null ? void 0 : _b.orderbook;
     const maxLen = Math.min((_c = obd == null ? void 0 : obd.asks.length) != null ? _c : 0, (_d = obd == null ? void 0 : obd.asks.length) != null ? _d : 0, 25);
     const items = [];
     for (let i2 = 0; i2 < maxLen; i2++) {
@@ -8679,6 +8693,8 @@ function OrderBookView(props) {
       setOrderItems(items);
   }, [orderBookQuery.data]);
   return /* @__PURE__ */ jsx(OrderTable, {
+    loading: orderBookQuery.loading,
+    error: (_a = orderBookQuery.error) == null ? void 0 : _a.message,
     items: orderItems
   });
 }
@@ -10076,7 +10092,8 @@ function SwapFormView({
   coins,
   primaryCoin,
   secondaryCoin,
-  setValue
+  setValue,
+  loading
 }) {
   return /* @__PURE__ */ jsxs(Vn, {
     className: "w-[700px] mx-auto self-center justify-self-center",
@@ -10101,6 +10118,7 @@ function SwapFormView({
       setValue: () => {
       }
     }), /* @__PURE__ */ jsx(er, {
+      disabled: loading,
       className: "mt-6 min-w-full",
       onClick: handleSwap,
       children: "Swap"
@@ -10149,7 +10167,7 @@ function SwapFormContainer({}) {
     setValue(1);
   };
   const [swapMutation, swapResult] = useMutation(SwapDocument);
-  const handleSwap = react.exports.useCallback(async () => {
+  const handleSwap = async () => {
     var _a2, _b2, _c2, _d, _e, _f, _g;
     if (!((_b2 = (_a2 = isFcRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered)) {
       const tx = await registerCoin({
@@ -10159,7 +10177,6 @@ function SwapFormContainer({}) {
           }
         }
       });
-      console.log("first coin not registered", tx);
       await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_c2 = tx.data) == null ? void 0 : _c2.registerCoin));
     }
     if (!((_e = (_d = isScRegistered.data) == null ? void 0 : _d.account) == null ? void 0 : _e.isCoinRegistered)) {
@@ -10170,7 +10187,6 @@ function SwapFormContainer({}) {
           }
         }
       });
-      console.log("second coin not registered", tx);
       await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_f = tx.data) == null ? void 0 : _f.registerCoin));
     }
     const swapTx = await swapMutation({
@@ -10198,7 +10214,7 @@ function SwapFormContainer({}) {
         message: "Swap unsuccessful"
       });
     }));
-  }, [firstCoin, secondCoin, value, conversion, wallet, swapMutation]);
+  };
   const onSelectPrimary = (c) => {
     onFirstCoinSelect(c);
     setValue(1);
@@ -10217,7 +10233,8 @@ function SwapFormContainer({}) {
     primaryCoin: firstCoin,
     secondaryCoin: secondCoin,
     setValue,
-    value
+    value,
+    loading: firstCoinPrice.loading || isFcRegistered.loading || isScRegistered.loading
   });
 }
 const httpLink = new HttpLink({
