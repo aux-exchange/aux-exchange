@@ -16,7 +16,8 @@ input RegisterCoinInput {
 type Mutation {
   registerCoin(registerCoinInput: RegisterCoinInput!): EntryFunctionPayload!
   createPool(createPoolInput: CreatePoolInput!): EntryFunctionPayload!
-  swap(swapInput: SwapInput!): EntryFunctionPayload!
+  swapExactIn(swapExactInInput: SwapExactInInput!): EntryFunctionPayload!
+  swapExactOut(swapExactOutInput: SwapExactOutInput!): EntryFunctionPayload!
   addLiquidity(addLiquidityInput: AddLiquidityInput!): EntryFunctionPayload!
   removeLiquidity(
     removeLiquidityInput: RemoveLiquidityInput!
@@ -50,3 +51,4 @@ type CoinInfo {
 
 scalar EntryFunctionPayload
 scalar Address
+scalar Timestamp

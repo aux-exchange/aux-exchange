@@ -14,6 +14,7 @@ export type Scalars = {
   Float: number;
   Address: any;
   EntryFunctionPayload: any;
+  Timestamp: any;
 };
 
 export type Account = {
@@ -21,7 +22,7 @@ export type Account = {
   address: Scalars['Address'];
   balances: Array<Balance>;
   deposits: Array<Deposit>;
-  isAUXAccountCreated: Scalars['Boolean'];
+  hasAuxAccount: Scalars['Boolean'];
   isCoinRegistered: Scalars['Boolean'];
   openOrders: Array<Order>;
   orderHistory: Array<Order>;
@@ -149,7 +150,7 @@ export type Level = {
 export type Market = {
   __typename?: 'Market';
   bars: Array<Bar>;
-  barsForRange: Array<Bar>;
+  barsTradingView: Array<Bar>;
   baseCoinInfo: CoinInfo;
   high24h?: Maybe<Scalars['Float']>;
   isRoundLot: Scalars['Boolean'];
@@ -179,12 +180,12 @@ export type MarketBarsArgs = {
 };
 
 
-export type MarketBarsForRangeArgs = {
+export type MarketBarsTradingViewArgs = {
   countBack: Scalars['String'];
   firstDataRequest: Scalars['Boolean'];
-  fromEpochMillisInclusive: Scalars['String'];
+  from: Scalars['Timestamp'];
   resolution: Resolution;
-  toEpochMillisExclusive: Scalars['String'];
+  to: Scalars['Timestamp'];
 };
 
 
@@ -234,7 +235,8 @@ export type Mutation = {
   placeOrder: Scalars['EntryFunctionPayload'];
   registerCoin: Scalars['EntryFunctionPayload'];
   removeLiquidity: Scalars['EntryFunctionPayload'];
-  swap: Scalars['EntryFunctionPayload'];
+  swapExactIn: Scalars['EntryFunctionPayload'];
+  swapExactOut: Scalars['EntryFunctionPayload'];
   transfer: Scalars['EntryFunctionPayload'];
   withdraw: Scalars['EntryFunctionPayload'];
 };
@@ -280,8 +282,13 @@ export type MutationRemoveLiquidityArgs = {
 };
 
 
-export type MutationSwapArgs = {
-  swapInput: SwapInput;
+export type MutationSwapExactInArgs = {
+  swapExactInInput: SwapExactInInput;
+};
+
+
+export type MutationSwapExactOutArgs = {
+  swapExactOutInput: SwapExactOutInput;
 };
 
 
@@ -358,12 +365,12 @@ export type Pool = {
   coinInfoLP: CoinInfo;
   coinInfoX: CoinInfo;
   coinInfoY: CoinInfo;
-  decimalUnitsIn: Scalars['Float'];
-  decimalUnitsOut: Scalars['Float'];
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
-  priceIn?: Maybe<Scalars['Float']>;
-  priceOut?: Maybe<Scalars['Float']>;
+  priceX: Scalars['Float'];
+  priceY: Scalars['Float'];
+  quoteExactIn: Scalars['Float'];
+  quoteExactOut: Scalars['Float'];
   removes: Array<RemoveLiquidity>;
   swaps: Array<Swap>;
 };
@@ -376,31 +383,19 @@ export type PoolAddsArgs = {
 };
 
 
-export type PoolDecimalUnitsInArgs = {
-  coinTypeIn: Scalars['String'];
-  decimalUnitsOut: Scalars['Float'];
-};
-
-
-export type PoolDecimalUnitsOutArgs = {
-  coinTypeOut: Scalars['String'];
-  decimalUnitsIn: Scalars['Float'];
-};
-
-
 export type PoolPositionArgs = {
   owner: Scalars['Address'];
 };
 
 
-export type PoolPriceInArgs = {
-  amount: Scalars['Float'];
+export type PoolQuoteExactInArgs = {
+  amountIn: Scalars['Float'];
   coinTypeIn: Scalars['String'];
 };
 
 
-export type PoolPriceOutArgs = {
-  amount: Scalars['Float'];
+export type PoolQuoteExactOutArgs = {
+  amountOut: Scalars['Float'];
   coinTypeOut: Scalars['String'];
 };
 
@@ -571,12 +566,20 @@ export type Swap = {
   time: Scalars['String'];
 };
 
-export type SwapInput = {
+export type SwapExactInInput = {
   amountIn: Scalars['Float'];
   coinTypeIn: Scalars['String'];
-  coinTypeOut: Scalars['String'];
-  minAmountOut: Scalars['Float'];
   poolInput: PoolInput;
+  quoteAmountOut: Scalars['Float'];
+  slippage?: InputMaybe<Scalars['Float']>;
+};
+
+export type SwapExactOutInput = {
+  amountOut: Scalars['Float'];
+  coinTypeOut: Scalars['String'];
+  poolInput: PoolInput;
+  quoteAmountIn: Scalars['Float'];
+  slippage?: InputMaybe<Scalars['Float']>;
 };
 
 export type Trade = {
@@ -738,7 +741,9 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   Swap: ResolverTypeWrapper<Swap>;
-  SwapInput: SwapInput;
+  SwapExactInInput: SwapExactInInput;
+  SwapExactOutInput: SwapExactOutInput;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   Trade: ResolverTypeWrapper<Trade>;
   Transfer: ResolverTypeWrapper<Transfer>;
   TransferInput: TransferInput;
@@ -786,7 +791,9 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Subscription: {};
   Swap: Swap;
-  SwapInput: SwapInput;
+  SwapExactInInput: SwapExactInInput;
+  SwapExactOutInput: SwapExactOutInput;
+  Timestamp: Scalars['Timestamp'];
   Trade: Trade;
   Transfer: Transfer;
   TransferInput: TransferInput;
@@ -799,7 +806,7 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
   address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   balances?: Resolver<Array<ResolversTypes['Balance']>, ParentType, ContextType>;
   deposits?: Resolver<Array<ResolversTypes['Deposit']>, ParentType, ContextType>;
-  isAUXAccountCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasAuxAccount?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isCoinRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<AccountIsCoinRegisteredArgs, 'coinType'>>;
   openOrders?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountOpenOrdersArgs>>;
   orderHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountOrderHistoryArgs>>;
@@ -870,7 +877,7 @@ export type LevelResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type MarketResolvers<ContextType = any, ParentType extends ResolversParentTypes['Market'] = ResolversParentTypes['Market']> = {
   bars?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsArgs, 'resolution'>>;
-  barsForRange?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsForRangeArgs, 'countBack' | 'firstDataRequest' | 'fromEpochMillisInclusive' | 'resolution' | 'toEpochMillisExclusive'>>;
+  barsTradingView?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsTradingViewArgs, 'countBack' | 'firstDataRequest' | 'from' | 'resolution' | 'to'>>;
   baseCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   high24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   isRoundLot?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MarketIsRoundLotArgs, 'quantity'>>;
@@ -903,7 +910,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   placeOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationPlaceOrderArgs, 'placeOrderInput'>>;
   registerCoin?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRegisterCoinArgs, 'registerCoinInput'>>;
   removeLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRemoveLiquidityArgs, 'removeLiquidityInput'>>;
-  swap?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapArgs, 'swapInput'>>;
+  swapExactIn?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapExactInArgs, 'swapExactInInput'>>;
+  swapExactOut?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapExactOutArgs, 'swapExactOutInput'>>;
   transfer?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationTransferArgs, 'transferInput'>>;
   withdraw?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationWithdrawArgs, 'withdrawInput'>>;
 };
@@ -946,12 +954,12 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  decimalUnitsIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolDecimalUnitsInArgs, 'coinTypeIn' | 'decimalUnitsOut'>>;
-  decimalUnitsOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolDecimalUnitsOutArgs, 'coinTypeOut' | 'decimalUnitsIn'>>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
-  priceIn?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<PoolPriceInArgs, 'amount' | 'coinTypeIn'>>;
-  priceOut?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<PoolPriceOutArgs, 'amount' | 'coinTypeOut'>>;
+  priceX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  priceY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  quoteExactIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolQuoteExactInArgs, 'amountIn' | 'coinTypeIn'>>;
+  quoteExactOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolQuoteExactOutArgs, 'amountOut' | 'coinTypeOut'>>;
   removes?: Resolver<Array<ResolversTypes['RemoveLiquidity']>, ParentType, ContextType, Partial<PoolRemovesArgs>>;
   swaps?: Resolver<Array<ResolversTypes['Swap']>, ParentType, ContextType, Partial<PoolSwapsArgs>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1011,6 +1019,10 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+  name: 'Timestamp';
+}
+
 export type TradeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Trade'] = ResolversParentTypes['Trade']> = {
   auxBurned?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1068,9 +1080,9 @@ export type Resolvers<ContextType = any> = {
   RemoveLiquidity?: RemoveLiquidityResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
+  Timestamp?: GraphQLScalarType;
   Trade?: TradeResolvers<ContextType>;
   Transfer?: TransferResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
-

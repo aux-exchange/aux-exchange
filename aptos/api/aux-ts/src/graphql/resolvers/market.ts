@@ -8,7 +8,7 @@ import {
   Bar,
   Market,
   MarketBarsArgs,
-  MarketBarsForRangeArgs,
+  MarketBarsTradingViewArgs,
   MarketIsRoundLotArgs,
   MarketIsRoundTickArgs,
   MarketOpenOrdersArgs,
@@ -160,6 +160,22 @@ export const market = {
     });
     return bar.volume;
   },
+  isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
+    return aux
+      .DU(quantity)
+      .toAtomicUnits(parent.baseCoinInfo.decimals)
+      .toBN()
+      .mod(aux.AU(parent.lotSizeString).toBN())
+      .eqn(0);
+  },
+  isRoundTick(parent: Market, { quantity }: MarketIsRoundTickArgs): boolean {
+    return aux
+      .DU(quantity)
+      .toAtomicUnits(parent.quoteCoinInfo.decimals)
+      .toBN()
+      .mod(aux.AU(parent.tickSizeString).toBN())
+      .eqn(0);
+  },
   async bars(
     parent: Market,
     { resolution, first, offset }: MarketBarsArgs
@@ -204,15 +220,15 @@ export const market = {
 
     return bars;
   },
-  async barsForRange(
+  async barsTradingView(
     parent: Market,
     {
       resolution,
-      fromEpochMillisInclusive,
-      toEpochMillisExclusive,
+      from,
+      to,
       countBack,
       firstDataRequest,
-    }: MarketBarsForRangeArgs
+    }: MarketBarsTradingViewArgs
   ): Promise<Array<Bar>> {
     const convert = {
       SECONDS_15: "15s",
@@ -234,8 +250,8 @@ export const market = {
     });
 
     // TODO: Perform actual indexing. For small numbers of bars this should be okay.
-    const startTime = parseFloat(fromEpochMillisInclusive);
-    const endTime = parseFloat(toEpochMillisExclusive);
+    const startTime = parseFloat(from);
+    const endTime = parseFloat(to);
     const bars: Bar[] = [];
     for await (const line of rl) {
       const bar = JSON.parse(line);
@@ -250,25 +266,6 @@ export const market = {
     const firstIndex = bars.length - parseInt(countBack);
     return bars.slice(firstIndex >= 0 ? firstIndex : 0);
   },
-
-  isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
-    return aux
-      .DU(quantity)
-      .toAtomicUnits(parent.baseCoinInfo.decimals)
-      .toBN()
-      .mod(aux.AU(parent.lotSizeString).toBN())
-      .eqn(0);
-  },
-
-  isRoundTick(parent: Market, { quantity }: MarketIsRoundTickArgs): boolean {
-    return aux
-      .DU(quantity)
-      .toAtomicUnits(parent.quoteCoinInfo.decimals)
-      .toBN()
-      .mod(aux.AU(parent.tickSizeString).toBN())
-      .eqn(0);
-  },
-
   async pythRating(
     parent: Market,
     { price, side }: MarketPythRatingArgs
