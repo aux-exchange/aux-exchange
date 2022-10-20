@@ -742,6 +742,9 @@ video {
 .h-3 {
   height: 0.75rem;
 }
+.h-20 {
+  height: 5rem;
+}
 .h-\[70px\] {
   height: 70px;
 }
@@ -765,9 +768,6 @@ video {
 }
 .h-16 {
   height: 4rem;
-}
-.h-20 {
-  height: 5rem;
 }
 .h-24 {
   height: 6rem;
@@ -994,14 +994,8 @@ video {
      -moz-user-select: none;
           user-select: none;
 }
-.grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
 .grid-cols-\[300px_1fr_1fr_1fr_1fr_1fr\] {
   grid-template-columns: 300px 1fr 1fr 1fr 1fr 1fr;
-}
-.grid-rows-2 {
-  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 .flex-row {
   flex-direction: row;
