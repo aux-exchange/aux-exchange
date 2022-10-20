@@ -357,6 +357,7 @@ export type Pool = {
   coinInfoLP: CoinInfo;
   coinInfoX: CoinInfo;
   coinInfoY: CoinInfo;
+  decimalUnitsOut: Scalars['Float'];
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
   priceIn?: Maybe<Scalars['Float']>;
@@ -370,6 +371,12 @@ export type PoolAddsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   owner?: InputMaybe<Scalars['Address']>;
+};
+
+
+export type PoolDecimalUnitsOutArgs = {
+  coinTypeOut: Scalars['String'];
+  decimalUnitsIn: Scalars['Float'];
 };
 
 
@@ -930,6 +937,7 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  decimalUnitsOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolDecimalUnitsOutArgs, 'coinTypeOut' | 'decimalUnitsIn'>>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
   priceIn?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<PoolPriceInArgs, 'amount' | 'coinTypeIn'>>;
@@ -1055,3 +1063,4 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+

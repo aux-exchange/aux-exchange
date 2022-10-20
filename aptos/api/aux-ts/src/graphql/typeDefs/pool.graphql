@@ -17,6 +17,7 @@ type Pool {
   position(owner: Address!): Position
   priceIn(coinTypeIn: String!, amount: Float!): Float
   priceOut(coinTypeOut: String!, amount: Float!): Float
+  decimalUnitsOut(coinTypeOut: String!, decimalUnitsIn: Float!): Float!
 }
 
 type Position {
