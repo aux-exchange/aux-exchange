@@ -1262,6 +1262,9 @@ video {
 .border-b-secondary-500 {
   border-bottom-color: var(--secondary-500);
 }
+.border-r-primary-700 {
+  border-right-color: var(--primary-700);
+}
 .border-b-primary-700 {
   border-bottom-color: var(--primary-700);
 }
