@@ -21,9 +21,11 @@
     "start:devnet-clob-orders": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-orders.ts",
     "start:graphql": "ts-node src/graphql/index.ts",
     "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts",
-    "codegen:graphql": "graphql-codegen --config codegen.ts"
+    "codegen:graphql": "graphql-codegen --config codegen.ts",
+    "sentry": "ts-node scripts/sentry.ts"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.0",
     "@graphql-tools/load-files": "^6.6.1",
     "@graphql-tools/schema": "^9.0.4",
     "@pythnetwork/client": "^2.8.0",
