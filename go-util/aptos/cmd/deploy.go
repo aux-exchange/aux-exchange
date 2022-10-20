@@ -50,7 +50,7 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 			"--assume-yes",
 			"--max-gas", "10000",
 		)
-		redWarn.Printf("command is: \n%s\n", deployCmd.String())
+
 		deployCmd.Stdout = os.Stdout
 		deployCmd.Stderr = os.Stderr
 
@@ -79,7 +79,7 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 		rebpublishCmd := exec.Command(cmdToRun, append(trailingParams, afterParams...)...)
 		rebpublishCmd.Stdout = os.Stdout
 		rebpublishCmd.Stderr = os.Stderr
-		redWarn.Printf("command:\n%s\n", rebpublishCmd.String())
+
 		orPanic(rebpublishCmd.Run())
 	} else {
 		fmt.Printf("publish aux in %s\n", auxDir)
@@ -100,7 +100,8 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 		publishCmd.Stdout = os.Stdout
 		publishCmd.Stderr = os.Stderr
 
-		redWarn.Printf("command:\n%s\n", publishCmd.String())
 		orPanic(publishCmd.Run())
 	}
+
+	fmt.Println("Done. Hope you enjoy aux exchange")
 }
