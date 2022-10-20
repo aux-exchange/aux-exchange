@@ -1,4 +1,4 @@
-import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -61,7 +61,6 @@ export type AddLiquidity = {
   amountAddedX: Scalars['Float'];
   amountAddedY: Scalars['Float'];
   amountMintedLP: Scalars['Float'];
-  time: Scalars['String'];
 };
 
 export type AddLiquidityInput = {
@@ -120,7 +119,7 @@ export type CreateMarketInput = {
 };
 
 export type CreatePoolInput = {
-  feePercent: Scalars['Float'];
+  feeBasisPoints: Scalars['String'];
   poolInput: PoolInput;
 };
 
@@ -357,8 +356,6 @@ export type Pool = {
   coinInfoLP: CoinInfo;
   coinInfoX: CoinInfo;
   coinInfoY: CoinInfo;
-  decimalUnitsIn: Scalars['Float'];
-  decimalUnitsOut: Scalars['Float'];
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
   priceIn?: Maybe<Scalars['Float']>;
@@ -372,18 +369,6 @@ export type PoolAddsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   owner?: InputMaybe<Scalars['Address']>;
-};
-
-
-export type PoolDecimalUnitsInArgs = {
-  coinTypeIn: Scalars['String'];
-  decimalUnitsOut: Scalars['Float'];
-};
-
-
-export type PoolDecimalUnitsOutArgs = {
-  coinTypeOut: Scalars['String'];
-  decimalUnitsIn: Scalars['Float'];
 };
 
 
@@ -491,7 +476,6 @@ export type RemoveLiquidity = {
   amountBurnedLP: Scalars['Float'];
   amountRemovedX: Scalars['Float'];
   amountRemovedY: Scalars['Float'];
-  time: Scalars['String'];
 };
 
 export type RemoveLiquidityInput = {
@@ -813,7 +797,6 @@ export type AddLiquidityResolvers<ContextType = any, ParentType extends Resolver
   amountAddedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountAddedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountMintedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -944,8 +927,6 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  decimalUnitsIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolDecimalUnitsInArgs, 'coinTypeIn' | 'decimalUnitsOut'>>;
-  decimalUnitsOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<PoolDecimalUnitsOutArgs, 'coinTypeOut' | 'decimalUnitsIn'>>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
   priceIn?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType, RequireFields<PoolPriceInArgs, 'amount' | 'coinTypeIn'>>;
@@ -987,7 +968,6 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
   amountBurnedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountRemovedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountRemovedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1005,7 +985,6 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
   amountOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   coinInfoIn?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoOut?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  time?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
