@@ -49,6 +49,7 @@ module aux::amm {
     const EINSUFFICIENT_LIQUIDITY: u64 = 17;
     const EADD_LIQUIDITY_UNDERFLOW: u64 = 18;
     const EINSUFFICIENT_OUTPUT_AMOUNT: u64 = 19;
+    const EUNAUTHORIZED: u64 = 20;
 
     struct LP<phantom X, phantom Y> has store, drop {}
 
@@ -170,6 +171,17 @@ module aux::amm {
             lp_burn: lp_burn,
         };
         move_to(amm_signer, pool);
+    }
+
+    public entry fun update_fee<X, Y>(sender: &signer, fee_bps: u64) acquires Pool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        assert!(fee_bps <= 10000, error::invalid_argument(EINVALID_FEE));
+        assert_pool<X, Y>();
+        assert!(
+            authority::is_signer_owner(sender) || signer::address_of(sender) == @aux,
+            EUNAUTHORIZED,
+        );
+        borrow_global_mut<Pool<X, Y>>(@aux).fee_bps = fee_bps;
     }
 
     /// Swap exact amount of input coin for variable amount of output coin
@@ -1390,9 +1402,11 @@ module aux::amm {
         // dx_f = dx(1-fee)
         //
         // (x + dx_f)*(y - dy) = x*y
-        // dx_f = x * dy / (y + dy)
-        //
-        // dx = x * dy / ((y + dy)*(1-f))
+        // (x + dx_f) = x*y / (y - dy)
+        // dx_f = x * y / (y - dy) - x(y - dy)/(y- dy)
+        // dx_f = (xy - xy + x dy)/(y - dy)
+        // dx_f = (x * dy) / (y - dy)
+        // dx = x * dy / ((y - dy)*(1-f))
         assert!(amount_out > 0, EINSUFFICIENT_OUTPUT_AMOUNT);
         assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
         let numerator = (reserve_in as u128) * (amount_out as u128) * 10000;
@@ -1794,6 +1808,55 @@ module aux::amm {
             let y_reserve = coin::value(&pool.y_reserve);
             assert!(x_reserve == 1001, ETEST_FAILED);
             assert!(y_reserve == 4000, ETEST_FAILED);
+        };
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_update_fee(sender: &signer, aptos_framework: &signer) acquires Pool {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+        let sender_addr = signer::address_of(sender);
+
+        setup_pool_for_test(sender, 0, 100000000, 100000000);
+
+        add_exact_liquidity<AuxCoin, AuxTestCoin>(sender, 10000000, 40000000);
+
+        // swap X for Y
+        assert!(coin::balance<AuxCoin>(sender_addr) == 90000000, ETEST_FAILED);
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 60000000, ETEST_FAILED);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            assert!(x_reserve == 10000000, ETEST_FAILED);
+            assert!(y_reserve == 40000000, ETEST_FAILED);
+        };
+        let au_out = au_out<AuxCoin, AuxTestCoin>(2);
+        assert!(au_out == 7, ETEST_FAILED);
+        swap_exact_coin_for_coin_with_signer<AuxCoin, AuxTestCoin>(sender, 20000, 70000);
+        assert!(coin::balance<AuxCoin>(sender_addr) == 89980000, coin::balance<AuxCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 60079840, coin::balance<AuxTestCoin>(sender_addr));
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            assert!(x_reserve == 10020000, x_reserve);
+            assert!(y_reserve == 39920160, y_reserve);
+        };
+
+        // test swap in the other direction: swap Y for X
+        // We get less X out for the same amount of Y, due to rounding errors working in favor of the pool
+        let au_out = au_out<AuxTestCoin, AuxCoin>(7);
+        assert!(au_out == 1, ETEST_FAILED);
+        update_fee<AuxCoin, AuxTestCoin>(sender, 33);
+        swap_exact_coin_for_coin_with_signer<AuxTestCoin, AuxCoin>(sender, 70000, 10000);
+        assert!(coin::balance<AuxCoin>(sender_addr) == 89997481, coin::balance<AuxCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 60009840, coin::balance<AuxTestCoin>(sender_addr));
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            assert!(x_reserve == 10002519, x_reserve);
+            assert!(y_reserve == 39990160, y_reserve);
         };
     }
 
