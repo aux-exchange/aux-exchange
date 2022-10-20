@@ -11,7 +11,8 @@ import {
   MutationPlaceOrderArgs,
   MutationRegisterCoinArgs,
   MutationRemoveLiquidityArgs,
-  MutationSwapArgs,
+  MutationSwapExactInArgs,
+  MutationSwapExactOutArgs,
   MutationTransferArgs,
   MutationWithdrawArgs,
   OrderType,
@@ -37,23 +38,53 @@ export const mutation = {
       arguments: [],
     };
   },
-
-  async swap(_parent: any, { swapInput }: MutationSwapArgs) {
-    const { coinTypeX, coinTypeY } = swapInput.poolInput;
-    const [coinInfoX, coinInfoY] = await Promise.all([
-      auxClient.getCoinInfo(coinTypeX),
-      auxClient.getCoinInfo(coinTypeY),
+  async swapExactIn(
+    _parent: any,
+    { swapExactInInput }: MutationSwapExactInArgs
+  ) {
+    const { coinTypeX, coinTypeY } = swapExactInInput.poolInput;
+    const coinTypeOut =
+      swapExactInInput.coinTypeIn === coinTypeX ? coinTypeY : coinTypeX;
+    const [coinInfoIn, coinInfoOut] = await Promise.all([
+      auxClient.getCoinInfo(swapExactInInput.coinTypeIn),
+      auxClient.getCoinInfo(coinTypeOut),
     ]);
+    const slippage = 1 - (swapExactInInput.slippage ?? 0.1) / 100;
     return aux.amm.core.mutation.swapExactCoinForCoinPayload(auxClient, {
       // @ts-ignore
       sender: undefined,
-      coinTypeIn: swapInput.coinTypeIn,
-      coinTypeOut: swapInput.coinTypeOut,
-      exactAmountAuIn: DU(swapInput.amountIn)
-        .toAtomicUnits(coinInfoX.decimals)
+      coinTypeIn: swapExactInInput.coinTypeIn,
+      coinTypeOut,
+      exactAmountAuIn: DU(swapExactInInput.amountIn)
+        .toAtomicUnits(coinInfoIn.decimals)
         .toString(),
-      minAmountAuOut: DU(0.9 * swapInput.minAmountOut)
-        .toAtomicUnits(coinInfoY.decimals)
+      minAmountAuOut: DU(slippage * swapExactInInput.quoteAmountOut)
+        .toAtomicUnits(coinInfoOut.decimals)
+        .toString(),
+    });
+  },
+  async swapExactOut(
+    _parent: any,
+    { swapExactOutInput }: MutationSwapExactOutArgs
+  ) {
+    const { coinTypeX, coinTypeY } = swapExactOutInput.poolInput;
+    const coinTypeIn =
+      swapExactOutInput.coinTypeOut === coinTypeY ? coinTypeX : coinTypeY;
+    const [coinInfoIn, coinInfoOut] = await Promise.all([
+      auxClient.getCoinInfo(coinTypeIn),
+      auxClient.getCoinInfo(swapExactOutInput.coinTypeOut),
+    ]);
+    const slippage = 1 - (swapExactOutInput.slippage ?? 0.1) / 100;
+    return aux.amm.core.mutation.swapCoinForExactCoinPayload(auxClient, {
+      // @ts-ignore
+      sender: undefined,
+      coinTypeIn,
+      coinTypeOut: swapExactOutInput.coinTypeOut,
+      exactAmountAuOut: DU(swapExactOutInput.amountOut)
+        .toAtomicUnits(coinInfoOut.decimals)
+        .toString(),
+      maxAmountAuIn: DU(slippage * swapExactOutInput.quoteAmountIn)
+        .toAtomicUnits(coinInfoIn.decimals)
         .toString(),
     });
   },

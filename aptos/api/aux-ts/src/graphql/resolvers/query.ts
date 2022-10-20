@@ -209,7 +209,7 @@ export const query = {
     // @ts-ignore
     return {
       address: owner,
-      isAUXAccountCreated: auxAccount !== undefined,
+      hasAuxAccount: auxAccount !== undefined,
     };
   },
 };

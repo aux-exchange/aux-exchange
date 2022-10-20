@@ -39,6 +39,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "graphql": "^16.6.0",
+    "graphql-scalars": "^1.19.0",
     "graphql-subscriptions": "^2.0.0",
     "graphql-ws": "^5.11.0",
     "js-sha3": "^0.8.0",
@@ -47,7 +48,7 @@
     "yaml": "^2.1.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.13.7",
+    "@graphql-codegen/cli": "^2.13.7",
     "@graphql-codegen/introspection": "2.2.1",
     "@graphql-codegen/typescript": "2.7.4",
     "@graphql-codegen/typescript-resolvers": "2.7.4",

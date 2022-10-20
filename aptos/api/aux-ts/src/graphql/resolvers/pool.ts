@@ -4,17 +4,21 @@ import type {
   AddLiquidity,
   Maybe,
   Pool,
-  PoolDecimalUnitsInArgs,
-  PoolDecimalUnitsOutArgs,
   PoolPositionArgs,
-  PoolPriceInArgs,
-  PoolPriceOutArgs,
+  PoolQuoteExactInArgs,
+  PoolQuoteExactOutArgs,
   Position,
   RemoveLiquidity,
   Swap,
 } from "../generated/types";
 
 export const pool = {
+  priceX(parent: Pool): number {
+    return parent.amountX === 0 ? 0 : parent.amountY / parent.amountX;
+  },
+  priceY(parent: Pool): number {
+    return parent.amountY === 0 ? 0 : parent.amountX / parent.amountY;
+  },
   async swaps(parent: Pool): Promise<Swap[]> {
     const swaps = await aux.amm.core.query.swapEvents(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
@@ -100,72 +104,51 @@ export const pool = {
         }
       : null;
   },
-  async priceIn(
+  quoteExactIn(
     parent: Pool,
-    { coinTypeIn, amount }: PoolPriceInArgs
-  ): Promise<Maybe<number>> {
-    const ratio =
-      coinTypeIn === parent.coinInfoX.coinType
-        ? parent.amountY / parent.amountX
-        : parent.amountX / parent.amountY;
-    return amount * ratio;
-  },
-  async priceOut(
-    parent: Pool,
-    { coinTypeOut, amount }: PoolPriceOutArgs
-  ): Promise<Maybe<number>> {
-    const ratio =
-      coinTypeOut === parent.coinInfoY.coinType
-        ? parent.amountY / parent.amountX
-        : parent.amountX / parent.amountY;
-    return amount * ratio;
-  },
-
-  decimalUnitsOut(
-    parent: Pool,
-    { coinTypeOut, decimalUnitsIn }: PoolDecimalUnitsOutArgs
+    { coinTypeIn, amountIn }: PoolQuoteExactInArgs
   ): number {
     const inReserve =
-      coinTypeOut == parent.coinInfoX.coinType
-        ? parent.amountY
-        : parent.amountX;
-    const outReserve =
-      coinTypeOut == parent.coinInfoX.coinType
+      coinTypeIn === parent.coinInfoX.coinType
         ? parent.amountX
         : parent.amountY;
+    const outReserve =
+      coinTypeIn === parent.coinInfoX.coinType
+        ? parent.amountY
+        : parent.amountX;
 
-    if (decimalUnitsIn == 0 || inReserve == 0 || outReserve == 0) {
-      return 0;
+    if (inReserve === 0 || outReserve === 0) {
+      throw new Error("Pool is empty");
     }
 
-    const decimalUnitsInWithFee =
-      decimalUnitsIn * (1 - parent.feePercent / 100.0);
+    const decimalUnitsInWithFee = amountIn * (1 - parent.feePercent / 100.0);
     return (
       (decimalUnitsInWithFee * outReserve) / (inReserve + decimalUnitsInWithFee)
     );
   },
-
-  decimalUnitsIn(
+  quoteExactOut(
     parent: Pool,
-    { coinTypeIn, decimalUnitsOut }: PoolDecimalUnitsInArgs
+    { coinTypeOut, amountOut }: PoolQuoteExactOutArgs
   ): number {
     const inReserve =
-      coinTypeIn == parent.coinInfoX.coinType ? parent.amountX : parent.amountY;
+      coinTypeOut == parent.coinInfoY.coinType
+        ? parent.amountX
+        : parent.amountY;
     const outReserve =
-      coinTypeIn == parent.coinInfoX.coinType ? parent.amountY : parent.amountX;
+      coinTypeOut == parent.coinInfoY.coinType
+        ? parent.amountY
+        : parent.amountX;
 
-    if (
-      decimalUnitsOut == 0 ||
-      inReserve == 0 ||
-      outReserve == 0 ||
-      decimalUnitsOut >= outReserve
-    ) {
-      return 0;
+    if (inReserve == 0 || outReserve == 0) {
+      throw new Error("Pool is empty");
     }
 
-    const numerator = inReserve * decimalUnitsOut;
+    if (amountOut >= outReserve) {
+      throw new Error("Insufficient pool reserves");
+    }
+    const numerator = inReserve * amountOut;
     const denominator =
-      (outReserve - decimalUnitsOut) * (1 - parent.feePercent / 100.0);
+      (outReserve - amountOut) * (1 - parent.feePercent / 100.0);
     return numerator / denominator;
   },
 };

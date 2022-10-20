@@ -10,15 +10,15 @@ type Pool {
   amountX: Float!
   amountY: Float!
   amountLP: Float!
+  priceX: Float!
+  priceY: Float!
   feePercent: Float!
   swaps(owner: Address, first: Int, offset: Int): [Swap!]!
   adds(owner: Address, first: Int, offset: Int): [AddLiquidity!]!
   removes(owner: Address, first: Int, offset: Int): [RemoveLiquidity!]!
   position(owner: Address!): Position
-  priceIn(coinTypeIn: String!, amount: Float!): Float
-  priceOut(coinTypeOut: String!, amount: Float!): Float
-  decimalUnitsOut(coinTypeOut: String!, decimalUnitsIn: Float!): Float!
-  decimalUnitsIn(coinTypeIn: String!, decimalUnitsOut: Float!): Float!
+  quoteExactIn(coinTypeIn: String!, amountIn: Float!): Float!
+  quoteExactOut(coinTypeOut: String!, amountOut: Float!): Float!
 }
 
 type Position {
@@ -47,12 +47,20 @@ input RemoveLiquidityInput {
   amountLP: Float!
 }
 
-input SwapInput {
+input SwapExactInInput {
   poolInput: PoolInput!
   coinTypeIn: String!
-  coinTypeOut: String!
   amountIn: Float!
-  minAmountOut: Float!
+  quoteAmountOut: Float!
+  slippage: Float
+}
+
+input SwapExactOutInput {
+  poolInput: PoolInput!
+  coinTypeOut: String!
+  amountOut: Float!
+  quoteAmountIn: Float!
+  slippage: Float
 }
 
 type Swap {
@@ -60,19 +68,19 @@ type Swap {
   coinInfoOut: CoinInfo!
   amountIn: Float!
   amountOut: Float!
-  time: String!
+  time: Timestamp!
 }
 
 type AddLiquidity {
   amountAddedX: Float!
   amountAddedY: Float!
   amountMintedLP: Float!
-  time: String!
+  time: Timestamp!
 }
 
 type RemoveLiquidity {
   amountRemovedX: Float!
   amountRemovedY: Float!
   amountBurnedLP: Float!
-  time: String!
+  time: Timestamp!
 }

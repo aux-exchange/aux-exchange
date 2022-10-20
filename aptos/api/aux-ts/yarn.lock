@@ -216,7 +216,7 @@ __metadata:
   resolution: "@aux/aux-ts@workspace:."
   dependencies:
     "@apollo/client": ^3.7.0
-    "@graphql-codegen/cli": 2.13.7
+    "@graphql-codegen/cli": ^2.13.7
     "@graphql-codegen/introspection": 2.2.1
     "@graphql-codegen/typescript": 2.7.4
     "@graphql-codegen/typescript-resolvers": 2.7.4
@@ -243,6 +243,7 @@ __metadata:
     eslint: ^8.23.0
     express: ^4.18.1
     graphql: ^16.6.0
+    graphql-scalars: ^1.19.0
     graphql-subscriptions: ^2.0.0
     graphql-ws: ^5.11.0
     js-sha3: ^0.8.0
@@ -909,7 +910,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/cli@npm:2.13.7":
+"@graphql-codegen/cli@npm:^2.13.7":
   version: 2.13.7
   resolution: "@graphql-codegen/cli@npm:2.13.7"
   dependencies:
@@ -4401,6 +4402,17 @@ __metadata:
   peerDependencies:
     graphql: 14 - 16
   checksum: 2e8900d10cded401b253a05650719321123e3b0ad5bc57523288892e0226dccf43668ec937753420084f649fb4e3f998f2547c884b746a3e91fa0a43f93e62d4
+  languageName: node
+  linkType: hard
+
+"graphql-scalars@npm:^1.19.0":
+  version: 1.19.0
+  resolution: "graphql-scalars@npm:1.19.0"
+  dependencies:
+    tslib: ~2.4.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 25f72223a61fe4bc4e3cab9f99642327c6fcd7cf2fcfeaf2a9e95afc3e1c0bcffaac7b58ab41c6a8f3eb83051c67cb0875f60d3af26d81eb81f7fd7ef466b468
   languageName: node
   linkType: hard
 

@@ -18,10 +18,10 @@ type Market {
   isRoundLot(quantity: String!): Boolean!
   isRoundTick(quantity: String!): Boolean!
   bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
-  barsForRange(
+  barsTradingView(
     resolution: Resolution!
-    fromEpochMillisInclusive: String!
-    toEpochMillisExclusive: String!
+    from: Timestamp!
+    to: Timestamp!
     countBack: String!
     firstDataRequest: Boolean!
   ): [Bar!]!
@@ -96,7 +96,7 @@ type Order {
   quantity: Float!
   price: Float!
   auxBurned: Float!
-  time: String!
+  time: Timestamp!
 }
 
 type Trade {
@@ -109,11 +109,11 @@ type Trade {
   price: Float!
   value: Float!
   auxBurned: Float!
-  time: String!
+  time: Timestamp!
 }
 
 type Bar {
-  time: String!
+  time: Timestamp!
   ohlcv: Ohlcv
 }
 
