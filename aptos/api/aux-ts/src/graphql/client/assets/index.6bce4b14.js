@@ -8534,14 +8534,14 @@ function OrderTable({
   });
 }
 const OrderBook = "";
-const OrderbookDocument = {
+const OrderBookQueryDocument = {
   "kind": "Document",
   "definitions": [{
     "kind": "OperationDefinition",
-    "operation": "subscription",
+    "operation": "query",
     "name": {
       "kind": "Name",
-      "value": "Orderbook"
+      "value": "OrderBookQuery"
     },
     "variableDefinitions": [{
       "kind": "VariableDefinition",
@@ -8549,22 +8549,16 @@ const OrderbookDocument = {
         "kind": "Variable",
         "name": {
           "kind": "Name",
-          "value": "marketInputs"
+          "value": "marketInput"
         }
       },
       "type": {
         "kind": "NonNullType",
         "type": {
-          "kind": "ListType",
-          "type": {
-            "kind": "NonNullType",
-            "type": {
-              "kind": "NamedType",
-              "name": {
-                "kind": "Name",
-                "value": "MarketInput"
-              }
-            }
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "MarketInput"
           }
         }
       }
@@ -8575,19 +8569,19 @@ const OrderbookDocument = {
         "kind": "Field",
         "name": {
           "kind": "Name",
-          "value": "orderbook"
+          "value": "market"
         },
         "arguments": [{
           "kind": "Argument",
           "name": {
             "kind": "Name",
-            "value": "marketInputs"
+            "value": "marketInput"
           },
           "value": {
             "kind": "Variable",
             "name": {
               "kind": "Name",
-              "value": "marketInputs"
+              "value": "marketInput"
             }
           }
         }],
@@ -8597,7 +8591,7 @@ const OrderbookDocument = {
             "kind": "Field",
             "name": {
               "kind": "Name",
-              "value": "bids"
+              "value": "orderbook"
             },
             "selectionSet": {
               "kind": "SelectionSet",
@@ -8605,35 +8599,45 @@ const OrderbookDocument = {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "price"
+                  "value": "bids"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "price"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "quantity"
+                    }
+                  }]
                 }
               }, {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "quantity"
-                }
-              }]
-            }
-          }, {
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "asks"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "price"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "quantity"
+                  "value": "asks"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "price"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "quantity"
+                    }
+                  }]
                 }
               }]
             }
@@ -8648,19 +8652,20 @@ function OrderBookView(props) {
     firstCoin,
     secondCoin
   } = useCoinXYParamState();
-  const orderBookSubscription = useSubscription(OrderbookDocument, {
+  const orderBookQuery = useQuery(OrderBookQueryDocument, {
     variables: {
-      marketInputs: [{
+      marketInput: {
         baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
         quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
-      }]
-    }
+      }
+    },
+    pollInterval: 2e3
   });
   const [orderItems, setOrderItems] = react.exports.useState([]);
   react.exports.useEffect(() => {
-    var _a, _b, _c;
-    const obd = (_a = orderBookSubscription.data) == null ? void 0 : _a.orderbook;
-    const maxLen = Math.min((_b = obd == null ? void 0 : obd.asks.length) != null ? _b : 0, (_c = obd == null ? void 0 : obd.asks.length) != null ? _c : 0);
+    var _a, _b, _c, _d;
+    const obd = (_b = (_a = orderBookQuery.data) == null ? void 0 : _a.market) == null ? void 0 : _b.orderbook;
+    const maxLen = Math.min((_c = obd == null ? void 0 : obd.asks.length) != null ? _c : 0, (_d = obd == null ? void 0 : obd.asks.length) != null ? _d : 0, 25);
     const items = [];
     for (let i2 = 0; i2 < maxLen; i2++) {
       const ask = obd == null ? void 0 : obd.asks[i2];
@@ -8672,7 +8677,7 @@ function OrderBookView(props) {
     }
     if (items.length)
       setOrderItems(items);
-  }, [orderBookSubscription.data]);
+  }, [orderBookQuery.data]);
   return /* @__PURE__ */ jsx(OrderTable, {
     items: orderItems
   });
