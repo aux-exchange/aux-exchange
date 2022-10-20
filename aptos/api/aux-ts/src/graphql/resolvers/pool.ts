@@ -4,6 +4,7 @@ import type {
   AddLiquidity,
   Maybe,
   Pool,
+  PoolDecimalUnitsOutArgs,
   PoolPositionArgs,
   PoolPriceInArgs,
   PoolPriceOutArgs,
@@ -117,5 +118,29 @@ export const pool = {
         ? parent.amountY / parent.amountX
         : parent.amountX / parent.amountY;
     return amount * ratio;
+  },
+
+  decimalUnitsOut(
+    parent: Pool,
+    { coinTypeOut, decimalUnitsIn }: PoolDecimalUnitsOutArgs
+  ): number {
+    const inReserve =
+      coinTypeOut == parent.coinInfoX.coinType
+        ? parent.amountY
+        : parent.amountX;
+    const outReserve =
+      coinTypeOut == parent.coinInfoX.coinType
+        ? parent.amountX
+        : parent.amountY;
+
+    if (decimalUnitsIn == 0 || inReserve == 0 || outReserve == 0) {
+      return 0;
+    }
+
+    const decimalUnitsInWithFee =
+      decimalUnitsIn * (1 - parent.feePercent / 100.0);
+    return (
+      (decimalUnitsInWithFee * outReserve) / (inReserve + decimalUnitsInWithFee)
+    );
   },
 };
