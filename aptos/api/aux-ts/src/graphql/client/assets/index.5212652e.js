@@ -2107,10 +2107,15 @@ class MartianWalletAdapter extends WalletAdapterCore {
   constructor() {
     super("martian", Wallets.Martian);
   }
-  async signAndSubmitTransaction(transaction) {
-    var _a;
-    console.log(window.martian);
-    await ((_a = this.getWallet()) == null ? void 0 : _a.generateSignAndSubmitTransaction(transaction));
+  async signAndSubmitTransaction(payload) {
+    var _a, _b;
+    const connection = await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
+    const address = connection.address;
+    console.log({
+      address,
+      payload
+    });
+    await ((_b = this.getWallet()) == null ? void 0 : _b.generateSignAndSubmitTransaction(address, payload));
   }
 }
 class PetraWalletAdapter extends WalletAdapterCore {
