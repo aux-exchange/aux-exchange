@@ -1,5 +1,6 @@
 import type { AptosAccount, Types } from "aptos";
 import type BN from "bn.js";
+import type { AccountEvent } from "../../../src/vault/core/query";
 import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import {
@@ -17,7 +18,13 @@ import type {
   RemoveLiquidityEvent,
   SwapEvent,
 } from "../core/events";
-import { addLiquidityTxResult } from "../core/mutation";
+import {
+  addLiquidityTxResult,
+  addLiquidityWithAccountPayload,
+  addLiquidityWithAccountTxResult,
+  removeLiquidityWithAccountPayload,
+  removeLiquidityWithAccountTxResult,
+} from "../core/mutation";
 import type { PoolInput } from "../core/query";
 
 export default class Pool implements core.query.Pool {
@@ -667,6 +674,73 @@ export default class Pool implements core.query.Pool {
       },
       transactionOptions
     );
+  }
+
+  /**
+   * Adds up to the given amounts of liquidity to the pool, using Aux Account
+   * balances.  Add as much liquidity as possible in as close of a ratio as
+   * possible to the pool. Any rounding benefits the pool. If rounding would
+   * reduce the LP tokens received by more than the specified slippage, abort.
+   */
+  async addLiquidityWithAccount(
+    { sender, amountX, amountY, maxSlippageBps }: AddLiquidityParams,
+    transactionOptions?: TransactionOptions
+  ): Promise<TransactionResult<Array<AddLiquidityEvent | AccountEvent>>> {
+    const amountAuX = toAtomicUnits(amountX, this.coinInfoX.decimals).toU64();
+    const amountAuY = toAtomicUnits(amountY, this.coinInfoY.decimals).toU64();
+    const payload = addLiquidityWithAccountPayload(this.auxClient, {
+      sender,
+      coinTypeX: this.coinInfoX.coinType,
+      coinTypeY: this.coinInfoY.coinType,
+      amountAuX,
+      amountAuY,
+      maxSlippageBps: maxSlippageBps.toU64(),
+    });
+    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+      sender,
+      payload,
+      transactionOptions,
+    });
+    if (tx.success) {
+      return addLiquidityWithAccountTxResult(this.auxClient, tx);
+    } else {
+      return {
+        tx,
+        payload: [],
+      };
+    }
+  }
+
+  /**
+   * Redeem LP tokens from the pool.
+   */
+  async removeLiquidityWithAccount(
+    { sender, amountLP }: RemoveLiquidityParams,
+    transactionOptions?: TransactionOptions
+  ): Promise<TransactionResult<Array<RemoveLiquidityEvent | AccountEvent>>> {
+    const amountAuLP = toAtomicUnits(
+      amountLP,
+      this.coinInfoLP.decimals
+    ).toU64();
+    const payload = removeLiquidityWithAccountPayload(this.auxClient, {
+      sender,
+      coinTypeX: this.coinInfoX.coinType,
+      coinTypeY: this.coinInfoY.coinType,
+      amountAuLP,
+    });
+    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+      sender,
+      payload,
+      transactionOptions,
+    });
+    if (tx.success) {
+      return removeLiquidityWithAccountTxResult(this.auxClient, tx);
+    } else {
+      return {
+        tx,
+        payload: [],
+      };
+    }
   }
 
   /**

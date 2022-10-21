@@ -111,6 +111,29 @@ export const mutation = {
       maxSlippageBps: "50",
     });
   },
+  async addLiquidityWithAccount(
+    _parent: any,
+    { addLiquidityInput }: MutationAddLiquidityArgs
+  ) {
+    const { coinTypeX, coinTypeY } = addLiquidityInput.poolInput;
+    const [coinInfoX, coinInfoY] = await Promise.all([
+      auxClient.getCoinInfo(coinTypeX),
+      auxClient.getCoinInfo(coinTypeY),
+    ]);
+    return aux.amm.core.mutation.addLiquidityWithAccountPayload(auxClient, {
+      // @ts-ignore
+      sender: undefined,
+      coinTypeX,
+      coinTypeY,
+      amountAuX: DU(addLiquidityInput.amountX)
+        .toAtomicUnits(coinInfoX.decimals)
+        .toString(),
+      amountAuY: DU(addLiquidityInput.amountY)
+        .toAtomicUnits(coinInfoY.decimals)
+        .toString(),
+      maxSlippageBps: "50",
+    });
+  },
   async removeLiquidity(
     _parent: any,
     { removeLiquidityInput }: MutationRemoveLiquidityArgs
@@ -121,6 +144,25 @@ export const mutation = {
       coinTypeY,
     });
     return aux.amm.core.mutation.removeLiquidityPayload(auxClient, {
+      // @ts-ignore
+      sender: undefined,
+      coinTypeX,
+      coinTypeY,
+      amountAuLP: DU(removeLiquidityInput.amountLP)
+        .toAtomicUnits(pool!.coinInfoLP.decimals)
+        .toString(),
+    });
+  },
+  async removeLiquidityWithAccount(
+    _parent: any,
+    { removeLiquidityInput }: MutationRemoveLiquidityArgs
+  ) {
+    const { coinTypeX, coinTypeY } = removeLiquidityInput.poolInput;
+    const pool = await aux.amm.core.query.pool(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    });
+    return aux.amm.core.mutation.removeLiquidityWithAccountPayload(auxClient, {
       // @ts-ignore
       sender: undefined,
       coinTypeX,

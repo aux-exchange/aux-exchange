@@ -22,6 +22,12 @@ type Mutation {
   removeLiquidity(
     removeLiquidityInput: RemoveLiquidityInput!
   ): EntryFunctionPayload!
+  addLiquidityWithAccount(
+    addLiquidityInput: AddLiquidityInput!
+  ): EntryFunctionPayload!
+  removeLiquidityWithAccount(
+    removeLiquidityInput: RemoveLiquidityInput!
+  ): EntryFunctionPayload!
 
   createMarket(createMarketInput: CreateMarketInput!): EntryFunctionPayload!
   placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!

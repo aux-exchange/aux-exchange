@@ -306,7 +306,7 @@ module aux::amm {
         coin::deposit(sender_address, user_y);
     }
 
-    public entry fun add_liquidity_with_vault<X, Y>(
+    public entry fun add_liquidity_with_aux_account<X, Y>(
         sender: &signer,
         x_au: u64,
         y_au: u64,
@@ -325,7 +325,7 @@ module aux::amm {
         vault::deposit_coin(sender_address, user_y);
     }
 
-    public entry fun remove_liquidity_with_vault<X, Y>(
+    public entry fun remove_liquidity_with_aux_account<X, Y>(
         sender: &signer,
         lp_au: u64,
     ) acquires Pool {
@@ -2858,7 +2858,7 @@ module aux::amm {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    fun test_add_liquidity_remove_liquidity_with_vault(sender: &signer, aptos_framework: &signer) acquires Pool {
+    fun test_add_liquidity_remove_liquidity_with_aux_account(sender: &signer, aptos_framework: &signer) acquires Pool {
         timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
@@ -2882,7 +2882,7 @@ module aux::amm {
         };
 
         let _ = sender_addr;
-        add_liquidity_with_vault<AuxCoin, AuxTestCoin>(sender, 1000, 4000, 0);
+        add_liquidity_with_aux_account<AuxCoin, AuxTestCoin>(sender, 1000, 4000, 0);
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
@@ -2900,7 +2900,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // Exact remove_liquidity.
-        remove_liquidity_with_vault<AuxCoin, AuxTestCoin>(sender, 50);
+        remove_liquidity_with_aux_account<AuxCoin, AuxTestCoin>(sender, 50);
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
@@ -2918,7 +2918,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // Rounded remove_liquidity
-        remove_liquidity_with_vault<AuxCoin, AuxTestCoin>(sender, 17);
+        remove_liquidity_with_aux_account<AuxCoin, AuxTestCoin>(sender, 17);
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
@@ -2936,7 +2936,7 @@ module aux::amm {
                 ETEST_FAILED);
 
         // Total remove_liquidity
-        remove_liquidity_with_vault<AuxCoin, AuxTestCoin>(sender, 1933 - MIN_LIQUIDITY);
+        remove_liquidity_with_aux_account<AuxCoin, AuxTestCoin>(sender, 1933 - MIN_LIQUIDITY);
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);

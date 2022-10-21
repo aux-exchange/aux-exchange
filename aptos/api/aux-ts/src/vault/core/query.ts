@@ -11,6 +11,40 @@ export interface Balances {
   balances: Entry<CoinBalance>[];
 }
 
+export type RawAccountEvent =
+  | RawTransferEvent
+  | RawDepositEvent
+  | RawWithdrawEvent;
+
+export interface RawTransferEvent {
+  type: string;
+  data: {
+    coinType: Types.MoveStructTag;
+    from: Types.Address;
+    to: Types.Address;
+    amount_au: Types.U64;
+  };
+}
+
+export interface RawDepositEvent {
+  type: string;
+  data: {
+    coinType: Types.MoveStructTag;
+    depositor: Types.Address;
+    to: Types.Address;
+    amount_au: Types.U64;
+  };
+}
+
+export interface RawWithdrawEvent {
+  type: string;
+  data: {
+    coinType: Types.MoveStructTag;
+    owner: Types.Address;
+    amount_au: Types.U64;
+  };
+}
+
 export interface TransferEvent {
   coinType: Types.MoveStructTag;
   from: Types.Address;
@@ -20,7 +54,8 @@ export interface TransferEvent {
 
 export interface DepositEvent {
   coinType: Types.MoveStructTag;
-  owner: Types.Address;
+  depositor: Types.Address;
+  to: Types.Address;
   amount: DecimalUnits;
 }
 
@@ -29,6 +64,8 @@ export interface WithdrawEvent {
   owner: Types.Address;
   amount: DecimalUnits;
 }
+
+export type AccountEvent = TransferEvent | DepositEvent | WithdrawEvent;
 
 export async function balances(
   auxClient: AuxClient,
@@ -103,11 +140,11 @@ export async function availableBalance(
   return AU((maybeResource.data as any).available_balance);
 }
 
-async function events<Type>(
+async function events<T extends AccountEvent>(
   auxClient: AuxClient,
   fieldName: string,
-  predicate: (event: Type) => boolean
-): Promise<Type[]> {
+  predicate: (event: RawAccountEvent) => boolean
+): Promise<T[]> {
   const events = await auxClient.aptosClient.getEventsByEventHandle(
     auxClient.moduleAddress,
     `${auxClient.moduleAddress}::vault::Vault`,
@@ -118,12 +155,21 @@ async function events<Type>(
     return [];
   }
   const decimals = (await auxClient.getCoinInfo(first.data.coinType)).decimals;
-  return events
-    .map((event) => {
-      event.data.amount = AU(event.data.amount_au).toDecimalUnits(decimals);
-      return event as unknown as Type;
-    })
-    .filter(predicate);
+  return events.filter(predicate).map((event) => {
+    event.data.amount = AU(event.data.amount_au).toDecimalUnits(decimals);
+    return event.data as T;
+  });
+}
+
+export async function parseAccountEvent(
+  auxClient: AuxClient,
+  event: RawAccountEvent
+): Promise<AccountEvent> {
+  const decimals = (await auxClient.getCoinInfo(event.data.coinType)).decimals;
+  return {
+    amount: AU(event.data.amount_au).toDecimalUnits(decimals),
+    ...event.data,
+  };
 }
 
 export async function transferEvents(
@@ -133,8 +179,9 @@ export async function transferEvents(
   return events(
     auxClient,
     "transfer_events",
-    // @ts-ignore
-    (event) => event.data.from === owner || event.data.to === owner
+    (event) =>
+      (event as RawTransferEvent).data.from === owner ||
+      (event as RawTransferEvent).data.to === owner
   );
 }
 
@@ -142,14 +189,21 @@ export async function depositEvents(
   auxClient: AuxClient,
   owner: Types.Address
 ): Promise<DepositEvent[]> {
-  // @ts-ignore
-  return events(auxClient, "deposit_events", (event) => event.data.owner === owner);
+  return events(
+    auxClient,
+    "deposit_events",
+    (event) => (event as RawDepositEvent).data.to === owner
+  );
 }
 
 export async function withdrawEvents(
   auxClient: AuxClient,
   owner: Types.Address
-): Promise<DepositEvent[]> {
+): Promise<WithdrawEvent[]> {
   // @ts-ignore
-  return events(auxClient, "withdraw_events", (event) => event.data.owner === owner);
+  return events(
+    auxClient,
+    "withdraw_events",
+    (event) => (event as RawWithdrawEvent).data.owner === owner
+  );
 }
