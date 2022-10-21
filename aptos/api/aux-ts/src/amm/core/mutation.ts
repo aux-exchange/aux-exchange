@@ -1,6 +1,8 @@
 import { AptosAccount, HexString, Types } from "aptos";
 import assert from "assert";
 import { BN } from "bn.js";
+import type { AccountEvent } from "../../../src/vault/core/query";
+import { parseAccountEvent } from "../../../src/vault/core/query";
 import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import { AU } from "../../units";
@@ -294,6 +296,28 @@ export async function addLiquidityTxResult(
   assert(false, "did not find an AddLiquidityEvent");
 }
 
+export async function addLiquidityWithAccountTxResult(
+  auxClient: AuxClient,
+  tx: Types.UserTransaction
+): Promise<TransactionResult<Array<AddLiquidityEvent | AccountEvent>>> {
+  for (const ev of tx.events.reverse()) {
+    let payload: Array<AddLiquidityEvent | AccountEvent> = [];
+    if (ev.type == `${auxClient.moduleAddress}::amm::AddLiquidityEvent`) {
+      payload.push(await parseRawAddLiquidityEvent(auxClient, ev));
+    } else if (
+      ev.type == `${auxClient.moduleAddress}::vault::WithdrawEvent` ||
+      ev.type == `${auxClient.moduleAddress}::vault::DepositEvent`
+    ) {
+      payload.push(await parseAccountEvent(auxClient, ev));
+    }
+    return {
+      tx,
+      payload,
+    };
+  }
+  assert(false, "did not find an AddLiquidityEvent");
+}
+
 export async function parseRawAddLiquidityEvent(
   auxClient: AuxClient,
   event: RawAddLiquidityEvent
@@ -325,6 +349,28 @@ export async function removeLiquidityTxResult(
         payload: await parseRawRemoveLiquidityEvent(auxClient, ev),
       };
     }
+  }
+  assert(false, "did not find a RemoveLiquidityEvent");
+}
+
+export async function removeLiquidityWithAccountTxResult(
+  auxClient: AuxClient,
+  tx: Types.UserTransaction
+): Promise<TransactionResult<Array<RemoveLiquidityEvent | AccountEvent>>> {
+  for (const ev of tx.events.reverse()) {
+    let payload: Array<RemoveLiquidityEvent | AccountEvent> = [];
+    if (ev.type == `${auxClient.moduleAddress}::amm::RemoveLiquidityEvent`) {
+      payload.push(await parseRawRemoveLiquidityEvent(auxClient, ev));
+    } else if (
+      ev.type == `${auxClient.moduleAddress}::vault::WithdrawEvent` ||
+      ev.type == `${auxClient.moduleAddress}::vault::DepositEvent`
+    ) {
+      payload.push(await parseAccountEvent(auxClient, ev));
+    }
+    return {
+      tx,
+      payload,
+    };
   }
   assert(false, "did not find a RemoveLiquidityEvent");
 }
@@ -404,12 +450,34 @@ export function addExactLiquidityPayload(
   };
 }
 
+export function addLiquidityWithAccountPayload(
+  auxClient: AuxClient,
+  input: AddLiquidityInput
+): Types.EntryFunctionPayload {
+  return {
+    function: `${auxClient.moduleAddress}::amm::add_liquidity_with_aux_account`,
+    type_arguments: [input.coinTypeX, input.coinTypeY],
+    arguments: [input.amountAuX, input.amountAuY, input.maxSlippageBps],
+  };
+}
+
 export function removeLiquidityPayload(
   auxClient: AuxClient,
   input: RemoveLiquidityInput
 ): Types.EntryFunctionPayload {
   return {
     function: `${auxClient.moduleAddress}::amm::remove_liquidity`,
+    type_arguments: [input.coinTypeX, input.coinTypeY],
+    arguments: [input.amountAuLP],
+  };
+}
+
+export function removeLiquidityWithAccountPayload(
+  auxClient: AuxClient,
+  input: RemoveLiquidityInput
+): Types.EntryFunctionPayload {
+  return {
+    function: `${auxClient.moduleAddress}::amm::remove_liquidity_with_aux_account`,
     type_arguments: [input.coinTypeX, input.coinTypeY],
     arguments: [input.amountAuLP],
   };
