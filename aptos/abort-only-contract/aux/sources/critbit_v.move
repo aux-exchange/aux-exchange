@@ -1,10 +1,12 @@
+// Code generated from github.com/fardream/gen-move-container
+// Caution when editing manually.
 // critbit tree based on http://github.com/agl/critbit
 module aux::critbit_v {
     const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
     fun is_not_emergency(): bool {
         false
     }
-    use std::vector;
+    use std::vector::{Self, swap, push_back, pop_back};
 
     const E_INVALID_ARGUMENT: u64 = 1;
     const E_EMPTY_TREE: u64 = 2;
@@ -13,12 +15,14 @@ module aux::critbit_v {
     const E_INDEX_OUT_OF_RANGE: u64 = 5;
     const E_DATA_NODE_LACK_PARENT: u64 = 6;
     const E_CANNOT_DESTRORY_NON_EMPTY: u64 = 7;
-
+    const E_EXCEED_CAPACITY: u64 = 8;
 
     // NULL_INDEX is 1 << 63;
-    const NULL_INDEX: u64 = 1 << 63;
+    const NULL_INDEX: u64 = 1 << 63;  // 9223372036854775808
     // MAX_U64
     const MAX_U64: u64 = 18446744073709551615;
+    // Max capacity of the critbit. data index must be less than MAX_CAPACITY
+    const MAX_CAPACITY: u64 = 9223372036854775807; // NULL_INDEX - 1
 
     // check if the index is NULL_INDEX
     public fun is_null_index(index: u64): bool {
@@ -247,7 +251,12 @@ module aux::critbit_v {
         };
 
         let data_index = vector::length(&tree.entries);
-        vector::push_back(&mut tree.entries, data_node);
+        assert!(
+            data_index < MAX_CAPACITY,
+            E_EXCEED_CAPACITY,
+        );
+
+        push_back(&mut tree.entries, data_node);
 
         let root = tree.root;
         let closest_index = find_closest_key(tree, key, root);
@@ -303,7 +312,7 @@ module aux::critbit_v {
         };
 
         let new_parent_index = vector::length(&tree.tree);
-        vector::push_back(&mut tree.tree, parent_node);
+        push_back(&mut tree.tree, parent_node);
         if (insertion_parent != NULL_INDEX) {
             replace_child(tree, insertion_parent, current, new_parent_index);
         } else {
@@ -356,7 +365,7 @@ module aux::critbit_v {
         if (end_index != index) {
             let end_parent = vector::borrow(&tree.entries, end_index).parent;
             let is_end_index_left = is_left_child(tree, convert_data_index(end_index), end_parent);
-            vector::swap(&mut tree.entries, index, end_index);
+            swap(&mut tree.entries, index, end_index);
             if (is_end_index_left) {
                 replace_left_child(tree, end_parent, data_index_converted);
             } else {
@@ -375,7 +384,7 @@ module aux::critbit_v {
             }
         };
 
-        let DataNode<V> {key, value, parent: _} = vector::pop_back(&mut tree.entries);
+        let DataNode<V> {key, value, parent: _} = pop_back(&mut tree.entries);
 
         if (vector::length(&tree.entries) == 0) {
             assert!(original_parent == NULL_INDEX, E_TREE_NOT_EMPTY);
@@ -404,7 +413,7 @@ module aux::critbit_v {
             assert!(tree_size > original_parent, E_INDEX_OUT_OF_RANGE);
             let tree_end_index = tree_size - 1;
             if (tree_end_index != original_parent) {
-                vector::swap(&mut tree.tree, tree_end_index, original_parent);
+                swap(&mut tree.tree, tree_end_index, original_parent);
                 let switched_node = vector::borrow(&tree.tree, original_parent);
                 let left_child = switched_node.left_child;
                 let right_child = switched_node.right_child;
@@ -418,7 +427,7 @@ module aux::critbit_v {
                     tree.root = original_parent;
                 };
             };
-            vector::pop_back(&mut tree.tree);
+            pop_back(&mut tree.tree);
             (key, value)
         }
     }
@@ -844,3 +853,4 @@ module aux::critbit_v {
         assert!(&bst == &v0_bst, 2);
     }
 }
+
