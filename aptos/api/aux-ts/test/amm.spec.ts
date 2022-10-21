@@ -1,5 +1,7 @@
+import { AptosAccount } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
+import { Vault } from "../src";
 import Pool from "../src/amm/dsl/pool";
 import { AuxClient, FakeCoin } from "../src/client";
 import { AU, DU } from "../src/units";
@@ -8,11 +10,14 @@ const [auxClient, sender] = AuxClient.createFromEnvForTesting({});
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
+const auxAccountOwner = new AptosAccount();
+const auxAccountOwnerAddr = auxAccountOwner.address().toShortString();
 
 describe("AMM DSL tests", function () {
   this.timeout(30000);
 
   let pool: Pool;
+  let vault: Vault;
 
   it("mintAux", async function () {
     await auxClient.registerAuxCoin(sender);
@@ -55,17 +60,37 @@ describe("AMM DSL tests", function () {
   });
 
   it("addExactLiquidity", async function () {
+    let initX = await auxClient.getCoinBalanceDecimals({
+      account: sender.address(),
+      coinType: pool.coinInfoX.coinType,
+    });
+    let initY = await auxClient.getCoinBalanceDecimals({
+      account: sender.address(),
+      coinType: pool.coinInfoY.coinType,
+    });
+
     const tx = await pool.addExactLiquidity({
       sender,
       amountX: DU(2),
       amountY: DU(2),
     });
-
     assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
     await pool.update();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
+
+    let finalX = await auxClient.getCoinBalanceDecimals({
+      account: sender.address(),
+      coinType: pool.coinInfoX.coinType,
+    });
+    let finalY = await auxClient.getCoinBalanceDecimals({
+      account: sender.address(),
+      coinType: pool.coinInfoY.coinType,
+    });
+
+    assert.equal(initX.toNumber() - finalX.toNumber(), 2);
+    assert.equal(initY.toNumber() - finalY.toNumber(), 2);
   });
 
   it("checkPoolSymmetricRead", async function () {
@@ -392,6 +417,85 @@ describe("AMM DSL tests", function () {
       assert.ok(await pool.addLiquidityEvents()),
       assert.ok(await pool.removeLiquidityEvents()),
     ]);
+  });
+
+  it("depositToAuxAccount", async function () {
+    vault = new Vault(auxClient);
+    await auxClient.airdropNativeCoin({
+      account: auxAccountOwner.address(),
+      quantity: AU(500_000_000),
+    });
+    await auxClient.registerAuxCoin(auxAccountOwner);
+    let tx = await auxClient.mintAux(sender, auxAccountOwnerAddr, DU(4));
+    assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
+    tx = await auxClient.registerAndMintFakeCoin({
+      sender: auxAccountOwner,
+      coin: FakeCoin.BTC,
+      amount: DU(4),
+    });
+    await vault.createAuxAccount(auxAccountOwner);
+    tx = await vault.deposit(
+      auxAccountOwner,
+      auxCoin,
+      DU(4),
+      auxAccountOwnerAddr
+    );
+    assert.ok(tx.success, `${JSON.stringify(tx.vm_status, undefined, "  ")}`);
+    assert.equal(
+      (await vault.balance(auxAccountOwnerAddr, auxCoin)).toNumber(),
+      4
+    );
+    tx = await vault.deposit(
+      auxAccountOwner,
+      btcCoin,
+      DU(4),
+      auxAccountOwnerAddr
+    );
+    assert.ok(tx.success, `${JSON.stringify(tx.vm_status, undefined, "  ")}`);
+    assert.equal(
+      (await vault.balance(auxAccountOwnerAddr, btcCoin)).toNumber(),
+      4
+    );
+  });
+
+  it("addLiquidityWithAccount", async function () {
+    await pool.resetPool({ sender });
+    let initX = await vault.balance(
+      auxAccountOwnerAddr,
+      pool.coinInfoX.coinType
+    );
+    let initY = await vault.balance(
+      auxAccountOwnerAddr,
+      pool.coinInfoY.coinType
+    );
+
+    const tx = await pool.addLiquidityWithAccount({
+      sender: auxAccountOwner,
+      amountX: DU(2),
+      amountY: DU(2),
+      maxSlippageBps: AU(0),
+    });
+    assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
+    await pool.update();
+    assert.equal(pool.amountX.toNumber(), 2);
+    assert.equal(pool.amountY.toNumber(), 2);
+    assert.equal(pool.amountLP.toNumber(), 0.2);
+
+    let finalX = await vault.balance(
+      auxAccountOwnerAddr,
+      pool.coinInfoX.coinType
+    );
+    let finalY = await vault.balance(
+      auxAccountOwnerAddr,
+      pool.coinInfoY.coinType
+    );
+
+    assert.equal(initX.toNumber() - finalX.toNumber(), 2);
+    assert.equal(initY.toNumber() - finalY.toNumber(), 2);
+    await pool.removeLiquidityWithAccount({
+      sender: auxAccountOwner,
+      amountLP: DU(0.2),
+    });
   });
 
   it("resetPool", async function () {

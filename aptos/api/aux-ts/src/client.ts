@@ -498,6 +498,26 @@ export class AuxClient {
   }
 
   /**
+   * @returns balance of given coin type in atomic units
+   */
+  async getCoinBalanceDecimals({
+    account,
+    coinType,
+  }: {
+    account: HexString;
+    coinType: Types.MoveStructTag;
+  }): Promise<DecimalUnits> {
+    const coinResource = await this.aptosClient.getAccountResource(
+      account,
+      `0x1::coin::CoinStore<${coinType}>`
+    );
+    const coinBalance = (coinResource.data as any).coin.value;
+    return AU(coinBalance).toDecimalUnits(
+      (await this.getCoinInfo(coinType)).decimals
+    );
+  }
+
+  /**
    * @returns information about the given coin type. In particular, this
    * includes decimals and supply.
    */
