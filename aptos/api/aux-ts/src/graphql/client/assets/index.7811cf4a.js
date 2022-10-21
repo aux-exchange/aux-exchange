@@ -2287,21 +2287,21 @@ const CoinXYParamCtx = react.exports.createContext(null);
 const CoinXYParamCtxProvider = ({
   children
 }) => {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const {
     params,
     setParams
   } = Nn();
   const coinsQuery = usePoolCoins();
   const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
-  const defaultCoinX = (_c = coins.find(({
+  const defaultCoinX = (_e = (_c = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("weth"))) == null ? void 0 : _c.coinType;
-  const defaultCoinY = (_d = coins.find(({
+  }) => coinType.toLowerCase().match("weth"))) == null ? void 0 : _c.coinType) != null ? _e : (_d = coins == null ? void 0 : coins[0]) == null ? void 0 : _d.coinType;
+  const defaultCoinY = (_h = (_f = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _d.coinType;
-  const coinx = (_e = params.get("coinx")) != null ? _e : defaultCoinX;
-  const coiny = (_f = params.get("coiny")) != null ? _f : defaultCoinY;
+  }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _f.coinType) != null ? _h : (_g = coins == null ? void 0 : coins[1]) == null ? void 0 : _g.coinType;
+  const coinx = (_i = params.get("coinx")) != null ? _i : defaultCoinX;
+  const coiny = (_j = params.get("coiny")) != null ? _j : defaultCoinY;
   const [firstCoin, setFirstCoin] = react.exports.useState(null);
   const [secondCoin, setSecondCoin] = react.exports.useState(null);
   react.exports.useEffect(() => {
@@ -2339,8 +2339,8 @@ const CoinXYParamCtxProvider = ({
     setParams(params);
   };
   const priceQuery = useLastTradePrice([{
-    baseCoinType: (_g = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _g : "",
-    quoteCoinType: (_h = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _h : ""
+    baseCoinType: (_k = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _k : "",
+    quoteCoinType: (_l = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _l : ""
   }]);
   return /* @__PURE__ */ jsx(CoinXYParamCtx.Provider, {
     value: {
@@ -2349,7 +2349,7 @@ const CoinXYParamCtxProvider = ({
       onFirstCoinSelect,
       onSecondCoinSelect,
       coins,
-      lastTradePrice: (_i = priceQuery.data) == null ? void 0 : _i.lastTradePrice
+      lastTradePrice: (_m = priceQuery.data) == null ? void 0 : _m.lastTradePrice
     },
     children
   });
