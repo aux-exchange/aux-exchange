@@ -74,7 +74,7 @@ export const mutation = {
       auxClient.getCoinInfo(coinTypeIn),
       auxClient.getCoinInfo(swapExactOutInput.coinTypeOut),
     ]);
-    const slippage = 1 - (swapExactOutInput.slippage ?? 0.1) / 100;
+    const slippage = 1 + (swapExactOutInput.slippage ?? 0.1) / 100;
     return aux.amm.core.mutation.swapCoinForExactCoinPayload(auxClient, {
       // @ts-ignore
       sender: undefined,
