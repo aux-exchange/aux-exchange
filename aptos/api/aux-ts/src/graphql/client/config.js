@@ -1,4 +1,10 @@
-
+const links = [
+    { to: '/', title: "Swap" },
+    { to: '/pools', title: "Pools" },
+    { to: '/trade', title: "Trade" },
+    { to: '/portfolio', title: "Portfolio" }
+  ]
+window.topnav_links = links 
 function getConfig() {
     const host = window.location.host
     window.rest_graphql_endpoint = 'https://mainnet.aux.exchange/graphql'

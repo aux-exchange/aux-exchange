@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { r as react, c as create$1, W as We, g as gt$1, R as React, p as pt$1, m as mt$1, q as qe$1, O as Oe, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, s as useLatest, t as jsxs, F as Fragment, D as DateTime, L as Link, X as XMarkIcon, v as Do, C as ChevronDownIcon, w as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, B as ArrowsUpDownIcon, H as HttpLink, E as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, U as InMemoryCache, V as useGeoLocation, Y as ApolloProvider, Z as BrowserRouter, _ as Routes, $ as Route, a0 as client$1 } from "./vendor.8e528a0a.js";
+import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, l as useSubscription, n as useQuery, o as useMutation, s as jsxs, F as Fragment, D as DateTime, L as Link, X as XMarkIcon, t as Do, C as ChevronDownIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, A as ArrowDownIcon, w as ArrowLongLeftIcon, x as useLazyQuery, y as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, z as ArrowsUpDownIcon, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.2dc76dac.js";
 import "./__commonjsHelpers__.5615ff64.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -2287,21 +2287,21 @@ const CoinXYParamCtx = react.exports.createContext(null);
 const CoinXYParamCtxProvider = ({
   children
 }) => {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const {
     params,
     setParams
   } = Nn();
   const coinsQuery = usePoolCoins();
   const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
-  const defaultCoinX = (_c = coins.find(({
+  const defaultCoinX = (_e = (_c = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("weth"))) == null ? void 0 : _c.coinType;
-  const defaultCoinY = (_d = coins.find(({
+  }) => coinType.toLowerCase().match("weth"))) == null ? void 0 : _c.coinType) != null ? _e : (_d = coins == null ? void 0 : coins[0]) == null ? void 0 : _d.coinType;
+  const defaultCoinY = (_h = (_f = coins.find(({
     coinType
-  }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _d.coinType;
-  const coinx = (_e = params.get("coinx")) != null ? _e : defaultCoinX;
-  const coiny = (_f = params.get("coiny")) != null ? _f : defaultCoinY;
+  }) => coinType.toLowerCase().match("usdc"))) == null ? void 0 : _f.coinType) != null ? _h : (_g = coins == null ? void 0 : coins[1]) == null ? void 0 : _g.coinType;
+  const coinx = (_i = params.get("coinx")) != null ? _i : defaultCoinX;
+  const coiny = (_j = params.get("coiny")) != null ? _j : defaultCoinY;
   const [firstCoin, setFirstCoin] = react.exports.useState(null);
   const [secondCoin, setSecondCoin] = react.exports.useState(null);
   react.exports.useEffect(() => {
@@ -2339,8 +2339,8 @@ const CoinXYParamCtxProvider = ({
     setParams(params);
   };
   const priceQuery = useLastTradePrice([{
-    baseCoinType: (_g = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _g : "",
-    quoteCoinType: (_h = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _h : ""
+    baseCoinType: (_k = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _k : "",
+    quoteCoinType: (_l = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _l : ""
   }]);
   return /* @__PURE__ */ jsx(CoinXYParamCtx.Provider, {
     value: {
@@ -2349,7 +2349,7 @@ const CoinXYParamCtxProvider = ({
       onFirstCoinSelect,
       onSecondCoinSelect,
       coins,
-      lastTradePrice: (_i = priceQuery.data) == null ? void 0 : _i.lastTradePrice
+      lastTradePrice: (_m = priceQuery.data) == null ? void 0 : _m.lastTradePrice
     },
     children
   });
@@ -2563,14 +2563,14 @@ function usePositions() {
   });
   return positionQuery;
 }
-const SwapDocument = {
+const SwapInDocument = {
   "kind": "Document",
   "definitions": [{
     "kind": "OperationDefinition",
     "operation": "mutation",
     "name": {
       "kind": "Name",
-      "value": "Swap"
+      "value": "SwapIn"
     },
     "variableDefinitions": [{
       "kind": "VariableDefinition",
@@ -2605,6 +2605,61 @@ const SwapDocument = {
           "name": {
             "kind": "Name",
             "value": "swapExactInInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "swapInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const SwapOutDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "SwapOut"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "swapInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "SwapExactOutInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "swapExactOut"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "swapExactOutInput"
           },
           "value": {
             "kind": "Variable",
@@ -2780,28 +2835,24 @@ function RegisterCoinModalView({
   const [wallet] = useWallet();
   const notifications = jt();
   const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
-  const refCoins = useLatest(coins);
   const clearRegistered = (_coins) => {
     const state = /* @__PURE__ */ new Map();
     _coins == null ? void 0 : _coins.forEach((c) => state.set(c == null ? void 0 : c.symbol, false));
     setRegistered(state);
   };
   react.exports.useEffect(() => {
-    if (JSON.stringify(refCoins.current) !== JSON.stringify(coins))
-      clearRegistered(coins);
-  }, [coins, clearRegistered]);
+    const newState = /* @__PURE__ */ new Map();
+    coins == null ? void 0 : coins.forEach((c) => newState.set(c.symbol, false));
+    setRegistered(newState);
+  }, [coins]);
   const allRegistered = react.exports.useMemo(() => {
     let res = true;
     registered.forEach((x) => {
       if (!x)
         res = false;
-      return;
     });
     return res;
-  }, [registered]);
-  console.log({
-    allRegistered
-  });
+  }, [registered, coins]);
   const modalRef = react.exports.useRef(null);
   const handleRegister = async (c) => {
     var _a;
@@ -2926,7 +2977,6 @@ function CreateAuxAccountContainer({}) {
         type: "error"
       });
     });
-    console.log(wallet);
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then(() => {
       notifications.addNotification({
         title: "Success",
@@ -2934,9 +2984,6 @@ function CreateAuxAccountContainer({}) {
         type: "success"
       });
     }).catch((err) => {
-      console.log({
-        err
-      });
       notifications.addNotification({
         title: "Error",
         message: "Failed to create AUX account!",
@@ -5876,6 +5923,7 @@ const WALLETS = [martian, petra];
 const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
   trigger
 }, _ref) {
+  var _a;
   const backupRef = react.exports.useRef();
   const ref = _ref != null ? _ref : backupRef;
   const [options, setOptions] = react.exports.useState([]);
@@ -5884,17 +5932,27 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
     size: "xs",
     children: "Recommended"
   });
+  const connectedBadge = /* @__PURE__ */ jsx(Pn, {
+    size: "xs",
+    variant: "success",
+    children: "Connected"
+  });
+  const detectedBadge = /* @__PURE__ */ jsx(Pn, {
+    size: "xs",
+    variant: "basic",
+    children: "Detected"
+  });
   const walletOptions = WALLETS.map((w) => ({
     name: w.walletType,
     checkDetected: w.isDetected,
     checkConnected: w.isConnected,
     async onClick() {
-      var _a;
+      var _a2;
       await (activeWallet == null ? void 0 : activeWallet.disconnect());
       setActiveWallet(w);
       await w.connect();
       await getOptions();
-      (_a = ref == null ? void 0 : ref.current) == null ? void 0 : _a.closeModal();
+      (_a2 = ref == null ? void 0 : ref.current) == null ? void 0 : _a2.closeModal();
     }
   }));
   async function getOptions() {
@@ -5978,9 +6036,9 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
           children: "Select Wallet"
         }), options.map((wallet) => /* @__PURE__ */ jsx("div", {
           onClick: () => {
-            var _a;
+            var _a2;
             wallet.onClick();
-            (_a = ref.current) == null ? void 0 : _a.closeModal();
+            (_a2 = ref.current) == null ? void 0 : _a2.closeModal();
           },
           className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
           children: /* @__PURE__ */ jsxs("div", {
@@ -5994,12 +6052,21 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
                 className: "font-semibold",
                 children: wallet.name
               }), wallet.link]
-            }), /* @__PURE__ */ jsx("div", {
+            }), /* @__PURE__ */ jsxs("div", {
               className: "inline-flex gap-2",
-              children: wallet.suggested ? suggestedBadge : null
+              children: [wallet.suggested ? suggestedBadge : null, wallet.name === (activeWallet == null ? void 0 : activeWallet.walletType) ? connectedBadge : null, !wallet.connected && wallet.detected ? detectedBadge : null]
             })]
           })
-        }, wallet.name))]
+        }, wallet.name)), /* @__PURE__ */ jsxs("div", {
+          className: "p-6 mt-6 rounded-xl bg-primary-900 border border-primary-700 flex justify-between items-center",
+          children: [/* @__PURE__ */ jsxs("span", {
+            children: ["Active Wallet: ", (_a = activeWallet == null ? void 0 : activeWallet.walletType) != null ? _a : "None"]
+          }), activeWallet ? /* @__PURE__ */ jsx(er, {
+            size: "sm",
+            onClick: async () => await activeWallet.disconnect().then(() => setActiveWallet(null)),
+            children: "Disconnect"
+          }) : null]
+        })]
       })
     })
   });
@@ -7225,8 +7292,146 @@ const PoolPriceInDocument = {
     }
   }]
 };
+const PoolPriceOutDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "PoolPriceOut"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "coinTypeOut"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "String"
+          }
+        }
+      }
+    }, {
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "amount"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Float"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "quoteExactOut"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeOut"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeOut"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "amountOut"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "amount"
+                }
+              }
+            }]
+          }]
+        }
+      }]
+    }
+  }]
+};
 function usePoolPriceIn(input, skip) {
   const poolPrice = useQuery(PoolPriceInDocument, {
+    variables: input,
+    fetchPolicy: "network-only",
+    skip
+  });
+  return poolPrice;
+}
+function usePoolPriceOut(input, skip) {
+  const poolPrice = useQuery(PoolPriceOutDocument, {
     variables: input,
     fetchPolicy: "network-only",
     skip
@@ -7782,7 +7987,7 @@ function RemoveLiquidityView({
           children: (firstCoin == null ? void 0 : firstCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
             children: [/* @__PURE__ */ jsx(qt, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
-            }), " ", firstCoinAmount]
+            }), " ", firstCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
             children: "No Coin Selected"
           })
@@ -7791,7 +7996,7 @@ function RemoveLiquidityView({
           children: (secondCoin == null ? void 0 : secondCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
             children: [/* @__PURE__ */ jsx(qt, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
-            }), " ", secondCoinAmount]
+            }), " ", secondCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
             children: "No Coin Selected"
           })
@@ -7857,8 +8062,8 @@ function RemoveLiquidityContainer({}) {
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
     navigate("/pools");
   }, [firstCoin, secondCoin, pctVal, navigate, removeLiquidityMutation, wallet]);
-  const firstCoinAmount = ((_x = (_w = (_v = (_u = poolQuery.data) == null ? void 0 : _u.pool) == null ? void 0 : _v.position) == null ? void 0 : _w.amountX) != null ? _x : 0) * (pctVal / 100);
-  const secondCoinAmount = ((_B = (_A = (_z = (_y = poolQuery.data) == null ? void 0 : _y.pool) == null ? void 0 : _z.position) == null ? void 0 : _A.amountY) != null ? _B : 0) * (pctVal / 100);
+  const firstCoinAmount = (_x = (_w = (_v = (_u = poolQuery.data) == null ? void 0 : _u.pool) == null ? void 0 : _v.position) == null ? void 0 : _w.amountX) != null ? _x : 0;
+  const secondCoinAmount = (_B = (_A = (_z = (_y = poolQuery.data) == null ? void 0 : _y.pool) == null ? void 0 : _z.position) == null ? void 0 : _A.amountY) != null ? _B : 0;
   return /* @__PURE__ */ jsx(RemoveLiquidityView, {
     firstCoin,
     firstCoinAmount,
@@ -10284,31 +10489,22 @@ function PoolsContainer({}) {
 }
 const Nav$1 = "";
 function Nav({}) {
+  var _a;
   const navLinkClasses = "w-auto px-8 py-4 text-primary-300 align-middle border-b-4 border-transparent border-solid hover:border-primary-600 hover:text-primary-300 hover:bg-primary-800";
   const activeLinkClasses = " border-accent-500 border-brand text-white";
-  return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-row w-auto mx-auto max-w-[100vw] overflow-x-auto md:translate-x-10",
-    children: [/* @__PURE__ */ jsx(NavLink, {
+  const disabledClasses = " opacity-70 pointer-events-none cursor-default";
+  return /* @__PURE__ */ jsx("div", {
+    className: "flex flex-row w-auto max-w-[100vw] overflow-x-auto md:translate-x-10",
+    children: (_a = window.topnav_links) == null ? void 0 : _a.map(({
+      to,
+      title,
+      disabled
+    }) => /* @__PURE__ */ jsx(NavLink, {
       end: true,
-      to: "/",
-      className: (navData) => navLinkClasses + (navData.isActive ? activeLinkClasses : ""),
-      children: "Swap"
-    }), /* @__PURE__ */ jsx(NavLink, {
-      end: true,
-      to: "/pools",
-      className: (navData) => navLinkClasses + (navData.isActive ? activeLinkClasses : ""),
-      children: "Pools"
-    }), /* @__PURE__ */ jsx(NavLink, {
-      end: true,
-      to: "/trade",
-      className: (navData) => navLinkClasses + (navData.isActive ? activeLinkClasses : ""),
-      children: "Trade"
-    }), /* @__PURE__ */ jsx(NavLink, {
-      end: true,
-      to: "/portfolio",
-      className: (navData) => navLinkClasses + (navData.isActive ? activeLinkClasses : ""),
-      children: "Portfolio"
-    })]
+      to,
+      className: (navData) => navLinkClasses + (navData.isActive ? activeLinkClasses : "") + (disabled ? disabledClasses : ""),
+      children: title
+    }))
   });
 }
 const Header$1 = "";
@@ -10322,18 +10518,24 @@ function Header({}) {
     children: "Connect Wallet"
   });
   return /* @__PURE__ */ jsxs("header", {
-    className: "grow-0 shrink-0 basis-auto items-center w-full flex flex-row top-0 bg-primary-900 border-b border-b-primary-700 box-shadow-lg z-20",
-    children: [/* @__PURE__ */ jsx(Link, {
-      to: "/",
-      className: "p-3",
-      children: /* @__PURE__ */ jsx("img", {
-        src: "./logo.svg",
-        alt: "AUX DEX Logo",
-        className: "h-[32px] w-auto"
-      })
-    }), /* @__PURE__ */ jsx(Nav, {}), /* @__PURE__ */ jsx(ConnectWalletContainer, {
-      trigger: connectEl
-    }), /* @__PURE__ */ jsx(NetworkToggle, {})]
+    className: "grow-0 shrink-0 basis-auto items-center w-full flex justify-between flex-row top-0 bg-primary-900 border-b border-b-primary-700 box-shadow-lg z-20",
+    children: [/* @__PURE__ */ jsxs("div", {
+      className: "flex",
+      children: [/* @__PURE__ */ jsx(Link, {
+        to: "/",
+        className: "p-3",
+        children: /* @__PURE__ */ jsx("img", {
+          src: "./logo.svg",
+          alt: "AUX DEX Logo",
+          className: "h-[32px] w-auto"
+        })
+      }), /* @__PURE__ */ jsx(Nav, {})]
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "flex",
+      children: [/* @__PURE__ */ jsx(ConnectWalletContainer, {
+        trigger: connectEl
+      }), /* @__PURE__ */ jsx(NetworkToggle, {})]
+    })]
   });
 }
 const SwapForm = "";
@@ -10346,7 +10548,6 @@ function SwapPanel({
   coins,
   title
 }) {
-  const onChange = react.exports.useCallback((e2) => setValue(Number(Number.parseFloat(e2.currentTarget.value))), [setValue]);
   return /* @__PURE__ */ jsxs("div", {
     className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
     children: [/* @__PURE__ */ jsxs("div", {
@@ -10373,7 +10574,7 @@ function SwapPanel({
         inputMode: "decimal",
         min: "0",
         type: "number",
-        onChange,
+        onChange: setValue,
         value: Number(value.toFixed(coin == null ? void 0 : coin.decimals)),
         className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
         placeholder: "0.00"
@@ -10396,17 +10597,19 @@ function SwapButton({
 }
 function SwapFormView({
   handleSwap,
-  conversion,
   invertSelections,
-  value,
+  valueIn,
+  valueOut,
+  onChangeValueIn,
+  onChangeValueOut,
   onSelectPrimary,
   onSelectSecondary,
   coins,
   primaryCoin,
   secondaryCoin,
-  setValue,
   loading,
-  unregisteredCoins
+  unregisteredCoins,
+  helperText
 }) {
   const [wallet] = useWallet();
   return /* @__PURE__ */ jsxs(Bn, {
@@ -10419,8 +10622,8 @@ function SwapFormView({
       coins,
       coin: primaryCoin,
       onCoinSelect: onSelectPrimary,
-      setValue,
-      value
+      setValue: onChangeValueIn,
+      value: valueIn
     }), /* @__PURE__ */ jsx(SwapButton, {
       onClick: invertSelections
     }), /* @__PURE__ */ jsx(SwapPanel, {
@@ -10428,10 +10631,12 @@ function SwapFormView({
       coins,
       coin: secondaryCoin,
       onCoinSelect: onSelectSecondary,
-      value: conversion,
-      setValue: () => {
-      }
-    }), !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
+      value: valueOut,
+      setValue: onChangeValueOut
+    }), helperText ? /* @__PURE__ */ jsx("div", {
+      className: "mt-6 text-red-300 text-left w-full",
+      children: helperText
+    }) : null, !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
       trigger: /* @__PURE__ */ jsx(er, {
         className: "mt-6 min-w-full",
         onClick: () => {
@@ -10448,7 +10653,7 @@ function SwapFormView({
         children: "Register Coins To Swap"
       })
     }) : /* @__PURE__ */ jsx(er, {
-      disabled: loading,
+      disabled: loading || !!helperText,
       className: "mt-6 min-w-full",
       onClick: handleSwap,
       children: "Swap"
@@ -10456,7 +10661,7 @@ function SwapFormView({
   });
 }
 function SwapFormContainer({}) {
-  var _a, _b, _c;
+  const [lastTouchedInput, setLastTouched] = react.exports.useState("in");
   const {
     firstCoin,
     secondCoin,
@@ -10479,54 +10684,88 @@ function SwapFormContainer({}) {
     }
   });
   react.exports.useEffect(() => {
-    var _a2, _b2, _c2, _d;
+    var _a, _b, _c, _d;
     const unregistered = [];
-    if (((_b2 = (_a2 = isScRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered) === false)
+    if (((_b = (_a = isScRegistered.data) == null ? void 0 : _a.account) == null ? void 0 : _b.isCoinRegistered) === false)
       unregistered.push(secondCoin);
-    if (((_d = (_c2 = isFcRegistered.data) == null ? void 0 : _c2.account) == null ? void 0 : _d.isCoinRegistered) === false)
+    if (((_d = (_c = isFcRegistered.data) == null ? void 0 : _c.account) == null ? void 0 : _d.isCoinRegistered) === false)
       unregistered.push(firstCoin);
     setUnregisteredCoins(unregistered);
   }, [isScRegistered, isFcRegistered, firstCoin, secondCoin]);
   const notifications = jt();
-  const [value, setValue] = react.exports.useState(1);
+  const [valueIn, setValueIn] = react.exports.useState(1);
+  const [valueOut, setValueOut] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
-    amount: value,
+    amount: valueIn,
     coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
     poolInput: {
       coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
   });
-  const conversion = (_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.quoteExactIn) != null ? _c : 0;
+  const secondCoinPrice = usePoolPriceOut({
+    amount: valueOut,
+    coinTypeOut: secondCoin == null ? void 0 : secondCoin.coinType,
+    poolInput: {
+      coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+      coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+    }
+  });
+  react.exports.useEffect(() => {
+    var _a, _b, _c, _d, _e, _f;
+    if (lastTouchedInput === "in")
+      setValueOut((_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.quoteExactIn) != null ? _c : 0);
+    else
+      setValueIn((_f = (_e = (_d = secondCoinPrice.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.quoteExactOut) != null ? _f : 0);
+  }, [firstCoinPrice, secondCoinPrice, lastTouchedInput]);
   const invertSelections = () => {
     const pc = firstCoin;
     const sc = secondCoin;
     onFirstCoinSelect(sc);
     onSecondCoinSelect(pc);
-    setValue(1);
+    setValueIn(1);
   };
-  const [swapMutation, swapResult] = useMutation(SwapDocument);
+  const [swapInMutation] = useMutation(SwapInDocument);
+  const [swapOutMutation] = useMutation(SwapOutDocument);
   const handleSwap = async () => {
-    var _a2;
-    const swapTx = await swapMutation({
-      variables: {
-        swapInput: {
-          amountIn: value,
-          coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
-          quoteAmountOut: conversion,
-          poolInput: {
-            coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
-            coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+    var _a, _b;
+    let swapTx;
+    if (lastTouchedInput === "in")
+      swapTx = (_a = (await swapInMutation({
+        variables: {
+          swapInput: {
+            amountIn: valueIn,
+            coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
+            quoteAmountOut: valueOut,
+            poolInput: {
+              coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+              coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+            }
           }
         }
-      }
-    });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = swapTx.data) == null ? void 0 : _a2.swapExactIn).then(() => {
+      })).data) == null ? void 0 : _a.swapExactIn;
+    else
+      swapTx = (_b = (await swapOutMutation({
+        variables: {
+          swapInput: {
+            amountOut: valueOut,
+            coinTypeOut: secondCoin == null ? void 0 : secondCoin.coinType,
+            quoteAmountIn: valueIn,
+            poolInput: {
+              coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
+              coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
+            }
+          }
+        }
+      })).data) == null ? void 0 : _b.swapExactOut;
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(swapTx).then(() => {
       notifications.addNotification({
         title: "Success",
         type: "success",
         message: "Swap successful"
       });
+      setValueIn(0);
+      setValueOut(0);
       delayRefetchQuery(1e3, ["Balances"]);
     }).catch((err) => {
       notifications.addNotification({
@@ -10538,25 +10777,39 @@ function SwapFormContainer({}) {
   };
   const onSelectPrimary = (c) => {
     onFirstCoinSelect(c);
-    setValue(1);
+    setValueIn(1);
   };
   const onSelectSecondary = (c) => {
     onSecondCoinSelect(c);
-    setValue(1);
+    setValueIn(1);
   };
+  const onChangeAmountIn = (e2) => {
+    setValueIn(Number.parseFloat(e2.currentTarget.value));
+    setLastTouched("in");
+  };
+  const onChangeAmountOut = (e2) => {
+    setValueOut(Number.parseFloat(e2.currentTarget.value));
+    setLastTouched("out");
+  };
+  const error = react.exports.useMemo(() => {
+    var _a, _b;
+    return ((_a = firstCoinPrice.error) == null ? void 0 : _a.message) || ((_b = secondCoinPrice.error) == null ? void 0 : _b.message);
+  }, [firstCoinPrice, secondCoinPrice]);
   return /* @__PURE__ */ jsx(SwapFormView, {
     coins,
-    conversion,
     handleSwap,
     invertSelections,
     onSelectPrimary,
     onSelectSecondary,
     primaryCoin: firstCoin,
     secondaryCoin: secondCoin,
-    setValue,
-    value,
+    onChangeValueIn: onChangeAmountIn,
+    onChangeValueOut: onChangeAmountOut,
+    valueIn,
+    valueOut,
     loading: firstCoinPrice.loading || isFcRegistered.loading || isScRegistered.loading,
-    unregisteredCoins
+    unregisteredCoins,
+    helperText: error
   });
 }
 const httpLink = new HttpLink({
@@ -10589,10 +10842,12 @@ function App() {
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex flex-col h-full w-full",
             children: [/* @__PURE__ */ jsx(Mn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
-              className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
+              id: "bgcontainer",
+              className: "bg-cover flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
               children: ["Sorry we do not support ", country, " at this time."]
             }) : /* @__PURE__ */ jsx("div", {
-              className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] justify-center",
+              id: "bgcontainer",
+              className: "bg-cover flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] justify-center",
               children: /* @__PURE__ */ jsx(CoinXYParamCtxProvider, {
                 children: /* @__PURE__ */ jsxs(Routes, {
                   children: [/* @__PURE__ */ jsx(Route, {
