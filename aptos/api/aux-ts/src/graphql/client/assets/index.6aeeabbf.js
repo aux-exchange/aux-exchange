@@ -298,7 +298,7 @@ function Et({
   });
 }
 const Rt = react.exports.forwardRef(Et), dr = Rt;
-function kt({
+function St({
   title: e2,
   titleId: n2,
   ...s2
@@ -324,7 +324,7 @@ function kt({
     })]
   });
 }
-const St = react.exports.forwardRef(kt), _t = St;
+const kt = react.exports.forwardRef(St), _t = kt;
 function ur({
   title: e2,
   message: n2,
@@ -603,7 +603,7 @@ const ne = create$1((e2) => ({
     };
   })
 }));
-function On() {
+function Nn() {
   const e2 = useNavigate(), n2 = useLocation(), s2 = ne((c) => c.params, A), a = ne((c) => c.setParams, A), o2 = ne((c) => c.addParams, A), l = ne((c) => c.removeParams, A);
   return react.exports.useEffect(() => {
     const c = `${n2.pathname}?${new URLSearchParams(n2.search).toString()}`;
@@ -634,7 +634,7 @@ function It() {
   return a;
 }
 const Dt = (e2) => typeof e2 == "boolean", At = (e2) => Dt(e2) ? String(e2) : e2, Bt = (e2, n2) => Object.entries(e2).every(([s2, a]) => n2[s2] === a);
-function Ut(e2) {
+function Vt(e2) {
   return (n2, s2) => {
     const a = Object.entries(n2).reduce((f, [u, m]) => m === void 0 ? f : {
       ...f,
@@ -649,7 +649,7 @@ function Ut(e2) {
     return It([e2.base, l, c, s2]);
   };
 }
-const Vt = Ut({
+const Ut = Vt({
   base: "text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer disabled:cursor-auto disabled:opacity-50",
   variants: {
     variant: {
@@ -680,7 +680,7 @@ function er({
   onClick: l,
   disabled: c
 }) {
-  const f = Vt({
+  const f = Ut({
     size: a,
     variant: s2
   }, e2), m = (() => {
@@ -705,7 +705,7 @@ function er({
     children: n2
   });
 }
-function Nn() {
+function Mn() {
   var C;
   const {
     removeNotification: e2,
@@ -733,7 +733,7 @@ function Nn() {
     if (n2.length && JSON.stringify(s2.current) !== JSON.stringify(n2[0])) {
       const y = n2[0];
       l(y), s2.current = y;
-      const S = setTimeout(async () => {
+      const k = setTimeout(async () => {
         await a.start({
           opacity: [1, 0],
           x: [0, 200],
@@ -741,7 +741,7 @@ function Nn() {
         }), e2(y), l(void 0);
       }, (v = y.dismissAfter) != null ? v : 3e3);
       return () => {
-        a.stop(), m.current || clearTimeout(S);
+        a.stop(), m.current || clearTimeout(k);
       };
     }
   }, [n2, e2, a]);
@@ -793,7 +793,7 @@ function Nn() {
     })]
   });
 }
-function Mn({
+function Tn({
   children: e2,
   className: n2,
   id: s2
@@ -1144,8 +1144,23 @@ const zt = ({
       })
     })]
   })]
+}), Xt = ({
+  size: e2
+}) => /* @__PURE__ */ h("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  id: "Layer_1",
+  width: e2,
+  height: e2,
+  viewBox: "0 0 1000 1000",
+  children: [/* @__PURE__ */ t$1("path", {
+    fill: "#ff5f5f",
+    d: "M473.73,933.7h0c-158.66,0-287.28-128.62-287.28-287.28V170.77S473.73,66.3,473.73,66.3V933.7Z"
+  }), /* @__PURE__ */ t$1("path", {
+    fill: "#ff5f5f",
+    d: "M526.27,576.86h0c158.66,0,287.28-128.62,287.28-287.28v-118.81s-287.28-104.47-287.28-104.47v510.56Z"
+  })]
 });
-function Xt({
+function Jt({
   symbol: e2,
   size: n2
 }) {
@@ -1206,20 +1221,24 @@ function Xt({
       return /* @__PURE__ */ t$1(Gt, {
         size: n2
       });
+    case "petra":
+      return /* @__PURE__ */ t$1(Xt, {
+        size: n2
+      });
     default:
       return null;
   }
 }
-function Jt({
+function qt({
   coin: e2,
   size: n2
 }) {
-  return e2 ? /* @__PURE__ */ t$1(Xt, {
+  return e2 ? /* @__PURE__ */ t$1(Jt, {
     symbol: e2 == null ? void 0 : e2.toLowerCase(),
     size: n2 != null ? n2 : 32
   }) : null;
 }
-function Tn({
+function Fn({
   coins: e2,
   size: n2 = 32
 }) {
@@ -1227,14 +1246,14 @@ function Tn({
     className: "flex items-center -space-x-2",
     children: e2.map((s2, a) => /* @__PURE__ */ t$1("div", {
       className: "inline-block rounded-full drop-shadow-lg ring-2 ring-primary-200",
-      children: /* @__PURE__ */ t$1(Jt, {
+      children: /* @__PURE__ */ t$1(qt, {
         coin: s2,
         size: n2
       })
     }, `avatar-${s2}-${a}`))
   });
 }
-function Fn({
+function Pn({
   children: e2,
   className: n2,
   variant: s2,
@@ -1279,7 +1298,7 @@ function Fn({
     children: e2
   });
 }
-function qt({
+function Qt({
   valueChange: e2,
   percentChange: n2,
   priceDirection: s2
@@ -1302,7 +1321,7 @@ function qt({
     })]
   });
 }
-function Pn({
+function $n({
   title: e2,
   value: n2,
   valueChange: s2,
@@ -1333,17 +1352,17 @@ function Pn({
     }), /* @__PURE__ */ t$1("div", {
       className: "text-2xl",
       children: n2
-    }), a || s2 ? /* @__PURE__ */ t$1(qt, {
+    }), a || s2 ? /* @__PURE__ */ t$1(Qt, {
       percentChange: a,
       valueChange: s2,
       priceDirection: o2
     }) : null]
   });
 }
-function Qt(...e2) {
+function en(...e2) {
   return e2.filter(Boolean).join(" ");
 }
-function $n({
+function Ln({
   options: e2,
   onChange: n2,
   label: s2,
@@ -1382,7 +1401,7 @@ function $n({
             value: m,
             className: ({
               active: g
-            }) => Qt(g ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+            }) => en(g ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
             children: m.label
           }, m.label))
         })]
@@ -1390,7 +1409,7 @@ function $n({
     })
   });
 }
-function Ln({
+function jn({
   value: e2,
   onChange: n2,
   name: s2,
@@ -1430,7 +1449,7 @@ function Ln({
     })]
   });
 }
-function jn({
+function In({
   enabled: e2,
   onChange: n2
 }) {
@@ -1473,7 +1492,7 @@ function jn({
     })
   });
 }
-function In({
+function Dn({
   tabs: e2
 }) {
   const n2 = (a) => a === "buy" ? "border-b-green-500 text-green-400" : a === "sell" ? "border-b-red-500 text-red-400" : "border-b-secondary-500 text-secondary-400", s2 = (a, o2) => {
@@ -1495,7 +1514,7 @@ function In({
     }, a.label))
   });
 }
-function Dn({
+function An({
   max: e2,
   min: n2,
   value: s2,
@@ -1524,7 +1543,7 @@ function Dn({
     })
   });
 }
-const An = ({
+const Bn = ({
   children: e2,
   className: n2,
   id: s2,
@@ -1547,7 +1566,7 @@ const An = ({
     children: e2
   })
 });
-const Bn = react.exports.forwardRef(function({
+const Vn = react.exports.forwardRef(function({
   children: n2,
   trigger: s2
 }, a) {
@@ -1637,8 +1656,8 @@ function ae(e2, n2, s2) {
     a = c;
     let u;
     if (s2.key && s2.debug != null && s2.debug() && (u = Date.now()), o2 = n2(...c), s2 == null || s2.onChange == null || s2.onChange(o2), s2.key && s2.debug != null && s2.debug()) {
-      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, C = g / 16, v = (y, S) => {
-        for (y = String(y); y.length < S; )
+      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, C = g / 16, v = (y, k) => {
+        for (y = String(y); y.length < k; )
           y = " " + y;
         return y;
       };
@@ -1650,12 +1669,12 @@ function ae(e2, n2, s2) {
     return o2;
   };
 }
-const en = (e2) => e2, rn = (e2) => {
+const rn = (e2) => e2, tn = (e2) => {
   const n2 = Math.max(e2.startIndex - e2.overscan, 0), s2 = Math.min(e2.endIndex + e2.overscan, e2.count - 1), a = [];
   for (let o2 = n2; o2 <= s2; o2++)
     a.push(o2);
   return a;
-}, tn = (e2, n2) => {
+}, nn = (e2, n2) => {
   const s2 = new ResizeObserver((a) => {
     var o2, l;
     n2({
@@ -1670,7 +1689,7 @@ const en = (e2) => e2, rn = (e2) => {
 }, nr = {
   element: ["scrollLeft", "scrollTop"],
   window: ["scrollX", "scrollY"]
-}, nn = (e2) => (n2, s2) => {
+}, an = (e2) => (n2, s2) => {
   if (!n2.scrollElement)
     return;
   const a = nr[e2][0], o2 = nr[e2][1];
@@ -1689,14 +1708,14 @@ const en = (e2) => e2, rn = (e2) => {
   }), () => {
     n2.scrollElement.removeEventListener("scroll", u);
   };
-}, an = nn("element"), sn = (e2, n2) => e2.getBoundingClientRect()[n2.options.horizontal ? "width" : "height"], on = (e2, n2, s2) => {
+}, sn = an("element"), on = (e2, n2) => e2.getBoundingClientRect()[n2.options.horizontal ? "width" : "height"], ln = (e2, n2, s2) => {
   var a;
   (a = s2.scrollElement) == null || a.scrollTo == null || a.scrollTo({
     [s2.options.horizontal ? "left" : "top"]: e2,
     behavior: n2 ? "smooth" : void 0
   });
 };
-class ln {
+class cn {
   constructor(n2) {
     var s2 = this;
     this.unsubs = [], this.scrollElement = null, this.measurementsCache = [], this.itemMeasurementsCache = {}, this.pendingMeasuredCacheIndexes = [], this.measureElementCache = {}, this.range = {
@@ -1715,12 +1734,12 @@ class ln {
         scrollPaddingStart: 0,
         scrollPaddingEnd: 0,
         horizontal: false,
-        getItemKey: en,
-        rangeExtractor: rn,
+        getItemKey: rn,
+        rangeExtractor: tn,
         enableSmoothScroll: true,
         onChange: () => {
         },
-        measureElement: sn,
+        measureElement: on,
         initialRect: {
           width: 0,
           height: 0
@@ -1746,12 +1765,12 @@ class ln {
       this.pendingMeasuredCacheIndexes = [];
       const u = this.measurementsCache.slice(0, f);
       for (let m = f; m < a; m++) {
-        const g = l(m), C = c[g], v = u[m - 1] ? u[m - 1].end : o2, y = typeof C == "number" ? C : this.options.estimateSize(m), S = v + y;
+        const g = l(m), C = c[g], v = u[m - 1] ? u[m - 1].end : o2, y = typeof C == "number" ? C : this.options.estimateSize(m), k = v + y;
         u[m] = {
           index: m,
           start: v,
           size: y,
-          end: S,
+          end: k,
           key: g
         };
       }
@@ -1760,7 +1779,7 @@ class ln {
       key: false,
       debug: () => this.options.debug
     }), this.calculateRange = ae(() => [this.getMeasurements(), this.getSize(), this.scrollOffset], (a, o2, l) => {
-      const c = dn({
+      const c = un({
         measurements: a,
         outerSize: o2,
         scrollOffset: l
@@ -1782,19 +1801,19 @@ class ln {
         const y = this.measurementsCache[g];
         if (!C)
           return;
-        const S = l(C, this), I = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
-        S !== I && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (S - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
+        const k = l(C, this), I = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
+        k !== I && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (k - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
-          [y.key]: S
+          [y.key]: k
         }, this.notify());
       }, f = [], u = {};
       for (let g = 0, C = a.length; g < C; g++) {
         var m;
-        const v = a[g], S = {
+        const v = a[g], k = {
           ...o2[v],
           measureElement: u[v] = (m = this.measureElementCache[v]) != null ? m : c(v)
         };
-        f.push(S);
+        f.push(k);
       }
       return this.measureElementCache = u, f;
     }, {
@@ -1855,7 +1874,7 @@ class ln {
     }, this.setOptions(n2), this.scrollRect = this.options.initialRect, this.scrollOffset = this.options.initialOffset, this.calculateRange();
   }
 }
-const cn = (e2, n2, s2, a) => {
+const dn = (e2, n2, s2, a) => {
   for (; e2 <= n2; ) {
     const o2 = (e2 + n2) / 2 | 0, l = s2(o2);
     if (l < a)
@@ -1867,13 +1886,13 @@ const cn = (e2, n2, s2, a) => {
   }
   return e2 > 0 ? e2 - 1 : 0;
 };
-function dn(e2) {
+function un(e2) {
   let {
     measurements: n2,
     outerSize: s2,
     scrollOffset: a
   } = e2;
-  const o2 = n2.length - 1, c = cn(0, o2, (u) => n2[u].start, a);
+  const o2 = n2.length - 1, c = dn(0, o2, (u) => n2[u].start, a);
   let f = c;
   for (; f < o2 && n2[f].end < a + s2; )
     f++;
@@ -1882,25 +1901,25 @@ function dn(e2) {
     endIndex: f
   };
 }
-const un = typeof window < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function fn(e2) {
+const fn = typeof window < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
+function hn(e2) {
   const n2 = react.exports.useReducer(() => ({}), {})[1], s2 = {
     ...e2,
     onChange: (o2) => {
       n2(), e2.onChange == null || e2.onChange(o2);
     }
-  }, [a] = react.exports.useState(() => new ln(s2));
-  return a.setOptions(s2), react.exports.useEffect(() => a._didMount(), []), un(() => a._willUpdate()), a;
+  }, [a] = react.exports.useState(() => new cn(s2));
+  return a.setOptions(s2), react.exports.useEffect(() => a._didMount(), []), fn(() => a._willUpdate()), a;
 }
-function hn(e2) {
-  return fn({
-    observeElementRect: tn,
-    observeElementOffset: an,
-    scrollToFn: on,
+function mn(e2) {
+  return hn({
+    observeElementRect: nn,
+    observeElementOffset: sn,
+    scrollToFn: ln,
     ...e2
   });
 }
-function mn({
+function pn({
   title: e2,
   titleId: n2,
   ...s2
@@ -1924,8 +1943,8 @@ function mn({
     })]
   });
 }
-const pn = react.exports.forwardRef(mn), gn = pn;
-function vn({
+const gn = react.exports.forwardRef(pn), vn = gn;
+function bn({
   title: e2,
   titleId: n2,
   ...s2
@@ -1949,7 +1968,7 @@ function vn({
     })]
   });
 }
-const bn = react.exports.forwardRef(vn), Cn = bn;
+const Cn = react.exports.forwardRef(bn), yn = Cn;
 function Un({
   data: e2,
   columns: n2,
@@ -1972,7 +1991,7 @@ function Un({
     }
   }), v = react.exports.useRef(null), {
     rows: y
-  } = C.getRowModel(), S = hn(a != null ? a : {
+  } = C.getRowModel(), k = mn(a != null ? a : {
     getScrollElement: () => v.current,
     count: y.length,
     estimateSize: () => y.length,
@@ -1981,7 +2000,7 @@ function Un({
     getVirtualItems: I,
     getTotalSize: de,
     scrollToIndex: $
-  } = S, _ = I();
+  } = k, _ = I();
   return react.exports.useEffect(() => {
     u && $(u);
   }, [u, $]), de(), /* @__PURE__ */ t$1(le, {
@@ -2004,10 +2023,10 @@ function Un({
               className: "mb-0",
               children: [flexRender(T.column.columnDef.header, T.getContext()), T.column.getIsSorted() ? T.column.getIsSorted() === "desc" ? /* @__PURE__ */ t$1("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
-                children: /* @__PURE__ */ t$1(gn, {})
+                children: /* @__PURE__ */ t$1(vn, {})
               }) : /* @__PURE__ */ t$1("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
-                children: /* @__PURE__ */ t$1(Cn, {})
+                children: /* @__PURE__ */ t$1(yn, {})
               }) : null]
             })
           }, T.id))
@@ -2087,6 +2106,11 @@ class WalletAdapterCore {
 class MartianWalletAdapter extends WalletAdapterCore {
   constructor() {
     super("martian", Wallets.Martian);
+  }
+  async signAndSubmitTransaction(transaction) {
+    var _a;
+    console.log(window.martian);
+    await ((_a = this.getWallet()) == null ? void 0 : _a.generateSignAndSubmitTransaction(transaction));
   }
 }
 class PetraWalletAdapter extends WalletAdapterCore {
@@ -2266,7 +2290,7 @@ const CoinXYParamCtxProvider = ({
   const {
     params,
     setParams
-  } = On();
+  } = Nn();
   const coinsQuery = usePoolCoins();
   const coins = (_b = (_a = coinsQuery.data) == null ? void 0 : _a.poolCoins) != null ? _b : [];
   const defaultCoinX = (_c = coins.find(({
@@ -2817,23 +2841,23 @@ function RegisterCoinModalView({
       });
     });
   };
-  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(Bn, {
+  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(Vn, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx("div", {
       className: "w-full flex justify-center items-center",
-      children: /* @__PURE__ */ jsxs(An, {
+      children: /* @__PURE__ */ jsxs(Bn, {
         className: "flex flex-col gap-4 w-[600px] max-w-[600px]",
-        children: [/* @__PURE__ */ jsx(Mn, {
+        children: [/* @__PURE__ */ jsx(Tn, {
           children: /* @__PURE__ */ jsx("span", {
             className: "font-bold",
             children: "Coin Registration"
           })
         }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
           className: " flex gap-4 items-center font-semibold text-2xl bg-primary-800 p-6 rounded-lg text-primary-300",
-          children: [/* @__PURE__ */ jsx(Jt, {
+          children: [/* @__PURE__ */ jsx(qt, {
             coin: c == null ? void 0 : c.symbol
-          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(Fn, {
+          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(Pn, {
             size: "xs",
             variant: "basic",
             children: "Registered"
@@ -2901,6 +2925,7 @@ function CreateAuxAccountContainer({}) {
         type: "error"
       });
     });
+    console.log(wallet);
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then(() => {
       notifications.addNotification({
         title: "Success",
@@ -2908,6 +2933,9 @@ function CreateAuxAccountContainer({}) {
         type: "success"
       });
     }).catch((err) => {
+      console.log({
+        err
+      });
       notifications.addNotification({
         title: "Error",
         message: "Failed to create AUX account!",
@@ -2939,7 +2967,7 @@ function NetworkToggle({}) {
   const currentNetwork = networkOptions.find((n2) => location.origin === n2.value);
   const onNetworkChange = (e2) => location.assign(e2 + location.pathname);
   return /* @__PURE__ */ jsx(Fragment, {
-    children: currentNetwork && /* @__PURE__ */ jsx($n, {
+    children: currentNetwork && /* @__PURE__ */ jsx(Ln, {
       label: "",
       className: "w-[120px] mt-0 mr-3",
       value: currentNetwork,
@@ -3259,7 +3287,7 @@ function usePoolsTable() {
           return /* @__PURE__ */ jsxs(Link, {
             to: poolUrl,
             className: "flex items-center gap-3 py-2",
-            children: [/* @__PURE__ */ jsx(Tn, {
+            children: [/* @__PURE__ */ jsx(Fn, {
               size: 32,
               coins: rowValues.coinList
             }), value]
@@ -3455,7 +3483,7 @@ function useBalancesTable() {
             const coinInfo = cell.getValue();
             return /* @__PURE__ */ jsxs("div", {
               className: "flex items-center gap-3",
-              children: [/* @__PURE__ */ jsx(Jt, {
+              children: [/* @__PURE__ */ jsx(qt, {
                 coin: coinInfo == null ? void 0 : coinInfo.symbol,
                 size: 32
               }), coinInfo == null ? void 0 : coinInfo.symbol]
@@ -5035,7 +5063,7 @@ const baseColumns = [{
     return /* @__PURE__ */ jsxs(Link, {
       to: "/trade",
       className: "flex items-center gap-3 py-2",
-      children: [/* @__PURE__ */ jsx(Tn, {
+      children: [/* @__PURE__ */ jsx(Fn, {
         size: 20,
         coins: [rowValues.baseCoinInfo.symbol, rowValues.quoteCoinInfo.symbol]
       }), value]
@@ -5069,7 +5097,7 @@ const baseColumns = [{
   cell: (cell) => {
     const value = cell.getValue();
     const variant = getBadgeVariant(value);
-    return /* @__PURE__ */ jsx(Fn, {
+    return /* @__PURE__ */ jsx(Pn, {
       size: "xs",
       variant,
       children: value
@@ -5277,7 +5305,7 @@ function CoinListItem({
   return /* @__PURE__ */ jsxs(Do.Option, {
     value: coinInfo,
     className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(Jt, {
+    children: [/* @__PURE__ */ jsx(qt, {
       coin: coinInfo.symbol
     }), /* @__PURE__ */ jsx("p", {
       className: "text-xl font-medium text-primary-100",
@@ -5325,7 +5353,7 @@ function CoinSearchModalView({
     onCoinSelect(coin);
     (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
   }, []);
-  return /* @__PURE__ */ jsx(Bn, {
+  return /* @__PURE__ */ jsx(Vn, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx(ModalContents, {
@@ -5355,9 +5383,9 @@ function ModalContents({
     }, 200);
     return () => clearInterval(interval);
   }, []);
-  return /* @__PURE__ */ jsxs(An, {
+  return /* @__PURE__ */ jsxs(Bn, {
     className: "bg-primary-700 min-w-[400px] min-h-[200px]",
-    children: [/* @__PURE__ */ jsx(Mn, {
+    children: [/* @__PURE__ */ jsx(Tn, {
       id: "headlessui-dialog-title-:rh:",
       children: "Select Token"
     }), /* @__PURE__ */ jsxs(Do, {
@@ -5407,7 +5435,7 @@ function CoinSelectButton({
     className,
     children: /* @__PURE__ */ jsxs("button", {
       className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(Jt, {
+      children: [coin ? /* @__PURE__ */ jsx(qt, {
         coin: coin.symbol,
         size: 24
       }) : null, /* @__PURE__ */ jsx("span", {
@@ -5446,7 +5474,7 @@ function WithdrawalView({
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
   const notifications = jt();
-  return /* @__PURE__ */ jsx(Bn, {
+  return /* @__PURE__ */ jsx(Vn, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(er, {
       size: "sm",
@@ -5454,10 +5482,10 @@ function WithdrawalView({
       },
       children: "Withdraw"
     }),
-    children: /* @__PURE__ */ jsxs(An, {
+    children: /* @__PURE__ */ jsxs(Bn, {
       className: "w-[700px] mx-auto gap-4 flex flex-col",
       padding: 6,
-      children: [/* @__PURE__ */ jsx(Mn, {
+      children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Withdraw"
       }), !coins.length && /* @__PURE__ */ jsx(ur, {
@@ -5745,7 +5773,7 @@ function DepositView({
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
   const notifications = jt();
-  return /* @__PURE__ */ jsx(Bn, {
+  return /* @__PURE__ */ jsx(Vn, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(er, {
       size: "sm",
@@ -5753,10 +5781,10 @@ function DepositView({
       },
       children: "Deposit"
     }),
-    children: /* @__PURE__ */ jsxs(An, {
+    children: /* @__PURE__ */ jsxs(Bn, {
       className: "w-[700px] mx-auto gap-4 flex flex-col",
       padding: 6,
-      children: [/* @__PURE__ */ jsx(Mn, {
+      children: [/* @__PURE__ */ jsx(Tn, {
         className: "mb-4",
         children: "Deposit"
       }), !coins.length && /* @__PURE__ */ jsx(ur, {
@@ -5851,7 +5879,7 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
   const ref = _ref != null ? _ref : backupRef;
   const [options, setOptions] = react.exports.useState([]);
   const [activeWallet, setActiveWallet, connection] = useWallet();
-  const suggestedBadge = /* @__PURE__ */ jsx(Fn, {
+  const suggestedBadge = /* @__PURE__ */ jsx(Pn, {
     size: "xs",
     children: "Recommended"
   });
@@ -5923,8 +5951,11 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
             className: "pl-2 mr-3 inline-flex items-center",
             onClick: () => {
             },
-            children: [walletType === "martian" ? /* @__PURE__ */ jsx(Jt, {
+            children: [walletType === "martian" ? /* @__PURE__ */ jsx(qt, {
               coin: "Martian",
+              size: 24
+            }) : null, walletType === "petra" ? /* @__PURE__ */ jsx(qt, {
+              coin: "petra",
               size: 24
             }) : null, /* @__PURE__ */ jsxs("div", {
               className: "ml-2",
@@ -5936,10 +5967,10 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
     return defaultTrigger;
   };
   return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(Bn, {
+    children: /* @__PURE__ */ jsx(Vn, {
       trigger: renderTrigger(trigger, activeWallet == null ? void 0 : activeWallet.walletType, connection == null ? void 0 : connection.address),
       ref,
-      children: /* @__PURE__ */ jsxs(An, {
+      children: /* @__PURE__ */ jsxs(Bn, {
         className: "h-[400px] bg-primary-800 border border-primary-700",
         children: [/* @__PURE__ */ jsx("div", {
           className: "pb-3 text-xl bg-stripes-secondary",
@@ -5953,7 +5984,7 @@ const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
           className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex items-center",
-            children: [/* @__PURE__ */ jsx(Jt, {
+            children: [/* @__PURE__ */ jsx(qt, {
               coin: wallet.name,
               size: 48
             }), /* @__PURE__ */ jsxs("div", {
@@ -5996,7 +6027,7 @@ function MarketListItem({
     onClick: onMarketSelectHandler,
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex shrink-0 items-center justify-center",
-      children: [/* @__PURE__ */ jsx(Tn, {
+      children: [/* @__PURE__ */ jsx(Fn, {
         coins: [market.baseCoinInfo.symbol, market.quoteCoinInfo.symbol],
         size: 32
       }), /* @__PURE__ */ jsxs("div", {
@@ -6320,7 +6351,7 @@ function MarketSelector({
         return /* @__PURE__ */ jsxs(Fragment, {
           children: [/* @__PURE__ */ jsxs(mt$1.Button, {
             className: `${open ? "" : "hover:bg-primary-700"} ${baseButtonClasses}`,
-            children: [/* @__PURE__ */ jsx(Tn, {
+            children: [/* @__PURE__ */ jsx(Fn, {
               coins: [firstCoin == null ? void 0 : firstCoin.symbol, secondCoin == null ? void 0 : secondCoin.symbol],
               size: 32
             }), /* @__PURE__ */ jsx("div", {
@@ -6349,7 +6380,7 @@ function MarketSelector({
                   className: "relative grid bg-primary-800",
                   children: [/* @__PURE__ */ jsx("div", {
                     className: "px-4 pt-4 pb-4 border-b border-b-primary-700",
-                    children: /* @__PURE__ */ jsx(Ln, {
+                    children: /* @__PURE__ */ jsx(jn, {
                       value: searchQuery,
                       name: "marketSearch",
                       placeholder: "Search Markets",
@@ -6715,11 +6746,11 @@ function PoolsEventTableView({
 }) {
   return /* @__PURE__ */ jsx("div", {
     className: "flex flex-col gap-4 items-center w-full mt-10",
-    children: /* @__PURE__ */ jsxs(An, {
+    children: /* @__PURE__ */ jsxs(Bn, {
       className: "max-w-[960px] w-full max-h-full overflow-auto px-0",
       children: [/* @__PURE__ */ jsxs("div", {
         className: "flex justify-between mb-4 px-6",
-        children: [/* @__PURE__ */ jsx(Mn, {
+        children: [/* @__PURE__ */ jsx(Tn, {
           children: "Transactions"
         }), /* @__PURE__ */ jsx("div", {
           className: "flex gap-2 mb-4",
@@ -6907,9 +6938,9 @@ function AddLiquidityView({
   firstCoinAu,
   secondCoinAu
 }) {
-  return /* @__PURE__ */ jsxs(An, {
+  return /* @__PURE__ */ jsxs(Bn, {
     className: "w-[600px] mx-auto self-center border border-slate-700",
-    children: [/* @__PURE__ */ jsx(Mn, {
+    children: [/* @__PURE__ */ jsx(Tn, {
       className: "mb-4",
       children: "Add Liquidity"
     }), /* @__PURE__ */ jsx(ce, {
@@ -7629,17 +7660,17 @@ function RemoveLiquidityView({
   notFoundMsg
 }) {
   var _a;
-  return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(An, {
+  return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(Bn, {
     className: "flex flex-col gap-8 w-[600px] mx-auto self-center",
     children: [notFoundMsg, /* @__PURE__ */ jsx(er, {
       onClick: goBackToPools,
       children: "Back to pools"
     })]
-  }) : /* @__PURE__ */ jsxs(An, {
+  }) : /* @__PURE__ */ jsxs(Bn, {
     className: "flex flex-col w-[600px] gap-12 mx-auto self-center border border-slate-700 ",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex justify-between items-center",
-      children: [/* @__PURE__ */ jsx(Mn, {
+      children: [/* @__PURE__ */ jsx(Tn, {
         children: "Remove Liquidity"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex text-xs text-slate-300",
@@ -7664,12 +7695,12 @@ function RemoveLiquidityView({
           className: "flex flex-row gap-6",
           children: [/* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2",
-            children: [/* @__PURE__ */ jsx(Jt, {
+            children: [/* @__PURE__ */ jsx(qt, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), firstCoinAmount]
           }), /* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2 w-full justify-center",
-            children: [/* @__PURE__ */ jsx(Jt, {
+            children: [/* @__PURE__ */ jsx(qt, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), secondCoinAmount]
           })]
@@ -7721,7 +7752,7 @@ function RemoveLiquidityView({
         })]
       }), /* @__PURE__ */ jsx("div", {
         className: "px-2",
-        children: /* @__PURE__ */ jsx(Dn, {
+        children: /* @__PURE__ */ jsx(An, {
           value: pctVal,
           onChange: setPctVal,
           min: 0,
@@ -7748,7 +7779,7 @@ function RemoveLiquidityView({
         children: [/* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (firstCoin == null ? void 0 : firstCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(Jt, {
+            children: [/* @__PURE__ */ jsx(qt, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), " ", firstCoinAmount]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -7757,7 +7788,7 @@ function RemoveLiquidityView({
         }), /* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (secondCoin == null ? void 0 : secondCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(Jt, {
+            children: [/* @__PURE__ */ jsx(qt, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), " ", secondCoinAmount]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -7859,7 +7890,7 @@ function PoolView({
       className: "flex my-6",
       children: [/* @__PURE__ */ jsx("div", {
         className: "flex",
-        children: pool && /* @__PURE__ */ jsx(Tn, {
+        children: pool && /* @__PURE__ */ jsx(Fn, {
           coins: [pool == null ? void 0 : pool.coinInfoX.symbol, pool == null ? void 0 : pool.coinInfoY.symbol],
           size: 48
         })
@@ -7869,13 +7900,13 @@ function PoolView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex",
-      children: [/* @__PURE__ */ jsx(Pn, {
+      children: [/* @__PURE__ */ jsx($n, {
         title: `${pool == null ? void 0 : pool.coinInfoX.name} Locked`,
         value: (_a = pool == null ? void 0 : pool.amountX) != null ? _a : "-"
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: `${pool == null ? void 0 : pool.coinInfoY.name} Locked`,
         value: (_b = pool == null ? void 0 : pool.amountY) != null ? _b : "-"
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "Fee Percent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
       })]
@@ -8001,7 +8032,7 @@ const connectWalletTrigger = /* @__PURE__ */ jsx(er, {
   size: "sm",
   children: "Connect Wallet"
 });
-const noWalletUI = /* @__PURE__ */ jsxs(An, {
+const noWalletUI = /* @__PURE__ */ jsxs(Bn, {
   className: "flex flex-col max-w-[600px] mx-auto self-center opacity-90",
   children: [/* @__PURE__ */ jsx("div", {
     className: "text-3xl mb-2",
@@ -8032,11 +8063,11 @@ function PortfolioView({
           children: [/* @__PURE__ */ jsx(CreateAuxAccountContainer, {}), /* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {})]
         })]
       })
-    }), /* @__PURE__ */ jsxs(An, {
+    }), /* @__PURE__ */ jsxs(Bn, {
       className: "sm:col-span-6",
-      children: [/* @__PURE__ */ jsx(Mn, {
+      children: [/* @__PURE__ */ jsx(Tn, {
         className: "inline-flex items-center gap-3",
-        children: /* @__PURE__ */ jsx(Fn, {
+        children: /* @__PURE__ */ jsx(Pn, {
           variant: "dark",
           size: "sm",
           children: "Coming Soon"
@@ -8125,11 +8156,11 @@ function PortfolioView({
           className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
         })]
       })]
-    }), /* @__PURE__ */ jsx(An, {
+    }), /* @__PURE__ */ jsx(Bn, {
       className: "sm:col-span-6",
       padding: 0,
       children: /* @__PURE__ */ jsxs(Ge.Group, {
-        children: [/* @__PURE__ */ jsx(In, {
+        children: [/* @__PURE__ */ jsx(Dn, {
           tabs: [
             {
               label: "Balances"
@@ -9613,13 +9644,13 @@ function TradingForm() {
     children: [/* @__PURE__ */ jsx(Ge.Group, {
       onChange: setActiveTab,
       selectedIndex: activeTab,
-      children: /* @__PURE__ */ jsx(In, {
+      children: /* @__PURE__ */ jsx(Dn, {
         tabs
       })
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-3 px-4",
       children: [/* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(Ln, {
+        children: [/* @__PURE__ */ jsx(jn, {
           className: "w-full",
           value: priceInput,
           onChange: onChangePrice,
@@ -9633,7 +9664,7 @@ function TradingForm() {
           children: [secondCoin == null ? void 0 : secondCoin.symbol, " must be in increments of ", tick.toString()]
         })]
       }), /* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(Ln, {
+        children: [/* @__PURE__ */ jsx(jn, {
           value: cxAmount,
           onChange: onChangeCxAmount,
           name: "coinx",
@@ -9674,7 +9705,7 @@ function TradingForm() {
         className: "grid gap-6 my-2 grid-row-2 grid-col-2",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(jn, {
+          children: [/* @__PURE__ */ jsx(In, {
             enabled: ioc,
             onChange: onChangeIOC
           }), "Immediate Or Cancel", /* @__PURE__ */ jsx(OrderTip, {
@@ -9685,7 +9716,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(jn, {
+          children: [/* @__PURE__ */ jsx(In, {
             enabled: post,
             onChange: onChangePost
           }), "Post", /* @__PURE__ */ jsx(OrderTip, {
@@ -9696,7 +9727,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(jn, {
+          children: [/* @__PURE__ */ jsx(In, {
             enabled: fok,
             onChange: onChangeFok
           }), "Fill or Kill", /* @__PURE__ */ jsx(OrderTip, {
@@ -9707,7 +9738,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(jn, {
+          children: [/* @__PURE__ */ jsx(In, {
             enabled: passiveJoin,
             onChange: onChangePassiveJoin
           }), "Passive Join", /* @__PURE__ */ jsx(OrderTip, {
@@ -9899,22 +9930,22 @@ function TradeView({}) {
         children: /* @__PURE__ */ jsx(MarketSelector, {
           onSelectMarket
         })
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "",
         value: lastTradePrice,
         priceDirection,
         valueChange: priceDiff,
         percentChange: priceDiffPct,
         className: "mx-1 ml-1"
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "24hr High",
         value: (_c = (_b = (_a = marketQuery.data) == null ? void 0 : _a.market) == null ? void 0 : _b.high24h) != null ? _c : "-",
         className: "mx-1"
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "24hr Low",
         value: (_f = (_e = (_d = marketQuery.data) == null ? void 0 : _d.market) == null ? void 0 : _e.low24h) != null ? _f : "-",
         className: "mx-1"
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "24hr Volume",
         value: (_i = (_h = (_g = marketQuery.data) == null ? void 0 : _g.market) == null ? void 0 : _h.volume24h) != null ? _i : "-",
         className: "ml-1"
@@ -9927,7 +9958,7 @@ function TradeView({}) {
       children: [/* @__PURE__ */ jsx(Ge.Group, {
         selectedIndex: marketEventTab,
         onChange: setMarketEventTab,
-        children: /* @__PURE__ */ jsx(In, {
+        children: /* @__PURE__ */ jsx(Dn, {
           tabs: marketEventTabs
         })
       }), marketEventTab === 0 ? /* @__PURE__ */ jsx(OrderBookContainer, {
@@ -9956,7 +9987,7 @@ function TradeView({}) {
       children: [/* @__PURE__ */ jsx(Ge.Group, {
         selectedIndex: orderTableTab,
         onChange: setOrderTableTab,
-        children: /* @__PURE__ */ jsx(In, {
+        children: /* @__PURE__ */ jsx(Dn, {
           tabs: orderTableTabs
         })
       }), /* @__PURE__ */ jsxs("div", {
@@ -10140,19 +10171,19 @@ function PoolsView({
     return searchQuery.length > 1 ? p.coinInfoX.name.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoY.name.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoX.symbol.toLowerCase().match(searchQuery.toLowerCase()) || p.coinInfoY.symbol.toLowerCase().match(searchQuery.toLowerCase()) : true;
   });
   const onSearchChange = (c) => setSearchQuery(c.currentTarget.value);
-  const NO_POOLS_UI = /* @__PURE__ */ jsx(An, {
+  const NO_POOLS_UI = /* @__PURE__ */ jsx(Bn, {
     className: "text-center mt-[200px] max-w-[400px] self-center border-primary-700 border",
     children: "No Pools Available"
   });
   const renderLiquidityItem = (pool, idx) => {
-    return /* @__PURE__ */ jsxs(An, {
+    return /* @__PURE__ */ jsxs(Bn, {
       className: "flex justify-between hover:bg-primary-900/70 hover:cursor-pointer border-primary-700 border overflow-x-auto",
       onClick: () => goToPoolInfo(pool.coinInfoX, pool.coinInfoY),
       children: [/* @__PURE__ */ jsxs("div", {
         className: "flex",
         children: [/* @__PURE__ */ jsx("div", {
           className: "flex items-center",
-          children: /* @__PURE__ */ jsx(Tn, {
+          children: /* @__PURE__ */ jsx(Fn, {
             coins: [pool.coinInfoX.symbol, pool.coinInfoY.symbol],
             size: 48
           })
@@ -10160,13 +10191,13 @@ function PoolsView({
           className: "self-center ml-4 text-xl",
           children: `${pool.coinInfoX.name} / ${pool.coinInfoY.name}`
         })]
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: `${pool.coinInfoX.name} Locked`,
         value: pool.amountX
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: `${pool.coinInfoY.name} Locked`,
         value: pool.amountY
-      }), /* @__PURE__ */ jsx(Pn, {
+      }), /* @__PURE__ */ jsx($n, {
         title: "Fee Perecent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
       }), /* @__PURE__ */ jsx(er, {
@@ -10178,7 +10209,7 @@ function PoolsView({
     }, idx);
   };
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col items-center gap-4 w-full max-w-[95vw] justify-center",
+    className: "flex flex-col items-center gap-4 w-full max-w-[95vw]",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex w-full justify-between items-center max-w-[1280px] my-8",
       children: [/* @__PURE__ */ jsxs("div", {
@@ -10189,7 +10220,7 @@ function PoolsView({
           className: "text-primary-200",
           children: "Earn AUX and a share of the trading fees by providing liquidity to pools!"
         })]
-      }), /* @__PURE__ */ jsx(Ln, {
+      }), /* @__PURE__ */ jsx(jn, {
         value: searchQuery,
         name: "marketSearch",
         placeholder: "Search Pools",
@@ -10377,9 +10408,9 @@ function SwapFormView({
   unregisteredCoins
 }) {
   const [wallet] = useWallet();
-  return /* @__PURE__ */ jsxs(An, {
+  return /* @__PURE__ */ jsxs(Bn, {
     className: "w-[700px] mx-auto self-center justify-self-center",
-    children: [/* @__PURE__ */ jsx(Mn, {
+    children: [/* @__PURE__ */ jsx(Tn, {
       className: "mb-4",
       children: "Swap"
     }), /* @__PURE__ */ jsx(SwapPanel, {
@@ -10556,7 +10587,7 @@ function App() {
         children: /* @__PURE__ */ jsx(BrowserRouter, {
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex flex-col h-full w-full",
-            children: [/* @__PURE__ */ jsx(Nn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
+            children: [/* @__PURE__ */ jsx(Mn, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
               className: "flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
               children: ["Sorry we do not support ", country, " at this time."]
             }) : /* @__PURE__ */ jsx("div", {
