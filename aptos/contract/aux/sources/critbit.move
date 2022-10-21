@@ -1,6 +1,22 @@
+// Code generated from github.com/fardream/gen-move-container
+// Caution when editing manually.
 // critbit tree based on http://github.com/agl/critbit
 module aux::critbit {
     use aptos_std::table_with_length::{Self as table, TableWithLength as Table};
+    fun swap<V>(table: &mut Table<u64, V>, i: u64, j: u64) {
+        let i_item = table::remove(table, i);
+        let j_item = table::remove(table, j);
+        table::add(table, j, i_item);
+        table::add(table, i, j_item);
+    }
+    fun push_back<V>(t: &mut Table<u64, V>, v: V) {
+        let i = table::length(t);
+        table::add(t, i, v)
+    }
+    fun pop_back<V>(t: &mut Table<u64, V>): V {
+        let i = table::length(t) - 1;
+        table::remove(t, i)
+    }
 
     const E_INVALID_ARGUMENT: u64 = 1;
     const E_EMPTY_TREE: u64 = 2;
@@ -9,11 +25,14 @@ module aux::critbit {
     const E_INDEX_OUT_OF_RANGE: u64 = 5;
     const E_DATA_NODE_LACK_PARENT: u64 = 6;
     const E_CANNOT_DESTRORY_NON_EMPTY: u64 = 7;
+    const E_EXCEED_CAPACITY: u64 = 8;
 
     // NULL_INDEX is 1 << 63;
-    const NULL_INDEX: u64 = 1 << 63;
+    const NULL_INDEX: u64 = 1 << 63;  // 9223372036854775808
     // MAX_U64
     const MAX_U64: u64 = 18446744073709551615;
+    // Max capacity of the critbit. data index must be less than MAX_CAPACITY
+    const MAX_CAPACITY: u64 = 9223372036854775807; // NULL_INDEX - 1
 
     // check if the index is NULL_INDEX
     public fun is_null_index(index: u64): bool {
@@ -229,7 +248,12 @@ module aux::critbit {
         };
 
         let data_index = table::length(&tree.entries);
-        table::add(&mut tree.entries, data_index, data_node);
+        assert!(
+            data_index < MAX_CAPACITY,
+            E_EXCEED_CAPACITY,
+        );
+
+        push_back(&mut tree.entries, data_node);
 
         let root = tree.root;
         let closest_index = find_closest_key(tree, key, root);
@@ -285,7 +309,7 @@ module aux::critbit {
         };
 
         let new_parent_index = table::length(&tree.tree);
-        table::add(&mut tree.tree, new_parent_index, parent_node);
+        push_back(&mut tree.tree, parent_node);
         if (insertion_parent != NULL_INDEX) {
             replace_child(tree, insertion_parent, current, new_parent_index);
         } else {
@@ -312,12 +336,6 @@ module aux::critbit {
         };
     }
 
-    fun swap<V>(table: &mut Table<u64, V>, i: u64, j: u64) {
-        let i_item = table::remove(table, i);
-        let j_item = table::remove(table, j);
-        table::add(table, j, i_item);
-        table::add(table, i, j_item);
-    }
     /// remove deletes and returns the element from the CritbitTree.
     public fun remove<V>(tree: &mut CritbitTree<V>, index: u64): (u128, V) {
         let old_length = table::length(&tree.entries);
@@ -362,7 +380,7 @@ module aux::critbit {
             }
         };
 
-        let DataNode<V> {key, value, parent: _} = table::remove(&mut tree.entries, end_index);
+        let DataNode<V> {key, value, parent: _} = pop_back(&mut tree.entries);
 
         if (table::length(&tree.entries) == 0) {
             assert!(original_parent == NULL_INDEX, E_TREE_NOT_EMPTY);
@@ -405,7 +423,7 @@ module aux::critbit {
                     tree.root = original_parent;
                 };
             };
-            table::remove(&mut tree.tree, tree_end_index);
+            pop_back(&mut tree.tree);
             (key, value)
         }
     }
