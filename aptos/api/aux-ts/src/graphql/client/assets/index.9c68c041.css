@@ -697,11 +697,8 @@ video {
 .h-6 {
   height: 1.5rem;
 }
-.h-12 {
-  height: 3rem;
-}
-.h-4 {
-  height: 1rem;
+.h-20 {
+  height: 5rem;
 }
 .h-14 {
   height: 3.5rem;
@@ -727,6 +724,9 @@ video {
 .h-8 {
   height: 2rem;
 }
+.h-4 {
+  height: 1rem;
+}
 .h-\[14px\] {
   height: 14px;
 }
@@ -741,9 +741,6 @@ video {
 }
 .h-3 {
   height: 0.75rem;
-}
-.h-20 {
-  height: 5rem;
 }
 .h-\[70px\] {
   height: 70px;
@@ -765,6 +762,9 @@ video {
 }
 .h-5 {
   height: 1.25rem;
+}
+.h-12 {
+  height: 3rem;
 }
 .h-16 {
   height: 4rem;
@@ -811,20 +811,17 @@ video {
 .w-10 {
   width: 2.5rem;
 }
-.w-48 {
-  width: 12rem;
-}
 .w-14 {
   width: 3.5rem;
 }
 .w-32 {
   width: 8rem;
 }
+.w-48 {
+  width: 12rem;
+}
 .w-8 {
   width: 2rem;
-}
-.w-auto {
-  width: auto;
 }
 .w-\[400px\] {
   width: 400px;
@@ -852,6 +849,9 @@ video {
 }
 .w-\[700px\] {
   width: 700px;
+}
+.w-auto {
+  width: auto;
 }
 .w-5 {
   width: 1.25rem;
@@ -894,6 +894,9 @@ video {
 }
 .max-w-\[400px\] {
   max-width: 400px;
+}
+.max-w-\[95vw\] {
+  max-width: 95vw;
 }
 .max-w-\[1280px\] {
   max-width: 1280px;
@@ -1041,6 +1044,9 @@ video {
 }
 .gap-8 {
   gap: 2rem;
+}
+.gap-12 {
+  gap: 3rem;
 }
 .gap-6 {
   gap: 1.5rem;
@@ -1375,10 +1381,6 @@ video {
 .p-6 {
   padding: 1.5rem;
 }
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
 .py-1 {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
@@ -1390,6 +1392,10 @@ video {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 .py-3 {
   padding-top: 0.75rem;
