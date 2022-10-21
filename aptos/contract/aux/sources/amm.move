@@ -197,8 +197,11 @@ module aux::amm {
             0,
         );
         let sender_address = signer::address_of(sender);
-        coin::deposit<CoinOut>(sender_address, out);
         coin::deposit<CoinIn>(sender_address, in);
+        if (!coin::is_account_registered<CoinOut>(sender_address)) {
+            coin::register<CoinOut>(sender);
+        };
+        coin::deposit<CoinOut>(sender_address, out);
     }
 
     /// Swaps at most max_in_au of CoinIn for exactly exact_out_au of CoinOut.
@@ -222,6 +225,9 @@ module aux::amm {
         );
         let sender_address = signer::address_of(sender);
         coin::deposit<CoinIn>(sender_address, in);
+        if (!coin::is_account_registered<CoinOut>(sender_address)) {
+            coin::register<CoinOut>(sender);
+        };
         coin::deposit<CoinOut>(sender_address, out);
     }
 
