@@ -2111,10 +2111,6 @@ class MartianWalletAdapter extends WalletAdapterCore {
     var _a, _b;
     const connection = await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
     const address = connection.address;
-    console.log({
-      address,
-      payload
-    });
     await ((_b = this.getWallet()) == null ? void 0 : _b.generateSignAndSubmitTransaction(address, payload));
   }
 }
