@@ -1147,6 +1147,9 @@ video {
 .border-0 {
   border-width: 0px;
 }
+.border-4 {
+  border-width: 4px;
+}
 .border-y {
   border-top-width: 1px;
   border-bottom-width: 1px;
@@ -2363,6 +2366,9 @@ video {
   border-width: 4px 4px 0;
   border-top-color: #6c6c6c;
 }
+.SwapForm-root {
+  background: #111111;
+}
 .icon-wrapper {
   box-sizing: border-box;
   display: inline-block;
@@ -2398,9 +2404,6 @@ video {
   background: #111111;
 }
 .Header-root {
-  background: #111111;
-}
-.SwapForm-root {
   background: #111111;
 }
 
