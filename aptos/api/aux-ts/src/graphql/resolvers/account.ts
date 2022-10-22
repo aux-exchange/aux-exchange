@@ -1,9 +1,11 @@
+import _ from "lodash";
 import * as aux from "../../";
 import { AU } from "../../";
 import AuxAccount from "../../account";
 import { parseTypeArgs } from "../../client";
 import { auxClient } from "../connection";
-import {
+import { orderEventToOrder, orderToOrder } from "../conversion";
+import type {
   Account,
   AccountIsCoinRegisteredArgs,
   AccountOpenOrdersArgs,
@@ -13,14 +15,12 @@ import {
   Balance,
   Deposit,
   Order,
-  OrderStatus,
-  OrderType,
   Position,
-  Side,
-  Trade,
+  RegisteredCoinInfo,
   Transfer,
   Withdrawal,
 } from "../generated/types";
+import { query } from "./query";
 
 export const account = {
   async isCoinRegistered(
@@ -33,7 +33,23 @@ export const account = {
     );
     return coinStore !== undefined;
   },
-
+  async registeredCoins(parent: Account): Promise<RegisteredCoinInfo[]> {
+    const resources = await auxClient.aptosClient.getAccountResources(
+      parent.address
+    );
+    const coinStores = resources.filter(
+      (resource) =>
+        resource.type.includes("CoinStore<") && !resource.type.includes("LP")
+    );
+    const coinTypes = new Set(
+      coinStores.map((coinStore) => parseTypeArgs(coinStore.type)[0])
+    );
+    const coins = await query.coins(undefined);
+    return coins.map((coin) => ({
+      coinInfo: coin,
+      registered: coinTypes.has(coin.coinType),
+    }));
+  },
   async walletBalances(parent: Account): Promise<Balance[]> {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
@@ -161,28 +177,9 @@ export const account = {
           baseCoinType,
           quoteCoinType,
         });
-        return orders.map((order) => {
-          return {
-            baseCoinType,
-            quoteCoinType,
-            orderId: order.id.toString(),
-            owner: order.ownerId.toString(),
-            market: `${auxClient.moduleAddress}::clob_market::Market<${baseCoinType}, ${quoteCoinType}>`,
-            orderType: OrderType.Limit,
-            orderStatus: OrderStatus.Open,
-            side: order.side === "bid" ? Side.Buy : Side.Sell,
-            auxBurned: order.auxBurned
-              .toDecimalUnits(6) // FIXME
-              .toNumber(),
-            time: order.timestamp.divn(1000).toString(), // microseconds => milliseconds
-            price: order.price
-              .toDecimalUnits(quoteCoinInfo.decimals)
-              .toNumber(),
-            quantity: order.quantity
-              .toDecimalUnits(baseCoinInfo.decimals)
-              .toNumber(),
-          };
-        });
+        return orders.map((order) =>
+          orderToOrder(order, baseCoinInfo, quoteCoinInfo)
+        );
       })
     );
     return orderss.flat();
@@ -198,27 +195,9 @@ export const account = {
       marketInputs.map(async (marketInput) => {
         const market = await aux.Market.read(auxClient, marketInput);
         const orders = await account.orderHistory(marketInput);
-        return orders.map((order) => {
-          return {
-            baseCoinType: market.baseCoinInfo.coinType,
-            quoteCoinType: market.quoteCoinInfo.coinType,
-            orderId: order.orderId.toString(),
-            owner: order.owner.toString(),
-            orderType: OrderType.Limit,
-            orderStatus: OrderStatus.Open,
-            side: order.isBid ? Side.Buy : Side.Sell,
-            // FIXME
-            auxBurned: 0,
-            // FIXME
-            time: "0",
-            price: order.price
-              .toDecimalUnits(market.quoteCoinInfo.decimals)
-              .toNumber(),
-            quantity: order.quantity
-              .toDecimalUnits(market.baseCoinInfo.decimals)
-              .toNumber(),
-          };
-        });
+        return orders.map((order) =>
+          orderEventToOrder(order, market.baseCoinInfo, market.quoteCoinInfo)
+        );
       })
     );
     return orderss.flat();
@@ -226,39 +205,19 @@ export const account = {
   async tradeHistory(
     parent: Account,
     args: AccountTradeHistoryArgs
-  ): Promise<Trade[]> {
+  ): Promise<Order[]> {
     const marketInputs =
       args.marketInputs ?? (await aux.Market.index(auxClient));
     const account = new aux.Account(auxClient, parent.address);
-    const tradess = await Promise.all(
+    const fillss = await Promise.all(
       marketInputs.map(async (marketInput) => {
         const market = await aux.Market.read(auxClient, marketInput);
         const fills = await account.tradeHistory(marketInput);
-        return fills.map((fill) => {
-          const price = fill.price
-            .toDecimalUnits(market.quoteCoinInfo.decimals)
-            .toNumber();
-          const quantity = fill.baseQuantity
-            .toDecimalUnits(market.baseCoinInfo.decimals)
-            .toNumber();
-          return {
-            baseCoinType: market.baseCoinInfo.coinType,
-            quoteCoinType: market.quoteCoinInfo.coinType,
-            orderId: fill.orderId.toString(),
-            owner: fill.owner.toString(),
-            market: `${market.baseCoinInfo.symbol}-${market.quoteCoinInfo.symbol}`,
-            side: fill.isBid ? Side.Buy : Side.Sell,
-            quantity,
-            price,
-            value: price * quantity,
-            // FIXME
-            auxBurned: 0,
-            // FIXME
-            time: fill.timestamp.divn(1000).toString(),
-          };
-        });
+        return fills.map((fill) =>
+          orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+        );
       })
     );
-    return tradess.flat();
+    return fillss.flat();
   },
 };

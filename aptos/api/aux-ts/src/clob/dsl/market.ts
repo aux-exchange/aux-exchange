@@ -21,32 +21,6 @@ import type { L2 } from "../core/query";
 
 const MAX_U64 = "18446744073709551615";
 
-// class MarketV2 {
-//   auxClient: AuxClient;
-//   marketInput: MarketInput;
-//   _info: MarketInfo | undefined;
-
-//   constructor(auxClient: AuxClient, marketInput: MarketInput) {
-//     this.auxClient = auxClient;
-//     this.marketInput = marketInput;
-//   }
-
-//   async create({
-//     baseLotSize,
-//     quoteLotSize,
-//   }: {
-//     baseLotSize: AtomicUnits;
-//     quoteLotSize: AtomicUnits;
-//   }): Promise<Types.UserTransaction> {
-//     return core.mutation.createMarket(this.auxClient, {
-//       sender: this.auxClient.sender!,
-//       ...this.marketInput,
-//       baseLotSize,
-//       quoteLotSize,
-//     });
-//   }
-// }
-
 export interface CreateParams {
   sender: AptosAccount;
   baseCoinType: Types.MoveStructTag;
@@ -55,7 +29,7 @@ export interface CreateParams {
   quoteLotSize: AtomicUnits;
 }
 
-export interface ReadParams {
+export interface MarketInput {
   baseCoinType: Types.MoveStructTag;
   quoteCoinType: Types.MoveStructTag;
 }
@@ -159,7 +133,7 @@ export default class Market implements core.query.Market {
   quoteCoinInfo: CoinInfo;
   l2: L2;
 
-  static async index(auxClient: AuxClient): Promise<ReadParams[]> {
+  static async index(auxClient: AuxClient): Promise<MarketInput[]> {
     return core.query.markets(auxClient);
   }
 
@@ -189,7 +163,7 @@ export default class Market implements core.query.Market {
    */
   static async read(
     auxClient: AuxClient,
-    { baseCoinType, quoteCoinType }: ReadParams
+    { baseCoinType, quoteCoinType }: MarketInput
   ): Promise<Market> {
     const clobAddress = auxClient.moduleAddress;
     const market = await core.query.market(
@@ -434,9 +408,9 @@ export default class Market implements core.query.Market {
   async orderHistory(owner: Types.Address): Promise<OrderPlacedEvent[]> {
     return core.query.orderHistory(
       this.auxClient,
-      owner,
       this.baseCoinInfo.coinType,
-      this.quoteCoinInfo.coinType
+      this.quoteCoinInfo.coinType,
+      owner
     );
   }
 

@@ -4,6 +4,7 @@ import * as aux from "../../";
 import { FakeCoin } from "../../../src/client";
 import { getBar } from "../../../src/indexer/analytics";
 import { auxClient, pythClient } from "../connection";
+import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
   Bar,
   Market,
@@ -17,12 +18,9 @@ import {
   MarketTradeHistoryArgs,
   Maybe,
   Order,
-  OrderStatus,
-  OrderType,
   PythRating,
   PythRatingColor,
   Side,
-  Trade,
 } from "../generated/types";
 
 /**
@@ -49,28 +47,9 @@ export const market = {
       baseCoinType: parent.baseCoinInfo.coinType,
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
-    return orders.map((order) => {
-      return {
-        baseCoinType: parent.baseCoinInfo.coinType,
-        quoteCoinType: parent.quoteCoinInfo.coinType,
-        orderId: order.id.toString(),
-        owner: order.ownerId.toString(),
-        market: `${parent.baseCoinInfo.symbol}-${parent.quoteCoinInfo.symbol}`,
-        orderType: OrderType.Limit,
-        orderStatus: OrderStatus.Open,
-        side: order.side === "bid" ? Side.Buy : Side.Sell,
-        auxBurned: order.auxBurned
-          .toDecimalUnits(6) // FIXME
-          .toNumber(),
-        time: order.timestamp.divn(1000).toString(), // microseconds => milliseconds
-        price: order.price
-          .toDecimalUnits(parent.quoteCoinInfo.decimals)
-          .toNumber(),
-        quantity: order.quantity
-          .toDecimalUnits(parent.baseCoinInfo.decimals)
-          .toNumber(),
-      };
-    });
+    return orders.map((order) =>
+      orderToOrder(order, parent.baseCoinInfo, parent.quoteCoinInfo)
+    );
   },
   async orderHistory(
     parent: Market,
@@ -81,60 +60,22 @@ export const market = {
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
     const orders = await market.orderHistory(owner);
-    return orders.map((order) => {
-      return {
-        baseCoinType: parent.baseCoinInfo.coinType,
-        quoteCoinType: parent.quoteCoinInfo.coinType,
-        orderId: order.orderId.toString(),
-        owner: order.owner.toString(),
-        market: `${parent.baseCoinInfo.symbol}-${parent.quoteCoinInfo.symbol}`,
-        orderType: OrderType.Limit,
-        orderStatus: OrderStatus.Open,
-        side: order.isBid ? Side.Buy : Side.Sell,
-        // FIXME
-        auxBurned: 0,
-        // FIXME
-        time: order.timestamp.divn(1000).toString(), // microseconds => milliseconds
-        price: order.price
-          .toDecimalUnits(parent.quoteCoinInfo.decimals)
-          .toNumber(),
-        quantity: order.quantity
-          .toDecimalUnits(parent.baseCoinInfo.decimals)
-          .toNumber(),
-      };
-    });
+    return orders.map((order) =>
+      orderEventToOrder(order, market.baseCoinInfo, market.quoteCoinInfo)
+    );
   },
   async tradeHistory(
     parent: Market,
     { owner }: MarketTradeHistoryArgs
-  ): Promise<Trade[]> {
+  ): Promise<Order[]> {
     const market = await aux.Market.read(auxClient, {
       baseCoinType: parent.baseCoinInfo.coinType,
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
     const fills = await market.tradeHistory(owner);
-    return fills.map((fill) => {
-      const price = fill.price
-        .toDecimalUnits(parent.quoteCoinInfo.decimals)
-        .toNumber();
-      const quantity = fill.baseQuantity
-        .toDecimalUnits(parent.baseCoinInfo.decimals)
-        .toNumber();
-      return {
-        baseCoinType: parent.baseCoinInfo.coinType,
-        quoteCoinType: parent.quoteCoinInfo.coinType,
-        orderId: fill.orderId.toString(),
-        owner: fill.owner.toString(),
-        market: `${parent.baseCoinInfo.symbol}-${parent.quoteCoinInfo.symbol}`,
-        side: fill.isBid ? Side.Buy : Side.Sell,
-        quantity,
-        price,
-        value: price * quantity,
-        // FIXME
-        auxBurned: 0,
-        time: fill.timestamp.divn(1000).toString(),
-      };
-    });
+    return fills.map((fill) =>
+      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+    );
   },
   async high24h(parent: Market): Promise<number | undefined> {
     const bar = await getBar({
