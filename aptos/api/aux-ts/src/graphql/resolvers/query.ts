@@ -1,11 +1,13 @@
 import { promises as fs } from "fs";
 import _ from "lodash";
+import * as coins from "../../coins";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
 import { auxClient } from "../connection";
-import type {
+import {
   Account,
   CoinInfo,
+  FeaturedStatus,
   Market,
   Maybe,
   Pool,
@@ -15,6 +17,71 @@ import type {
   QueryPoolArgs,
   QueryPoolsArgs,
 } from "../generated/types";
+
+function getFeaturedPriority(status: FeaturedStatus): number {
+  switch (status) {
+    case FeaturedStatus.None:
+      return 0;
+    case FeaturedStatus.Hot:
+      return 1;
+    case FeaturedStatus.Promoted:
+      return 2;
+  }
+}
+
+function formatPool(pool: aux.Pool) {
+  let featuredStatus = FeaturedStatus.None;
+  for (const [x, y] of PROMOTED_POOLS) {
+    if (
+      (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
+      (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
+    ) {
+      featuredStatus = FeaturedStatus.Promoted;
+      break;
+    }
+  }
+  if (featuredStatus == FeaturedStatus.None) {
+    for (const [x, y] of HOT_POOLS) {
+      if (
+        (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
+        (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
+      ) {
+        featuredStatus = FeaturedStatus.Hot;
+        break;
+      }
+    }
+  }
+
+  const recognizedLiquidity = Math.max(
+    coins.ALL_USD_STABLES.includes(pool.coinInfoX.coinType)
+      ? pool.amountX.toNumber()
+      : 0,
+    coins.ALL_USD_STABLES.includes(pool.coinInfoY.coinType)
+      ? pool.amountY.toNumber()
+      : 0
+  );
+
+  const auLiquidity = Math.max(
+    pool.amountAuX.toNumber(),
+    pool.amountAuY.toNumber()
+  );
+
+  return {
+    coinInfoX: pool.coinInfoX,
+    coinInfoY: pool.coinInfoY,
+    coinInfoLP: pool.coinInfoLP,
+    amountX: pool.amountX.toNumber(),
+    amountY: pool.amountY.toNumber(),
+    amountLP: pool.amountLP.toNumber(),
+    feePercent: pool.feePct,
+    featuredStatus,
+    recognizedLiquidity,
+    auLiquidity,
+  };
+}
+
+const HOT_POOLS = [[coins.MOJO, coins.APT]];
+const PROMOTED_POOLS: Array<[string, string]> = [];
 
 export const query = {
   address() {
@@ -44,15 +111,7 @@ export const query = {
       return null;
     }
     // @ts-ignore
-    return {
-      coinInfoX: pool.coinInfoX,
-      coinInfoY: pool.coinInfoY,
-      coinInfoLP: pool.coinInfoLP,
-      amountX: pool.amountX.toNumber(),
-      amountY: pool.amountY.toNumber(),
-      amountLP: pool.amountLP.toNumber(),
-      feePercent: pool.feePct,
-    };
+    return formatPool(pool);
   },
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
@@ -63,18 +122,26 @@ export const query = {
         aux.Pool.read(auxClient, poolReadParam)
       )
     );
-    // @ts-ignore
-    return pools
+    const formattedPools = pools
       .filter((maybePool) => maybePool !== undefined && maybePool !== null)
-      .map((pool) => ({
-        coinInfoX: pool!.coinInfoX,
-        coinInfoY: pool!.coinInfoY,
-        coinInfoLP: pool!.coinInfoLP,
-        amountX: pool!.amountX.toNumber(),
-        amountY: pool!.amountY.toNumber(),
-        amountLP: pool!.amountLP.toNumber(),
-        feePercent: pool!.feePct,
-      }));
+      .map((pool) => formatPool(pool!));
+
+    // List hot pools first, then order by recognized liquidity, then by atomic
+    // units of liquidity.
+    formattedPools.sort((lhs, rhs) => {
+      if (lhs.featuredStatus != rhs.featuredStatus) {
+        return (
+          getFeaturedPriority(rhs.featuredStatus) -
+          getFeaturedPriority(lhs.featuredStatus)
+        );
+      }
+      if (lhs.recognizedLiquidity != rhs.recognizedLiquidity) {
+        return rhs.recognizedLiquidity - lhs.recognizedLiquidity;
+      }
+      return rhs.auLiquidity - lhs.auLiquidity;
+    });
+    // @ts-ignore
+    return formattedPools;
   },
   async poolCoins(parent: any) {
     return this.coins(parent);

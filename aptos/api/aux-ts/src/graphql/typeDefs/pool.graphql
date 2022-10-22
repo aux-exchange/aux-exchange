@@ -3,6 +3,12 @@ input PoolInput {
   coinTypeY: String!
 }
 
+enum FeaturedStatus {
+  NONE,
+  HOT,
+  PROMOTED,
+}
+
 type Pool {
   coinInfoX: CoinInfo!
   coinInfoY: CoinInfo!
@@ -13,6 +19,7 @@ type Pool {
   priceX: Float!
   priceY: Float!
   feePercent: Float!
+  featuredStatus: FeaturedStatus!
   swaps(owner: Address, first: Int, offset: Int): [Swap!]!
   adds(owner: Address, first: Int, offset: Int): [AddLiquidity!]!
   removes(owner: Address, first: Int, offset: Int): [RemoveLiquidity!]!

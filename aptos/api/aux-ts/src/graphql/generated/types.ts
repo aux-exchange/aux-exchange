@@ -126,6 +126,12 @@ export type DepositInput = {
   to: Scalars['Address'];
 };
 
+export enum FeaturedStatus {
+  Hot = 'HOT',
+  None = 'NONE',
+  Promoted = 'PROMOTED'
+}
+
 export type Level = {
   __typename?: 'Level';
   price: Scalars['Float'];
@@ -363,6 +369,7 @@ export type Pool = {
   coinInfoLP: CoinInfo;
   coinInfoX: CoinInfo;
   coinInfoY: CoinInfo;
+  featuredStatus: FeaturedStatus;
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
   priceX: Scalars['Float'];
@@ -703,6 +710,7 @@ export type ResolversTypes = {
   Deposit: ResolverTypeWrapper<Deposit>;
   DepositInput: DepositInput;
   EntryFunctionPayload: ResolverTypeWrapper<Scalars['EntryFunctionPayload']>;
+  FeaturedStatus: FeaturedStatus;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -941,6 +949,7 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  featuredStatus?: Resolver<ResolversTypes['FeaturedStatus'], ParentType, ContextType>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
   priceX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1065,3 +1074,4 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+
