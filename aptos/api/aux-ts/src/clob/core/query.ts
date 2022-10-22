@@ -350,6 +350,9 @@ export async function openOrders(
     payload,
   });
   const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;
+  if (_.isUndefined(event)) {
+    return [];
+  }
   return event.data.open_orders.map((order) => {
     const auxBurned = order.aux_au_to_burn_per_lot;
     const time = order.timestamp;
@@ -369,24 +372,26 @@ export async function openOrders(
 
 export async function orderHistory(
   auxClient: AuxClient,
-  owner: Types.Address,
   baseCoinType: Types.MoveStructTag,
-  quoteCoinType: Types.MoveStructTag
+  quoteCoinType: Types.MoveStructTag,
+  owner: Types.Address | undefined
 ): Promise<OrderPlacedEvent[]> {
-  return (
-    await orderPlacedEvents(
-      auxClient,
-      auxClient.moduleAddress,
-      await market(auxClient, baseCoinType, quoteCoinType)
-    )
-  ).filter((orderPlacedEvent) => orderPlacedEvent.owner.hex() === owner);
+  const events = await orderPlacedEvents(
+    auxClient,
+    auxClient.moduleAddress,
+    await market(auxClient, baseCoinType, quoteCoinType)
+  );
+  return events.filter(
+    (orderPlacedEvent) =>
+      _.isUndefined(owner) || orderPlacedEvent.owner.hex() === owner
+  );
 }
 
 export async function tradeHistory(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
   quoteCoinType: Types.MoveStructTag,
-  owner?: Types.Address
+  owner: Types.Address | undefined
 ): Promise<OrderFillEvent[]> {
   return (
     await orderFillEvents(

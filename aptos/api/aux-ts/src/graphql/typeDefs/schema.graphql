@@ -1,5 +1,6 @@
 type Query {
   address: Address!
+  coins: [CoinInfo!]!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
   poolCoins: [CoinInfo!]!
@@ -40,11 +41,11 @@ type Mutation {
 }
 
 type Subscription {
-  swap(poolInputs: [PoolInput!]): Swap
-  addLiquidity(poolInputs: [PoolInput!]): AddLiquidity
-  removeLiquidity(poolInputs: [PoolInput!]): RemoveLiquidity
-  orderbook(marketInputs: [MarketInput!]): Orderbook
-  trade(marketInputs: [MarketInput!]): Trade
+  swap(poolInputs: [PoolInput!]): Swap!
+  addLiquidity(poolInputs: [PoolInput!]): AddLiquidity!
+  removeLiquidity(poolInputs: [PoolInput!]): RemoveLiquidity!
+  orderbook(marketInputs: [MarketInput!]): Orderbook!
+  trade(marketInputs: [MarketInput!]): Order!
   lastTradePrice(marketInputs: [MarketInput!]): Float!
 }
 

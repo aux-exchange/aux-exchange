@@ -11,7 +11,7 @@ type Market {
   orderbook: Orderbook!
   openOrders(owner: Address): [Order!]!
   orderHistory(owner: Address): [Order!]!
-  tradeHistory(owner: Address): [Trade!]!
+  tradeHistory(owner: Address): [Order!]!
   high24h: Float
   low24h: Float
   volume24h: Float
@@ -93,20 +93,8 @@ type Order {
   orderType: OrderType!
   orderStatus: OrderStatus!
   side: Side!
-  quantity: Float!
   price: Float!
-  auxBurned: Float!
-  time: Timestamp!
-}
-
-type Trade {
-  baseCoinType: String!
-  quoteCoinType: String!
-  orderId: ID!
-  owner: Address!
-  side: Side!
   quantity: Float!
-  price: Float!
   value: Float!
   auxBurned: Float!
   time: Timestamp!
@@ -123,11 +111,6 @@ type Ohlcv {
   low: Float!
   close: Float!
   volume: Float!
-}
-
-type ClobSubscription {
-  orderbook(marketInput: MarketInput!): Orderbook!
-  trades(marketInput: MarketInput!): Trade!
 }
 
 input MarketInput {

@@ -2,6 +2,7 @@ type Account {
   address: Address!
   hasAuxAccount: Boolean!
   isCoinRegistered(coinType: String!): Boolean!
+  registeredCoins: [RegisteredCoinInfo!]!
   walletBalances: [Balance!]!
   balances: [Balance!]!
   deposits: [Deposit!]!
@@ -10,5 +11,10 @@ type Account {
   poolPositions(poolInputs: [PoolInput!]): [Position!]!
   openOrders(marketInputs: [MarketInput!]): [Order!]!
   orderHistory(marketInputs: [MarketInput!]): [Order!]!
-  tradeHistory(marketInputs: [MarketInput!]): [Trade!]!
+  tradeHistory(marketInputs: [MarketInput!]): [Order!]!
+}
+
+type RegisteredCoinInfo {
+  coinInfo: CoinInfo!
+  registered: Boolean!
 }

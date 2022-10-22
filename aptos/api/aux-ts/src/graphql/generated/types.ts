@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -27,7 +27,8 @@ export type Account = {
   openOrders: Array<Order>;
   orderHistory: Array<Order>;
   poolPositions: Array<Position>;
-  tradeHistory: Array<Trade>;
+  registeredCoins: Array<RegisteredCoinInfo>;
+  tradeHistory: Array<Order>;
   transfers: Array<Transfer>;
   walletBalances: Array<Balance>;
   withdrawals: Array<Withdrawal>;
@@ -91,22 +92,6 @@ export type CancelOrderInput = {
   sender: Scalars['Address'];
 };
 
-export type ClobSubscription = {
-  __typename?: 'ClobSubscription';
-  orderbook: Orderbook;
-  trades: Trade;
-};
-
-
-export type ClobSubscriptionOrderbookArgs = {
-  marketInput: MarketInput;
-};
-
-
-export type ClobSubscriptionTradesArgs = {
-  marketInput: MarketInput;
-};
-
 export type CoinInfo = {
   __typename?: 'CoinInfo';
   coinType: Scalars['String'];
@@ -168,7 +153,7 @@ export type Market = {
   tickSize: Scalars['Float'];
   tickSizeDecimals: Scalars['String'];
   tickSizeString: Scalars['String'];
-  tradeHistory: Array<Trade>;
+  tradeHistory: Array<Order>;
   volume24h?: Maybe<Scalars['Float']>;
 };
 
@@ -335,6 +320,7 @@ export type Order = {
   quoteCoinType: Scalars['String'];
   side: Side;
   time: Scalars['Timestamp'];
+  value: Scalars['Float'];
 };
 
 export enum OrderStatus {
@@ -457,6 +443,7 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<Account>;
   address: Scalars['Address'];
+  coins: Array<CoinInfo>;
   market?: Maybe<Market>;
   marketCoins: Array<CoinInfo>;
   markets: Array<Market>;
@@ -492,6 +479,12 @@ export type QueryPoolsArgs = {
 
 export type RegisterCoinInput = {
   coinType: Scalars['String'];
+};
+
+export type RegisteredCoinInfo = {
+  __typename?: 'RegisteredCoinInfo';
+  coinInfo: CoinInfo;
+  registered: Scalars['Boolean'];
 };
 
 export type RemoveLiquidity = {
@@ -531,12 +524,12 @@ export enum Side {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  addLiquidity?: Maybe<AddLiquidity>;
+  addLiquidity: AddLiquidity;
   lastTradePrice: Scalars['Float'];
-  orderbook?: Maybe<Orderbook>;
-  removeLiquidity?: Maybe<RemoveLiquidity>;
-  swap?: Maybe<Swap>;
-  trade?: Maybe<Trade>;
+  orderbook: Orderbook;
+  removeLiquidity: RemoveLiquidity;
+  swap: Swap;
+  trade: Order;
 };
 
 
@@ -592,20 +585,6 @@ export type SwapExactOutInput = {
   poolInput: PoolInput;
   quoteAmountIn: Scalars['Float'];
   slippage?: InputMaybe<Scalars['Float']>;
-};
-
-export type Trade = {
-  __typename?: 'Trade';
-  auxBurned: Scalars['Float'];
-  baseCoinType: Scalars['String'];
-  orderId: Scalars['ID'];
-  owner: Scalars['Address'];
-  price: Scalars['Float'];
-  quantity: Scalars['Float'];
-  quoteCoinType: Scalars['String'];
-  side: Side;
-  time: Scalars['Timestamp'];
-  value: Scalars['Float'];
 };
 
 export type Transfer = {
@@ -718,7 +697,6 @@ export type ResolversTypes = {
   Bar: ResolverTypeWrapper<Bar>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CancelOrderInput: CancelOrderInput;
-  ClobSubscription: ResolverTypeWrapper<ClobSubscription>;
   CoinInfo: ResolverTypeWrapper<CoinInfo>;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
@@ -745,6 +723,7 @@ export type ResolversTypes = {
   PythRatingColor: PythRatingColor;
   Query: ResolverTypeWrapper<{}>;
   RegisterCoinInput: RegisterCoinInput;
+  RegisteredCoinInfo: ResolverTypeWrapper<RegisteredCoinInfo>;
   RemoveLiquidity: ResolverTypeWrapper<RemoveLiquidity>;
   RemoveLiquidityInput: RemoveLiquidityInput;
   Resolution: Resolution;
@@ -756,7 +735,6 @@ export type ResolversTypes = {
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
-  Trade: ResolverTypeWrapper<Trade>;
   Transfer: ResolverTypeWrapper<Transfer>;
   TransferInput: TransferInput;
   Wallet: ResolverTypeWrapper<Wallet>;
@@ -774,7 +752,6 @@ export type ResolversParentTypes = {
   Bar: Bar;
   Boolean: Scalars['Boolean'];
   CancelOrderInput: CancelOrderInput;
-  ClobSubscription: ClobSubscription;
   CoinInfo: CoinInfo;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
@@ -798,6 +775,7 @@ export type ResolversParentTypes = {
   PythRating: PythRating;
   Query: {};
   RegisterCoinInput: RegisterCoinInput;
+  RegisteredCoinInfo: RegisteredCoinInfo;
   RemoveLiquidity: RemoveLiquidity;
   RemoveLiquidityInput: RemoveLiquidityInput;
   String: Scalars['String'];
@@ -806,7 +784,6 @@ export type ResolversParentTypes = {
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
   Timestamp: Scalars['Timestamp'];
-  Trade: Trade;
   Transfer: Transfer;
   TransferInput: TransferInput;
   Wallet: Wallet;
@@ -823,7 +800,8 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
   openOrders?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountOpenOrdersArgs>>;
   orderHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountOrderHistoryArgs>>;
   poolPositions?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType, Partial<AccountPoolPositionsArgs>>;
-  tradeHistory?: Resolver<Array<ResolversTypes['Trade']>, ParentType, ContextType, Partial<AccountTradeHistoryArgs>>;
+  registeredCoins?: Resolver<Array<ResolversTypes['RegisteredCoinInfo']>, ParentType, ContextType>;
+  tradeHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountTradeHistoryArgs>>;
   transfers?: Resolver<Array<ResolversTypes['Transfer']>, ParentType, ContextType>;
   walletBalances?: Resolver<Array<ResolversTypes['Balance']>, ParentType, ContextType>;
   withdrawals?: Resolver<Array<ResolversTypes['Withdrawal']>, ParentType, ContextType>;
@@ -852,12 +830,6 @@ export type BalanceResolvers<ContextType = any, ParentType extends ResolversPare
 export type BarResolvers<ContextType = any, ParentType extends ResolversParentTypes['Bar'] = ResolversParentTypes['Bar']> = {
   ohlcv?: Resolver<Maybe<ResolversTypes['Ohlcv']>, ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ClobSubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClobSubscription'] = ResolversParentTypes['ClobSubscription']> = {
-  orderbook?: Resolver<ResolversTypes['Orderbook'], ParentType, ContextType, RequireFields<ClobSubscriptionOrderbookArgs, 'marketInput'>>;
-  trades?: Resolver<ResolversTypes['Trade'], ParentType, ContextType, RequireFields<ClobSubscriptionTradesArgs, 'marketInput'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -907,7 +879,7 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
   tickSize?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   tickSizeDecimals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tickSizeString?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tradeHistory?: Resolver<Array<ResolversTypes['Trade']>, ParentType, ContextType, Partial<MarketTradeHistoryArgs>>;
+  tradeHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<MarketTradeHistoryArgs>>;
   volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -951,6 +923,7 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
   quoteCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   side?: Resolver<ResolversTypes['Side'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -999,12 +972,19 @@ export type PythRatingResolvers<ContextType = any, ParentType extends ResolversP
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'owner'>>;
   address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  coins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   market?: Resolver<Maybe<ResolversTypes['Market']>, ParentType, ContextType, RequireFields<QueryMarketArgs, 'marketInput'>>;
   marketCoins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
   pool?: Resolver<Maybe<ResolversTypes['Pool']>, ParentType, ContextType, RequireFields<QueryPoolArgs, 'poolInput'>>;
   poolCoins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
+};
+
+export type RegisteredCoinInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredCoinInfo'] = ResolversParentTypes['RegisteredCoinInfo']> = {
+  coinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  registered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type RemoveLiquidityResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveLiquidity'] = ResolversParentTypes['RemoveLiquidity']> = {
@@ -1016,12 +996,12 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
-  addLiquidity?: SubscriptionResolver<Maybe<ResolversTypes['AddLiquidity']>, "addLiquidity", ParentType, ContextType, Partial<SubscriptionAddLiquidityArgs>>;
+  addLiquidity?: SubscriptionResolver<ResolversTypes['AddLiquidity'], "addLiquidity", ParentType, ContextType, Partial<SubscriptionAddLiquidityArgs>>;
   lastTradePrice?: SubscriptionResolver<ResolversTypes['Float'], "lastTradePrice", ParentType, ContextType, Partial<SubscriptionLastTradePriceArgs>>;
-  orderbook?: SubscriptionResolver<Maybe<ResolversTypes['Orderbook']>, "orderbook", ParentType, ContextType, Partial<SubscriptionOrderbookArgs>>;
-  removeLiquidity?: SubscriptionResolver<Maybe<ResolversTypes['RemoveLiquidity']>, "removeLiquidity", ParentType, ContextType, Partial<SubscriptionRemoveLiquidityArgs>>;
-  swap?: SubscriptionResolver<Maybe<ResolversTypes['Swap']>, "swap", ParentType, ContextType, Partial<SubscriptionSwapArgs>>;
-  trade?: SubscriptionResolver<Maybe<ResolversTypes['Trade']>, "trade", ParentType, ContextType, Partial<SubscriptionTradeArgs>>;
+  orderbook?: SubscriptionResolver<ResolversTypes['Orderbook'], "orderbook", ParentType, ContextType, Partial<SubscriptionOrderbookArgs>>;
+  removeLiquidity?: SubscriptionResolver<ResolversTypes['RemoveLiquidity'], "removeLiquidity", ParentType, ContextType, Partial<SubscriptionRemoveLiquidityArgs>>;
+  swap?: SubscriptionResolver<ResolversTypes['Swap'], "swap", ParentType, ContextType, Partial<SubscriptionSwapArgs>>;
+  trade?: SubscriptionResolver<ResolversTypes['Order'], "trade", ParentType, ContextType, Partial<SubscriptionTradeArgs>>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
@@ -1036,20 +1016,6 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
-
-export type TradeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Trade'] = ResolversParentTypes['Trade']> = {
-  auxBurned?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  orderId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  quoteCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  side?: Resolver<ResolversTypes['Side'], ParentType, ContextType>;
-  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
 
 export type TransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transfer'] = ResolversParentTypes['Transfer']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1077,7 +1043,6 @@ export type Resolvers<ContextType = any> = {
   Address?: GraphQLScalarType;
   Balance?: BalanceResolvers<ContextType>;
   Bar?: BarResolvers<ContextType>;
-  ClobSubscription?: ClobSubscriptionResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;
   Deposit?: DepositResolvers<ContextType>;
   EntryFunctionPayload?: GraphQLScalarType;
@@ -1091,13 +1056,12 @@ export type Resolvers<ContextType = any> = {
   Position?: PositionResolvers<ContextType>;
   PythRating?: PythRatingResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RegisteredCoinInfo?: RegisteredCoinInfoResolvers<ContextType>;
   RemoveLiquidity?: RemoveLiquidityResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
-  Trade?: TradeResolvers<ContextType>;
   Transfer?: TransferResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
-

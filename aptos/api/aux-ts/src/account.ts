@@ -4,16 +4,14 @@ import type { PoolInput, Position } from "./amm/core/query";
 import type { AuxClient } from "./client";
 import type { OrderFillEvent, OrderPlacedEvent } from "./clob/core/events";
 import type { Order } from "./clob/core/query";
-import Market from "./clob/dsl/market";
+import Market, { MarketInput } from "./clob/dsl/market";
 import * as vault from "./vault";
-import type { Balances, DepositEvent, TransferEvent, WithdrawEvent } from "./vault/core/query";
-
-export interface MarketData<T> {
-  market: Market;
-  data: T;
-}
-
-type MarketType = Types.MoveStructTag;
+import type {
+  Balances,
+  DepositEvent,
+  TransferEvent,
+  WithdrawEvent,
+} from "./vault/core/query";
 
 /**
  * Represents an account in the AUX exchange.
@@ -52,103 +50,18 @@ export default class AuxAccount {
     return amm.core.query.positions(this.auxClient, this.owner);
   }
 
-  // overloads for single market vs. across all markets
-  async openOrders(marketPair: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<Order[]>;
-
-  async openOrders(
-    marketPair?: undefined
-  ): Promise<Record<MarketType, MarketData<Order[]>>>;
-
-  async openOrders(marketPair?: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<Order[] | Record<MarketType, MarketData<Order[]>>> {
-    return this.dao(
-      async (market, owner) => market.openOrders(owner),
-      marketPair
-    );
+  async openOrders(marketInput: MarketInput): Promise<Order[]> {
+    const market = await Market.read(this.auxClient, marketInput);
+    return market.openOrders(this.owner);
   }
 
-  async orderHistory(marketPair: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<OrderPlacedEvent[]>;
-
-  async orderHistory(
-    marketPair: undefined
-  ): Promise<Record<MarketType, MarketData<OrderPlacedEvent[]>>>;
-
-  async orderHistory(marketPair?: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<
-    OrderPlacedEvent[] | Record<MarketType, MarketData<OrderPlacedEvent[]>>
-  > {
-    return this.dao(
-      async (market, owner) => market.orderHistory(owner),
-      marketPair
-    );
+  async orderHistory(marketInput: MarketInput): Promise<OrderPlacedEvent[]> {
+    const market = await Market.read(this.auxClient, marketInput);
+    return market.orderHistory(this.owner);
   }
 
-  async tradeHistory(marketPair: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<OrderFillEvent[]>;
-
-  async tradeHistory(
-    marketPair: undefined
-  ): Promise<Record<MarketType, MarketData<OrderFillEvent[]>>>;
-
-  async tradeHistory(marketPair?: {
-    baseCoinType: Types.MoveStructTag;
-    quoteCoinType: Types.MoveStructTag;
-  }): Promise<
-    OrderFillEvent[] | Record<MarketType, MarketData<OrderFillEvent[]>>
-  > {
-    return this.dao(
-      async (market, owner) => market.tradeHistory(owner),
-      marketPair
-    );
-  }
-
-  private async dao<Type>(
-    f: (market: Market, owner: Types.Address) => Promise<Type>,
-    marketPair?: {
-      baseCoinType: Types.MoveStructTag;
-      quoteCoinType: Types.MoveStructTag;
-    }
-  ): Promise<Type | Record<MarketType, MarketData<Type>>> {
-    if (marketPair !== undefined) {
-      const market = (await Market.read(this.auxClient, marketPair))!;
-      if (market === undefined) {
-        throw new Error(`Error querying ${marketPair}. Market not found.`);
-      }
-      return f(market, this.owner);
-    }
-    const resources = await this.auxClient.aptosClient.getAccountResources(
-      this.auxClient.moduleAddress
-    );
-
-    // TODO: This can be more robust.
-    const poolResources: Types.MoveResource[] = resources.filter(
-      (resource: Types.MoveResource) => resource.type.includes("Market<")
-    );
-    const promises = [];
-    for (const poolResource of poolResources) {
-      const coinType = poolResource.type.split("Market<", 2)[1]!; // ! because of above `.includes`
-      const [x, y] = coinType.replace(">", "").split(", ", 2);
-      const [coinTypeX, coinTypeY] = [x!, y!];
-      const market = (await Market.read(this.auxClient, {
-        baseCoinType: coinTypeX,
-        quoteCoinType: coinTypeY,
-      }))!;
-      promises.push(
-        f(market, this.owner).then((data) => [market.type, { market, data }])
-      );
-    }
-    return Object.fromEntries(await Promise.all(promises));
+  async tradeHistory(marketInput: MarketInput): Promise<OrderFillEvent[]> {
+    const market = await Market.read(this.auxClient, marketInput);
+    return market.tradeHistory(this.owner);
   }
 }
