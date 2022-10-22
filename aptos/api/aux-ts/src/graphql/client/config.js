@@ -5,6 +5,8 @@ const links = [
     { to: '/portfolio', title: "Portfolio" }
   ]
 window.topnav_links = links 
+window.isAux = true
+
 function getConfig() {
     const host = window.location.host
     window.rest_graphql_endpoint = 'https://mainnet.aux.exchange/graphql'
