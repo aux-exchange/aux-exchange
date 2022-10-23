@@ -17,6 +17,7 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
 } from "../generated/types";
+import type { Types } from "aptos";
 
 function getFeaturedPriority(status: FeaturedStatus): number {
   switch (status) {
@@ -29,7 +30,10 @@ function getFeaturedPriority(status: FeaturedStatus): number {
   }
 }
 
-function formatPool(pool: aux.Pool) {
+function formatPool(
+  pool: aux.Pool,
+  coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
+) {
   let featuredStatus = FeaturedStatus.None;
   for (const [x, y] of PROMOTED_POOLS) {
     if (
@@ -66,9 +70,25 @@ function formatPool(pool: aux.Pool) {
     pool.amountAuY.toNumber()
   );
 
+  const coinXNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoX.coinType];
+  const coinInfoX = pool.coinInfoX;
+  if (!_.isUndefined(coinXNameSymbol)) {
+    const [name, symbol] = coinXNameSymbol;
+    coinInfoX.name = name;
+    coinInfoX.symbol = symbol;
+  }
+
+  const coinYNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoY.coinType];
+  const coinInfoY = pool.coinInfoY;
+  if (!_.isUndefined(coinYNameSymbol)) {
+    const [name, symbol] = coinYNameSymbol;
+    coinInfoY.name = name;
+    coinInfoY.symbol = symbol;
+  }
+
   return {
-    coinInfoX: pool.coinInfoX,
-    coinInfoY: pool.coinInfoY,
+    coinInfoX,
+    coinInfoY,
     coinInfoLP: pool.coinInfoLP,
     amountX: pool.amountX.toNumber(),
     amountY: pool.amountY.toNumber(),
@@ -122,9 +142,21 @@ export const query = {
         aux.Pool.read(auxClient, poolReadParam)
       )
     );
+    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
+    const hippoCoins = JSON.parse(await fs.readFile(path, "utf-8")).map(
+      (coin: any) => ({
+        coinType: coin.token_type.type,
+        decimals: coin.decimals,
+        name: coin.name,
+        symbol: coin.symbol,
+      })
+    );
+    const coinTypeToHippoNameSymbol = Object.fromEntries(
+      hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
+    );
     const formattedPools = pools
       .filter((maybePool) => maybePool !== undefined && maybePool !== null)
-      .map((pool) => formatPool(pool!));
+      .map((pool) => formatPool(pool!, coinTypeToHippoNameSymbol));
 
     // List hot pools first, then order by recognized liquidity, then by atomic
     // units of liquidity.
