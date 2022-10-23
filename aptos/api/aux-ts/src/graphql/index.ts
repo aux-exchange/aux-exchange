@@ -66,7 +66,7 @@ async function startApolloServer() {
   // let react handle routing
   app.get("*", (_, res) => res.sendFile(__dirname + "/client/index.html"));
 
-  const port = Number(process.argv[2] ?? 4000);
+  const port = Number(process.env["GRAPHQL_PORT"] ?? 4000);
   server.listen(port, () => {
     console.log("graphql-server is running on", port);
   });
