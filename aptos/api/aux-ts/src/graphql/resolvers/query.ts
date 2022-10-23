@@ -123,7 +123,7 @@ export const query = {
       decimals: coin.decimals,
       name: coin.name,
       symbol: coin.symbol,
-    }));
+    })).reverse();
   },
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const pool = await aux.Pool.read(auxClient, poolInput);
