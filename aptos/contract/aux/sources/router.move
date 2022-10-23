@@ -1,11 +1,15 @@
 /// TODO: optionally use sender's vault account
 module aux::router {
+    use std::string::String;
+
     use aux::amm;
     use aux::clob_market;
     use aux::util;
     use aux::fee;
 
     use aptos_framework::coin;
+    use aptos_framework::type_info;
+    use aptos_framework::event::{EventHandle, Self};
     use std::signer;
 
     const MAX_U64: u64 = 18446744073709551615;
@@ -64,9 +68,47 @@ module aux::router {
     // end !!! CONSTANTS !!! Keep in sync clob.move, clob_market.move, router.move
     //////////////////////////////////////////////////////////////////
 
+    /**********/
+    /* EVENTS */
+    /**********/
+
+    struct RouterEvents has key {
+        quote_events: EventHandle<RouterQuoteEvent>
+    }
+
+    const CLOB_VENUE_ID: u64 = 1;
+    const AMM_VENUE_ID: u64 = 2;
+
+    struct RouterQuoteEvent has store, drop {
+        coin_in: String,
+        coin_out: String,
+        venue_id: u64,
+        amount_in: u64,
+        amount_out: u64,
+        fee_amount: u64,
+        rebate_amount: u64,
+        fee_currency: String,
+        // Initial price
+        // For AMM: priceNum = reserveIn, priceDenom = reserveOut
+        // For CLOB:
+        //  if bid: priceNum = initial price, priceDenom = 10^(base decimals)
+        //  if ask: priceNum = 10^(base decimals), priceDenom = initial price
+        init_price_num: u64,
+        init_price_denom: u64,
+    }
+
     /*******************/
     /* ENTRY FUNCTIONS */
     /*******************/
+
+    public entry fun init_router(sender: &signer) {
+        let module_signer = authority::get_signer(sender);
+        if (!exists<RouterEvents>(@aux)) {
+            move_to(&module_signer, RouterEvents {
+                quote_events: account::new_event_handle<RouterQuoteEvent>(&module_signer)
+            })
+        }
+    }
 
     /// USER -> CoinIn -> POOL -> CoinOut -> USER
     public entry fun swap_exact_coin_for_coin_with_signer<CoinIn, CoinOut>(
@@ -118,14 +160,12 @@ module aux::router {
     /* PUBLIC FUNCTIONS */
     /********************/
 
-    // TODO: handle ZERO_FEE in quote functions
-
     /// Calculate amount of CoinOut received for au_in of CoinIn
     /// Returns (amount_in, amount_out)
     public fun amount_out<CoinIn, CoinOut>(
         sender_addr: address, // delegatee, see place_order in clob_market for more comments
         au_in: u64,
-    ): (u64, u64) {
+    ): (u64, u64) acquires RouterEvents {
         let taker_fee_bps = fee::default_taker_fee_bps();
 
         // check if pool/market exists
@@ -149,14 +189,23 @@ module aux::router {
 
             let total_input_spent_au = 0;
             let total_output_received_au = 0;
+            let amm_total_input_spent_au = 0;
+            let amm_total_output_received_au = 0;
+            let clob_total_input_spent_au = 0;
+            let clob_total_output_received_au = 0;
+            let clob_total_fee_paid = 0;
 
             let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
                 (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
             } else {
-                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
             };
-
             let (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(true, 0, true, timestamp, sender_addr);
+
+            let init_reserve_in = reserve_in;
+            let init_reserve_out = reserve_out;
+            let init_best_bid_price = best_bid_price_au;
+
 
             while (total_input_spent_au < au_in) {
                 // user is selling base to receive quote (ASK)
@@ -167,6 +216,8 @@ module aux::router {
                     let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
@@ -192,20 +243,62 @@ module aux::router {
                 reserve_out = reserve_out - coin_received_au;
                 total_input_spent_au = total_input_spent_au + coin_spent_au;
                 total_output_received_au = total_output_received_au + coin_received_au;
+                amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
 
                 // If we're not done, place order through clob
                 if (total_input_spent_au < au_in) {
                     let remaining_qty_au = (au_in - total_input_spent_au) / lot_size * lot_size;    // round to nearest lot size
                     let base_spent_au = if (best_bid_qty_au < remaining_qty_au) { best_bid_qty_au } else { remaining_qty_au };
-                    let quote_received_au = fee::subtract_fee(sender_addr, clob_market::quote_qty<CoinIn>(best_bid_price_au, base_spent_au), true);
-                    total_input_spent_au = total_input_spent_au + (base_spent_au as u64);
-                    total_output_received_au = total_output_received_au + (quote_received_au as u64);
+                    let quote_qty = clob_market::quote_qty<CoinIn>(best_bid_price_au, base_spent_au);
+                    let quote_received_au = fee::subtract_fee(sender_addr, quote_qty, true);
+                    clob_total_fee_paid = clob_total_fee_paid + quote_qty - quote_received_au;
+                    total_input_spent_au = total_input_spent_au + base_spent_au;
+                    total_output_received_au = total_output_received_au + quote_received_au;
+                    clob_total_input_spent_au = clob_total_input_spent_au + base_spent_au;
+                    clob_total_output_received_au = clob_total_output_received_au + quote_received_au;
                     // Invariant: we will never fill more than one level at a time.
                     // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
                     (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(false, level_idx, true, timestamp, sender_addr);
                 }
             };
             assert!(total_input_spent_au == au_in, E_INTERNAL_ERROR);
+            assert!(total_input_spent_au == amm_total_input_spent_au + clob_total_input_spent_au, E_INTERNAL_ERROR);
+            assert!(total_output_received_au == amm_total_output_received_au + clob_total_output_received_au, E_INTERNAL_ERROR);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: clob_total_input_spent_au,
+                    amount_out: clob_total_output_received_au,
+                    fee_amount: clob_total_fee_paid,
+                    rebate_amount: 0,
+                    fee_currency: coin_out,
+                    init_price_num: (base_unit_au as u64),
+                    init_price_denom: init_best_bid_price,
+
+                });
+            let amount_in_no_fee = init_reserve_in * amm_total_output_received_au / (init_reserve_out + amm_total_output_received_au);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: amm_total_input_spent_au,
+                    amount_out: amm_total_output_received_au,
+                    fee_amount: amm_total_input_spent_au - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_reserve_in,
+                    init_price_denom: init_reserve_out,
+
+                });
             (total_input_spent_au, total_output_received_au)
         } else if (pool_exists && market_exists_quote_in_base_out) {
             // Pool<CoinIn, CoinOut> && Market<CoinOut, CoinIn>
@@ -215,13 +308,22 @@ module aux::router {
 
             let total_input_spent_au = 0;
             let total_output_received_au= 0;
+            let amm_total_input_spent_au = 0;
+            let amm_total_output_received_au = 0;
+            let clob_total_input_spent_au = 0;
+            let clob_total_output_received_au = 0;
+            let clob_total_fee_paid = 0;
 
             let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
                 (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
             } else {
-                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
             };
             let (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(true, 0, false, timestamp, sender_addr);
+
+            let init_reserve_in = reserve_in;
+            let init_reserve_out = reserve_out;
+            let init_best_ask_price = best_ask_price_au;
 
             while (total_input_spent_au < au_in) {
                 // user is spending quote to receive base (BID)
@@ -232,6 +334,8 @@ module aux::router {
                     let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
@@ -244,6 +348,8 @@ module aux::router {
                     let coin_received_au = amm::amount_out(coin_spent_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
 
@@ -268,28 +374,94 @@ module aux::router {
                 reserve_out = reserve_out - coin_received_au;
                 total_input_spent_au = total_input_spent_au + coin_spent_au;
                 total_output_received_au = total_output_received_au + coin_received_au;
+                amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
 
                 if (total_input_spent_au < au_in) {
                     let remaining_base_qty_au = (((au_in - total_input_spent_au) as u128) * (base_unit_au as u128) / (best_ask_plus_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                     remaining_base_qty_au = remaining_base_qty_au / lot_size * lot_size;    // round to nearest lot size
                     let base_received_au = if (best_ask_qty_au < remaining_base_qty_au) { best_ask_qty_au } else { remaining_base_qty_au };
-                    let quote_spent_au = fee::add_fee(sender_addr, clob_market::quote_qty<CoinOut>(best_ask_price_au, base_received_au), true);
+                    let quote_qty = clob_market::quote_qty<CoinOut>(best_ask_price_au, base_received_au);
+                    let quote_spent_au = fee::add_fee(sender_addr, quote_qty, true);
+                    clob_total_fee_paid = clob_total_fee_paid + quote_spent_au - quote_qty;
                     total_input_spent_au = total_input_spent_au + (quote_spent_au as u64);
                     total_output_received_au = total_output_received_au + (base_received_au as u64);
+                    clob_total_input_spent_au = clob_total_input_spent_au + (quote_spent_au as u64);
+                    clob_total_output_received_au = clob_total_output_received_au + (base_received_au as u64);
                     // Invariant: we will never fill more than one level at a time.
                     // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
                     (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(false, level_idx, false, timestamp, sender_addr);
                 }
             };
             assert!(total_input_spent_au == au_in, E_INTERNAL_ERROR);
+            assert!(total_input_spent_au == amm_total_input_spent_au + clob_total_input_spent_au, amm_total_input_spent_au + clob_total_input_spent_au);
+            assert!(total_output_received_au == amm_total_output_received_au + clob_total_output_received_au, amm_total_output_received_au + clob_total_output_received_au);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: clob_total_input_spent_au,
+                    amount_out: clob_total_output_received_au,
+                    fee_amount: clob_total_fee_paid,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_best_ask_price,
+                    init_price_denom: (base_unit_au as u64)
+                });
+            let amount_in_no_fee = init_reserve_in * amm_total_output_received_au / (init_reserve_out + amm_total_output_received_au);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: amm_total_input_spent_au,
+                    amount_out: amm_total_output_received_au,
+                    fee_amount: amm_total_input_spent_au - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_reserve_in,
+                    init_price_denom: init_reserve_out,
+
+                });
             (total_input_spent_au, total_output_received_au)
         } else if (pool_exists) {
+            let (reserve_in, reserve_out) = if (pool_exists_in_out) {
+                (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>())
+            } else {
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>())
+            };
             let coin_spent = au_in;
             let coin_received = amm::au_out<CoinIn, CoinOut>(coin_spent);
             assert!((coin_spent as u64) == au_in, E_INTERNAL_ERROR);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            let amount_in_no_fee = reserve_in * coin_received / (reserve_out + coin_received);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: coin_spent,
+                    amount_out: coin_received,
+                    fee_amount: coin_spent - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: reserve_in,
+                    init_price_denom: reserve_out,
+
+                });
             (coin_spent, coin_received)
         } else if (market_exists_base_in_quote_out) {
             let lot_size = clob_market::lot_size<CoinIn, CoinOut>();
+            let best_bid_price = clob_market::best_bid_au<CoinIn, CoinOut>();
             let (base_spent_au, quote_received_au) = clob_market::estimate_fill<CoinIn, CoinOut>(
                 sender_addr,
                 false,
@@ -298,6 +470,23 @@ module aux::router {
                 timestamp
             );
             assert!((base_spent_au as u64) <= au_in, E_INTERNAL_ERROR);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: base_spent_au,
+                    amount_out: quote_received_au,
+                    fee_amount: clob_market::quote_qty<CoinIn>(best_bid_price, base_spent_au) - quote_received_au,
+                    rebate_amount: 0,
+                    fee_currency: coin_out,
+                    init_price_num: (util::exp(10, (coin::decimals<CoinIn>() as u128)) as u64),
+                    init_price_denom: best_bid_price
+                });
             (base_spent_au, quote_received_au)
         } else {
             abort(E_UNSUPPORTED)
@@ -309,7 +498,7 @@ module aux::router {
     public fun amount_in<CoinIn, CoinOut>(
         sender_addr: address, // delegatee, see place_order in clob_market for more comments
         au_out: u64,
-    ): (u64, u64) {
+    ): (u64, u64) acquires RouterEvents {
         let taker_fee_bps = fee::default_taker_fee_bps();
 
         // check if pool/market exists
@@ -333,14 +522,23 @@ module aux::router {
 
             let total_input_spent_au = 0;
             let total_output_received_au = 0;
+            let amm_total_input_spent_au = 0;
+            let amm_total_output_received_au = 0;
+            let clob_total_input_spent_au = 0;
+            let clob_total_output_received_au = 0;
+            let clob_total_fee_paid = 0;
 
             let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
                 (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
             } else {
-                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
             };
 
             let (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(true, 0, true, timestamp, sender_addr);
+
+            let init_reserve_in = reserve_in;
+            let init_reserve_out = reserve_out;
+            let init_best_bid_price = best_bid_price_au;
 
             while (total_output_received_au < au_out) {
                 // user is selling base to receive quote (ASK)
@@ -351,6 +549,8 @@ module aux::router {
                     let coin_spent_au = amm::amount_in(coin_received_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
                 // best price on orderbook is top of bids (most someone is willing to pay in Y (quote) for 1 unit of X (base))
@@ -362,6 +562,8 @@ module aux::router {
                     let coin_spent_au = amm::amount_in(coin_received_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
                 // Otherwise, limit swap up to best bid price
@@ -386,21 +588,63 @@ module aux::router {
                 reserve_out = reserve_out - coin_received_au;
                 total_input_spent_au = total_input_spent_au + coin_spent_au;
                 total_output_received_au = total_output_received_au + coin_received_au;
+                amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
 
                 // If we're not done, place order through clob
                 if (total_output_received_au < au_out) {
                     let remaining_base_qty_for_level = (((au_out - total_output_received_au) as u128) * (base_unit_au as u128) / (best_bid_less_fee as u128) as u64);  // how many au of base can we buy at the best ask with our remaining quote?
                     let remaining_qty_au = remaining_base_qty_for_level / lot_size * lot_size;    // round to nearest lot size
                     let base_spent_au = if (best_bid_qty_au < remaining_qty_au) { best_bid_qty_au } else { remaining_qty_au };
-                    let quote_received_au = fee::subtract_fee(sender_addr, clob_market::quote_qty<CoinIn>(best_bid_price_au, base_spent_au), true);
-                    total_input_spent_au = total_input_spent_au + (base_spent_au as u64);
-                    total_output_received_au = total_output_received_au + (quote_received_au as u64);
+                    let quote_qty = clob_market::quote_qty<CoinIn>(best_bid_price_au, base_spent_au);
+                    let quote_received_au = fee::subtract_fee(sender_addr, quote_qty, true);
+                    total_input_spent_au = total_input_spent_au + base_spent_au;
+                    total_output_received_au = total_output_received_au + quote_received_au;
+                    clob_total_input_spent_au = clob_total_input_spent_au + base_spent_au;
+                    clob_total_output_received_au = clob_total_output_received_au + quote_received_au;
+                    clob_total_fee_paid = clob_total_fee_paid + quote_qty - quote_received_au;
                     // Invariant: we will never fill more than one level at a time.
                     // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
                     (level_idx, best_bid_price_au, best_bid_qty_au) = clob_market::next_level_in_order<CoinIn, CoinOut>(false, level_idx, true, timestamp, sender_addr);
                 }
             };
             assert!(total_output_received_au == au_out, E_INTERNAL_ERROR);
+            assert!(total_input_spent_au == amm_total_input_spent_au + clob_total_input_spent_au, E_INTERNAL_ERROR);
+            assert!(total_output_received_au == amm_total_output_received_au + clob_total_output_received_au, E_INTERNAL_ERROR);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: clob_total_input_spent_au,
+                    amount_out: clob_total_output_received_au,
+                    fee_amount: clob_total_fee_paid,
+                    rebate_amount: 0,
+                    fee_currency: coin_out,
+                    init_price_num: (base_unit_au as u64),
+                    init_price_denom: init_best_bid_price,
+
+                });
+            let amount_in_no_fee = init_reserve_in * amm_total_output_received_au / (init_reserve_out + amm_total_output_received_au);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: amm_total_input_spent_au,
+                    amount_out: amm_total_output_received_au,
+                    fee_amount: amm_total_input_spent_au - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_reserve_in,
+                    init_price_denom: init_reserve_out,
+
+                });
             (total_input_spent_au, total_output_received_au)
         } else if (pool_exists && market_exists_quote_in_base_out) {
             // Pool<CoinIn, CoinOut> && Market<CoinOut, CoinIn>
@@ -410,13 +654,22 @@ module aux::router {
 
             let total_input_spent_au = 0;
             let total_output_received_au= 0;
+            let amm_total_input_spent_au = 0;
+            let amm_total_output_received_au = 0;
+            let clob_total_input_spent_au = 0;
+            let clob_total_output_received_au = 0;
+            let clob_total_fee_paid = 0;
 
             let (reserve_in, reserve_out, fee_bps) = if (pool_exists_in_out) {
                 (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>(), amm::fee_bps<CoinIn, CoinOut>())
             } else {
-                (amm::y_au<CoinIn, CoinOut>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>(), amm::fee_bps<CoinOut, CoinIn>())
             };
             let (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(true, 0, false, timestamp, sender_addr);
+
+            let init_reserve_in = reserve_in;
+            let init_reserve_out = reserve_out;
+            let init_best_ask_price = best_ask_price_au;
 
             while (total_output_received_au < au_out) {
                 // user is spending quote to receive base (BID)
@@ -428,6 +681,8 @@ module aux::router {
                     let coin_spent_au = amm::amount_in(coin_received_au, reserve_in, reserve_out, fee_bps);
                     total_input_spent_au = total_input_spent_au + coin_spent_au;
                     total_output_received_au = total_output_received_au + coin_received_au;
+                    amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                    amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
                     break
                 };
                 // best price on orderbook is top of asks (least amount of X (quote) someone is willing sell 1 unit of Y (base) for)
@@ -455,28 +710,94 @@ module aux::router {
                 reserve_out = reserve_out - coin_received_au;
                 total_input_spent_au = total_input_spent_au + coin_spent_au;
                 total_output_received_au = total_output_received_au + coin_received_au;
+                amm_total_input_spent_au = amm_total_input_spent_au + coin_spent_au;
+                amm_total_output_received_au = amm_total_output_received_au + coin_received_au;
 
                 if (total_output_received_au < au_out) {
                     let remaining_qty_au = (au_out - total_output_received_au) / lot_size * lot_size;    // round to nearest lot size
                     let base_received_au = if (best_ask_qty_au < remaining_qty_au) { best_ask_qty_au } else { remaining_qty_au };
-                    let quote_spent_au = fee::add_fee(sender_addr, clob_market::quote_qty<CoinOut>(best_ask_price_au, base_received_au), true);
-                    total_input_spent_au = total_input_spent_au + (quote_spent_au as u64);
-                    total_output_received_au = total_output_received_au + (base_received_au as u64);
+                    let quote_qty = clob_market::quote_qty<CoinOut>(best_ask_price_au, base_received_au);
+                    let quote_spent_au = fee::add_fee(sender_addr, quote_qty, true);
+                    total_input_spent_au = total_input_spent_au + quote_spent_au;
+                    total_output_received_au = total_output_received_au + base_received_au;
+                    clob_total_input_spent_au = clob_total_input_spent_au + quote_spent_au;
+                    clob_total_output_received_au = clob_total_output_received_au + base_received_au;
+                    clob_total_fee_paid = clob_total_fee_paid + quote_spent_au - quote_qty;
                     // Invariant: we will never fill more than one level at a time.
                     // Only options are: 1) take the full level, 2) take part of the level with 0 input remaining, 3) take part of the level with < 1 lot input remaining
                     (level_idx, best_ask_price_au, best_ask_qty_au) = clob_market::next_level_in_order<CoinOut, CoinIn>(false, level_idx, false, timestamp, sender_addr);
                 }
             };
             assert!(total_output_received_au == au_out, E_INTERNAL_ERROR);
+            assert!(total_input_spent_au == amm_total_input_spent_au + clob_total_input_spent_au, E_INTERNAL_ERROR);
+            assert!(total_output_received_au == amm_total_output_received_au + clob_total_output_received_au, E_INTERNAL_ERROR);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: clob_total_input_spent_au,
+                    amount_out: clob_total_output_received_au,
+                    fee_amount: clob_total_fee_paid,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_best_ask_price,
+                    init_price_denom: (base_unit_au as u64)
+                });
+            let amount_in_no_fee = init_reserve_in * amm_total_output_received_au / (init_reserve_out + amm_total_output_received_au);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: amm_total_input_spent_au,
+                    amount_out: amm_total_output_received_au,
+                    fee_amount: amm_total_input_spent_au - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: init_reserve_in,
+                    init_price_denom: init_reserve_out,
+
+                });
             (total_input_spent_au, total_output_received_au)
         } else if (pool_exists) {
+            let (reserve_in, reserve_out) = if (pool_exists_in_out) {
+                (amm::x_au<CoinIn, CoinOut>(), amm::y_au<CoinIn, CoinOut>())
+            } else {
+                (amm::y_au<CoinOut, CoinIn>(), amm::x_au<CoinOut, CoinIn>())
+            };
             let coin_received = au_out;
             let coin_spent = amm::au_in<CoinIn, CoinOut>(coin_received);
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            let amount_in_no_fee = reserve_in * coin_received / (reserve_out + coin_received);
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: AMM_VENUE_ID,
+                    amount_in: coin_spent,
+                    amount_out: coin_received,
+                    fee_amount: coin_spent - amount_in_no_fee,
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: reserve_in,
+                    init_price_denom: reserve_out,
+
+                });
             (coin_spent, coin_received)
         } else if (market_exists_quote_in_base_out) {
             // BUY
             let tick_size = clob_market::tick_size<CoinOut, CoinIn>();
             let lot_size = clob_market::lot_size<CoinOut, CoinIn>();
+            let best_ask_price = clob_market::best_ask_au<CoinOut, CoinIn>();
             let (base_received_au, quote_spent_au) = clob_market::estimate_fill<CoinOut, CoinIn>(
                 sender_addr,
                 true,
@@ -484,6 +805,23 @@ module aux::router {
                 au_out / lot_size * lot_size,
                 timestamp
             );
+            let router_events = borrow_global_mut<RouterEvents>(@aux);
+            let coin_in = type_info::type_name<CoinIn>();
+            let coin_out = type_info::type_name<CoinOut>();
+            event::emit_event<RouterQuoteEvent>(
+                &mut router_events.quote_events,
+                RouterQuoteEvent {
+                    coin_in,
+                    coin_out,
+                    venue_id: CLOB_VENUE_ID,
+                    amount_in: quote_spent_au,
+                    amount_out: base_received_au,
+                    fee_amount: quote_spent_au - clob_market::quote_qty<CoinOut>(best_ask_price, base_received_au),
+                    rebate_amount: 0,
+                    fee_currency: coin_in,
+                    init_price_num: best_ask_price,
+                    init_price_denom: (util::exp(10, (coin::decimals<CoinOut>() as u128)) as u64)
+                });
             (quote_spent_au, base_received_au)
         } else {
             abort(E_UNSUPPORTED)
@@ -943,6 +1281,7 @@ module aux::router {
             timestamp::set_time_has_started_for_testing(aptos_framework);
 
         };
+        init_router(sender);
 
         assert!(signer::address_of(&authority::get_signer(sender)) == @aux, E_TEST_FAILED);
 
@@ -982,7 +1321,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // Base: decimals = 8, lot size = 1e4
         // Quote: decimals = 6, tick size = 1e4
 
@@ -1062,7 +1401,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // X = Quote = USDC
         // Y = Base = BTC
         let base_decimals = 8;
@@ -1136,7 +1475,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // Base: decimals = 8, lot size = 1e4
         // Quote: decimals = 6, tick size = 1e4
         // Base = BTC
@@ -1209,7 +1548,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // X = BTC
         // Y = USDC
         let base_decimals = 8;
@@ -1305,7 +1644,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // Base: decimals = 8, lot size = 1e4
         // Quote: decimals = 6, tick size = 1e4
 
@@ -1384,7 +1723,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // X = Quote = USDC
         // Y = Base = BTC
         let base_decimals = 8;
@@ -1458,7 +1797,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // X = Quote = USDC
         // Y = Base = BTC
         let base_decimals = 8;
@@ -1527,7 +1866,7 @@ module aux::router {
         bob: &signer,
         aux: &signer,
         aptos_framework: &signer
-    ) {
+    ) acquires RouterEvents {
         // X = BTC
         // Y = USDC
         let base_decimals = 8;
