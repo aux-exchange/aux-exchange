@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, n as useQuery, A as ArrowsUpDownIcon, o as useSubscription, s as useMutation, F as Fragment, t as DateTime, L as Link, X as XMarkIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.c0b699fb.js";
+import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, n as useQuery, A as ArrowsUpDownIcon, o as useSubscription, s as useMutation, F as Fragment, t as DateTime, L as Link, X as XMarkIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.0726e70b.js";
 import "./__commonjsHelpers__.5615ff64.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -9627,31 +9627,31 @@ function OrderTable({
   const askTableRef = react.exports.useRef(null);
   const bidTableRef = react.exports.useRef(null);
   const asks = react.exports.useMemo(() => {
-    var _a2;
-    return ((_a2 = items.map(({
+    var _a2, _b2;
+    return (_b2 = ((_a2 = items.map(({
       ask
     }) => ask)) != null ? _a2 : []).filter(Boolean).sort((a, b) => {
-      var _a3, _b2;
-      return ((_a3 = a == null ? void 0 : a.price) != null ? _a3 : 0) < ((_b2 = b == null ? void 0 : b.price) != null ? _b2 : 0) ? 1 : -1;
-    });
+      var _a3, _b3;
+      return ((_a3 = a == null ? void 0 : a.price) != null ? _a3 : 0) < ((_b3 = b == null ? void 0 : b.price) != null ? _b3 : 0) ? 1 : -1;
+    })) != null ? _b2 : [];
   }, [items]);
   const bids = react.exports.useMemo(() => {
-    var _a2;
-    return ((_a2 = items.map(({
+    var _a2, _b2;
+    return (_b2 = ((_a2 = items.map(({
       bid
     }) => bid)) != null ? _a2 : []).filter(Boolean).sort((a, b) => {
-      var _a3, _b2;
-      return ((_a3 = a == null ? void 0 : a.price) != null ? _a3 : 0) < ((_b2 = b == null ? void 0 : b.price) != null ? _b2 : 0) ? 1 : -1;
-    });
+      var _a3, _b3;
+      return ((_a3 = a == null ? void 0 : a.price) != null ? _a3 : 0) < ((_b3 = b == null ? void 0 : b.price) != null ? _b3 : 0) ? 1 : -1;
+    })) != null ? _b2 : [];
   }, [items]);
   const renderAskRow = react.exports.useCallback((row) => {
     var _a2;
     return /* @__PURE__ */ jsx(OrderRow, {
-      order: asks[row.index],
+      order: asks[row == null ? void 0 : row.index],
       scale: scaleAsk,
       side: "ask",
       onClick: onOrderClick
-    }, (_a2 = asks[row.index]) == null ? void 0 : _a2.price);
+    }, (_a2 = asks[row == null ? void 0 : row.index]) == null ? void 0 : _a2.price);
   }, [scaleAsk, asks]);
   const askOrderTableProps = {
     loading,
@@ -9682,11 +9682,11 @@ function OrderTable({
   const renderBidRow = react.exports.useCallback((row) => {
     var _a2;
     return /* @__PURE__ */ jsx(OrderRow, {
-      order: bids[row.index],
+      order: bids[row == null ? void 0 : row.index],
       scale: scaleBid,
       side: "bid",
       onClick: onOrderClick
-    }, (_a2 = bids[row.index]) == null ? void 0 : _a2.price);
+    }, (_a2 = bids[row == null ? void 0 : row.index]) == null ? void 0 : _a2.price);
   }, [scaleBid, bids]);
   const bidOrderTableProps = {
     loading,
@@ -9716,9 +9716,6 @@ function OrderTable({
       enableSmoothScroll: true
     }
   };
-  console.log({
-    bids
-  });
   return /* @__PURE__ */ jsxs("div", {
     className: "h-full flex flex-col justify-start",
     children: [/* @__PURE__ */ jsx("div", {
