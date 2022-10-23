@@ -12,6 +12,9 @@ module aux::fee {
     const FEE_ALREADY_INITIALIZED: u64 = 0;
     const E_TEST_FAILURE: u64 = 1;
 
+    const DEFAULT_MAKER_REBATE_BPS: u8 = 0;
+    const DEFAULT_TAKER_FEE_BPS: u8 = 0;
+
     struct Fee has key {
         maker_rebate_bps: u8,
         taker_fee_bps: u8
@@ -21,10 +24,18 @@ module aux::fee {
         exists<Fee>(account)
     }
 
+    public fun default_taker_fee_bps(): u8 {
+        DEFAULT_TAKER_FEE_BPS
+    }
+
+    public fun default_maker_rebate_bps(): u8 {
+        DEFAULT_MAKER_REBATE_BPS
+    }
+
     public fun initialize_fee_default(sender: &signer) {
         // Make sure the user hasn't initialize fee before
         assert!(!fee_exists(signer::address_of(sender)),FEE_ALREADY_INITIALIZED);
-        move_to<Fee>(sender, Fee {maker_rebate_bps: 0, taker_fee_bps: 0});
+        move_to<Fee>(sender, Fee {maker_rebate_bps: DEFAULT_MAKER_REBATE_BPS, taker_fee_bps: DEFAULT_TAKER_FEE_BPS});
     }
 
     public(friend) fun update_maker_rebase_bps(account: address, new_maker_rebate_bps: u8) acquires Fee {
