@@ -4,7 +4,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, A as ArrowsUpDownIcon, n as useSubscription, o as useQuery, s as useMutation, F as Fragment, t as DateTime, L as Link, X as XMarkIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.cd84b956.js";
+import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, n as useQuery, A as ArrowsUpDownIcon, o as useSubscription, s as useMutation, F as Fragment, t as DateTime, L as Link, X as XMarkIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.c0b699fb.js";
 import "./__commonjsHelpers__.5615ff64.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -67,14 +67,14 @@ function nt() {
   Xe = 1;
   var e2 = React, n2 = Symbol.for("react.element"), s2 = Symbol.for("react.fragment"), a = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, l = { key: true, ref: true, __self: true, __source: true };
   function c(f, u, m) {
-    var g, b = {}, v = null, w = null;
-    m !== void 0 && (v = "" + m), u.key !== void 0 && (v = "" + u.key), u.ref !== void 0 && (w = u.ref);
+    var g, b = {}, v = null, y = null;
+    m !== void 0 && (v = "" + m), u.key !== void 0 && (v = "" + u.key), u.ref !== void 0 && (y = u.ref);
     for (g in u)
       a.call(u, g) && !l.hasOwnProperty(g) && (b[g] = u[g]);
     if (f && f.defaultProps)
       for (g in u = f.defaultProps, u)
         b[g] === void 0 && (b[g] = u[g]);
-    return { $$typeof: n2, type: f, key: v, ref: w, props: b, _owner: o2.current };
+    return { $$typeof: n2, type: f, key: v, ref: y, props: b, _owner: o2.current };
   }
   return Z.Fragment = s2, Z.jsx = c, Z.jsxs = c, Z;
 }
@@ -243,8 +243,8 @@ function bt({
     })]
   });
 }
-const wt = react.exports.forwardRef(bt), lr = wt;
-function yt({
+const yt = react.exports.forwardRef(bt), lr = yt;
+function wt({
   title: e2,
   titleId: n2,
   ...s2
@@ -270,7 +270,7 @@ function yt({
     })]
   });
 }
-const xt = react.exports.forwardRef(yt), cr = xt;
+const xt = react.exports.forwardRef(wt), cr = xt;
 function Et({
   title: e2,
   titleId: n2,
@@ -495,7 +495,7 @@ function fr({
     }
   })();
 }
-function D(e2, n2) {
+function A(e2, n2) {
   if (Object.is(e2, n2))
     return true;
   if (typeof e2 != "object" || e2 === null || typeof n2 != "object" || n2 === null)
@@ -557,9 +557,9 @@ const xe = create$1((e2) => ({
   }
 }));
 function jt() {
-  const e2 = xe((a) => a.notifications, D), n2 = xe((a) => a.addNotification, D);
+  const e2 = xe((a) => a.notifications, A), n2 = xe((a) => a.addNotification, A);
   return {
-    removeNotification: xe((a) => a.removeNotification, D),
+    removeNotification: xe((a) => a.removeNotification, A),
     addNotification: n2,
     notifications: e2
   };
@@ -604,7 +604,7 @@ const ne = create$1((e2) => ({
   })
 }));
 function Nn() {
-  const e2 = useNavigate(), n2 = useLocation(), s2 = ne((c) => c.params, D), a = ne((c) => c.setParams, D), o2 = ne((c) => c.addParams, D), l = ne((c) => c.removeParams, D);
+  const e2 = useNavigate(), n2 = useLocation(), s2 = ne((c) => c.params, A), a = ne((c) => c.setParams, A), o2 = ne((c) => c.addParams, A), l = ne((c) => c.removeParams, A);
   return react.exports.useEffect(() => {
     const c = `${n2.pathname}?${new URLSearchParams(n2.search).toString()}`;
     `${n2.pathname}?${s2.toString()}` !== c && e2(`${n2.pathname}?${s2.toString()}`);
@@ -731,15 +731,15 @@ function Ln() {
   }, [o2]), react.exports.useEffect(() => {
     var v;
     if (n2.length && JSON.stringify(s2.current) !== JSON.stringify(n2[0])) {
-      const w = n2[0];
-      l(w), s2.current = w;
+      const y = n2[0];
+      l(y), s2.current = y;
       const S = setTimeout(async () => {
         await a.start({
           opacity: [1, 0],
           x: [0, 200],
           transition: u
-        }), e2(w), l(void 0);
-      }, (v = w.dismissAfter) != null ? v : 3e3);
+        }), e2(y), l(void 0);
+      }, (v = y.dismissAfter) != null ? v : 3e3);
       return () => {
         a.stop(), m.current || clearTimeout(S);
       };
@@ -786,9 +786,9 @@ function Ln() {
         className: "text-white",
         children: o2 == null ? void 0 : o2.message
       }), /* @__PURE__ */ t$1("div", {
-        children: (b = o2 == null ? void 0 : o2.actions) == null ? void 0 : b.map((v, w) => /* @__PURE__ */ t$1(er, {
+        children: (b = o2 == null ? void 0 : o2.actions) == null ? void 0 : b.map((v, y) => /* @__PURE__ */ t$1(er, {
           ...v
-        }, w))
+        }, y))
       })]
     })]
   });
@@ -1693,10 +1693,10 @@ function se(e2, n2, s2) {
     a = c;
     let u;
     if (s2.key && s2.debug != null && s2.debug() && (u = Date.now()), o2 = n2(...c), s2 == null || s2.onChange == null || s2.onChange(o2), s2.key && s2.debug != null && s2.debug()) {
-      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, b = g / 16, v = (w, S) => {
-        for (w = String(w); w.length < S; )
-          w = " " + w;
-        return w;
+      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, b = g / 16, v = (y, S) => {
+        for (y = String(y); y.length < S; )
+          y = " " + y;
+        return y;
       };
       console.info("%c\u23F1 " + v(g, 5) + " /" + v(m, 5) + " ms", `
             font-size: .6rem;
@@ -1802,11 +1802,11 @@ class dn {
       this.pendingMeasuredCacheIndexes = [];
       const u = this.measurementsCache.slice(0, f);
       for (let m = f; m < a; m++) {
-        const g = l(m), b = c[g], v = u[m - 1] ? u[m - 1].end : o2, w = typeof b == "number" ? b : this.options.estimateSize(m), S = v + w;
+        const g = l(m), b = c[g], v = u[m - 1] ? u[m - 1].end : o2, y = typeof b == "number" ? b : this.options.estimateSize(m), S = v + y;
         u[m] = {
           index: m,
           start: v,
-          size: w,
+          size: y,
           end: S,
           key: g
         };
@@ -1835,13 +1835,13 @@ class dn {
     }), this.getVirtualItems = se(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (a, o2, l) => {
       const c = (g) => (b) => {
         var v;
-        const w = this.measurementsCache[g];
+        const y = this.measurementsCache[g];
         if (!b)
           return;
-        const S = l(b, this), I = (v = this.itemMeasurementsCache[w.key]) != null ? v : w.size;
-        S !== I && (w.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (S - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
+        const S = l(b, this), I = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
+        S !== I && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (S - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
-          [w.key]: S
+          [y.key]: S
         }, this.notify());
       }, f = [], u = {};
       for (let g = 0, b = a.length; g < b; g++) {
@@ -1881,8 +1881,8 @@ class dn {
           l = "start";
         else
           return;
-      const w = l === "end" ? v.end + s2.options.scrollPaddingEnd : v.start - s2.options.scrollPaddingStart;
-      s2.scrollToOffset(w, {
+      const y = l === "end" ? v.end + s2.options.scrollPaddingEnd : v.start - s2.options.scrollPaddingStart;
+      s2.scrollToOffset(y, {
         align: l,
         smoothScroll: c,
         ...f
@@ -2005,7 +2005,7 @@ function bn({
     })]
   });
 }
-const wn = react.exports.forwardRef(bn), yn = wn;
+const yn = react.exports.forwardRef(bn), wn = yn;
 function Hn({
   data: e2,
   columns: n2,
@@ -2027,11 +2027,11 @@ function Hn({
       sorting: m
     }
   }), v = react.exports.useRef(null), {
-    rows: w
+    rows: y
   } = b.getRowModel(), S = pn(a != null ? a : {
     getScrollElement: () => v.current,
-    count: w.length,
-    estimateSize: () => w.length,
+    count: y.length,
+    estimateSize: () => y.length,
     overscan: 10
   }), {
     getVirtualItems: I,
@@ -2052,8 +2052,8 @@ function Hn({
       className: `border-collapse table-auto max-w-full w-full text-sm capitalize relative ${o2}`,
       ref: v,
       children: [/* @__PURE__ */ t$1("thead", {
-        children: b.getHeaderGroups().map((A) => /* @__PURE__ */ t$1("tr", {
-          children: A.headers.map((L) => /* @__PURE__ */ t$1("th", {
+        children: b.getHeaderGroups().map((V) => /* @__PURE__ */ t$1("tr", {
+          children: V.headers.map((L) => /* @__PURE__ */ t$1("th", {
             onClick: L.column.getToggleSortingHandler(),
             className: "border-b dark:border-primary-600 font-medium pr-2 pl-4 pt-3 pb-3 text-primary-400 dark:text-primary-200 text-left",
             children: /* @__PURE__ */ h(de, {
@@ -2063,15 +2063,15 @@ function Hn({
                 children: /* @__PURE__ */ t$1(Cn, {})
               }) : /* @__PURE__ */ t$1("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
-                children: /* @__PURE__ */ t$1(yn, {})
+                children: /* @__PURE__ */ t$1(wn, {})
               }) : null]
             })
           }, L.id))
-        }, A.id))
+        }, V.id))
       }), /* @__PURE__ */ t$1("tbody", {
-        children: k.map((A) => {
+        children: k.map((V) => {
           var X;
-          const L = w[A.index];
+          const L = y[V == null ? void 0 : V.index];
           return (X = s2 == null ? void 0 : s2(L)) != null ? X : /* @__PURE__ */ t$1("tr", {
             children: L.getVisibleCells().map((H) => /* @__PURE__ */ t$1("td", {
               className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
@@ -2499,62 +2499,6 @@ function CoinSelectButton({
     })
   });
 }
-function SwapPanel({
-  coin,
-  onCoinSelect,
-  setValue,
-  value,
-  disabled,
-  coins,
-  title
-}) {
-  return /* @__PURE__ */ jsxs("div", {
-    className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
-    children: [/* @__PURE__ */ jsxs("div", {
-      className: "flex justify-between flex-auto flex-col gap-2",
-      children: [/* @__PURE__ */ jsx(de, {
-        className: "text-primary-300",
-        children: title
-      }), /* @__PURE__ */ jsx("div", {
-        children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
-          coins,
-          trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
-            coin
-          }),
-          onCoinSelect
-        })
-      })]
-    }), /* @__PURE__ */ jsxs("div", {
-      className: "flex justify-between flex-auto flex-col gap-4",
-      children: [/* @__PURE__ */ jsx("div", {
-        className: "text-sm text-right",
-        children: "Balance: -"
-      }), /* @__PURE__ */ jsx("input", {
-        disabled: !!disabled,
-        inputMode: "decimal",
-        min: "0",
-        type: "number",
-        onChange: setValue,
-        value: Number(value.toFixed(coin == null ? void 0 : coin.decimals)),
-        className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
-        placeholder: "0.00"
-      })]
-    })]
-  });
-}
-function SwapButton({
-  onClick
-}) {
-  return /* @__PURE__ */ jsx("div", {
-    className: "text-center h-4 flex justify-center",
-    children: /* @__PURE__ */ jsx("div", {
-      className: "absolute mt-[-1rem] w-12 text-brand bg-primary-900 shadow-md rounded-[50%] p-3 cursor-pointer hover:bg-primary-900/60",
-      onClick,
-      role: "button",
-      children: /* @__PURE__ */ jsx(ArrowsUpDownIcon, {})
-    })
-  });
-}
 var Wallets = /* @__PURE__ */ ((Wallets2) => {
   Wallets2["Petra"] = "Petra";
   Wallets2["Martian"] = "Martian";
@@ -2672,6 +2616,193 @@ const WalletProvider = WalletContextProvider;
 function useWallet() {
   const wallet = react.exports.useContext(WalletContext);
   return wallet;
+}
+const BalancesDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "Balances"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "balances"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfo"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "balance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "availableBalance"
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function useBalances() {
+  const [wallet, , connection] = useWallet();
+  const balancesQuery = useQuery(BalancesDocument, {
+    variables: {
+      owner: connection == null ? void 0 : connection.address
+    },
+    skip: !(connection == null ? void 0 : connection.address)
+  });
+  return balancesQuery;
+}
+function SwapPanel({
+  coin,
+  onCoinSelect,
+  setValue,
+  value,
+  disabled,
+  coins,
+  title
+}) {
+  var _a, _b;
+  const balances = useBalances();
+  const findBalance = (coin2) => {
+    var _a2, _b2;
+    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.balances.find((b) => b.coinInfo.coinType === coin2);
+  };
+  return /* @__PURE__ */ jsxs("div", {
+    className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
+    children: [/* @__PURE__ */ jsxs("div", {
+      className: "flex justify-between flex-auto flex-col gap-2",
+      children: [/* @__PURE__ */ jsx(de, {
+        className: "text-primary-300",
+        children: title
+      }), /* @__PURE__ */ jsx("div", {
+        children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
+          coins,
+          trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
+            coin
+          }),
+          onCoinSelect
+        })
+      })]
+    }), /* @__PURE__ */ jsxs("div", {
+      className: "flex justify-between flex-auto flex-col gap-4",
+      children: [/* @__PURE__ */ jsxs("div", {
+        className: "text-sm text-right",
+        children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a.balance) != null ? _b : "-" : "-"]
+      }), /* @__PURE__ */ jsx("input", {
+        disabled: !!disabled,
+        inputMode: "decimal",
+        min: "0",
+        type: "number",
+        onChange: setValue,
+        value: Number(value.toFixed(coin == null ? void 0 : coin.decimals)),
+        className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
+        placeholder: "0.00"
+      })]
+    })]
+  });
+}
+function SwapButton({
+  onClick
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    className: "text-center h-4 flex justify-center",
+    children: /* @__PURE__ */ jsx("div", {
+      className: "absolute mt-[-1rem] w-12 text-brand bg-primary-900 shadow-md rounded-[50%] p-3 cursor-pointer hover:bg-primary-900/60",
+      onClick,
+      role: "button",
+      children: /* @__PURE__ */ jsx(ArrowsUpDownIcon, {})
+    })
+  });
 }
 const LastTradePriceDocument = {
   "kind": "Document",
@@ -4299,131 +4430,6 @@ function PoolPositionsTable({}) {
     customRowRender: poolTableProps.customRowRender,
     className: poolTableProps.className
   });
-}
-const BalancesDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "Balances"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "balances"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinInfo"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "coinType"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "decimals"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "name"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "symbol"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "balance"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "availableBalance"
-                }
-              }]
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function useBalances() {
-  const [wallet, , connection] = useWallet();
-  const balancesQuery = useQuery(BalancesDocument, {
-    variables: {
-      owner: connection == null ? void 0 : connection.address
-    },
-    skip: !(connection == null ? void 0 : connection.address)
-  });
-  return balancesQuery;
 }
 function useBalancesTable() {
   var _a, _b;
