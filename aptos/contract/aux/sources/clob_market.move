@@ -162,6 +162,8 @@ module aux::clob_market {
     const E_UNAUTHORIZED_FOR_MARKET_UPDATE: u64 = 36;
     const E_UNAUTHORIZED_FOR_MARKET_CREATION: u64 = 37;
     const E_MARKET_NOT_UPDATING: u64 = 38;
+    const E_SIDE_EMPTY: u64 = 38;
+    const E_INVALID_LEVEL_INDEX: u64 = 38;
 
     /*********/
     /* ORDER */
@@ -371,7 +373,7 @@ module aux::clob_market {
     }
 
     /// Returns value of order in quote AU
-    fun quote_qty<B>(price: u64, quantity: u64): u64 {
+    public fun quote_qty<B>(price: u64, quantity: u64): u64 {
         // TODO: pass in decimals for gas saving
         ((price as u128) * (quantity as u128) / exp(10, (coin::decimals<B>() as u128)) as u64)
     }
@@ -1296,17 +1298,69 @@ module aux::clob_market {
         market.tick_size
     }
 
-    // TODO: consolidate these with inner functions
     // Returns the best bid price as quote coin atomic units
     public fun best_bid_au<B, Q>(): u64 acquires Market {
         let market = borrow_global<Market<B, Q>>(@aux);
-        best_bid_price(market)
+        assert!(critbit::size(&market.bids) > 0, E_NO_BIDS_IN_BOOK);
+        let index = critbit::get_max_index(&market.bids);
+        let (_, level) = critbit::borrow_at_index(&market.bids, index);
+        level.price
     }
 
-    // Returns the best bid price as quote coin atomic units
+    // Returns the best ask price as quote coin atomic units
     public fun best_ask_au<B, Q>(): u64 acquires Market {
         let market = borrow_global<Market<B, Q>>(@aux);
-        best_ask_price(market)
+        assert!(critbit::size(&market.asks) > 0, E_NO_ASKS_IN_BOOK);
+        let index = critbit::get_min_index(&market.asks);
+        let (_, level) = critbit::borrow_at_index(&market.asks, index);
+        level.price
+    }
+
+    /// Returns (level_idx, level_price, total_quantity) for the next level (in order)
+    /// Parameters:
+    ///     first: if true, return the first level (max for bids, min for asks)
+    ///     current_idx: current index, for which the next level will be returned (ignored if first == true)
+    ///     bids: if true, use bids, if false, use asks
+    ///     timestamp: current timestamp, used to eliminate timed out orders
+    ///     sender_addr: address of sender, used to eliminate self-trade orders
+    public(friend) fun next_level_in_order<B, Q>(first: bool, current_idx: u64, bids: bool, timestamp: u64, sender_addr: address): (u64, u64, u64) acquires Market {
+        let market = borrow_global<Market<B, Q>>(@aux);
+        let side = if (bids) { &market.bids } else { &market.asks };
+        assert!(critbit::size(side) > 0, E_SIDE_EMPTY);
+        let level_idx = if (first) {
+            if (bids) {
+                critbit::get_max_index(side)
+            } else {
+                critbit::get_min_index(side)
+            }
+        } else {
+            assert!(current_idx != CRITBIT_NULL_INDEX, E_INVALID_LEVEL_INDEX);
+            if (bids) {
+                critbit::next_in_reverse_order(side, current_idx)
+            } else {
+                critbit::next_in_order(side, current_idx)
+            }
+        };
+        if (level_idx == CRITBIT_NULL_INDEX) {
+            return (level_idx, 0, 0)
+        };
+        let (_, level) = critbit::borrow_at_index(side, level_idx);
+        // now walk the book.
+        // since some orders have already expired, we need to check the orders one by one.
+        let total_quantity = 0;
+        let order_idx = critbit_v::get_min_index(&level.orders);
+        while (order_idx != CRITBIT_NULL_INDEX) {
+            let (_, passive_order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+            if (passive_order.owner_id == sender_addr) {
+                // Assum STP == CANCEL_AGGRESSIVE
+                break
+            };
+            if (passive_order.timeout_timestamp >= timestamp) {
+                total_quantity = total_quantity + passive_order.quantity;
+            };
+            order_idx = critbit_v::next_in_order(&level.orders, order_idx);
+        };
+        (level_idx, level.price, total_quantity)
     }
 
     // cancel_order returns (order_cancelled, cancel_success)
@@ -1388,13 +1442,15 @@ module aux::clob_market {
 
         // round quantity down (router may submit un-quantized quantities)
         let lot_size = market.lot_size;
+        let tick_size = market.lot_size;
         let rounded_quantity = quantity / lot_size * lot_size;
+        let rounded_price = limit_price / tick_size * tick_size;
 
         let (base_au, quote_au) = new_order<B, Q>(
             market,
             sender_addr,
             is_bid,
-            limit_price,
+            rounded_price,
             rounded_quantity,
             0,
             order_type,
@@ -1412,12 +1468,18 @@ module aux::clob_market {
             if (is_bid) {
                 // taker pays quote, receives base
                 let quote = coin::extract<Q>(quote_coin, (quote_au as u64));
+                if (!coin::is_account_registered<Q>(@aux)) {
+                    coin::register<Q>(module_signer);
+                };
                 coin::deposit<Q>(vault_addr, quote);
                 let base = coin::withdraw<B>(module_signer, (base_au as u64));
                 coin::merge<B>(base_coin, base);
             } else {
                 // taker receives quote, pays base
                 let base = coin::extract<B>(base_coin, (base_au as u64));
+                if (!coin::is_account_registered<B>(@aux)) {
+                    coin::register<B>(module_signer);
+                };
                 coin::deposit<B>(vault_addr, base);
                 let quote = coin::withdraw<Q>(module_signer, (quote_au as u64));
                 coin::merge<Q>(quote_coin, quote);
@@ -1428,6 +1490,68 @@ module aux::clob_market {
             abort(E_INVALID_STATE)
         };
         (base_au, quote_au)
+    }
+
+    /// returns (base_qty_filled, quote_qty_filled) (includes fees)
+    public fun estimate_fill<B, Q>(order_owner: address, is_bid: bool, limit_price: u64, quantity: u64, timestamp: u64): (u64, u64) acquires Market {
+        let market = borrow_global<Market<B, Q>>(@aux);
+        let tick_size = market.tick_size;
+        let lot_size = market.lot_size;
+        if (quantity % lot_size != 0) {
+            abort(E_INVALID_QUANTITY)
+        } else if (limit_price % tick_size != 0) {
+            abort(E_INVALID_PRICE)
+        };
+        let filled = 0u64;
+        let quote_quantity = 0;
+        let side = if (is_bid) { &market.asks } else { &market.bids };
+        if (critbit::size(side) == 0) {
+            // Just emit the event
+            return (0, 0)
+        };
+        let idx = if (is_bid) { critbit::get_min_index(side) } else { critbit::get_max_index(side) };
+
+        while(idx != CRITBIT_NULL_INDEX && filled < quantity) {
+            let (_, level) = critbit::borrow_at_index(side, idx);
+            let can_fill = (is_bid && level.price <= limit_price) || (!is_bid && level.price >= limit_price);
+            if (can_fill) {
+                // now walk the book.
+                // since some orders have already expired, we need to check the orders one by one.
+                let order_idx = critbit_v::get_min_index(&level.orders);
+                while (order_idx != CRITBIT_NULL_INDEX && filled < quantity) {
+                    let (_, passive_order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                    if (passive_order.owner_id == order_owner) {
+                        // Assum STP == CANCEL_AGGRESSIVE
+                        return (0, 0)
+                    };
+                    if (passive_order.timeout_timestamp >= timestamp) {
+                        let remaining = quantity - filled;
+                        let filled_qty = if (remaining < passive_order.quantity) {
+                            filled = quantity;
+                            remaining
+                        } else {
+                            filled = filled + passive_order.quantity;
+                            passive_order.quantity
+                        };
+                        quote_quantity = quote_quantity + quote_qty<B>(filled_qty, level.price);
+                    };
+                    order_idx = critbit_v::next_in_order(&level.orders, order_idx);
+                };
+                idx = if (is_bid) {
+                    critbit::next_in_order(side, idx)
+                } else {
+                    critbit::next_in_reverse_order(side, idx)
+                };
+            } else {
+                break
+            }
+        };
+        if (is_bid) {
+            quote_quantity = fee::add_fee(order_owner, quote_quantity, true);
+        } else {
+            quote_quantity = fee::subtract_fee(order_owner, quote_quantity, true);
+        };
+        (filled, quote_quantity)
     }
 
     /*********************/
@@ -1534,14 +1658,14 @@ module aux::clob_market {
         }
     }
 
-    public fun best_bid_price<B, Q>(market: &Market<B, Q>): u64 {
+    fun best_bid_price<B, Q>(market: &Market<B, Q>): u64 {
         assert!(critbit::size(&market.bids) > 0, E_NO_BIDS_IN_BOOK);
         let index = critbit::get_max_index(&market.bids);
         let (_, level) = critbit::borrow_at_index(&market.bids, index);
         level.price
     }
 
-    public fun best_ask_price<B, Q>(market: &Market<B, Q>): u64 {
+    fun best_ask_price<B, Q>(market: &Market<B, Q>): u64 {
         assert!(critbit::size(&market.asks) > 0, E_NO_ASKS_IN_BOOK);
         let index = critbit::get_min_index(&market.asks);
         let (_, level) = critbit::borrow_at_index(&market.asks, index);

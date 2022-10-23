@@ -490,7 +490,7 @@ module aux::amm {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_out(
+            amount_out(
                 au_in,
                 x_reserve,
                 y_reserve,
@@ -500,11 +500,12 @@ module aux::amm {
             let pool = borrow_global<Pool<CoinOut, CoinIn>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps)
+            amount_out(au_in, y_reserve, x_reserve, pool.fee_bps)
         } else {
             abort(EPOOL_NOT_FOUND)
         }
     }
+
 
     /// Returns au of input token required to receive au of output token
     public fun au_in<CoinIn, CoinOut>(au_out: u64): u64 acquires Pool {
@@ -512,12 +513,12 @@ module aux::amm {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps)
+            amount_in(au_out, x_reserve, y_reserve, pool.fee_bps)
         } else if (exists<Pool<CoinOut, CoinIn>>(@aux)) {
             let pool = borrow_global<Pool<CoinOut, CoinIn>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps)
+            amount_in(au_out, y_reserve, x_reserve, pool.fee_bps)
         } else {
             abort(EPOOL_NOT_FOUND)
         }
@@ -812,7 +813,7 @@ module aux::amm {
             };
 
             // Update pool balances
-            let au_out = get_amount_out(au_in, x_reserve, y_reserve, pool.fee_bps);
+            let au_out = amount_out(au_in, x_reserve, y_reserve, pool.fee_bps);
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
 
             // transfer tokens
@@ -865,7 +866,7 @@ module aux::amm {
             };
 
             // Update pool balances
-            let au_out = get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps);
+            let au_out = amount_out(au_in, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
 
             // transfer tokens
@@ -943,7 +944,7 @@ module aux::amm {
                 if (limit_amount_in == 0) {
                     return (0, 0)
                 };
-                let limit_amount_out = get_amount_out(
+                let limit_amount_out = amount_out(
                     limit_amount_in,
                     x_reserve,
                     y_reserve,
@@ -956,7 +957,7 @@ module aux::amm {
                     au_out = limit_amount_out
                 };
             };
-            let au_in = get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps);
+            let au_in = amount_in(au_out, x_reserve, y_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
             let in = coin::extract<CoinIn>(coin_in, au_in);
@@ -1002,7 +1003,7 @@ module aux::amm {
                 if (limit_amount_in == 0) {
                     return (0, 0)
                 };
-                let limit_amount_out = get_amount_out(limit_amount_in, y_reserve, x_reserve, pool.fee_bps);
+                let limit_amount_out = amount_out(limit_amount_in, y_reserve, x_reserve, pool.fee_bps);
                 if (limit_amount_out == 0) {
                     return (0, 0)
                 };
@@ -1011,7 +1012,7 @@ module aux::amm {
                 };
             };
 
-            let au_in = get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps);
+            let au_in = amount_in(au_out, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
             let in = coin::extract<CoinIn>(coin_in, au_in);
@@ -1143,7 +1144,7 @@ module aux::amm {
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
 
-            let au_out = get_amount_out(au_in, x_reserve, y_reserve, pool.fee_bps);
+            let au_out = amount_out(au_in, x_reserve, y_reserve, pool.fee_bps);
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve + au_in) as u128) * ((y_reserve - au_out) as u128);
@@ -1156,7 +1157,7 @@ module aux::amm {
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
 
-            let au_out = get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps);
+            let au_out = amount_out(au_in, y_reserve, x_reserve, pool.fee_bps);
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
             let old_product = (x_reserve as u128) * (y_reserve as u128);
             let new_product = ((x_reserve - au_out) as u128) * ((y_reserve + au_in) as u128);
@@ -1187,6 +1188,98 @@ module aux::amm {
         );
         coin::deposit<CoinOut>(signer::address_of(sender), out);
         swap
+    }
+
+    public fun fee_bps<X, Y>(): u64 acquires Pool {
+       assert!(exists<Pool<X, Y>>(@aux), EPOOL_NOT_FOUND);
+       let pool = borrow_global<Pool<X, Y>>(@aux);
+       pool.fee_bps
+    }
+
+
+    public fun amount_out(
+        amount_in: u64,
+        reserve_in: u64,
+        reserve_out: u64,
+        fee_bps: u64
+    ): u64 {
+        // Swapping x -> y
+        //
+        // dx_f = dx(1-fee)
+        //
+        // (x + dx_f)*(y - dy) = x*y
+        //
+        // dy = y * dx_f / (x + dx_f)
+        assert!(amount_in > 0, EINSUFFICIENT_INPUT_AMOUNT);
+        assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
+        let amount_in_with_fee = (amount_in as u128) * ((10000 - fee_bps) as u128);
+        let numerator = to128(mul256(amount_in_with_fee, (reserve_out as u128)));
+        let denominator = ((reserve_in as u128) * 10000) + amount_in_with_fee;
+        ((numerator / denominator) as u64)
+    }
+
+    public fun amount_in(
+        amount_out: u64,
+        reserve_in: u64,
+        reserve_out: u64,
+        fee_bps: u64
+    ): u64 {
+        // Swapping x -> y
+        //
+        // dx_f = dx(1-fee)
+        //
+        // (x + dx_f) = x*y / (y - dy)
+        //
+        // dx_f = x * y / (y - dy) - x(y - dy)/(y- dy)
+        //
+        // dx_f = (xy - xy + x dy)/(y - dy)
+        //
+        // dx_f = (x * dy) / (y - dy)
+        //
+        // dx = x * dy / ((y + dy)*(1-f))
+        assert!(amount_out > 0, EINSUFFICIENT_OUTPUT_AMOUNT);
+        assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
+        let numerator = (reserve_in as u128) * (amount_out as u128) * 10000;
+        let denominator = ((reserve_out - amount_out) as u128) * ((10000 - fee_bps) as u128);
+        ((numerator + denominator - 1) / denominator as u64)
+    }
+
+    // Returns the amount of input coin (coin added to pool) that would achieve
+    // the provided limit price of OutputCoin/InputCoin
+    public fun amount_in_limit(
+        limit_out_per_in_num: u128,
+        limit_out_per_in_denom: u128,
+        reserve_in: u64,
+        reserve_out: u64,
+        _fee_bps: u64
+    ): u64 {
+        // Approximation (ignores fees)
+        //
+        // x in -> y out
+        // p = limit price of input coin (y/x)
+        // q = amount x added to pool to achieve limit price (p)
+        // f = (10000 + fee_bps) / 10000
+        //
+        // p = y / x
+        //   = x*y / x^2
+        //   = k / x^2
+        //   = k / (x + q)^2
+        //
+        // q = sqrt(k / p) - x
+
+        let inside_root = div128(
+            mul256(
+                (reserve_in as u128) * (reserve_out as u128),
+                limit_out_per_in_denom
+            ),
+            limit_out_per_in_num
+        );
+        let left = integer_square_root(inside_root);
+        if (left < (reserve_in as u128)) {
+            0
+        } else {
+            ((left - (reserve_in as u128)) as u64)
+        }
     }
 
     /*********************/
@@ -1375,87 +1468,6 @@ module aux::amm {
         (lp, x, y)
     }
 
-    fun get_amount_out(
-        amount_in: u64,
-        reserve_in: u64,
-        reserve_out: u64,
-        fee_bps: u64
-    ): u64 {
-        // Swapping x -> y
-        //
-        // dx_f = dx(1-fee)
-        //
-        // (x + dx_f)*(y - dy) = x*y
-        //
-        // dy = y * dx_f / (x + dx_f)
-        assert!(amount_in > 0, EINSUFFICIENT_INPUT_AMOUNT);
-        assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
-        let amount_in_with_fee = (amount_in as u128) * ((10000 - fee_bps) as u128);
-        let numerator = to128(mul256(amount_in_with_fee, (reserve_out as u128)));
-        let denominator = ((reserve_in as u128) * 10000) + amount_in_with_fee;
-        ((numerator / denominator) as u64)
-    }
-
-    fun get_amount_in(
-        amount_out: u64,
-        reserve_in: u64,
-        reserve_out: u64,
-        fee_bps: u64
-    ): u64 {
-        // Swapping x -> y
-        //
-        // dx_f = dx(1-fee)
-        //
-        // (x + dx_f)*(y - dy) = x*y
-        // (x + dx_f) = x*y / (y - dy)
-        // dx_f = x * y / (y - dy) - x(y - dy)/(y- dy)
-        // dx_f = (xy - xy + x dy)/(y - dy)
-        // dx_f = (x * dy) / (y - dy)
-        // dx = x * dy / ((y - dy)*(1-f))
-        assert!(amount_out > 0, EINSUFFICIENT_OUTPUT_AMOUNT);
-        assert!(reserve_in > 0 && reserve_out > 0, EINSUFFICIENT_LIQUIDITY);
-        let numerator = (reserve_in as u128) * (amount_out as u128) * 10000;
-        let denominator = ((reserve_out - amount_out) as u128) * ((10000 - fee_bps) as u128);
-        ((numerator + denominator - 1) / denominator as u64)
-    }
-
-    // Returns the amount of input coin (coin added to pool) that would achieve
-    // the provided limit price of OutputCoin/InputCoin
-    fun amount_in_limit(
-        limit_out_per_in_num: u128,
-        limit_out_per_in_denom: u128,
-        reserve_in: u64,
-        reserve_out: u64,
-        _fee_bps: u64
-    ): u64 {
-        // Approximation (ignores fees)
-        //
-        // x in -> y out
-        // p = limit price of input coin (y/x)
-        // q = amount x added to pool to achieve limit price (p)
-        // f = (10000 + fee_bps) / 10000
-        //
-        // p = y / x
-        //   = x*y / x^2
-        //   = k / x^2
-        //   = k / (x + q)^2
-        //
-        // q = sqrt(k / p) - x
-
-        let inside_root = div128(
-            mul256(
-                (reserve_in as u128) * (reserve_out as u128),
-                limit_out_per_in_denom
-            ),
-            limit_out_per_in_num
-        );
-        let left = integer_square_root(inside_root);
-        if (left < (reserve_in as u128)) {
-            0
-        } else {
-            ((left - (reserve_in as u128)) as u64)
-        }
-    }
 
     /// integer_square_root returns the floor of the square root of the input.
     fun integer_square_root(s: Uint256): u128 {
