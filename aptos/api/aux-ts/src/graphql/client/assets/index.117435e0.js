@@ -7923,6 +7923,85 @@ const SimplePoolDocument = {
     }
   }]
 };
+const PoolSpotPriceDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "PoolSpotPrice"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "poolInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "PoolInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "pool"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "poolInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "poolInput"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "priceX"
+            }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "priceY"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function usePoolSpotPrice(input, skip) {
+  const poolPrice = useQuery(PoolSpotPriceDocument, {
+    variables: input,
+    fetchPolicy: "network-only",
+    skip
+  });
+  return poolPrice;
+}
 function AddLiquidityContainer({}) {
   var _a, _b, _c, _d, _e, _f, _g, _h;
   const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
@@ -7947,24 +8026,14 @@ function AddLiquidityContainer({}) {
     skip: !firstCoin || !secondCoin
   });
   const poolNoAmount = !((_b = (_a = poolQuery.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.amountX);
-  const firstCoinPrice = usePoolPriceIn({
-    amount: firstCoinAu,
-    coinTypeIn: firstCoin == null ? void 0 : firstCoin.coinType,
+  const coinSpotPrice = usePoolSpotPrice({
     poolInput: {
       coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
       coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
     }
-  }, poolNoAmount);
-  const secondCoinPrice = usePoolPriceIn({
-    amount: secondCoinAu,
-    coinTypeIn: secondCoin == null ? void 0 : secondCoin.coinType,
-    poolInput: {
-      coinTypeX: firstCoin == null ? void 0 : firstCoin.coinType,
-      coinTypeY: secondCoin == null ? void 0 : secondCoin.coinType
-    }
-  }, poolNoAmount);
-  const conversionIn = (_e = (_d = (_c = firstCoinPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.quoteExactIn) != null ? _e : 0;
-  const conversionOut = (_h = (_g = (_f = secondCoinPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.quoteExactIn) != null ? _h : 0;
+  });
+  const conversionIn = firstCoinAu * ((_e = (_d = (_c = coinSpotPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.priceX) != null ? _e : 0);
+  const conversionOut = secondCoinAu * ((_h = (_g = (_f = coinSpotPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.priceY) != null ? _h : 0);
   const notifications = jt();
   async function addLiquidityHandler() {
     return await addLiquidity({
