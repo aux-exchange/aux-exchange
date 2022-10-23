@@ -32,6 +32,7 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 	apiPort := "8080"
 	tcpPort := "6180"
 	telemetryPort := "9101"
+	detach := false
 
 	cmd.Flags().StringVarP(&workingDir, "working-dir", "d", workingDir, "working directory - default to user home directory. a folder \"aptos-node-{network}\" wil be created in that folder.")
 	cmd.MarkFlagDirname("working-dir")
@@ -39,6 +40,7 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&apiPort, "api-port", "p", apiPort, "api port (try not to collide with default 8080)")
 	cmd.Flags().StringVarP(&tcpPort, "tcp-port", "t", tcpPort, "tcp port (try not to collide with default 6180)")
 	cmd.Flags().StringVarP(&telemetryPort, "telemetry-port", "m", telemetryPort, "telemetry port (try not to collide with default 9101)")
+	cmd.Flags().BoolVar(&detach, "detach", detach, "detach the podman process")
 
 	cmd.Run = func(_ *cobra.Command, _ []string) {
 		workingDir = path.Clean(workingDir)
@@ -75,8 +77,15 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 		image := fmt.Sprintf("docker.io/aptoslabs/validator:%s", networkName)
 
 		//  docker run --pull=always --rm -p 8080:8080 -p 9101:9101 -p 6180:6180 -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data --workdir /opt/aptos/etc --name=aptos-fullnode aptoslabs/validator:devnet aptos-node -f /opt/aptos/etc/public_full_node.yaml
-		fullNodeCmd := exec.Command("podman", "run", "--rm", "--pull=always", "-d",
-			"-p", fmt.Sprintf("%s:8080", apiPort),
+		params := []string{
+			"run",
+			"--rm", "--pull=always",
+		}
+
+		if detach {
+			params = append(params, "-d")
+		}
+		params = append(params, "-p", fmt.Sprintf("%s:8080", apiPort),
 			"-p", fmt.Sprintf("%s:6180", tcpPort),
 			"-p", fmt.Sprintf("%s:9101", telemetryPort),
 			"-v", fmt.Sprintf("%s:/opt/aptos/etc:z", realDir),
@@ -87,6 +96,8 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 			"aptos-node",
 			"-f", "/opt/aptos/etc/full_node.yml",
 		)
+
+		fullNodeCmd := exec.Command("podman", params...)
 		fullNodeCmd.Stderr = os.Stderr
 		fullNodeCmd.Stdout = os.Stdout
 
