@@ -121,7 +121,9 @@ export const query = {
 
     // The "liquidity" of a coin is defined as the sum of the liquidity of the
     // pools that trade it.
-    const allPools = await this.pools(parent, {});
+    const allPools = await this.pools(parent, {
+      poolInputs: await aux.Pool.index(auxClient),
+    });
     const coinInfo = new Map();
     for (const pool of allPools) {
       for (const coin of [pool!.coinInfoX.coinType, pool!.coinInfoY.coinType]) {
