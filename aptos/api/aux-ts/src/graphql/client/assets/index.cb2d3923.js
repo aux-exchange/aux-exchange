@@ -2726,6 +2726,62 @@ const BalancesDocument = {
                 }
               }]
             }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "walletBalances"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfo"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "balance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "availableBalance"
+                }
+              }]
+            }
           }]
         }
       }]
@@ -2755,7 +2811,7 @@ function SwapPanel({
   const balances = useBalances();
   const findBalance = (coin2) => {
     var _a2, _b2;
-    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.balances.find((b) => b.coinInfo.coinType === coin2);
+    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.walletBalances.find((b) => b.coinInfo.coinType === coin2);
   };
   return /* @__PURE__ */ jsxs("div", {
     className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
@@ -7672,6 +7728,12 @@ function DepositInput({
   onChange,
   value
 }) {
+  var _a, _b;
+  const balances = useBalances();
+  const findBalance = (coin2) => {
+    var _a2, _b2;
+    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.walletBalances.find((b) => b.coinInfo.coinType === coin2);
+  };
   return /* @__PURE__ */ jsxs("div", {
     className: "relative w-full",
     children: [/* @__PURE__ */ jsx("input", {
@@ -7687,9 +7749,9 @@ function DepositInput({
         coin
       }),
       onCoinSelect
-    }), /* @__PURE__ */ jsx("span", {
+    }), /* @__PURE__ */ jsxs("span", {
       className: "absolute right-2 mt-1 font-semibold text-primary-400",
-      children: "Balance: 0"
+      children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a.balance) != null ? _b : "-" : "-"]
     })]
   });
 }
