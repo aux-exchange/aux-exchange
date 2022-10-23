@@ -117,13 +117,18 @@ export const query = {
       );
     }
     const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const coins = JSON.parse(await fs.readFile(path, "utf-8"));
+    let coins = JSON.parse(await fs.readFile(path, "utf-8"));
+    const mojito = coins[0];
+
+    coins = coins.slice(1, coins.length);
+    coins.push(mojito);
+    coins = coins.reverse();
     return coins.map((coin: any) => ({
       coinType: coin.token_type.type,
       decimals: coin.decimals,
       name: coin.name,
       symbol: coin.symbol,
-    })).reverse();
+    }));
   },
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const pool = await aux.Pool.read(auxClient, poolInput);
