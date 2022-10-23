@@ -130,8 +130,20 @@ export const query = {
     if (pool === undefined) {
       return null;
     }
+    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
+    const hippoCoins = JSON.parse(await fs.readFile(path, "utf-8")).map(
+      (coin: any) => ({
+        coinType: coin.token_type.type,
+        decimals: coin.decimals,
+        name: coin.name,
+        symbol: coin.symbol,
+      })
+    );
+    const coinTypeToHippoNameSymbol = Object.fromEntries(
+      hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
+    );
     // @ts-ignore
-    return formatPool(pool);
+    return formatPool(pool, coinTypeToHippoNameSymbol);
   },
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
