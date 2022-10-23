@@ -107,7 +107,7 @@ export const query = {
   address() {
     return auxClient.moduleAddress;
   },
-  async coins(_parent: any): Promise<CoinInfo[]> {
+  async coins(parent: any): Promise<CoinInfo[]> {
     if (process.env["APTOS_PROFILE"] === "devnet") {
       return Promise.all(
         [
@@ -118,12 +118,61 @@ export const query = {
     }
     const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
     const coins = JSON.parse(await fs.readFile(path, "utf-8"));
-    return coins.map((coin: any) => ({
-      coinType: coin.token_type.type,
-      decimals: coin.decimals,
-      name: coin.name,
-      symbol: coin.symbol,
-    })).reverse();
+
+    // The "liquidity" of a coin is defined as the sum of the liquidity of the
+    // pools that trade it.
+    const allPools = await this.pools(parent, {});
+    const coinInfo = new Map();
+    for (const pool of allPools) {
+      for (const coin of [pool!.coinInfoX.coinType, pool!.coinInfoY.coinType]) {
+        if (!coinInfo.has(coin)) {
+          coinInfo.set(coin, {
+            recognizedLiquidity: (pool as any).recognizedLiquidity,
+            auLiquidity: (pool as any).auLiquidity,
+            priority: getFeaturedPriority(pool.featuredStatus),
+          });
+        } else {
+          const info = coinInfo.get(coin);
+          info.recognizedLiquidity += (pool as any).recognizedLiquidity;
+          info.auLiquidity += (pool as any).auLiquidity;
+          info.priority = Math.max(
+            info.priority,
+            getFeaturedPriority(pool.featuredStatus)
+          );
+        }
+      }
+    }
+
+    const allCoins = coins.map((coin: any) => {
+      const coinType = coin.token_type.type;
+      // The feature priority of a token is the max feature priority of the
+      // pools that include it.
+      const thisCoinInfo = coinInfo.get(coinType);
+      const recognizedLiquidity =
+        thisCoinInfo === undefined ? 0 : thisCoinInfo.recognizedLiquidity;
+      const auLiquidity =
+        thisCoinInfo === undefined ? 0 : thisCoinInfo.auLiquidity;
+      const priority = thisCoinInfo === undefined ? 0 : thisCoinInfo.priority;
+      return {
+        coinType: coin.token_type.type,
+        decimals: coin.decimals,
+        name: coin.name,
+        symbol: coin.symbol,
+        priority,
+        recognizedLiquidity,
+        auLiquidity,
+      };
+    });
+    allCoins.sort((lhs: any, rhs: any) => {
+      if (lhs.priority != rhs.priority) {
+        return rhs.priority - lhs.priority;
+      }
+      if (lhs.recognizedLiquidity != rhs.recognizedLiquidity) {
+        return rhs.recognizedLiquidity - lhs.recognizedLiquidity;
+      }
+      return rhs.auLiquidity - lhs.auLiquidity;
+    });
+    return allCoins;
   },
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const pool = await aux.Pool.read(auxClient, poolInput);
