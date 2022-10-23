@@ -241,12 +241,16 @@ async function logMarket(productId: string, market: Market) {
     quoteCoinType: market.quoteCoinInfo.coinType,
   });
   const l2 = {
+    // @ts-ignore
     bids: m.level2.bids
+      // @ts-ignore
       .map((l2) => [l2.price.toNumber(), l2.quantity.toNumber()])
       // .reverse()
       // .filter(([price, _]) => price! > 1300 && price! < 1400)
       .slice(0, 5),
+    // @ts-ignore
     asks: m.level2.asks
+      // @ts-ignore
       .map((l2) => [l2.price.toNumber(), l2.quantity.toNumber()])
       // .reverse()
       // .filter(([price, _]) => price! > 1300 && price! < 1400)
@@ -254,7 +258,9 @@ async function logMarket(productId: string, market: Market) {
   };
   console.log({
     productId,
+    // @ts-ignore
     numBids: m.level2.bids.length,
+    // @ts-ignore
     numAsks: m.level2.asks.length,
     bids: l2.bids,
     asks: l2.asks,
