@@ -72,8 +72,10 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 		fullNodeConfigPath := path.Join(realDir, "full_node.yml")
 		os.WriteFile(fullNodeConfigPath, getOrPanic(fullNodeConfig.ToConfigFile()), 0o666)
 
+		image := fmt.Sprintf("docker.io/aptoslabs/validator:%s", networkName)
+
 		//  docker run --pull=always --rm -p 8080:8080 -p 9101:9101 -p 6180:6180 -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data --workdir /opt/aptos/etc --name=aptos-fullnode aptoslabs/validator:devnet aptos-node -f /opt/aptos/etc/public_full_node.yaml
-		fullNodeCmd := exec.Command("podman", "run", "--rm", "--pull=always",
+		fullNodeCmd := exec.Command("podman", "run", "--rm", "--pull=always", "-d",
 			"-p", fmt.Sprintf("%s:8080", apiPort),
 			"-p", fmt.Sprintf("%s:6180", tcpPort),
 			"-p", fmt.Sprintf("%s:9101", telemetryPort),
@@ -81,7 +83,7 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 			"-v", fmt.Sprintf("%s:/opt/aptos/data:z", dataDir),
 			"--workdir", "/opt/aptos/etc",
 			fmt.Sprintf("--name=aptos-fullnode-%s", networkName),
-			"docker.io/aptoslabs/validator:devnet",
+			image,
 			"aptos-node",
 			"-f", "/opt/aptos/etc/full_node.yml",
 		)
