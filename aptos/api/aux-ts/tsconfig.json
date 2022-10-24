@@ -9,12 +9,6 @@
     "outDir": "./build",
     "removeComments": true,
     "sourceMap": true,
-
-    "baseUrl": "./",
-    "paths": {
-      "*": ["src/types/*"]
-    },
-
     "preserveSymlinks": true,
     "allowSyntheticDefaultImports": true
   },
