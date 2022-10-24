@@ -1,11 +1,5 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, n as useQuery, A as ArrowsUpDownIcon, o as useSubscription, s as useMutation, F as Fragment, t as DateTime, L as Link, X as XMarkIcon, v as ChevronUpIcon, M as MagnifyingGlassIcon, w as ArrowDownIcon, x as ArrowLongLeftIcon, y as useLazyQuery, z as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, B as GraphQLWsLink, E as createClient, J as split, K as getMainDefinition, P as ApolloClient, Q as InMemoryCache, U as useGeoLocation, V as ApolloProvider, Y as BrowserRouter, Z as Routes, _ as Route, $ as client$1 } from "./vendor.0726e70b.js";
-import "./__commonjsHelpers__.5615ff64.js";
+import { r as react, c as create$1, W as We, g as gt$1, p as pt$1, m as mt$1, q as qe$1, O as Oe, R as React, u as useAnimationControls, a as motion, b as useNavigate, d as useLocation, e as be, G as Ge, S as Slider, f as useReactTable, h as flexRender, i as getCoreRowModel, j as getSortedRowModel, k as jsx, D as Do, l as jsxs, C as ChevronDownIcon, n as dist, o as useQuery, A as ArrowsUpDownIcon, s as useMutation, F as Fragment, t as useSubscription, v as DateTime, L as Link, X as XMarkIcon, w as ChevronUpIcon, M as MagnifyingGlassIcon, x as ArrowDownIcon, y as ArrowLongLeftIcon, z as useLazyQuery, B as linear, T as Tooltip, I as InformationCircleIcon, N as NavLink, H as HttpLink, E as GraphQLWsLink, J as createClient, K as split, P as getMainDefinition, Q as ApolloClient, U as InMemoryCache, V as useGeoLocation, Y as ApolloProvider, Z as BrowserRouter, _ as Routes, $ as Route, a0 as client$1 } from "./vendor.8044daf1.js";
+import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -324,7 +318,7 @@ function _t({
     })]
   });
 }
-const St = react.exports.forwardRef(_t), kt = St;
+const kt = react.exports.forwardRef(_t), St = kt;
 function ur({
   title: e2,
   message: n2,
@@ -429,9 +423,9 @@ function Mt({}) {
         viewBox: "0 0 20 20",
         xmlns: "http://www.w3.org/2000/svg",
         children: /* @__PURE__ */ t$1("path", {
-          "fill-rule": "evenodd",
+          fillRule: "evenodd",
           d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z",
-          "clip-rule": "evenodd"
+          clipRule: "evenodd"
         })
       }), /* @__PURE__ */ h("div", {
         children: [/* @__PURE__ */ t$1("div", {
@@ -733,7 +727,7 @@ function Ln() {
     if (n2.length && JSON.stringify(s2.current) !== JSON.stringify(n2[0])) {
       const y = n2[0];
       l(y), s2.current = y;
-      const S = setTimeout(async () => {
+      const k = setTimeout(async () => {
         await a.start({
           opacity: [1, 0],
           x: [0, 200],
@@ -741,7 +735,7 @@ function Ln() {
         }), e2(y), l(void 0);
       }, (v = y.dismissAfter) != null ? v : 3e3);
       return () => {
-        a.stop(), m.current || clearTimeout(S);
+        a.stop(), m.current || clearTimeout(k);
       };
     }
   }, [n2, e2, a]);
@@ -778,7 +772,7 @@ function Ln() {
           variant: "basic",
           className: "border-0 bg-none",
           onClick: g,
-          children: /* @__PURE__ */ t$1(kt, {
+          children: /* @__PURE__ */ t$1(St, {
             className: "w-4 h-4"
           })
         })]
@@ -1009,8 +1003,8 @@ const Ht = ({
       fill: "url(#paint0_linear_565_36)"
     })
   }), /* @__PURE__ */ t$1("path", {
-    "fill-rule": "evenodd",
-    "clip-rule": "evenodd",
+    fillRule: "evenodd",
+    clipRule: "evenodd",
     d: "M72.0326 26.1859C63.8397 27.0689 56.183 30.1983 49.8696 35.2442C46.9678 37.5634 42.6866 42.0724 42.8041 42.6855C42.8666 43.0109 87.1379 43.1875 88.2454 42.8666C88.7009 42.7346 89.3523 42.1677 91.0059 40.4637C94.525 36.8378 94.9579 36.8372 98.1899 40.4542C100.554 43.0994 100.123 42.9469 105.235 42.9469C110.194 42.9469 110.05 43.0253 108.502 41.1634C99.7889 30.6876 85.3364 24.7521 72.0326 26.1859ZM83.5475 49.493C83.287 49.6524 82.3473 50.6084 81.4592 51.6175C80.1725 53.0794 79.6599 53.5432 78.9356 53.9001L78.0269 54.3481L57.2956 54.3912C42.4328 54.4219 36.5048 54.4837 36.354 54.6094C35.6329 55.2102 33.7859 64.076 34.262 64.6518C34.4227 64.8461 37.2007 64.8784 53.7599 64.8784C76.3488 64.8784 73.328 65.2419 76.205 62.1772C79.4292 58.7428 79.9921 58.7433 83.0659 62.1833C84.3549 63.6258 85.1459 64.3774 85.5869 64.5785C86.4761 64.9838 117.679 65.0478 118.012 64.645C118.492 64.064 116.777 55.582 116.002 54.7044C115.773 54.4452 114.979 54.4268 103.675 54.4203C89.0669 54.4119 90.7822 54.7058 88.1315 51.7577C85.7251 49.0812 84.8921 48.6697 83.5475 49.493ZM68.6411 71.2825C68.4242 71.4013 67.48 72.361 66.5428 73.4155C65.3224 74.7885 64.6062 75.4557 64.0189 75.7665L63.199 76.2004L49.1369 76.2433C37.1108 76.2799 35.0475 76.3193 34.8858 76.5147C34.3738 77.1342 37.4509 86.4703 38.2712 86.7862C38.7384 86.9663 57.6912 86.9059 58.1803 86.7229C58.4245 86.6315 59.6537 85.5305 60.9117 84.2762C64.4533 80.745 64.8098 80.7385 67.869 84.1491C69.1953 85.6277 69.9911 86.3828 70.4383 86.5867C71.2649 86.9634 113.615 87.0646 114.122 86.6911C115.027 86.0225 117.88 77.1169 117.381 76.5138C117.212 76.3093 114.591 76.2791 96.7397 76.2761C72.7067 76.272 75.8402 76.6284 73.1206 73.5897C70.8068 71.0041 69.9531 70.5644 68.6411 71.2825ZM51.9802 92.417C51.7097 92.5826 50.7899 93.5144 49.9365 94.4874C48.346 96.3008 47.6126 96.8642 46.4387 97.1749C45.4376 97.4398 45.5536 97.7526 47.2274 99.3013C63.8667 114.696 88.9112 114.652 105.174 99.1988C105.969 98.4435 106.494 97.8227 106.465 97.6725C106.421 97.4422 104.289 97.4121 82.9147 97.3401C60.8326 97.2657 59.3824 97.244 58.9033 96.9811C58.6228 96.8273 57.5595 95.7696 56.5401 94.6307C54.1897 92.0045 53.3333 91.5887 51.9802 92.417Z",
     fill: "white"
   }), /* @__PURE__ */ h("defs", {
@@ -1021,7 +1015,7 @@ const Ht = ({
       width: "152",
       height: "152",
       filterUnits: "userSpaceOnUse",
-      "color-interpolation-filters": "sRGB",
+      colorInterpolationFilters: "sRGB",
       children: [/* @__PURE__ */ t$1("feFlood", {
         "flood-opacity": "0",
         result: "BackgroundImageFix"
@@ -1102,8 +1096,8 @@ const Ht = ({
       d: "M480 240C480 372.548 372.548 480 240 480C107.452 480 0 372.548 0 240C0 107.452 107.452 0 240 0C372.548 0 480 107.452 480 240ZM40.08 240C40.08 350.413 129.587 439.92 240 439.92C350.413 439.92 439.92 350.413 439.92 240C439.92 129.587 350.413 40.08 240 40.08C129.587 40.08 40.08 129.587 40.08 240Z",
       fill: "url(#paint1_linear_3135_111)"
     }), /* @__PURE__ */ t$1("path", {
-      "fill-rule": "evenodd",
-      "clip-rule": "evenodd",
+      fillRule: "evenodd",
+      clipRule: "evenodd",
       d: "M260 102C260 100.895 259.105 100 258 100H222C220.895 100 220 100.895 220 102V127.591C220 128.558 219.307 129.384 218.358 129.573C212.655 130.705 207.329 132.298 202.38 134.352C191.46 138.824 182.984 145.584 176.952 154.632C170.92 163.576 167.904 174.808 167.904 188.328C167.904 200.288 170.556 210.532 175.86 219.06C181.164 227.484 188.6 234.712 198.168 240.744C207.736 246.672 218.916 251.924 231.708 256.5C243.46 260.66 252.82 264.508 259.788 268.044C266.756 271.58 271.748 275.272 274.764 279.12C277.78 282.968 279.288 287.544 279.288 292.848C279.288 297.944 277.884 302.364 275.076 306.108C272.268 309.852 268.212 312.712 262.908 314.688C257.708 316.664 251.312 317.652 243.72 317.652C235.088 317.652 227.548 316.3 221.1 313.596C214.756 310.892 209.712 306.836 205.968 301.428C202.607 296.339 200.532 290.142 199.742 282.837C199.63 281.798 198.765 280.992 197.72 280.992H162.65C161.515 280.992 160.606 281.937 160.67 283.07C161.528 298.37 165.291 311.145 171.96 321.396C178.928 332.004 188.392 339.908 200.352 345.108C205.963 347.527 211.968 349.383 218.367 350.677C219.312 350.868 220 351.693 220 352.657V378C220 379.105 220.895 380 222 380H258C259.105 380 260 379.105 260 378V353.524C260 352.522 260.743 351.676 261.734 351.529C269.645 350.351 276.9 348.419 283.5 345.732C295.252 340.948 304.3 333.876 310.644 324.516C317.092 315.052 320.264 303.508 320.16 289.884C320.056 279.484 318.132 270.904 314.388 264.144C310.644 257.28 305.496 251.612 298.944 247.14C292.496 242.564 285.008 238.56 276.48 235.128C267.952 231.592 258.904 227.952 249.336 224.208C238 219.632 229.368 215.472 223.44 211.728C217.512 207.984 213.456 204.188 211.272 200.34C209.192 196.492 208.152 192.176 208.152 187.392C208.152 179.28 211.012 173.196 216.732 169.14C222.452 164.98 230.252 162.9 240.132 162.9C247.308 162.9 253.236 163.992 257.916 166.176C262.7 168.36 266.392 171.636 268.992 176.004C271.345 179.864 272.889 184.619 273.624 190.268C273.756 191.289 274.614 192.072 275.644 192.072H310.628C311.807 192.072 312.732 191.055 312.601 189.882C311.124 176.7 307.872 165.574 302.844 156.504C297.54 146.936 289.844 139.708 279.756 134.82C274.495 132.271 268.469 130.387 261.681 129.167C260.714 128.993 260 128.159 260 127.177V102Z",
       fill: "white"
     })]
@@ -1168,8 +1162,8 @@ const Ht = ({
   viewBox: "0 0 103 103",
   fill: "none",
   children: [/* @__PURE__ */ t$1("path", {
-    "fill-rule": "evenodd",
-    "clip-rule": "evenodd",
+    fillRule: "evenodd",
+    clipRule: "evenodd",
     d: "M22.9502 10.2643C22.5477 11.0133 21.7426 13.105 21.4397 14.1883C19.8648 19.8224 21.3755 26.3702 25.3503 31.1377L26.0965 32.0326L29.0759 59.395C30.7146 74.4442 32.1004 87.0127 32.1552 87.3248C32.2101 87.637 32.5069 88.4128 32.8147 89.0488C33.7536 90.9892 35.6743 92.4326 37.855 92.8365C38.4057 92.9387 44.2607 93 53.4499 93C69.2309 93 69.0815 93.0071 70.744 92.1786C71.5853 91.7592 72.7659 90.7069 73.3908 89.8198C74.4169 88.3626 74.3583 88.7945 77.6089 58.7058C79.2949 43.0991 80.7113 30.1293 80.7562 29.8841L80.8379 29.4382H74.7298H68.6217L70.0594 23.3172L71.4971 17.1961L76.8355 17.1533L82.1739 17.1105V15.3214V13.5324L76.3237 13.5805L70.4735 13.6289L69.6896 14.0791C68.3996 14.82 68.257 15.2002 66.5758 22.3848C65.7412 25.9521 65.0208 28.9983 64.9748 29.1545C64.8966 29.4201 64.331 29.4382 56.1173 29.4382H47.3432L47.8958 28.2627C49.2297 25.4256 49.7438 22.8705 49.5976 19.8049C49.4849 17.445 48.9596 15.2967 48.0125 13.3219C47.3963 12.0372 47.3135 11.9395 46.7527 11.8368C46.4226 11.7762 45.5753 11.7771 44.87 11.8389C41.8951 12.0992 39.2387 12.9005 37.0063 14.2115C36.2609 14.6491 35.6172 15.0071 35.5757 15.0071C35.5342 15.0071 35.0793 14.6549 34.565 14.2244C31.8855 11.9824 28.6739 10.6017 25.0825 10.1479C23.35 9.92899 23.1236 9.94131 22.9502 10.2643ZM29.0508 14.9374C34.2926 17.3454 37.5575 22.8873 36.9578 28.3587L36.8395 29.4382H32.706H28.5725L27.8458 28.5334C26.3627 26.6874 25.0461 23.6969 24.575 21.104C24.2245 19.1754 24.5275 15.9596 25.2289 14.1641L25.3996 13.7266L26.6103 14.0495C27.2762 14.227 28.3744 14.6266 29.0508 14.9374ZM45.336 16.2336C45.8631 17.7536 46.0442 19.2551 45.9532 21.3526C45.8324 24.1368 45.13 26.2444 43.5466 28.5743L42.9596 29.4382H41.7155H40.4714L40.5838 28.0853C40.8135 25.3186 40.1057 22.0793 38.6842 19.3927C37.7435 17.6149 37.6859 17.7879 39.5213 16.878C40.8349 16.2266 41.9147 15.8571 43.3385 15.572C44.9161 15.2562 45.0074 15.2865 45.336 16.2336ZM64.0436 33.2082C64.0019 33.3197 63.5292 35.2898 62.9933 37.5861L62.0188 41.7614H46.4015H30.784L30.4209 38.3969C30.2212 36.5464 30.0106 34.5764 29.953 34.0189L29.8481 33.0055H46.9838C60.6221 33.0055 64.104 33.0468 64.0436 33.2082ZM76.7001 33.2892C76.7016 33.4454 76.5023 35.4155 76.2571 37.6672L75.8112 41.7614H70.7594H65.7075L65.8225 41.3155C66.0379 40.4795 67.7351 33.185 67.7351 33.095C67.7351 33.0458 69.7515 33.0055 72.2161 33.0055C76.372 33.0055 76.6973 33.0261 76.7001 33.2892ZM75.3682 45.6124C75.3649 46.5115 70.8778 86.8446 70.7425 87.1922C70.4824 87.8606 69.5393 88.809 68.8153 89.1303C68.1877 89.4089 67.3092 89.4256 53.2963 89.4256C39.1597 89.4256 38.4097 89.411 37.7616 89.1235C36.9434 88.7605 36.2588 88.0939 35.9194 87.3302C35.7541 86.9584 34.9181 79.8526 33.4489 66.3321C32.2275 55.0924 31.2271 45.7686 31.2256 45.6124C31.2233 45.3436 32.3839 45.3287 53.2963 45.3287C74.208 45.3287 75.3694 45.3436 75.3682 45.6124ZM52.0091 52.9911L47.1556 57.7351L52.011 62.4767L56.8666 67.2186L61.7604 62.4352L66.6542 57.6519L61.8434 52.9496C59.1974 50.3633 56.9943 48.2473 56.9475 48.2473C56.9007 48.2473 54.6784 50.382 52.0091 52.9911ZM59.2716 60.0009L56.9475 62.2716L54.584 59.9625L52.2205 57.6533L54.5403 55.3825L56.8602 53.1116L59.228 55.4209L61.5959 57.7302L59.2716 60.0009ZM42.5086 78.8121V85.8655H49.7281H56.9475V78.8121V71.7587H49.7281H42.5086V78.8121ZM53.2963 78.8964V82.4667L49.6866 82.4231L46.0769 82.3793L46.0319 79.0597C46.007 77.2339 46.0234 75.6468 46.0681 75.533C46.1306 75.3739 46.9769 75.3259 49.7229 75.3259H53.2963V78.8964Z",
     fill: "url(#paint0_linear_131_1710)"
   }), /* @__PURE__ */ t$1("defs", {
@@ -1693,8 +1687,8 @@ function se(e2, n2, s2) {
     a = c;
     let u;
     if (s2.key && s2.debug != null && s2.debug() && (u = Date.now()), o2 = n2(...c), s2 == null || s2.onChange == null || s2.onChange(o2), s2.key && s2.debug != null && s2.debug()) {
-      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, b = g / 16, v = (y, S) => {
-        for (y = String(y); y.length < S; )
+      const m = Math.round((Date.now() - l) * 100) / 100, g = Math.round((Date.now() - u) * 100) / 100, b = g / 16, v = (y, k) => {
+        for (y = String(y); y.length < k; )
           y = " " + y;
         return y;
       };
@@ -1802,12 +1796,12 @@ class dn {
       this.pendingMeasuredCacheIndexes = [];
       const u = this.measurementsCache.slice(0, f);
       for (let m = f; m < a; m++) {
-        const g = l(m), b = c[g], v = u[m - 1] ? u[m - 1].end : o2, y = typeof b == "number" ? b : this.options.estimateSize(m), S = v + y;
+        const g = l(m), b = c[g], v = u[m - 1] ? u[m - 1].end : o2, y = typeof b == "number" ? b : this.options.estimateSize(m), k = v + y;
         u[m] = {
           index: m,
           start: v,
           size: y,
-          end: S,
+          end: k,
           key: g
         };
       }
@@ -1838,19 +1832,19 @@ class dn {
         const y = this.measurementsCache[g];
         if (!b)
           return;
-        const S = l(b, this), I = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
-        S !== I && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (S - I), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
+        const k = l(b, this), V = (v = this.itemMeasurementsCache[y.key]) != null ? v : y.size;
+        k !== V && (y.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (k - V), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
-          [y.key]: S
+          [y.key]: k
         }, this.notify());
       }, f = [], u = {};
       for (let g = 0, b = a.length; g < b; g++) {
         var m;
-        const v = a[g], S = {
+        const v = a[g], k = {
           ...o2[v],
           measureElement: u[v] = (m = this.measureElementCache[v]) != null ? m : c(v)
         };
-        f.push(S);
+        f.push(k);
       }
       return this.measureElementCache = u, f;
     }, {
@@ -2028,16 +2022,16 @@ function Hn({
     }
   }), v = react.exports.useRef(null), {
     rows: y
-  } = b.getRowModel(), S = pn(a != null ? a : {
+  } = b.getRowModel(), k = pn(a != null ? a : {
     getScrollElement: () => v.current,
     count: y.length,
     estimateSize: () => y.length,
     overscan: 10
   }), {
-    getVirtualItems: I,
+    getVirtualItems: V,
     getTotalSize: ue,
     scrollToIndex: P
-  } = S, k = I();
+  } = k, S = V();
   return react.exports.useEffect(() => {
     u && P(u);
   }, [u, P]), ue(), /* @__PURE__ */ t$1(ce, {
@@ -2052,8 +2046,8 @@ function Hn({
       className: `border-collapse table-auto max-w-full w-full text-sm capitalize relative ${o2}`,
       ref: v,
       children: [/* @__PURE__ */ t$1("thead", {
-        children: b.getHeaderGroups().map((V) => /* @__PURE__ */ t$1("tr", {
-          children: V.headers.map((L) => /* @__PURE__ */ t$1("th", {
+        children: b.getHeaderGroups().map(($) => /* @__PURE__ */ t$1("tr", {
+          children: $.headers.map((L) => /* @__PURE__ */ t$1("th", {
             onClick: L.column.getToggleSortingHandler(),
             className: "border-b dark:border-primary-600 font-medium pr-2 pl-4 pt-3 pb-3 text-primary-400 dark:text-primary-200 text-left",
             children: /* @__PURE__ */ h(de, {
@@ -2067,16 +2061,19 @@ function Hn({
               }) : null]
             })
           }, L.id))
-        }, V.id))
+        }, $.id))
       }), /* @__PURE__ */ t$1("tbody", {
-        children: k.map((V) => {
+        children: S.map(($) => {
           var X;
-          const L = y[V == null ? void 0 : V.index];
+          const L = y[$ == null ? void 0 : $.index];
           return (X = s2 == null ? void 0 : s2(L)) != null ? X : /* @__PURE__ */ t$1("tr", {
-            children: L.getVisibleCells().map((H) => /* @__PURE__ */ t$1("td", {
+            children: L ? L.getVisibleCells().map((H) => /* @__PURE__ */ t$1("td", {
               className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
               children: flexRender(H.column.columnDef.cell, H.getContext())
-            }, H.id))
+            }, H.id)) : /* @__PURE__ */ t$1("td", {
+              className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
+              children: " "
+            }, $.index)
           }, L.id);
         })
       })]
@@ -2499,124 +2496,6 @@ function CoinSelectButton({
     })
   });
 }
-var Wallets = /* @__PURE__ */ ((Wallets2) => {
-  Wallets2["Petra"] = "Petra";
-  Wallets2["Martian"] = "Martian";
-  return Wallets2;
-})(Wallets || {});
-class WalletAdapterCore {
-  constructor(wallet_namespace, walletType) {
-    __publicField(this, "__wallet_namespace");
-    __publicField(this, "walletType");
-    this.walletType = walletType;
-    this.__wallet_namespace = wallet_namespace;
-    this.getWallet = this.getWallet.bind(this);
-    this.isConnected = this.isConnected.bind(this);
-    this.connect = this.connect.bind(this);
-    this.isDetected = this.isDetected.bind(this);
-    this.swap = this.swap.bind(this);
-    this.addLiquidity = this.addLiquidity.bind(this);
-    this.removeLiquidity = this.removeLiquidity.bind(this);
-    this.signAndSubmitTransaction = this.signAndSubmitTransaction.bind(this);
-    this.signTransaction = this.signTransaction.bind(this);
-    this.disconnect = this.disconnect.bind(this);
-  }
-  getWallet() {
-    return window[this.__wallet_namespace];
-  }
-  isConnected() {
-    var _a;
-    return (_a = this.getWallet()) == null ? void 0 : _a.isConnected();
-  }
-  isDetected() {
-    if (this.__wallet_namespace in window)
-      return true;
-    return false;
-  }
-  async connect() {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
-  }
-  async disconnect() {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.disconnect());
-  }
-  async signAndSubmitTransaction(transaction) {
-    var _a;
-    await ((_a = this.getWallet()) == null ? void 0 : _a.signAndSubmitTransaction(transaction));
-  }
-  async signTransaction(transaction) {
-    var _a;
-    return await ((_a = this.getWallet()) == null ? void 0 : _a.signTransaction(transaction));
-  }
-  async swap(coinX, coinY) {
-  }
-  async addLiquidity(coinX, coinY) {
-  }
-  async removeLiquidity(coinX, coinY) {
-  }
-}
-class MartianWalletAdapter extends WalletAdapterCore {
-  constructor() {
-    super("martian", Wallets.Martian);
-  }
-  async signAndSubmitTransaction(payload) {
-    var _a, _b;
-    const connection = await ((_a = this.getWallet()) == null ? void 0 : _a.connect());
-    const address = connection.address;
-    await ((_b = this.getWallet()) == null ? void 0 : _b.generateSignAndSubmitTransaction(address, payload));
-  }
-}
-class PetraWalletAdapter extends WalletAdapterCore {
-  constructor() {
-    super("aptos", Wallets.Petra);
-  }
-}
-const WalletContext = react.exports.createContext([null, () => {
-}, null]);
-const WalletContextProvider = ({
-  children
-}) => {
-  const [activeWallet, setActiveWallet] = react.exports.useState(null);
-  const [connection, setConnection] = react.exports.useState(null);
-  react.exports.useEffect(() => {
-    if (!connection && !activeWallet) {
-      const lastWallet = localStorage.getItem("aux_last_wallet");
-      switch (lastWallet) {
-        case Wallets.Martian: {
-          const adapter = new MartianWalletAdapter();
-          if (adapter.isDetected())
-            setActiveWallet(new MartianWalletAdapter());
-        }
-        case Wallets.Petra: {
-          const adapter = new PetraWalletAdapter();
-          if (adapter.isDetected())
-            setActiveWallet(new PetraWalletAdapter());
-        }
-        default:
-          return;
-      }
-    }
-  }, []);
-  react.exports.useEffect(() => {
-    activeWallet == null ? void 0 : activeWallet.connect().then((c) => {
-      setConnection(c);
-      localStorage.setItem("aux_last_wallet", activeWallet.walletType);
-    });
-    return () => {
-      activeWallet == null ? void 0 : activeWallet.disconnect();
-    };
-  }, [activeWallet]);
-  return /* @__PURE__ */ jsx(WalletContext.Provider, {
-    value: [activeWallet, setActiveWallet, connection],
-    children
-  });
-};
-const WalletProvider = WalletContextProvider;
-function useWallet() {
-  const wallet = react.exports.useContext(WalletContext);
-  return wallet;
-}
 const BalancesDocument = {
   "kind": "Document",
   "definitions": [{
@@ -2789,12 +2668,13 @@ const BalancesDocument = {
   }]
 };
 function useBalances() {
-  const [wallet, , connection] = useWallet();
+  var _a, _b;
+  const wallet = dist.useWallet();
   const balancesQuery = useQuery(BalancesDocument, {
     variables: {
-      owner: connection == null ? void 0 : connection.address
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
     },
-    skip: !(connection == null ? void 0 : connection.address)
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
   });
   return balancesQuery;
 }
@@ -2858,6 +2738,355 @@ function SwapButton({
       role: "button",
       children: /* @__PURE__ */ jsx(ArrowsUpDownIcon, {})
     })
+  });
+}
+function RegisterCoinModalView({
+  coins,
+  trigger,
+  executeSwap
+}) {
+  const [registerCoin] = useMutation(RegisterCoinDocument);
+  const wallet = dist.useWallet();
+  const notifications = jt();
+  const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
+  const clearRegistered = (_coins) => {
+    const state = /* @__PURE__ */ new Map();
+    _coins == null ? void 0 : _coins.forEach((c) => state.set(c == null ? void 0 : c.symbol, false));
+    setRegistered(state);
+  };
+  react.exports.useEffect(() => {
+    const newState = /* @__PURE__ */ new Map();
+    coins == null ? void 0 : coins.forEach((c) => newState.set(c.symbol, false));
+    setRegistered(newState);
+  }, [coins]);
+  const allRegistered = react.exports.useMemo(() => {
+    let res = true;
+    registered.forEach((x) => {
+      if (!x)
+        res = false;
+    });
+    return res;
+  }, [registered, coins]);
+  const modalRef = react.exports.useRef(null);
+  const handleRegister = async (c) => {
+    var _a;
+    const tx = (_a = (await registerCoin({
+      variables: {
+        registerCoinInput: {
+          coinType: c == null ? void 0 : c.coinType
+        }
+      }
+    })).data) == null ? void 0 : _a.registerCoin;
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then((x) => {
+      setRegistered((prev) => {
+        prev.set(c == null ? void 0 : c.symbol, true);
+        return new Map(prev);
+      });
+      notifications.addNotification({
+        title: "Success",
+        type: "success",
+        message: "Coin successfully registered."
+      });
+    }).catch((e2) => {
+      notifications.addNotification({
+        title: "Error",
+        type: "error",
+        message: "Failed to register coin."
+      });
+    }));
+  };
+  const submitSwap = async () => {
+    await executeSwap().then(() => {
+      clearRegistered(coins);
+      modalRef.current.closeModal();
+    }).catch((err) => {
+      notifications.addNotification({
+        title: "Error",
+        type: "error",
+        message: "Failed to execute swap."
+      });
+    });
+  };
+  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(Bn, {
+    trigger,
+    ref: modalRef,
+    children: /* @__PURE__ */ jsx("div", {
+      className: "w-full flex justify-center items-center",
+      children: /* @__PURE__ */ jsxs(Un, {
+        className: "flex flex-col gap-4 w-[600px] max-w-[600px]",
+        children: [/* @__PURE__ */ jsx(Tn, {
+          children: /* @__PURE__ */ jsx("span", {
+            className: "font-bold",
+            children: "Coin Registration"
+          })
+        }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
+          className: " flex gap-4 items-center font-semibold text-2xl bg-primary-800 p-6 rounded-lg text-primary-300",
+          children: [/* @__PURE__ */ jsx(Qt, {
+            coin: c == null ? void 0 : c.symbol
+          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(Pn, {
+            size: "xs",
+            variant: "basic",
+            children: "Registered"
+          }) : /* @__PURE__ */ jsxs(er, {
+            size: "xs",
+            variant: "basic",
+            onClick: () => handleRegister(c),
+            children: ["Register ", c == null ? void 0 : c.symbol]
+          })]
+        })), /* @__PURE__ */ jsx("p", {
+          children: "Please register your coin(s) to transact within the DEX."
+        }), allRegistered ? /* @__PURE__ */ jsx(er, {
+          onClick: submitSwap,
+          children: "Submit Swap"
+        }) : null]
+      })
+    })
+  });
+}
+const RegisterCoinModalView$1 = react.exports.memo(RegisterCoinModalView);
+function RegisterCoinModalContainer({
+  coins,
+  trigger,
+  executeSwap
+}) {
+  return /* @__PURE__ */ jsx(RegisterCoinModalView$1, {
+    coins,
+    trigger,
+    executeSwap
+  });
+}
+const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
+  trigger
+}, _ref) {
+  var _a, _b, _c, _d, _e, _f, _g, _h;
+  const backupRef = react.exports.useRef();
+  const ref = _ref != null ? _ref : backupRef;
+  const [options, setOptions] = react.exports.useState([]);
+  const wallet = dist.useWallet();
+  const suggestedBadge = /* @__PURE__ */ jsx(Pn, {
+    size: "xs",
+    children: "Recommended"
+  });
+  const connectedBadge = /* @__PURE__ */ jsx(Pn, {
+    size: "xs",
+    variant: "success",
+    children: "Connected"
+  });
+  const detectedBadge = /* @__PURE__ */ jsx(Pn, {
+    size: "xs",
+    variant: "basic",
+    children: "Detected"
+  });
+  async function getOptions() {
+    const walletOptions = wallet.wallets.map((w) => ({
+      ...w,
+      async onClick() {
+        var _a2;
+        const detected = w.adapter.readyState === dist.WalletReadyState.Installed;
+        if (detected) {
+          await wallet.connect(w.adapter.name);
+          await getOptions();
+          (_a2 = ref == null ? void 0 : ref.current) == null ? void 0 : _a2.closeModal();
+        } else {
+          window.open(w.adapter.url);
+        }
+      }
+    }));
+    const _options = await Promise.all(walletOptions.map(async ({
+      adapter,
+      onClick
+    }) => {
+      const suggested = adapter.name === dist.MartianWalletName;
+      const suggestedLink = /* @__PURE__ */ jsx("a", {
+        href: "https://martianwallet.xyz/",
+        target: "_blank",
+        rel: "noreferrer",
+        title: "Learn More About Martian Wallet",
+        className: "text-xs inline-flex items-center",
+        children: "martianwallet.xyz"
+      });
+      const extLink = /* @__PURE__ */ jsx("a", {
+        href: adapter.url,
+        target: "_blank",
+        rel: "noreferrer",
+        title: `Learn More About ${adapter.name} Wallet`,
+        className: "text-xs inline-flex items-center",
+        children: "Installation Required"
+      });
+      const detected = adapter.readyState === dist.WalletReadyState.Installed;
+      return {
+        name: adapter.name,
+        onClick,
+        link: suggested ? suggestedLink : !detected ? extLink : null,
+        suggested,
+        connected: adapter.connected,
+        detected,
+        icon: adapter.icon
+      };
+    }));
+    const result = _options.sort((a, b) => {
+      if (a.connected)
+        return -1;
+      return 1;
+    });
+    setOptions(result);
+  }
+  react.exports.useEffect(() => {
+    const interval = setInterval(async () => {
+      await getOptions();
+    }, 3e3);
+    return () => clearInterval(interval);
+  }, [getOptions]);
+  const renderTrigger = (defaultTrigger, walletType, address, isConnected, icon) => {
+    if (walletType && address) {
+      let addressResult = "";
+      addressResult += address.slice(0, 4);
+      addressResult += "...";
+      addressResult += address.slice(address.length - 4, address.length);
+      switch (walletType) {
+        default:
+          return /* @__PURE__ */ jsxs(er, {
+            variant: "basic",
+            size: "sm",
+            className: "pl-2 mr-3 inline-flex items-center",
+            onClick: () => {
+            },
+            children: [/* @__PURE__ */ jsx("img", {
+              src: icon,
+              height: 24,
+              width: 24
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "ml-2",
+              children: [walletType, ": ", addressResult]
+            })]
+          });
+      }
+    }
+    return defaultTrigger;
+  };
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: /* @__PURE__ */ jsx(Bn, {
+      trigger: renderTrigger(trigger, (_a = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _a.adapter.name, (_e = (_d = (_c = (_b = wallet.wallet) == null ? void 0 : _b.adapter) == null ? void 0 : _c.publicAccount) == null ? void 0 : _d.address) != null ? _e : "", true, (_f = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _f.adapter.icon),
+      ref,
+      children: /* @__PURE__ */ jsxs(Un, {
+        className: "h-[600px] bg-primary-800 border border-primary-700",
+        children: [/* @__PURE__ */ jsx("div", {
+          className: "pb-3 text-xl bg-stripes-secondary",
+          children: "Select Wallet"
+        }), /* @__PURE__ */ jsx("div", {
+          className: "overflow-y-scroll max-h-[400px]",
+          children: options.map((w) => {
+            var _a2;
+            return /* @__PURE__ */ jsx("div", {
+              onClick: () => {
+                var _a3;
+                w.onClick();
+                (_a3 = ref.current) == null ? void 0 : _a3.closeModal();
+              },
+              className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${w.suggested && "bg-brand-purple/60"}`,
+              children: /* @__PURE__ */ jsxs("div", {
+                className: "flex items-center",
+                children: [/* @__PURE__ */ jsx("img", {
+                  src: w.icon,
+                  height: 48,
+                  width: 48
+                }), /* @__PURE__ */ jsxs("div", {
+                  className: "ml-3 mr-auto flex flex-col",
+                  children: [/* @__PURE__ */ jsx("div", {
+                    className: "font-semibold",
+                    children: w.name
+                  }), w.link]
+                }), /* @__PURE__ */ jsxs("div", {
+                  className: "inline-flex gap-2",
+                  children: [w.suggested ? suggestedBadge : null, w.name === ((_a2 = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _a2.adapter.name) ? connectedBadge : null, !w.connected && w.detected ? detectedBadge : null]
+                })]
+              })
+            }, w.name);
+          })
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "p-6 mt-6 rounded-xl bg-primary-900 border border-primary-700 flex justify-between items-center",
+          children: [/* @__PURE__ */ jsxs("span", {
+            children: ["Active Wallet: ", (_h = (_g = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _g.adapter.name) != null ? _h : "None"]
+          }), wallet ? /* @__PURE__ */ jsx(er, {
+            size: "sm",
+            onClick: async () => await wallet.disconnect(),
+            children: "Disconnect"
+          }) : null]
+        })]
+      })
+    })
+  });
+});
+function ConnectWalletContainer({
+  trigger
+}) {
+  return /* @__PURE__ */ jsx(ConnectWalletView, {
+    trigger
+  });
+}
+function SwapFormView({
+  handleSwap,
+  invertSelections,
+  valueIn,
+  valueOut,
+  onChangeValueIn,
+  onChangeValueOut,
+  onSelectPrimary,
+  onSelectSecondary,
+  coins,
+  primaryCoin,
+  secondaryCoin,
+  loading,
+  unregisteredCoins,
+  helperText
+}) {
+  const wallet = dist.useWallet();
+  return /* @__PURE__ */ jsxs(Un, {
+    className: "w-[700px] mx-auto self-center justify-self-center",
+    children: [/* @__PURE__ */ jsx(Tn, {
+      className: "mb-4",
+      children: "Swap"
+    }), /* @__PURE__ */ jsx(SwapPanel, {
+      title: "From",
+      coins,
+      coin: primaryCoin,
+      onCoinSelect: onSelectPrimary,
+      setValue: onChangeValueIn,
+      value: valueIn
+    }), /* @__PURE__ */ jsx(SwapButton, {
+      onClick: invertSelections
+    }), /* @__PURE__ */ jsx(SwapPanel, {
+      title: "To",
+      coins,
+      coin: secondaryCoin,
+      onCoinSelect: onSelectSecondary,
+      value: valueOut,
+      setValue: onChangeValueOut
+    }), helperText ? /* @__PURE__ */ jsx("div", {
+      className: "mt-6 text-red-300 text-left w-full",
+      children: helperText
+    }) : null, !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
+      trigger: /* @__PURE__ */ jsx(er, {
+        className: "mt-6 min-w-full",
+        onClick: () => {
+        },
+        children: "Connect Wallet To Swap"
+      })
+    }) : (unregisteredCoins == null ? void 0 : unregisteredCoins.length) ? /* @__PURE__ */ jsx(RegisterCoinModalContainer, {
+      executeSwap: handleSwap,
+      coins: unregisteredCoins,
+      trigger: /* @__PURE__ */ jsx(er, {
+        className: "mt-6 min-w-full",
+        onClick: () => {
+        },
+        children: "Register Coins To Swap"
+      })
+    }) : /* @__PURE__ */ jsx(er, {
+      disabled: loading || !!helperText,
+      className: "mt-6 min-w-full",
+      onClick: handleSwap,
+      children: "Swap"
+    })]
   });
 }
 const LastTradePriceDocument = {
@@ -2976,7 +3205,9 @@ const PoolCoinsDocument = {
   }]
 };
 function usePoolCoins() {
-  const poolCoins = useQuery(PoolCoinsDocument);
+  const poolCoins = useQuery(PoolCoinsDocument, {
+    fetchPolicy: "network-only"
+  });
   return poolCoins;
 }
 const CoinXYParamCtx = react.exports.createContext(null);
@@ -3049,552 +3280,6 @@ const CoinXYParamCtxProvider = ({
 function useCoinXYParamState() {
   const ctx = react.exports.useContext(CoinXYParamCtx);
   return ctx;
-}
-const PositionsQueryDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "PositionsQuery"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "poolPositions"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinInfoX"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "coinType"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "decimals"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "name"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "symbol"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinInfoY"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "coinType"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "decimals"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "name"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "symbol"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinInfoLP"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "coinType"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "decimals"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "name"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "symbol"
-                    }
-                  }]
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountX"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountY"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "amountLP"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "share"
-                }
-              }]
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function usePositions() {
-  const [wallet, , connection] = useWallet();
-  const positionQuery = useQuery(PositionsQueryDocument, {
-    variables: {
-      owner: connection == null ? void 0 : connection.address
-    },
-    skip: !(connection == null ? void 0 : connection.address)
-  });
-  return positionQuery;
-}
-function RegisterCoinModalView({
-  coins,
-  trigger,
-  executeSwap
-}) {
-  const [registerCoin] = useMutation(RegisterCoinDocument);
-  const [wallet] = useWallet();
-  const notifications = jt();
-  const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
-  const clearRegistered = (_coins) => {
-    const state = /* @__PURE__ */ new Map();
-    _coins == null ? void 0 : _coins.forEach((c) => state.set(c == null ? void 0 : c.symbol, false));
-    setRegistered(state);
-  };
-  react.exports.useEffect(() => {
-    const newState = /* @__PURE__ */ new Map();
-    coins == null ? void 0 : coins.forEach((c) => newState.set(c.symbol, false));
-    setRegistered(newState);
-  }, [coins]);
-  const allRegistered = react.exports.useMemo(() => {
-    let res = true;
-    registered.forEach((x) => {
-      if (!x)
-        res = false;
-    });
-    return res;
-  }, [registered, coins]);
-  const modalRef = react.exports.useRef(null);
-  const handleRegister = async (c) => {
-    var _a;
-    const tx = (_a = (await registerCoin({
-      variables: {
-        registerCoinInput: {
-          coinType: c == null ? void 0 : c.coinType
-        }
-      }
-    })).data) == null ? void 0 : _a.registerCoin;
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then((x) => {
-      setRegistered((prev) => {
-        prev.set(c == null ? void 0 : c.symbol, true);
-        return new Map(prev);
-      });
-      notifications.addNotification({
-        title: "Success",
-        type: "success",
-        message: "Coin successfully registered."
-      });
-    }).catch((e2) => {
-      notifications.addNotification({
-        title: "Error",
-        type: "error",
-        message: "Failed to register coin."
-      });
-    }));
-  };
-  const submitSwap = async () => {
-    await executeSwap().then(() => {
-      clearRegistered(coins);
-      modalRef.current.closeModal();
-    }).catch((err) => {
-      notifications.addNotification({
-        title: "Error",
-        type: "error",
-        message: "Failed to execute swap."
-      });
-    });
-  };
-  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(Bn, {
-    trigger,
-    ref: modalRef,
-    children: /* @__PURE__ */ jsx("div", {
-      className: "w-full flex justify-center items-center",
-      children: /* @__PURE__ */ jsxs(Un, {
-        className: "flex flex-col gap-4 w-[600px] max-w-[600px]",
-        children: [/* @__PURE__ */ jsx(Tn, {
-          children: /* @__PURE__ */ jsx("span", {
-            className: "font-bold",
-            children: "Coin Registration"
-          })
-        }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
-          className: " flex gap-4 items-center font-semibold text-2xl bg-primary-800 p-6 rounded-lg text-primary-300",
-          children: [/* @__PURE__ */ jsx(Qt, {
-            coin: c == null ? void 0 : c.symbol
-          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(Pn, {
-            size: "xs",
-            variant: "basic",
-            children: "Registered"
-          }) : /* @__PURE__ */ jsxs(er, {
-            size: "xs",
-            variant: "basic",
-            onClick: () => handleRegister(c),
-            children: ["Register ", c == null ? void 0 : c.symbol]
-          })]
-        })), /* @__PURE__ */ jsx("p", {
-          children: "Please register your coin(s) to transact within the DEX."
-        }), allRegistered ? /* @__PURE__ */ jsx(er, {
-          onClick: submitSwap,
-          children: "Submit Swap"
-        }) : null]
-      })
-    })
-  });
-}
-const RegisterCoinModalView$1 = react.exports.memo(RegisterCoinModalView);
-function RegisterCoinModalContainer({
-  coins,
-  trigger,
-  executeSwap
-}) {
-  return /* @__PURE__ */ jsx(RegisterCoinModalView$1, {
-    coins,
-    trigger,
-    executeSwap
-  });
-}
-const martian = new MartianWalletAdapter();
-const petra = new PetraWalletAdapter();
-const WALLETS = [martian, petra];
-const ConnectWalletView = react.exports.forwardRef(function ConnectWalletView2({
-  trigger
-}, _ref) {
-  var _a;
-  const backupRef = react.exports.useRef();
-  const ref = _ref != null ? _ref : backupRef;
-  const [options, setOptions] = react.exports.useState([]);
-  const [activeWallet, setActiveWallet, connection] = useWallet();
-  const suggestedBadge = /* @__PURE__ */ jsx(Pn, {
-    size: "xs",
-    children: "Recommended"
-  });
-  const connectedBadge = /* @__PURE__ */ jsx(Pn, {
-    size: "xs",
-    variant: "success",
-    children: "Connected"
-  });
-  const detectedBadge = /* @__PURE__ */ jsx(Pn, {
-    size: "xs",
-    variant: "basic",
-    children: "Detected"
-  });
-  const walletOptions = WALLETS.map((w) => ({
-    name: w.walletType,
-    checkDetected: w.isDetected,
-    checkConnected: w.isConnected,
-    async onClick() {
-      var _a2;
-      await (activeWallet == null ? void 0 : activeWallet.disconnect());
-      setActiveWallet(w);
-      await w.connect();
-      await getOptions();
-      (_a2 = ref == null ? void 0 : ref.current) == null ? void 0 : _a2.closeModal();
-    }
-  }));
-  async function getOptions() {
-    const _options = await Promise.all(walletOptions.map(async ({
-      name,
-      checkConnected,
-      checkDetected,
-      onClick
-    }) => {
-      const connected = Boolean(checkConnected());
-      const detected = Boolean(checkDetected());
-      const suggested = name === Wallets.Martian;
-      const suggestedLink = /* @__PURE__ */ jsx("a", {
-        href: "https://martianwallet.xyz/",
-        target: "_blank",
-        rel: "noreferrer",
-        title: "Learn More About Martian Wallet",
-        className: "text-xs inline-flex items-center",
-        children: "martianwallet.xyz"
-      });
-      return {
-        name,
-        onClick,
-        link: suggested ? suggestedLink : null,
-        suggested,
-        connected,
-        detected
-      };
-    }));
-    const result = _options.sort((a, b) => {
-      if (a.connected)
-        return -1;
-      if (a.suggested)
-        return 1;
-      if (a.detected)
-        return 1;
-      return 1;
-    });
-    setOptions(result);
-  }
-  react.exports.useEffect(() => {
-    getOptions();
-  }, []);
-  const renderTrigger = (defaultTrigger, walletType, address, isConnected) => {
-    if (walletType && address) {
-      let addressResult = "";
-      addressResult += address.slice(0, 4);
-      addressResult += "...";
-      addressResult += address.slice(address.length - 4, address.length);
-      switch (walletType) {
-        default:
-          return /* @__PURE__ */ jsxs(er, {
-            variant: "basic",
-            size: "sm",
-            className: "pl-2 mr-3 inline-flex items-center",
-            onClick: () => {
-            },
-            children: [walletType === "martian" ? /* @__PURE__ */ jsx(Qt, {
-              coin: "Martian",
-              size: 24
-            }) : null, walletType === "petra" ? /* @__PURE__ */ jsx(Qt, {
-              coin: "petra",
-              size: 24
-            }) : null, /* @__PURE__ */ jsxs("div", {
-              className: "ml-2",
-              children: [walletType, ": ", addressResult]
-            })]
-          });
-      }
-    }
-    return defaultTrigger;
-  };
-  return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(Bn, {
-      trigger: renderTrigger(trigger, activeWallet == null ? void 0 : activeWallet.walletType, connection == null ? void 0 : connection.address),
-      ref,
-      children: /* @__PURE__ */ jsxs(Un, {
-        className: "h-[400px] bg-primary-800 border border-primary-700",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "pb-3 text-xl bg-stripes-secondary",
-          children: "Select Wallet"
-        }), options.map((wallet) => /* @__PURE__ */ jsx("div", {
-          onClick: () => {
-            var _a2;
-            wallet.onClick();
-            (_a2 = ref.current) == null ? void 0 : _a2.closeModal();
-          },
-          className: `rounded-lg p-4 hover:bg-secondary-800 hover:cursor-pointer ${wallet.suggested && "bg-brand-purple/60"}`,
-          children: /* @__PURE__ */ jsxs("div", {
-            className: "flex items-center",
-            children: [/* @__PURE__ */ jsx(Qt, {
-              coin: wallet.name,
-              size: 48
-            }), /* @__PURE__ */ jsxs("div", {
-              className: "ml-3 mr-auto flex flex-col",
-              children: [/* @__PURE__ */ jsx("div", {
-                className: "font-semibold",
-                children: wallet.name
-              }), wallet.link]
-            }), /* @__PURE__ */ jsxs("div", {
-              className: "inline-flex gap-2",
-              children: [wallet.suggested ? suggestedBadge : null, wallet.name === (activeWallet == null ? void 0 : activeWallet.walletType) ? connectedBadge : null, !wallet.connected && wallet.detected ? detectedBadge : null]
-            })]
-          })
-        }, wallet.name)), /* @__PURE__ */ jsxs("div", {
-          className: "p-6 mt-6 rounded-xl bg-primary-900 border border-primary-700 flex justify-between items-center",
-          children: [/* @__PURE__ */ jsxs("span", {
-            children: ["Active Wallet: ", (_a = activeWallet == null ? void 0 : activeWallet.walletType) != null ? _a : "None"]
-          }), activeWallet ? /* @__PURE__ */ jsx(er, {
-            size: "sm",
-            onClick: async () => await activeWallet.disconnect().then(() => setActiveWallet(null)),
-            children: "Disconnect"
-          }) : null]
-        })]
-      })
-    })
-  });
-});
-function ConnectWalletContainer({
-  trigger
-}) {
-  return /* @__PURE__ */ jsx(ConnectWalletView, {
-    trigger
-  });
-}
-function SwapFormView({
-  handleSwap,
-  invertSelections,
-  valueIn,
-  valueOut,
-  onChangeValueIn,
-  onChangeValueOut,
-  onSelectPrimary,
-  onSelectSecondary,
-  coins,
-  primaryCoin,
-  secondaryCoin,
-  loading,
-  unregisteredCoins,
-  helperText
-}) {
-  const [wallet] = useWallet();
-  return /* @__PURE__ */ jsxs(Un, {
-    className: "w-[700px] mx-auto self-center justify-self-center",
-    children: [/* @__PURE__ */ jsx(Tn, {
-      className: "mb-4",
-      children: "Swap"
-    }), /* @__PURE__ */ jsx(SwapPanel, {
-      title: "From",
-      coins,
-      coin: primaryCoin,
-      onCoinSelect: onSelectPrimary,
-      setValue: onChangeValueIn,
-      value: valueIn
-    }), /* @__PURE__ */ jsx(SwapButton, {
-      onClick: invertSelections
-    }), /* @__PURE__ */ jsx(SwapPanel, {
-      title: "To",
-      coins,
-      coin: secondaryCoin,
-      onCoinSelect: onSelectSecondary,
-      value: valueOut,
-      setValue: onChangeValueOut
-    }), helperText ? /* @__PURE__ */ jsx("div", {
-      className: "mt-6 text-red-300 text-left w-full",
-      children: helperText
-    }) : null, !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
-      trigger: /* @__PURE__ */ jsx(er, {
-        className: "mt-6 min-w-full",
-        onClick: () => {
-        },
-        children: "Connect Wallet To Swap"
-      })
-    }) : (unregisteredCoins == null ? void 0 : unregisteredCoins.length) ? /* @__PURE__ */ jsx(RegisterCoinModalContainer, {
-      executeSwap: handleSwap,
-      coins: unregisteredCoins,
-      trigger: /* @__PURE__ */ jsx(er, {
-        className: "mt-6 min-w-full",
-        onClick: () => {
-        },
-        children: "Register Coins To Swap"
-      })
-    }) : /* @__PURE__ */ jsx(er, {
-      disabled: loading || !!helperText,
-      className: "mt-6 min-w-full",
-      onClick: handleSwap,
-      children: "Swap"
-    })]
-  });
 }
 const PoolPriceInDocument = {
   "kind": "Document",
@@ -3880,6 +3565,7 @@ async function delayRefetchQuery(delay, queries) {
   }), delay));
 }
 function SwapFormContainer({}) {
+  var _a, _b;
   const [lastTouchedInput, setLastTouched] = react.exports.useState("in");
   const {
     firstCoin,
@@ -3889,23 +3575,23 @@ function SwapFormContainer({}) {
     coins
   } = useCoinXYParamState();
   const [unregisteredCoins, setUnregisteredCoins] = react.exports.useState([]);
-  const [wallet, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const isFcRegistered = useQuery(IsCoinRegisteredDocument, {
     variables: {
       coinType: firstCoin == null ? void 0 : firstCoin.coinType,
-      owner: connection == null ? void 0 : connection.address
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
     }
   });
   const isScRegistered = useQuery(IsCoinRegisteredDocument, {
     variables: {
       coinType: secondCoin == null ? void 0 : secondCoin.coinType,
-      owner: connection == null ? void 0 : connection.address
+      owner: (_b = wallet.account) == null ? void 0 : _b.address
     }
   });
   react.exports.useEffect(() => {
-    var _a, _b, _c, _d;
+    var _a2, _b2, _c, _d;
     const unregistered = [];
-    if (((_b = (_a = isScRegistered.data) == null ? void 0 : _a.account) == null ? void 0 : _b.isCoinRegistered) === false)
+    if (((_b2 = (_a2 = isScRegistered.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.isCoinRegistered) === false)
       unregistered.push(secondCoin);
     if (((_d = (_c = isFcRegistered.data) == null ? void 0 : _c.account) == null ? void 0 : _d.isCoinRegistered) === false)
       unregistered.push(firstCoin);
@@ -3931,9 +3617,9 @@ function SwapFormContainer({}) {
     }
   });
   react.exports.useEffect(() => {
-    var _a, _b, _c, _d, _e, _f;
+    var _a2, _b2, _c, _d, _e, _f;
     if (lastTouchedInput === "in")
-      setValueOut((_c = (_b = (_a = firstCoinPrice.data) == null ? void 0 : _a.pool) == null ? void 0 : _b.quoteExactIn) != null ? _c : 0);
+      setValueOut((_c = (_b2 = (_a2 = firstCoinPrice.data) == null ? void 0 : _a2.pool) == null ? void 0 : _b2.quoteExactIn) != null ? _c : 0);
     else
       setValueIn((_f = (_e = (_d = secondCoinPrice.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.quoteExactOut) != null ? _f : 0);
   }, [firstCoinPrice, secondCoinPrice, lastTouchedInput]);
@@ -3947,10 +3633,10 @@ function SwapFormContainer({}) {
   const [swapInMutation] = useMutation(SwapInDocument);
   const [swapOutMutation] = useMutation(SwapOutDocument);
   const handleSwap = async () => {
-    var _a, _b;
+    var _a2, _b2;
     let swapTx;
     if (lastTouchedInput === "in")
-      swapTx = (_a = (await swapInMutation({
+      swapTx = (_a2 = (await swapInMutation({
         variables: {
           swapInput: {
             amountIn: valueIn,
@@ -3962,9 +3648,9 @@ function SwapFormContainer({}) {
             }
           }
         }
-      })).data) == null ? void 0 : _a.swapExactIn;
+      })).data) == null ? void 0 : _a2.swapExactIn;
     else
-      swapTx = (_b = (await swapOutMutation({
+      swapTx = (_b2 = (await swapOutMutation({
         variables: {
           swapInput: {
             amountOut: valueOut,
@@ -3976,7 +3662,7 @@ function SwapFormContainer({}) {
             }
           }
         }
-      })).data) == null ? void 0 : _b.swapExactOut;
+      })).data) == null ? void 0 : _b2.swapExactOut;
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(swapTx).then(() => {
       notifications.addNotification({
         title: "Success",
@@ -4011,8 +3697,8 @@ function SwapFormContainer({}) {
     setLastTouched("out");
   };
   const error = react.exports.useMemo(() => {
-    var _a, _b;
-    return ((_a = firstCoinPrice.error) == null ? void 0 : _a.message) || ((_b = secondCoinPrice.error) == null ? void 0 : _b.message);
+    var _a2, _b2;
+    return ((_a2 = firstCoinPrice.error) == null ? void 0 : _a2.message) || ((_b2 = secondCoinPrice.error) == null ? void 0 : _b2.message);
   }, [firstCoinPrice, secondCoinPrice]);
   return /* @__PURE__ */ jsx(SwapFormView, {
     coins,
@@ -4067,7 +3753,7 @@ const CreateAuxAccountDocument = {
   }]
 };
 function CreateAuxAccountContainer({}) {
-  const [wallet] = useWallet();
+  const wallet = dist.useWallet();
   const notifications = jt();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const createAccount = async () => {
@@ -4312,12 +3998,13 @@ const TradeHistoryDocument = {
   }]
 };
 function useTradeHistory() {
-  const [, , connection] = useWallet();
+  var _a, _b;
+  const wallet = dist.useWallet();
   const tradeHistoryQuery = useQuery(TradeHistoryDocument, {
     variables: {
-      owner: connection == null ? void 0 : connection.address
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
     },
-    skip: !(connection == null ? void 0 : connection.address)
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
   });
   return tradeHistoryQuery;
 }
@@ -4414,6 +4101,212 @@ function TradeTable({}) {
     className: tradeTableProps.className
   });
 }
+const PositionsQueryDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "PositionsQuery"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "poolPositions"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfoX"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfoY"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfoLP"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountX"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountY"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "amountLP"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "share"
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function usePositions() {
+  var _a, _b;
+  const wallet = dist.useWallet();
+  const positionQuery = useQuery(PositionsQueryDocument, {
+    variables: {
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
+    },
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
+  });
+  return positionQuery;
+}
 function usePoolsTable() {
   var _a, _b;
   const poolsQuery = usePositions();
@@ -4441,7 +4334,7 @@ function usePoolsTable() {
             className: "flex items-center gap-3 py-2",
             children: [/* @__PURE__ */ jsx(Fn, {
               size: 32,
-              coins: rowValues.coinList
+              coins: [rowValues.coinInfoX.symbol, rowValues.coinInfoY.symbol].filter(Boolean)
             }), value]
           });
         }
@@ -4765,12 +4658,13 @@ const OrdersDocument = {
   }]
 };
 function useOrders() {
-  const [wallet, , connection] = useWallet();
+  var _a, _b;
+  const wallet = dist.useWallet();
   const ordersQuery = useQuery(OrdersDocument, {
     variables: {
-      owner: connection == null ? void 0 : connection.address
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
     },
-    skip: !(connection == null ? void 0 : connection.address)
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
   });
   return ordersQuery;
 }
@@ -6228,17 +6122,18 @@ const baseColumns = [{
   }
 }];
 function useOpenOrdersTable() {
-  const [wallet, , connection] = useWallet();
+  var _a;
+  const wallet = dist.useWallet();
   const marketCoins = useMarketCoins();
   const [cancelOrder] = useMutation(CancelOrderDocument);
   const orders = useOrders();
   const tableRef = react.exports.useRef(null);
   const getCoin = (a) => marketCoins == null ? void 0 : marketCoins.find((m) => m.coinType === a);
   const tableProps = react.exports.useMemo(() => {
-    var _a, _b, _c, _d;
+    var _a2, _b, _c, _d;
     return {
       loading: orders.loading,
-      error: (_a = orders.error) == null ? void 0 : _a.message,
+      error: (_a2 = orders.error) == null ? void 0 : _a2.message,
       noData: /* @__PURE__ */ jsx(ur, {
         message: "You have no open orders for this market. Submit one and it will show up here.",
         variant: "basic"
@@ -6247,7 +6142,7 @@ function useOpenOrdersTable() {
         time,
         ...order
       }) => {
-        var _a2;
+        var _a3;
         const baseCoinInfo = getCoin(order.baseCoinType);
         const quoteCoinInfo = getCoin(order.quoteCoinType);
         const market = baseCoinInfo && quoteCoinInfo ? `${baseCoinInfo.symbol}/${quoteCoinInfo.symbol}` : null;
@@ -6256,24 +6151,24 @@ function useOpenOrdersTable() {
           baseCoinInfo,
           quoteCoinInfo,
           market,
-          time: (_a2 = DateTime.fromJSDate(new Date(Number(time))).toRelative()) != null ? _a2 : ""
+          time: (_a3 = DateTime.fromJSDate(new Date(Number(time))).toRelative()) != null ? _a3 : ""
         };
       })) != null ? _d : [],
       columns: [...baseColumns, {
         accessorKey: "orderId",
         header: "",
         cell: (cell) => {
-          var _a2, _b2, _c2;
+          var _a3, _b2, _c2;
           const value = cell.getValue();
           const idx = cell.row.index;
-          const cellValue = (_c2 = (_b2 = (_a2 = orders.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.openOrders) == null ? void 0 : _c2[idx];
+          const cellValue = (_c2 = (_b2 = (_a3 = orders.data) == null ? void 0 : _a3.account) == null ? void 0 : _b2.openOrders) == null ? void 0 : _c2[idx];
           const onCancelOrder = async () => {
-            var _a3;
+            var _a4, _b3;
             const tx = await cancelOrder({
               variables: {
                 cancelOrderInput: {
                   orderId: value,
-                  sender: connection == null ? void 0 : connection.address,
+                  sender: (_a4 = wallet.account) == null ? void 0 : _a4.address,
                   marketInput: {
                     baseCoinType: cellValue == null ? void 0 : cellValue.baseCoinType,
                     quoteCoinType: cellValue == null ? void 0 : cellValue.quoteCoinType
@@ -6281,7 +6176,7 @@ function useOpenOrdersTable() {
                 }
               }
             });
-            await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a3 = tx.data) == null ? void 0 : _a3.cancelOrder));
+            await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_b3 = tx.data) == null ? void 0 : _b3.cancelOrder));
           };
           return /* @__PURE__ */ jsx("button", {
             onClick: onCancelOrder,
@@ -6293,7 +6188,7 @@ function useOpenOrdersTable() {
         }
       }]
     };
-  }, [connection == null ? void 0 : connection.address, orders.data, orders.loading]);
+  }, [(_a = wallet.account) == null ? void 0 : _a.address, orders.data, orders.loading]);
   return [tableProps, tableRef];
 }
 function useOrderHistoryTable(displayMarket) {
@@ -6415,9 +6310,9 @@ const WithdrawDocument = {
 function WithdrawalView({
   withdraw
 }) {
-  var _a, _b, _c;
+  var _a, _b, _c, _d;
   const [amount, setAmount] = react.exports.useState(0);
-  const [wallet, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const balances = useBalances();
   const fullBalances = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.balances;
   const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
@@ -6426,7 +6321,7 @@ function WithdrawalView({
   const isCoinRegistered = useQuery(IsCoinRegisteredDocument, {
     variables: {
       coinType: coin == null ? void 0 : coin.coinType,
-      owner: connection == null ? void 0 : connection.address
+      owner: (_d = wallet.account) == null ? void 0 : _d.address
     },
     skip: !(coin == null ? void 0 : coin.coinType)
   });
@@ -6490,7 +6385,7 @@ function WithdrawalView({
       }), /* @__PURE__ */ jsx(er, {
         disabled: !coin || Number(balance) < amount,
         onClick: async () => {
-          var _a2, _b2;
+          var _a2, _b2, _c2;
           if (coin) {
             if (!((_a2 = isCoinRegistered.data) == null ? void 0 : _a2.account)) {
               const tx = await registerCoin({
@@ -6505,7 +6400,7 @@ function WithdrawalView({
             await withdraw({
               amount,
               coinType: coin.coinType,
-              from: connection == null ? void 0 : connection.address
+              from: (_c2 = wallet.account) == null ? void 0 : _c2.address
             }).then(() => {
               var _a3;
               (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
@@ -6529,7 +6424,7 @@ function WithdrawalView({
   });
 }
 function WithdrawalContainer({}) {
-  const [wallet, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const [withdrawMutation] = useMutation(WithdrawDocument);
   const withdraw = async (withdrawInput) => {
     var _a;
@@ -6720,10 +6615,12 @@ function DepositView({
 }) {
   var _a, _b, _c;
   const [amount, setAmount] = react.exports.useState(0);
-  const [, , connection] = useWallet();
+  const {
+    account
+  } = dist.useWallet();
   const balances = useQuery(WalletBalancesDocument, {
     variables: {
-      owner: connection == null ? void 0 : connection.address
+      owner: account == null ? void 0 : account.address
     }
   });
   const fullBalances = (_b = (_a = balances.data) == null ? void 0 : _a.account) == null ? void 0 : _b.walletBalances;
@@ -6793,8 +6690,8 @@ function DepositView({
             deposit({
               amount,
               coinType: coin.coinType,
-              from: connection == null ? void 0 : connection.address,
-              to: connection == null ? void 0 : connection.address
+              from: account == null ? void 0 : account.address,
+              to: account == null ? void 0 : account.address
             }).then(() => {
               var _a2;
               (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
@@ -6817,7 +6714,7 @@ function DepositView({
   });
 }
 function DepositContainer({}) {
-  const [wallet] = useWallet();
+  const wallet = dist.useWallet();
   const [depositMutation] = useMutation(DepositDocument);
   const deposit = async (depositInput) => {
     var _a;
@@ -7732,8 +7629,11 @@ function DepositInput({
   const balances = useBalances();
   const findBalance = (coin2) => {
     var _a2, _b2;
-    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.walletBalances.find((b) => b.coinInfo.coinType === coin2);
+    return (_b2 = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b2.balances.find((b) => b.coinInfo.symbol === coin2);
   };
+  console.log({
+    balances
+  });
   return /* @__PURE__ */ jsxs("div", {
     className: "relative w-full",
     children: [/* @__PURE__ */ jsx("input", {
@@ -7751,7 +7651,7 @@ function DepositInput({
       onCoinSelect
     }), /* @__PURE__ */ jsxs("span", {
       className: "absolute right-2 mt-1 font-semibold text-primary-400",
-      children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a.balance) != null ? _b : "-" : "-"]
+      children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a = findBalance(coin == null ? void 0 : coin.symbol)) == null ? void 0 : _a.balance) != null ? _b : "-" : "-"]
     })]
   });
 }
@@ -8005,7 +7905,7 @@ function usePoolSpotPrice(input, skip) {
 function AddLiquidityContainer({}) {
   var _a, _b, _c, _d, _e, _f, _g, _h;
   const [addLiquidity, addLiquidityResponse] = useMutation(AddLiquidityDocument);
-  const [wallet] = useWallet();
+  const wallet = dist.useWallet();
   const navigate = useNavigate();
   const [firstCoinAu, setFirstCoinAu] = react.exports.useState(0);
   const [secondCoinAu, setSecondCoinAu] = react.exports.useState(0);
@@ -8563,10 +8463,10 @@ function RemoveLiquidityView({
   });
 }
 function RemoveLiquidityContainer({}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t2, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I;
   const navigate = useNavigate();
   const [removeLiquidityMutation, removeLiquidityResult] = useMutation(RemoveLiquidityDocument);
-  const [wallet, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const {
     firstCoin,
     secondCoin
@@ -8578,24 +8478,24 @@ function RemoveLiquidityContainer({}) {
         coinTypeX: (_a = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _a : "",
         coinTypeY: (_b = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _b : ""
       },
-      owner: connection == null ? void 0 : connection.address
+      owner: (_c = wallet.account) == null ? void 0 : _c.address
     },
     skip: !firstCoin
   });
   const firstCoinRelativePriceQuery = usePoolPriceIn({
     amount: 1,
-    coinTypeIn: (_e = (_d = (_c = poolQuery.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.coinInfoX.coinType) != null ? _e : "",
+    coinTypeIn: (_f = (_e = (_d = poolQuery.data) == null ? void 0 : _d.pool) == null ? void 0 : _e.coinInfoX.coinType) != null ? _f : "",
     poolInput: {
-      coinTypeX: (_h = (_g = (_f = poolQuery.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.coinInfoX.coinType) != null ? _h : "",
-      coinTypeY: (_k = (_j = (_i = poolQuery.data) == null ? void 0 : _i.pool) == null ? void 0 : _j.coinInfoY.coinType) != null ? _k : ""
+      coinTypeX: (_i = (_h = (_g = poolQuery.data) == null ? void 0 : _g.pool) == null ? void 0 : _h.coinInfoX.coinType) != null ? _i : "",
+      coinTypeY: (_l = (_k = (_j = poolQuery.data) == null ? void 0 : _j.pool) == null ? void 0 : _k.coinInfoY.coinType) != null ? _l : ""
     }
   });
   const secondCoinRelativePriceQuery = usePoolPriceIn({
     amount: 1,
-    coinTypeIn: (_n = (_m = (_l = poolQuery.data) == null ? void 0 : _l.pool) == null ? void 0 : _m.coinInfoY.coinType) != null ? _n : "",
+    coinTypeIn: (_o = (_n = (_m = poolQuery.data) == null ? void 0 : _m.pool) == null ? void 0 : _n.coinInfoY.coinType) != null ? _o : "",
     poolInput: {
-      coinTypeX: (_q = (_p = (_o = poolQuery.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.coinInfoX.coinType) != null ? _q : "",
-      coinTypeY: (_t2 = (_s = (_r = poolQuery.data) == null ? void 0 : _r.pool) == null ? void 0 : _s.coinInfoY.coinType) != null ? _t2 : ""
+      coinTypeX: (_r = (_q = (_p = poolQuery.data) == null ? void 0 : _p.pool) == null ? void 0 : _q.coinInfoX.coinType) != null ? _r : "",
+      coinTypeY: (_u = (_t2 = (_s = poolQuery.data) == null ? void 0 : _s.pool) == null ? void 0 : _t2.coinInfoY.coinType) != null ? _u : ""
     }
   });
   const [pctVal, setPctVal] = react.exports.useState(0);
@@ -8616,13 +8516,13 @@ function RemoveLiquidityContainer({}) {
     await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
     navigate("/pools");
   }, [firstCoin, secondCoin, pctVal, navigate, removeLiquidityMutation, wallet]);
-  const firstCoinAmount = (_x = (_w = (_v = (_u = poolQuery.data) == null ? void 0 : _u.pool) == null ? void 0 : _v.position) == null ? void 0 : _w.amountX) != null ? _x : 0;
-  const secondCoinAmount = (_B = (_A = (_z = (_y = poolQuery.data) == null ? void 0 : _y.pool) == null ? void 0 : _z.position) == null ? void 0 : _A.amountY) != null ? _B : 0;
+  const firstCoinAmount = (_y = (_x = (_w = (_v = poolQuery.data) == null ? void 0 : _v.pool) == null ? void 0 : _w.position) == null ? void 0 : _x.amountX) != null ? _y : 0;
+  const secondCoinAmount = (_C = (_B = (_A = (_z = poolQuery.data) == null ? void 0 : _z.pool) == null ? void 0 : _A.position) == null ? void 0 : _B.amountY) != null ? _C : 0;
   return /* @__PURE__ */ jsx(RemoveLiquidityView, {
     firstCoin,
     firstCoinAmount,
-    firstCoinRelativePrice: (_E = (_D = (_C = firstCoinRelativePriceQuery.data) == null ? void 0 : _C.pool) == null ? void 0 : _D.quoteExactIn) != null ? _E : 0,
-    secondCoinRelativePrice: (_H = (_G = (_F = secondCoinRelativePriceQuery.data) == null ? void 0 : _F.pool) == null ? void 0 : _G.quoteExactIn) != null ? _H : 0,
+    firstCoinRelativePrice: (_F = (_E = (_D = firstCoinRelativePriceQuery.data) == null ? void 0 : _D.pool) == null ? void 0 : _E.quoteExactIn) != null ? _F : 0,
+    secondCoinRelativePrice: (_I = (_H = (_G = secondCoinRelativePriceQuery.data) == null ? void 0 : _G.pool) == null ? void 0 : _H.quoteExactIn) != null ? _I : 0,
     secondCoinAmount,
     goBackToPools: () => navigate("/pools"),
     handleRemoveLiquidity,
@@ -8807,9 +8707,11 @@ const noWalletUI = /* @__PURE__ */ jsxs(Un, {
 function PortfolioView({
   positions
 }) {
-  const [wallet, , connection] = useWallet();
-  (connection == null ? void 0 : connection.address) ? `${connection.address.slice(0, 6)}...${connection.address.slice(connection.address.length - 6, connection.address.length)}` : "-";
-  return !connection || connection.address === null ? noWalletUI : /* @__PURE__ */ jsxs("div", {
+  const {
+    account
+  } = dist.useWallet();
+  (account == null ? void 0 : account.address) ? `${account.address.toString().slice(0, 6)}...${account.address.toString().slice(account.address.toString().length - 6, account.address.toString().length)}` : "-";
+  return !account || account.address === null ? noWalletUI : /* @__PURE__ */ jsxs("div", {
     className: " w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[48px_260px_1fr] md:grid-cols-6 gap-2 p-4 mx-auto md:max-w-[1140px]",
     children: [/* @__PURE__ */ jsx("div", {
       className: " sm:col-span-1 md:col-span-6 h-full",
@@ -9125,7 +9027,7 @@ const TradeControlsProvider = function TradeControlProvider({
   const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(Number(e2.currentTarget.value)), []);
   const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(Number(e2.currentTarget.value)), []);
   const [placeOrderMutation] = useMutation(PlaceOrderDocument);
-  const [wallet, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const placeOrder = async (placeOrderInput) => {
     var _a2;
     const tx = await placeOrderMutation({
@@ -9139,7 +9041,8 @@ const TradeControlsProvider = function TradeControlProvider({
     addNotification
   } = jt();
   const submitTrade = async () => {
-    if (firstCoin && secondCoin && connection) {
+    var _a2;
+    if (firstCoin && secondCoin && wallet.account) {
       await placeOrder({
         auxToBurn: 0,
         clientOrderId: 0,
@@ -9150,7 +9053,7 @@ const TradeControlsProvider = function TradeControlProvider({
           quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
         },
         quantity: cxAmount.toString(),
-        sender: connection == null ? void 0 : connection.address,
+        sender: (_a2 = wallet.account) == null ? void 0 : _a2.address,
         side: activeTab === 0 ? Side.Buy : Side.Sell
       }).then(() => {
         resetForm();
@@ -10608,21 +10511,21 @@ function usePositionsTable() {
   return [tableProps, tableRef];
 }
 function TradeView({}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
   const createTradingView = useCreateTradingView();
   const {
     firstCoin,
     secondCoin,
     lastTradePrice
   } = useCoinXYParamState();
-  const [, , connection] = useWallet();
+  const wallet = dist.useWallet();
   const marketQuery = useQuery(MarketDocument, {
     variables: {
       marketInput: {
         baseCoinType: firstCoin == null ? void 0 : firstCoin.coinType,
         quoteCoinType: secondCoin == null ? void 0 : secondCoin.coinType
       },
-      owner: connection == null ? void 0 : connection.address
+      owner: (_a = wallet.account) == null ? void 0 : _a.address
     },
     skip: !firstCoin || !secondCoin
   });
@@ -10711,15 +10614,15 @@ function TradeView({}) {
         className: "mx-1 ml-1"
       }), /* @__PURE__ */ jsx($n, {
         title: "24hr High",
-        value: (_c = (_b = (_a = marketQuery.data) == null ? void 0 : _a.market) == null ? void 0 : _b.high24h) != null ? _c : "-",
+        value: (_d = (_c = (_b = marketQuery.data) == null ? void 0 : _b.market) == null ? void 0 : _c.high24h) != null ? _d : "-",
         className: "mx-1"
       }), /* @__PURE__ */ jsx($n, {
         title: "24hr Low",
-        value: (_f = (_e = (_d = marketQuery.data) == null ? void 0 : _d.market) == null ? void 0 : _e.low24h) != null ? _f : "-",
+        value: (_g = (_f = (_e = marketQuery.data) == null ? void 0 : _e.market) == null ? void 0 : _f.low24h) != null ? _g : "-",
         className: "mx-1"
       }), /* @__PURE__ */ jsx($n, {
         title: "24hr Volume",
-        value: (_i = (_h = (_g = marketQuery.data) == null ? void 0 : _g.market) == null ? void 0 : _h.volume24h) != null ? _i : "-",
+        value: (_j = (_i = (_h = marketQuery.data) == null ? void 0 : _h.market) == null ? void 0 : _i.volume24h) != null ? _j : "-",
         className: "ml-1"
       })]
     }), /* @__PURE__ */ jsx("div", {
@@ -10737,8 +10640,8 @@ function TradeView({}) {
         price: lastTradePrice,
         priceDirection,
         symbol: "BTC-USD",
-        baseCoinType: (_j = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _j : "",
-        quoteCoinType: (_k = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _k : "",
+        baseCoinType: (_k = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _k : "",
+        quoteCoinType: (_l = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _l : "",
         onOrderClick: (v, s2) => {
           if (s2 === "ask")
             setActiveTab(0);
@@ -10976,7 +10879,7 @@ function PoolsView({
         title: `${pool.coinInfoY.name} Locked`,
         value: pool.amountY
       }), /* @__PURE__ */ jsx($n, {
-        title: "Fee Perecent",
+        title: "Fee Percent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
       }), /* @__PURE__ */ jsx(er, {
         size: "sm",
@@ -10990,14 +10893,11 @@ function PoolsView({
     className: "flex flex-col items-center gap-4 w-full max-w-[95vw]",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex w-full justify-between items-center max-w-[1280px] my-8",
-      children: [/* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx("h2", {
+      children: [/* @__PURE__ */ jsx("div", {
+        children: /* @__PURE__ */ jsx("h2", {
           className: "text-4xl mb-2",
           children: "Pools"
-        }), window.isAux ? /* @__PURE__ */ jsx("p", {
-          className: "text-primary-200",
-          children: "Earn AUX and a share of the trading fees by providing liquidity to pools!"
-        }) : null]
+        })
       }), /* @__PURE__ */ jsx(In, {
         value: searchQuery,
         name: "marketSearch",
@@ -11128,6 +11028,7 @@ const client = new ApolloClient({
   credentials: "include"
 });
 const BLACK_LIST = ["IR", "KP", "BY", "MM", "CI", "CU", "CD", "IQ", "LR", "SY", "ZW", "UA", "BI", "CF", "LY", "ML", "NI", "VE", "YE", "RU"];
+const wallets = [new dist.MartianWalletAdapter(), new dist.AptosWalletAdapter(), new dist.PontemWalletAdapter(), new dist.HippoWalletAdapter(), new dist.FewchaWalletAdapter(), new dist.HippoExtensionWalletAdapter(), new dist.SpikaWalletAdapter(), new dist.RiseWalletAdapter(), new dist.FletchWalletAdapter(), new dist.TokenPocketWalletAdapter(), new dist.ONTOWalletAdapter(), new dist.SafePalWalletAdapter()];
 function App() {
   const location = useGeoLocation();
   const country = location.country;
@@ -11135,7 +11036,8 @@ function App() {
     className: "dark w-full h-full",
     children: /* @__PURE__ */ jsx(ApolloProvider, {
       client,
-      children: /* @__PURE__ */ jsx(WalletProvider, {
+      children: /* @__PURE__ */ jsx(dist.WalletProvider, {
+        wallets,
         children: /* @__PURE__ */ jsx(BrowserRouter, {
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex flex-col h-full w-full",
