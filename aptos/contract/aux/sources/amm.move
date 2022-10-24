@@ -117,24 +117,17 @@ module aux::amm {
     /// Creates an empty pool for coins of type X and Y. Charge the given basis
     /// point fee on swaps.
     public entry fun create_pool<X, Y>(sender: &signer, fee_bps: u64) {
-        assert!(fee_bps <= 10000, error::invalid_argument(EINVALID_FEE));
-        assert!(!exists<Pool<X, Y>>(@aux), error::already_exists(EPOOL_ALREADY_EXISTS));
-        assert!(!exists<Pool<Y, X>>(@aux), error::already_exists(ETYPE_ARGS_WRONG_ORDER));
-
-        // The signer must own one of the coins or be the aux authority.
-        let x_type = type_info::type_of<X>();
-        let y_type = type_info::type_of<Y>();
-        let sender_address = signer::address_of(sender);
-        if (type_info::account_address(&x_type) != sender_address &&
-            type_info::account_address(&y_type) != sender_address) {
-            // Asserts that sender has the authority for @aux.
-            authority::get_signer(sender);
+        // The fee can be adjusted later, but for permissionless creation, stick
+        // to common fees. @aux can use any fee.
+        if (fee_bps < 10 || fee_bps > 30) {
+            assert!(authority::is_signer_owner(sender), error::invalid_argument(EINVALID_FEE));
         };
 
-        let amm_signer = &authority::get_signer_self();
-
+        assert!(!exists<Pool<X, Y>>(@aux), error::already_exists(EPOOL_ALREADY_EXISTS));
+        assert!(!exists<Pool<Y, X>>(@aux), error::already_exists(ETYPE_ARGS_WRONG_ORDER));
         assert!(!coin::is_coin_initialized<LP<X,Y>>(), EPOOL_ALREADY_EXISTS);
 
+        let amm_signer = &authority::get_signer_self();
         let (lp_burn, lp_freeze, lp_mint) = coin::initialize<LP<X, Y>>(
             amm_signer,
             lp_name<X, Y>(),
