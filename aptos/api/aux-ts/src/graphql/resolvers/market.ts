@@ -2,7 +2,6 @@ import fs from "fs";
 import readline from "readline";
 import * as aux from "../../";
 import { FakeCoin } from "../../../src/client";
-import { getBar } from "../../../src/indexer/analytics";
 import { auxClient, pythClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
@@ -77,29 +76,35 @@ export const market = {
       orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
     );
   },
-  async high24h(parent: Market): Promise<number | undefined> {
-    const bar = await getBar({
-      baseCoinType: parent.baseCoinInfo.coinType,
-      quoteCoinType: parent.quoteCoinInfo.coinType,
-      resolution: "1d",
-    });
-    return bar.high;
+  async high24h(parent: Market): Promise<Maybe<number>> {
+    parent
+    return null;
+    // const bar = await publishBarEvents({
+    //   baseCoinType: parent.baseCoinInfo.coinType,
+    //   quoteCoinType: parent.quoteCoinInfo.coinType,
+    //   resolution: "1d",
+    // });
+    // return bar.high;
   },
-  async low24h(parent: Market): Promise<number | undefined> {
-    const bar = await getBar({
-      baseCoinType: parent.baseCoinInfo.coinType,
-      quoteCoinType: parent.quoteCoinInfo.coinType,
-      resolution: "1d",
-    });
-    return bar.low;
+  async low24h(parent: Market): Promise<Maybe<number>> {
+    parent
+    return null;
+    // const bar = await publishBarEvents({
+    //   baseCoinType: parent.baseCoinInfo.coinType,
+    //   quoteCoinType: parent.quoteCoinInfo.coinType,
+    //   resolution: "1d",
+    // });
+    // return bar.low;
   },
-  async volume24h(parent: Market): Promise<number | undefined> {
-    const bar = await getBar({
-      baseCoinType: parent.baseCoinInfo.coinType,
-      quoteCoinType: parent.quoteCoinInfo.coinType,
-      resolution: "1d",
-    });
-    return bar.volume;
+  async volume24h(parent: Market): Promise<Maybe<number>> {
+    parent
+    return null;
+    // const bar = await publishBarEvents({
+    //   baseCoinType: parent.baseCoinInfo.coinType,
+    //   quoteCoinType: parent.quoteCoinInfo.coinType,
+    //   resolution: "1d",
+    // });
+    // return bar.volume;
   },
   isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
     return aux
