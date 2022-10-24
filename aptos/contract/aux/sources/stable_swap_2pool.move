@@ -995,7 +995,7 @@ module aux::stable_swap_2pool {
         // Curve first do the "swap", then deduct fee https://github.com/curvefi/curve-contract/blob/master/contracts/pools/aave/StableSwapAave.vy#L536
         let new_x = reserve_in + amount_in;
         let current_D = compute_d_curve_standard(reserve_in, reserve_out, current_A);
-        let new_y = get_y_iterative_curve(new_x, current_A, current_D);
+        let new_y = get_y_iterative_curve(new_x, current_A, current_D + 1);
 
         let y_out = reserve_out - (new_y as u64);
         // If the output is smaller than the minimum reprensentable decimal of a coin, then we output 0, e.g. if USDC 6 decimal, we send 0.000001 USDC, i.e. 1 aUSDC, fee_bps = 5, 1 * 9995 / 10000 = 0, since with 6 decimal, the output amount underflows
@@ -1015,73 +1015,74 @@ module aux::stable_swap_2pool {
         let new_y = reserve_out - (uint256::downcast(amount_out_with_fee) as u64);
         let current_D = compute_d_curve_standard(reserve_in, reserve_out, current_A);
         // By symmetry can use same function to solve for x
-        let new_x = get_y_iterative_curve(new_y, current_A, current_D);
+        let new_x = get_y_iterative_curve(new_y, current_A, current_D + 1);
         let x_in = (new_x as u64) - reserve_in;
         x_in
     }
 
     #[test]
     fun test_get_amount_in(){
+        assert!(get_amount_in(1, 10, 10, 1, 85)==1,(get_amount_in(10000, 300000, 300000, 5, 85) as u64));
         // perfect balance pool, including fee so pay a bit more than 10000, 30x, 30y 
-        assert!(get_amount_in(10000, 300000, 300000, 5, 85)==10006, (get_amount_in(10000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 300000, 300000, 5, 85)==10007, (get_amount_in(10000, 300000, 300000, 5, 85) as u64));
         
         // ask same amount out, since amount in is more expensive priced by the pool, less amount_in is required
-        assert!(get_amount_in(10000, 250000, 300000, 5, 85)==9995, (get_amount_in(10000, 250000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 250000, 300000, 5, 85)==9996, (get_amount_in(10000, 250000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(10000, 200000, 300000, 5, 85)==9981, (get_amount_in(10000, 200000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 200000, 300000, 5, 85)==9982, (get_amount_in(10000, 200000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(10000, 150000, 300000, 5, 85)==9958, (get_amount_in(10000, 150000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 150000, 300000, 5, 85)==9959, (get_amount_in(10000, 150000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(10000, 100000, 300000, 5, 85)==9912, (get_amount_in(10000, 100000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 100000, 300000, 5, 85)==9913, (get_amount_in(10000, 100000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(10000, 100000, 200000, 5, 85)==9961, (get_amount_in(10000, 100000, 200000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 100000, 200000, 5, 85)==9962, (get_amount_in(10000, 100000, 200000, 5, 85) as u64));
 
         // with same pool, the more amount_out, the more amount_in required
-        assert!(get_amount_in(10000, 300000, 300000, 5, 85)==10006, (get_amount_in(10000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(10000, 300000, 300000, 5, 85)==10007, (get_amount_in(10000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(20000, 300000, 300000, 5, 85)==20017, (get_amount_in(20000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(20000, 300000, 300000, 5, 85)==20018, (get_amount_in(20000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(30000, 300000, 300000, 5, 85)==30032, (get_amount_in(30000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(30000, 300000, 300000, 5, 85)==30033, (get_amount_in(30000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_in(40000, 300000, 300000, 5, 85)==40051, (get_amount_in(40000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_in(40000, 300000, 300000, 5, 85)==40052, (get_amount_in(40000, 300000, 300000, 5, 85) as u64));
 
         // A decreases, more slippagge, so for same amount_out, need more amount_in
         assert!(get_amount_in(40000, 300000, 300000, 5, 80)==40053, (get_amount_in(40000, 300000, 300000, 5, 80) as u64));
         assert!(get_amount_in(40000, 300000, 300000, 5, 75)==40056, (get_amount_in(40000, 300000, 300000, 5, 75) as u64));
-        assert!(get_amount_in(40000, 300000, 300000, 5, 70)==40058, (get_amount_in(40000, 300000, 300000, 5, 70) as u64));
+        assert!(get_amount_in(40000, 300000, 300000, 5, 70)==40059, (get_amount_in(40000, 300000, 300000, 5, 70) as u64));
         
-        assert!(get_amount_in(40000, 300000, 300000, 5, 1)==41898, (get_amount_in(40000, 300000, 300000, 5, 1) as u64));
+        assert!(get_amount_in(40000, 300000, 300000, 5, 1)==41899, (get_amount_in(40000, 300000, 300000, 5, 1) as u64));
     }
 
     #[test]
     fun test_get_amount_out(){
         // 1 x, 30x, 30y
-        assert!(get_amount_out(10000, 300000, 300000, 5, 85)==9994, (get_amount_out(10000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 300000, 300000, 5, 85)==9993, (get_amount_out(10000, 300000, 300000, 5, 85) as u64));
 
          // ask same amount in, since amount in is more expensive priced by the pool, more amount_out
-        assert!(get_amount_out(10000, 250000, 300000, 5, 85)==10004, (get_amount_out(10000, 250000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 250000, 300000, 5, 85)==10003, (get_amount_out(10000, 250000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(10000, 200000, 300000, 5, 85)==10018, (get_amount_out(10000, 200000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 200000, 300000, 5, 85)==10017, (get_amount_out(10000, 200000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(10000, 150000, 300000, 5, 85)==10041, (get_amount_out(10000, 150000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 150000, 300000, 5, 85)==10040, (get_amount_out(10000, 150000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(10000, 100000, 300000, 5, 85)==10088, (get_amount_out(10000, 100000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 100000, 300000, 5, 85)==10087, (get_amount_out(10000, 100000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(10000, 100000, 200000, 5, 85)==10038, (get_amount_out(10000, 100000, 200000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 100000, 200000, 5, 85)==10037, (get_amount_out(10000, 100000, 200000, 5, 85) as u64));
 
         // with same pool, the more amount_in, the more amount_out
-        assert!(get_amount_out(10000, 300000, 300000, 5, 85)==9994, (get_amount_out(10000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(10000, 300000, 300000, 5, 85)==9993, (get_amount_out(10000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(20000, 300000, 300000, 5, 85)==19983, (get_amount_out(20000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(20000, 300000, 300000, 5, 85)==19982, (get_amount_out(20000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(30000, 300000, 300000, 5, 85)==29968, (get_amount_out(30000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(30000, 300000, 300000, 5, 85)==29967, (get_amount_out(30000, 300000, 300000, 5, 85) as u64));
 
-        assert!(get_amount_out(40000, 300000, 300000, 5, 85)==39949, (get_amount_out(40000, 300000, 300000, 5, 85) as u64));
+        assert!(get_amount_out(40000, 300000, 300000, 5, 85)==39948, (get_amount_out(40000, 300000, 300000, 5, 85) as u64));
 
         // Other fixed, Smaller A, more splippage, so less amount_out
         assert!(get_amount_out(40000, 300000, 300000, 5, 80)==39947, (get_amount_out(40000, 300000, 300000, 5, 80) as u64));
         assert!(get_amount_out(40000, 300000, 300000, 5, 75)==39945, (get_amount_out(40000, 300000, 300000, 5, 75) as u64));
-        assert!(get_amount_out(40000, 300000, 300000, 5, 70)==39942, (get_amount_out(40000, 300000, 300000, 5, 70) as u64));
+        assert!(get_amount_out(40000, 300000, 300000, 5, 70)==39941, (get_amount_out(40000, 300000, 300000, 5, 70) as u64));
 
         // Extreme case, this is right, with smaller A, same amount_in, less amount_out due to larger slippage
         assert!(get_amount_out(40000, 300000, 300000, 5, 1)==38266, (get_amount_out(40000, 300000, 300000, 5, 1) as u64));
@@ -1133,7 +1134,7 @@ module aux::stable_swap_2pool {
             }else{
                 diff = sub(y_u256, prev_y);
             };
-            if (uint256::less(diff, uint256::new(0, 2))){
+            if (uint256::is_zero(&diff)) {
                 break
             };
             idx = idx + 1;
@@ -1476,30 +1477,30 @@ module aux::stable_swap_2pool {
             assert!(y_reserve == 4000, ETEST_FAILED);
         };
         let au_out = au_out<AuxCoin, AuxTestCoin>(2);
-        assert!(au_out == 4, au_out);
+        assert!(au_out == 3, au_out);
         swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 2, 3);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8998, coin::balance<AuxCoin>(sender_addr));
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6004, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6003, coin::balance<AuxTestCoin>(sender_addr));
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
             assert!(x_reserve == 1002, x_reserve);
-            assert!(y_reserve == 3996, y_reserve);
+            assert!(y_reserve == 3997, y_reserve);
         };
 
         // test swap in the other direction: swap Y for X
         let au_out = au_out<AuxTestCoin, AuxCoin>(7);
-        assert!(au_out == 9, au_out);
+        assert!(au_out == 8, au_out);
         swap_exact_coin_for_coin<AuxTestCoin, AuxCoin>(sender, 7, 8);
-        assert!(coin::balance<AuxCoin>(sender_addr) == 9007, coin::balance<AuxCoin>(sender_addr));
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 5997, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxCoin>(sender_addr) == 9006, coin::balance<AuxCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 5996, coin::balance<AuxTestCoin>(sender_addr));
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            assert!(x_reserve == 993, x_reserve);
-            assert!(y_reserve == 4003, y_reserve);
+            assert!(x_reserve == 994, x_reserve);
+            assert!(y_reserve == 4004, y_reserve);
         };
     }
 
@@ -1560,14 +1561,14 @@ module aux::stable_swap_2pool {
         // unlike constant product, stable swap outputs less when pool is imbalanced
         swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 1, 2);
         assert!(coin::balance<AuxCoin>(sender_addr) == 8999, coin::balance<AuxCoin>(sender_addr));
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6003, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6002, coin::balance<AuxTestCoin>(sender_addr));
         {
             let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
             let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxTestCoin>>(), 0);
             assert!(x_reserve == 1001, x_reserve);
-            assert!(y_reserve == 3997, y_reserve);
+            assert!(y_reserve == 3998, y_reserve);
             assert!(pool_lp_au == 4991, (pool_lp_au as u64));
         };
         remove_liquidity<AuxCoin, AuxTestCoin>(sender, 1000);
@@ -1801,7 +1802,7 @@ module aux::stable_swap_2pool {
             au_in: 1000,
             au_out: 1000,
             expected_au_in: 1000,
-            expected_au_out: 1006,
+            expected_au_out: 1005,
             x_in_y_out: true,
             use_limit: false,
             limit_num: 0,
@@ -1826,7 +1827,7 @@ module aux::stable_swap_2pool {
             au_in: 1000,
             au_out: 1000,
             expected_au_in: 1000,
-            expected_au_out: 1002,
+            expected_au_out: 1001,
             x_in_y_out: true,
             use_limit: false,
             limit_num: 0,
@@ -1848,9 +1849,9 @@ module aux::stable_swap_2pool {
             exact_in: false,
             init_x: 10000,
             init_y: 20000,
-            au_in: 1818,
+            au_in: 1811,
             au_out: 1818,
-            expected_au_in: 1810,
+            expected_au_in: 1811,
             expected_au_out: 1818,
             x_in_y_out: true,
             use_limit: false,
@@ -1873,9 +1874,9 @@ module aux::stable_swap_2pool {
             exact_in: false,
             init_x: 2000000,
             init_y: 200000000,
-            au_in: 87960059,
+            au_in: 87960060,
             au_out: 100000000,
-            expected_au_in: 87960059,
+            expected_au_in: 87960060,
             expected_au_out: 100000000,
             x_in_y_out: true,
             use_limit: false,
@@ -1895,7 +1896,7 @@ module aux::stable_swap_2pool {
             init_y: 20000,
             au_in: 1811,
             au_out: 1813,
-            expected_au_in: 1810,
+            expected_au_in: 1811,
             expected_au_out: 1813,
             // final_x: 11000,
             // final_y: 18187 
@@ -1921,9 +1922,9 @@ module aux::stable_swap_2pool {
             init_x: 10000,
             init_y: 10000,
             au_in: 100,
-            au_out: 99,
+            au_out: 100,
             expected_au_in: 100,
-            expected_au_out: 101,
+            expected_au_out: 100,
             x_in_y_out: true,
             use_limit: false,
             limit_num: 0,
@@ -2101,13 +2102,13 @@ module aux::stable_swap_2pool {
 
         assert!(coin::balance<AuxCoin>(sender_addr) == 7999000 * decimal, coin::balance<AuxCoin>(sender_addr));
         // 1000 -> 999.88
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6000999880830, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 6000999880829, coin::balance<AuxTestCoin>(sender_addr));
 
         swap_exact_coin_for_coin<AuxTestCoin, AuxCoin>(sender, 1000 * decimal, 0);
 
         // 1000 -> 999.32
-        assert!(coin::balance<AuxCoin>(sender_addr) == 7999999319250, coin::balance<AuxCoin>(sender_addr));
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 5999999880830, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxCoin>(sender_addr) == 7999999319249, coin::balance<AuxCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 5999999880829, coin::balance<AuxTestCoin>(sender_addr));
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
@@ -2151,14 +2152,94 @@ module aux::stable_swap_2pool {
 
         assert!(coin::balance<AuxCoin>(sender_addr) == 4999990000000000000, coin::balance<AuxCoin>(sender_addr));
         // 1 -> 1.003
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 3000010030928245545, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 3000010030928245544, coin::balance<AuxTestCoin>(sender_addr));
 
         swap_exact_coin_for_coin<AuxTestCoin, AuxCoin>(sender, 1 * decimal / 100000, 0);
 
         // 1 -> 0.996
-        assert!(coin::balance<AuxCoin>(sender_addr) == 4999999961193377144, coin::balance<AuxCoin>(sender_addr));
-        assert!(coin::balance<AuxTestCoin>(sender_addr) == 3000000030928245545, coin::balance<AuxTestCoin>(sender_addr));
+        assert!(coin::balance<AuxCoin>(sender_addr) == 4999999961193377143, coin::balance<AuxCoin>(sender_addr));
+        assert!(coin::balance<AuxTestCoin>(sender_addr) == 3000000030928245544, coin::balance<AuxTestCoin>(sender_addr));
     }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_add_liquidity_d(sender: &signer, 
+        aptos_framework: &signer) acquires Pool {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+
+        let sender_addr = signer::address_of(sender);
+        setup_pool_for_test(sender, 10, 10000, 10000, 85);
+
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            assert!(d==0, (d as u64));
+        };
+
+        let _ = sender_addr;
+        add_liquidity<AuxCoin, AuxTestCoin>(sender, 1000, 4000);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxTestCoin>>(), 0);
+            assert!(x_reserve == 1000, x_reserve);
+            assert!(y_reserve == 4000, y_reserve);
+            assert!(pool_lp_au == 4991, (pool_lp_au as u64));
+            assert!(d==4991, (d as u64));
+        };
+
+        assert!(coin::balance<LP<AuxCoin, AuxTestCoin>>(sender_addr) == 3991,
+                coin::balance<LP<AuxCoin, AuxTestCoin>>(sender_addr) );
+
+        // remove all liquidity
+        remove_liquidity<AuxCoin, AuxTestCoin>(sender, 3991);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxTestCoin>>(), 0);
+            assert!(x_reserve == 201, x_reserve);
+            assert!(y_reserve == 802, y_reserve);
+            assert!(pool_lp_au == 1000, (pool_lp_au as u64));
+            assert!(d==1001,(d as u64));
+        };
+
+        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 10, 8);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            // check d increase
+            assert!(d==1002,(d as u64));
+        };
+
+        swap_exact_coin_for_coin<AuxCoin, AuxTestCoin>(sender, 10, 8);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            // check d increase
+            assert!(d==1003,(d as u64));
+        };
+
+        swap_coin_for_exact_coin<AuxCoin, AuxTestCoin>(sender, 12, 10);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxTestCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let d = compute_d_curve_standard(x_reserve, y_reserve, 85);
+            // d kept the same due to round-down, but think should be fine?
+            assert!(d==1003,(d as u64));
+        }
+    }
+
+
 
         
 }
