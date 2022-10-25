@@ -85,28 +85,3 @@ A very convoluted way of redeploying to a resource account and allow it to self-
         }
     }
     ```
-
-## Generate selfsigned
-
-A code generator is provided at [cmd/gen-aptos-deployer-selfsign] to generate the code:
-
-```bash
-gen-aptos-deployer-selfsign --help
-generate the self-signed module to support self-signing modules. Used with deployer.
-
-Usage:
-  gen-aptos-deployer-selfsign [flags]
-
-Flags:
-  -a, --address string               address for the module (default "module_address")
-  -f, --friend-modules stringArray   friend modules for this module, must be within the same address.
-  -h, --help                         help for gen-aptos-deployer-selfsign
-  -n, --module-name string           module name for the self-signed module (default "module_name")
-  -o, --output string                output file name. (default "./sources/self_signed.move")
-```
-
-For example, to generate the [example](../deployer-examples/selfsigned/sources/authority.move), the following can be run in the [examples/selfsigned](../deployer-examples/selfsigned) folder:
-
-```bash
-go run ../deployer/cmd/gen-aptos-deployer-selfsign -a selfsigned -f another_mod -n authority -o sources/authority.move
-```
