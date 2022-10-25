@@ -37,7 +37,7 @@ func GetCalculateResourceAddressCmd() *cobra.Command {
 	cmd.Run = func(_ *cobra.Command, _ []string) {
 		fmt.Printf("source address: %s\n", sourceAddress)
 		fmt.Printf("seed: %s\n", seed)
-		addr, err := aptos.StringToAddress(sourceAddress)
+		addr, err := aptos.ParseAddress(sourceAddress)
 		if err != nil {
 			panic(err)
 		}

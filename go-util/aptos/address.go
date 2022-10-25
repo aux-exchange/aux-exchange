@@ -2,6 +2,7 @@ package aptos
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -13,8 +14,8 @@ const AddressLength = 32
 // Address in aptos, 32 byte long.
 type Address [AddressLength]byte
 
-// StringToAddress converts a hex encoded string to address.
-func StringToAddress(s string) (Address, error) {
+// ParseAddress converts a hex encoded string to address.
+func ParseAddress(s string) (Address, error) {
 	trimmed := strings.TrimPrefix(strings.ToLower(s), "0x")
 	exptedLength := AddressLength * 2
 	if len(trimmed) > exptedLength {
@@ -51,7 +52,64 @@ func CalculateResourceAddress(sourceAddress Address, seed []byte) (Address, erro
 	return sha3.Sum256(allbytes), nil
 }
 
+// Hex representation of the address, with 0x prefix
 func (address Address) String() string {
 	allBytes := address[:]
-	return "0x" + hex.EncodeToString(allBytes)
+	return "0x" + strings.TrimLeft(hex.EncodeToString(allBytes), "0")
+}
+
+// Checks if the address is zero.
+func (address Address) IsZero() bool {
+	for i := 0; i < AddressLength; i++ {
+		if address[i] != 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Check if an address string is named address
+func IsNamedAddress(address string) bool {
+	return !strings.HasPrefix(address, "0x")
+}
+
+var (
+	_ json.Marshaler   = (*Address)(nil)
+	_ json.Unmarshaler = (*Address)(nil)
+)
+
+func (address *Address) UnmarshalJSON(input []byte) error {
+	var dataStr string
+	if err := json.Unmarshal(input, &dataStr); err != nil {
+		return err
+	}
+
+	x, err := ParseAddress(dataStr)
+	if err != nil {
+		return err
+	}
+	*address = x
+
+	return nil
+}
+
+func (address Address) MarshalJSON() ([]byte, error) {
+	return json.Marshal(address.String())
+}
+
+// Set is to support cobra value
+func (a *Address) Set(s string) error {
+	b, err := ParseAddress(s)
+	*a = Address(b)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Type is to support cobra value
+func (a Address) Type() string {
+	return "aptos-address"
 }

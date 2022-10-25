@@ -1,0 +1,200 @@
+[
+  {
+    "name": "Tortuga Staked Aptos",
+    "symbol": "tAPT",
+    "official_symbol": "tAPT",
+    "coingecko_id": "",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/TortugaStakedAptos.png",
+    "project_url": "https://tortuga.finance/",
+    "token_type": {
+      "type": "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114::staked_aptos_coin::StakedAptosCoin",
+      "account_address": "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114",
+      "module_name": "staked_aptos_coin",
+      "struct_name": "StakedAptosCoin"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Argo USD",
+    "symbol": "USDA",
+    "official_symbol": "USDA",
+    "coingecko_id": "",
+    "decimals": 6,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDA.svg",
+    "project_url": "https://argo.fi/",
+    "token_type": {
+      "type": "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA",
+      "account_address": "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc",
+      "module_name": "usda",
+      "struct_name": "USDA"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Ditto Staked Aptos",
+    "symbol": "stAPT",
+    "official_symbol": "stAPT",
+    "coingecko_id": "",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/DittoStakedAptos.svg",
+    "project_url": "https://www.dittofinance.io/",
+    "token_type": {
+      "type": "0xd11107bdf0d6d7040c6c0bfbdecb6545191fdf13e8d8d259952f53e1713f61b5::staked_coin::StakedAptos",
+      "account_address": "0xd11107bdf0d6d7040c6c0bfbdecb6545191fdf13e8d8d259952f53e1713f61b5",
+      "module_name": "staked_coin",
+      "struct_name": "StakedAptos"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Wrapped BTC",
+    "symbol": "WBTC",
+    "official_symbol": "WBTC",
+    "coingecko_id": "wrapped-bitcoin",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/BTC.webp",
+    "project_url": "",
+    "token_type": {
+      "type": "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T",
+      "account_address": "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "FTX Token",
+    "symbol": "FTT",
+    "official_symbol": "FTX Token",
+    "coingecko_id": "ftx-token",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/FTXToken.webp",
+    "project_url": "",
+    "token_type": {
+      "type": "0x419d16ebaeda8dc374b1178a61d24fb699799d55a3f475f427998769c537b51b::coin::T",
+      "account_address": "0x419d16ebaeda8dc374b1178a61d24fb699799d55a3f475f427998769c537b51b",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "USD Coin (Solana)",
+    "symbol": "USDCso",
+    "official_symbol": "USDC",
+    "coingecko_id": "",
+    "decimals": 6,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg",
+    "project_url": "",
+    "token_type": {
+      "type": "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T",
+      "account_address": "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Wrapped Ether",
+    "symbol": "WETH",
+    "official_symbol": "WETH",
+    "coingecko_id": "weth",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/WETH.svg",
+    "project_url": "",
+    "token_type": {
+      "type": "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T",
+      "account_address": "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "SOL",
+    "symbol": "SOL",
+    "official_symbol": "SOL",
+    "coingecko_id": "solana",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/SOL.webp",
+    "project_url": "",
+    "token_type": {
+      "type": "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13::coin::T",
+      "account_address": "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "official_symbol": "USDC",
+    "coingecko_id": "usd-coin",
+    "decimals": 6,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg",
+    "project_url": "",
+    "token_type": {
+      "type": "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
+      "account_address": "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "official_symbol": "USDT",
+    "coingecko_id": "tether",
+    "decimals": 6,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDT.svg",
+    "project_url": "",
+    "token_type": {
+      "type": "0xa2eda21a58856fda86451436513b867c97eecb4ba099da5775520e0f7492e852::coin::T",
+      "account_address": "0xa2eda21a58856fda86451436513b867c97eecb4ba099da5775520e0f7492e852",
+      "module_name": "coin",
+      "struct_name": "T"
+    },
+    "extensions": {
+      "data": []
+    }
+  },
+  {
+    "name": "Aptos Coin",
+    "symbol": "APT",
+    "official_symbol": "APT",
+    "coingecko_id": "aptos",
+    "decimals": 8,
+    "logo_url": "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/APT.webp",
+    "project_url": "https://aptoslabs.com/",
+    "token_type": {
+      "type": "0x1::aptos_coin::AptosCoin",
+      "account_address": "0x1",
+      "module_name": "aptos_coin",
+      "struct_name": "AptosCoin"
+    },
+    "extensions": {
+      "data": []
+    }
+  }
+]

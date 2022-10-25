@@ -4,9 +4,8 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"fmt"
-	"strings"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 // Config is a configuration section in aptos's yaml config file.
@@ -16,31 +15,6 @@ type Config struct {
 	Account    string `yaml:"account"`
 	RestUrl    string `yaml:"rest_url"`
 	FaucetUrl  string `yaml:"faucet_url"`
-}
-
-func (c *Config) MarshalYAML() (any, error) {
-	n := yaml.Node{}
-	n.Encode(struct {
-		PrivateKey string `yaml:"private_key"`
-		PublicKey  string `yaml:"public_key"`
-		Account    string `yaml:"account"`
-		RestUrl    string `yaml:"rest_url"`
-		FaucetUrl  string `yaml:"faucet_url"`
-	}{
-		PrivateKey: c.PrivateKey,
-		PublicKey:  c.PublicKey,
-		Account:    c.Account,
-		RestUrl:    c.RestUrl,
-		FaucetUrl:  c.FaucetUrl,
-	})
-
-	for _, v := range n.Content {
-		if strings.HasPrefix(v.Value, "0x") {
-			v.Style = yaml.DoubleQuotedStyle
-		}
-	}
-
-	return n, nil
 }
 
 func (config *Config) SetKey(account *LocalAccount) error {
@@ -65,7 +39,7 @@ func (config *Config) GetLocalAccount() (*LocalAccount, error) {
 		return nil, fmt.Errorf("public key mismatch")
 	}
 
-	account, err := StringToAddress(config.Account)
+	account, err := ParseAddress(config.Account)
 	if err != nil {
 		return nil, err
 	}

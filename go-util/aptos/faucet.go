@@ -1,36 +1,55 @@
 package aptos
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
-func RequestFromFaucet(faucetUrl string, address string, amount uint64) (string, error) {
+func RequestFromFaucet(ctx context.Context, faucetUrl string, address *Address, amount uint64) ([]string, error) {
 	url, err := url.JoinPath(faucetUrl, "mint")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	fullUrl := fmt.Sprintf("%s?address=0x%s&amount=%d", url, address, amount)
+	fullUrl := fmt.Sprintf("%s?address=%s&amount=%d", url, address.String(), amount)
 
 	fmt.Printf("requesting airdrop for %s from %s\n", address, fullUrl)
 
-	resp, err := http.Post(fullUrl, "", nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, fullUrl, nil)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	allBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if resp.StatusCode >= 400 {
-		return "", fmt.Errorf("failed to fund from faucet: %s", string(allBytes))
+		return nil, fmt.Errorf("failed to fund from faucet: %s", string(allBytes))
 	}
 
-	return string(allBytes), nil
+	allTxHashes := make([]string, 0)
+	err = json.Unmarshal(allBytes, &allTxHashes)
+	if err != nil {
+		return nil, nil
+	}
+	return mapSlices(allTxHashes, func(in string) string {
+		if !strings.HasPrefix(in, "0x") {
+			return "0x" + in
+		} else {
+			return in
+		}
+	}), nil
 }

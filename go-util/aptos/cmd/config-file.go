@@ -23,9 +23,9 @@ func getConfigFileLocation() (string, bool) {
 	return path.Join(dir, "config.yaml"), false
 }
 
-func getProfile(network string) string {
+func getProfile(network aptos.Network) string {
 	switch network {
-	case aptos.Mainet:
+	case aptos.Mainnet:
 		return "mainnet"
 	case aptos.Devnet:
 		return "devnet"

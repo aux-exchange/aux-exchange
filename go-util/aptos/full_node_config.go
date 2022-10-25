@@ -1,6 +1,6 @@
 package aptos
 
-import "gopkg.in/yaml.v3"
+import "github.com/goccy/go-yaml"
 
 // FullNodeConfig is representation of full_node_config.yml
 type FullNodeConfig struct {

@@ -4,8 +4,9 @@ package aux_go_generate
 
 // critbit
 
-//go:generate go run github.com/fardream/gen-move-container critbit -o ../aptos/contract/aux/sources/critbit_v.move -p aux -m critbit_v
-//go:generate go run github.com/fardream/gen-move-container critbit -o ../aptos/contract/aux/sources/critbit.move -p aux -m critbit --use-aptos-table
+// need go install github.com/fardream/gen-move-container@latest
+//go:generate gen-move-container critbit -o ../aptos/contract/aux/sources/critbit_v.move -p aux -m critbit_v
+//go:generate gen-move-container critbit -o ../aptos/contract/aux/sources/critbit.move -p aux -m critbit --use-aptos-table
 
 // abort-only-contract
 // must run this after the commands above because this is copying the contract over
