@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/aux-exchange/aux-exchange/go-util/aptos"
@@ -35,7 +35,7 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 	doFaucet := false
 	waitForValidator := false
 	redeploy := false
-	cmd.Flags().StringVar(&network, "network", network, fmt.Sprintf("network to publish to, must be one of %s, %s, %s, or %s", aptos.Localnet, aptos.Devnet, aptos.Testnet, aptos.Mainet))
+	cmd.Flags().Var(&network, "network", fmt.Sprintf("network to publish to, must be one of %s, %s, %s, or %s", aptos.Localnet, aptos.Devnet, aptos.Testnet, aptos.Mainnet))
 	cmd.Flags().BoolVarP(&genNewKey, "gen-newkey", "f", genNewKey, "generate new key even if old key exists.")
 	cmd.Flags().StringVarP(&workDir, "working-directory", "w", workDir, "working directory containing the code of aux and deployer.")
 	cmd.Flags().BoolVarP(&skipLocalNet, "skip-localnet-validator", "n", skipLocalNet, "skip launching a new validator if nothing is running at :8080")
@@ -55,7 +55,7 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 		}
 
 		// check if the node is running
-		restUrl, faucetUrl, err := aptos.GetDefaultEndpoint(strings.ToLower(network))
+		restUrl, faucetUrl, err := aptos.GetDefaultEndpoint(network)
 		orPanic(err)
 
 		if len(overrideUrl) > 0 {
@@ -122,13 +122,15 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 			if skipFaucet {
 				redWarn.Printf("Newly created profile... not requesting airdrop, quit\n")
 			} else {
-				fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 1_000_000_000)))
+				addr := getOrPanic(aptos.ParseAddress(config.Account))
+				fmt.Println(getOrPanic(aptos.RequestFromFaucet(context.Background(), config.FaucetUrl, &addr, 1_000_000_000)))
 			}
 		} else if doFaucet {
-			fmt.Println(getOrPanic(aptos.RequestFromFaucet(config.FaucetUrl, config.Account, 1_000_000_000)))
+			addr := getOrPanic(aptos.ParseAddress(config.Account))
+			fmt.Println(getOrPanic(aptos.RequestFromFaucet(context.Background(), config.FaucetUrl, &addr, 1_000_000_000)))
 		}
 
-		resourceAccount := getOrPanic(aptos.CalculateResourceAddress(getOrPanic(aptos.StringToAddress(config.Account)), []byte(seed))).String()
+		resourceAccount := getOrPanic(aptos.CalculateResourceAddress(getOrPanic(aptos.ParseAddress(config.Account)), []byte(seed))).String()
 		if checkAccountExist(config.RestUrl, resourceAccount) {
 			redWarn.Printf("resource account: %s exists, maybe redeploy?\n", resourceAccount)
 		}

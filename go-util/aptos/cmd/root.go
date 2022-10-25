@@ -14,6 +14,13 @@ func GetRootCmd() *cobra.Command {
 		GetKeyAndMnemonicCmd(),
 		GetCalculateResourceAddressCmd(),
 		GetLaunchAptosNodeCmd(),
+		GetListAccountCmd(),
+		GetListMarketCmd(),
+		GetListChainCmd(),
+		GetListPoolCmd(),
+		GetListL2MarketCmd(),
+		GetListAllOrdersCmd(),
+		GetPlaceClobOrderCmd(),
 	)
 
 	return cmd

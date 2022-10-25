@@ -3,7 +3,7 @@ package aptos_test
 import (
 	"testing"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 
 	"github.com/aux-exchange/aux-exchange/go-util/aptos"
 )

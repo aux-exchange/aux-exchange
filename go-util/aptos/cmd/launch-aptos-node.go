@@ -9,8 +9,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/aux-exchange/aux-exchange/go-util/aptos"
 	"github.com/spf13/cobra"
+
+	"github.com/aux-exchange/aux-exchange/go-util/aptos"
 )
 
 func downloadFile(url string) []byte {

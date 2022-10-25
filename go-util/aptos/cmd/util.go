@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/aux-exchange/aux-exchange/go-util/aptos"
+	"github.com/aux-exchange/aux-exchange/go-util/aptos/known"
 	"github.com/mattn/go-isatty"
 )
 
@@ -58,4 +60,18 @@ func checkAccountExist(restUrl, account string) bool {
 	defer res.Body.Close()
 
 	return res.StatusCode < 400
+}
+
+func parseCoinType(network aptos.Network, coinType string) (*aptos.MoveTypeTag, error) {
+	coinInfo := known.GetCoinInfoBySymbol(network, coinType)
+	if coinInfo != nil {
+		return coinInfo.TokenType.Type, nil
+	}
+
+	coin, err := aptos.ParseMoveTypeTag(coinType)
+	if err != nil {
+		return nil, fmt.Errorf("cannot find %s on aptos %s as a known coin, and failed to parse as a move type: %w", coinType, network, err)
+	}
+
+	return coin, nil
 }

@@ -10,6 +10,8 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
+const SignatureLength = 64
+
 // GenerateAuthenticationKey calculates the authentication key for a scheme.
 //
 // The information is based on https://aptos.dev/concepts/basics-accounts/#signature-schemes
@@ -79,6 +81,10 @@ func parseHexString(hexString string) ([]byte, error) {
 	return hex.DecodeString(strings.TrimPrefix(hexString, "0x"))
 }
 
+func prefixedHexString(input []byte) string {
+	return "0x" + hex.EncodeToString(input)
+}
+
 // NewPrivateKeyFromHexString generates a private key from hex string.
 func NewPrivateKeyFromHexString(hexString string) (*ed25519.PrivateKey, error) {
 	pk, err := parseHexString(hexString)
@@ -114,4 +120,13 @@ func NewLocalAccountWithRandomKey() (*LocalAccount, error) {
 		PrivateKey: priv,
 		Address:    address,
 	}, nil
+}
+
+func (account *LocalAccount) Sign(message []byte) (*SingleSignature, error) {
+	signature := ed25519.Sign(account.PrivateKey, message)
+	return NewSingleSignature(&account.PublicKey, signature), nil
+}
+
+func (account *LocalAccount) SignForSimulation(message []byte) (*SingleSignature, error) {
+	return NewSingleSignatureForSimulation(&account.PublicKey), nil
 }
