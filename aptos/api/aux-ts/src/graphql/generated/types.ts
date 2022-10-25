@@ -532,6 +532,7 @@ export enum Side {
 export type Subscription = {
   __typename?: 'Subscription';
   addLiquidity: AddLiquidity;
+  bar: Bar;
   lastTradePrice: Scalars['Float'];
   orderbook: Orderbook;
   removeLiquidity: RemoveLiquidity;
@@ -542,6 +543,12 @@ export type Subscription = {
 
 export type SubscriptionAddLiquidityArgs = {
   poolInputs?: InputMaybe<Array<PoolInput>>;
+};
+
+
+export type SubscriptionBarArgs = {
+  marketInputs?: InputMaybe<Array<MarketInput>>;
+  resolution: Scalars['String'];
 };
 
 
@@ -1006,6 +1013,7 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   addLiquidity?: SubscriptionResolver<ResolversTypes['AddLiquidity'], "addLiquidity", ParentType, ContextType, Partial<SubscriptionAddLiquidityArgs>>;
+  bar?: SubscriptionResolver<ResolversTypes['Bar'], "bar", ParentType, ContextType, RequireFields<SubscriptionBarArgs, 'resolution'>>;
   lastTradePrice?: SubscriptionResolver<ResolversTypes['Float'], "lastTradePrice", ParentType, ContextType, Partial<SubscriptionLastTradePriceArgs>>;
   orderbook?: SubscriptionResolver<ResolversTypes['Orderbook'], "orderbook", ParentType, ContextType, Partial<SubscriptionOrderbookArgs>>;
   removeLiquidity?: SubscriptionResolver<ResolversTypes['RemoveLiquidity'], "removeLiquidity", ParentType, ContextType, Partial<SubscriptionRemoveLiquidityArgs>>;
@@ -1074,4 +1082,3 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
-

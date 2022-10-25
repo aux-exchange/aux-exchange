@@ -1,31 +1,32 @@
+import * as redis from "redis";
 import * as aux from "..";
-import { AuxClient } from "../client";
+import { AuxClient, FakeCoin } from "../client";
 
-import type { Types } from "aptos";
 import * as BN from "bn.js";
-import fs from "fs";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import _ from "lodash";
-import type { OrderFillEvent } from "../clob/core/events";
+import { orderEventToOrder } from "../graphql/conversion";
+import type { MarketInput, Order } from "../graphql/generated/types";
 
 const [auxClient, _moduleAuthority] = AuxClient.createFromEnvForTesting({});
-const pubsub = new RedisPubSub();
+const redisClient = redis.createClient();
+redisClient.on("error", (err) => console.error("[Redis]", err));
+const redisPubSub = new RedisPubSub();
 
 export interface Bar {
-  open: number | undefined;
-  high: number | undefined;
-  low: number | undefined;
-  close: number | undefined;
-  volume: number | undefined;
-  fills: {
-    price: number;
-    quantity: number;
-    timestamp: number;
-  }[];
-  cursor: number;
+  resolution: Resolution;
+  time: number;
+  ohlcv: {
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+  } | null;
 }
 
 type Resolution = "15s" | "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w";
+
 export const RESOLUTIONS = [
   "15s",
   "1m",
@@ -54,7 +55,7 @@ async function publishAmmEvents() {
         if (swapCursor === swapEvent.sequenceNumber) {
           break;
         }
-        await pubsub.publish("SWAP", {
+        await redisPubSub.publish("SWAP", {
           ...swapEvent,
           amountIn: swapEvent.in.toNumber(),
           amountOut: swapEvent.out.toNumber(),
@@ -65,7 +66,7 @@ async function publishAmmEvents() {
         if (addCursor === addLiquidityEvent.sequenceNumber) {
           break;
         }
-        await pubsub.publish("ADD_LIQUIDITY", {
+        await redisPubSub.publish("ADD_LIQUIDITY", {
           ...addLiquidityEvent,
           amountAddedX: addLiquidityEvent.xAdded.toNumber(),
           amountAddedY: addLiquidityEvent.yAdded.toNumber(),
@@ -77,7 +78,7 @@ async function publishAmmEvents() {
         if (removeCursor === removeLiquidityEvent.sequenceNumber) {
           break;
         }
-        await pubsub.publish("REMOVE_LIQUIDITY", {
+        await redisPubSub.publish("REMOVE_LIQUIDITY", {
           ...removeLiquidityEvent,
           amountRemovedX: removeLiquidityEvent.xRemoved.toNumber(),
           amountRemovedY: removeLiquidityEvent.yRemoved.toNumber(),
@@ -86,188 +87,161 @@ async function publishAmmEvents() {
         removeCursor = removeLiquidityEvent.sequenceNumber;
       }
     }
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-  }
-}
-
-async function publishClobEvents() {
-  let fillCursor: BN = new BN.BN(0);
-  fillCursor;
-
-  const marketReadParams = await aux.Market.index(auxClient);
-  const markets = await Promise.all(
-    marketReadParams.map((marketReadParam) =>
-      aux.Market.read(auxClient, marketReadParam).then((market) => market!)
-    )
-  );
-
-  while (true) {
-    for (const market of markets) {
-      const baseCoinType = market.baseCoinInfo.coinType;
-      const quoteCoinType = market.quoteCoinInfo.coinType;
-      // if (!baseCoinType.includes("BTC") && !baseCoinType.includes("ETH")) {
-      //   continue;
-      // }
-      if (!baseCoinType.includes("ETH")) {
-        continue;
-      }
-      if (!quoteCoinType.includes("USDC")) {
-        continue;
-      }
-      const marketName = `${market.baseCoinInfo.symbol}/${market.quoteCoinInfo.symbol}`;
-      marketName;
-
-      await market.update();
-      const bids = market.l2.bids.map((level) => ({
-        price: level.price.toNumber(),
-        quantity: level.quantity.toNumber(),
-      }));
-      const asks = market.l2.asks.map((level) => ({
-        price: level.price.toNumber(),
-        quantity: level.quantity.toNumber(),
-      }));
-      bids;
-      asks;
-      console.log("publishing orderbook");
-      // console.log(bids);
-      // console.log(asks);
-      // pubsub.publish("ORDERBOOK", {
-      //   baseCoinType: market.baseCoinInfo.coinType,
-      //   quoteCoinType: market.quoteCoinInfo.coinType,
-      //   bids,
-      //   asks,
-      // });
-      pubsub.publish("ORDERBOOK", {
-        baseCoinType: market.baseCoinInfo.coinType,
-        quoteCoinType: market.quoteCoinInfo.coinType,
-        bids,
-        asks,
-      });
-
-      //   let lastOrderFillEvent;
-      //   for (const orderFillEvent of await market.fills()) {
-      //     if (fillCursor === orderFillEvent.sequenceNumber) {
-      //       break;
-      //     }
-      //     const quantity = orderFillEvent.baseQuantity
-      //       .toDecimalUnits(market.baseCoinInfo.decimals)
-      //       .toNumber();
-      //     const price = orderFillEvent.price
-      //       .toDecimalUnits(market.quoteCoinInfo.decimals)
-      //       .toNumber();
-      //     const trade = {
-      //       orderId: orderFillEvent.orderId,
-      //       owner: orderFillEvent.owner,
-      //       market: marketName,
-      //       time: Math.floor(orderFillEvent.timestamp.toNumber()),
-      //       quantity,
-      //       price,
-      //       value: quantity * price,
-      //     };
-      //     await pubsub.publish("TRADE", trade);
-      //     fillCursor = orderFillEvent.sequenceNumber;
-      //     lastOrderFillEvent = orderFillEvent;
-      //   }
-      //   if (lastOrderFillEvent !== undefined) {
-      //     const baseCoinType = market.baseCoinInfo.coinType;
-      //     const quoteCoinType = market.quoteCoinInfo.coinType;
-      //     await pubsub.publish("LAST_TRADE_PRICE", {
-      //       baseCoinType,
-      //       quoteCoinType,
-      //       price: lastOrderFillEvent.price
-      //         .toDecimalUnits(market.quoteCoinInfo.decimals)
-      //         .toNumber(),
-      //     });
-      //     for (const resolution of RESOLUTIONS) {
-      //       console.log("publishing bar");
-      //       await pubsub.publish(
-      //         "BAR",
-      //         publishBarEvents({ baseCoinType, quoteCoinType, resolution })
-      //       );
-      //     }
-      //   }
-    }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }
 
-const PATH = "src/indexer/data/analytics.json";
-async function publishBarEvents({
-  baseCoinType,
-  quoteCoinType,
-  resolution,
-}: {
-  baseCoinType: Types.MoveStructTag;
-  quoteCoinType: Types.MoveStructTag;
-  resolution: Resolution;
-}): Promise<Bar> {
-  const [auxClient, _moduleAuthority] = AuxClient.createFromEnvForTesting({});
-  const market = await aux.Market.read(auxClient, {
-    baseCoinType,
-    quoteCoinType,
-  });
-  const convert = (fill: OrderFillEvent) => ({
-    price: fill.price.toDecimalUnits(market.quoteCoinInfo.decimals).toNumber(),
-    quantity: fill.baseQuantity
-      .toDecimalUnits(market.baseCoinInfo.decimals)
-      .toNumber(),
-    timestamp: fill.timestamp.toNumber(),
-  });
-
-  let { cursor, fills }: Bar = fs.existsSync(PATH)
-    ? JSON.parse(fs.readFileSync(PATH, "utf-8"))
-    : {
-        cursor: 0,
-        fills: [],
-      };
-
-  const now = Date.now();
-  fills = _.dropWhile(
-    fills,
-    (fill) => fill.timestamp < now - resolutionSeconds(resolution)
+async function publishClobEvents() {
+  const marketInputs = await aux.Market.index(auxClient);
+  const rawCursors = await redisClient.get("cursors");
+  const cursors: Record<string, number> = JSON.parse(rawCursors ?? "{}");
+  const keyToCursor = Object.fromEntries(
+    marketInputs.map((marketInput) => {
+      const key = `${marketInput.baseCoinType}-${marketInput.quoteCoinType}`;
+      return [key, cursors[key] ?? 0];
+    })
   );
 
   while (true) {
-    // pagination logic
-    // start: 0, limit: 100
-    // server will return starting from lowest seq num
-    // if there are multiple pages, keep paging until the cursor overlaps
-    // only process the records within a page that are > cursor
-    // move the cursor forward after processing
-    const moreFills = await market.fills({ start: cursor, limit: 100 });
-    const fillsSince =
-      cursor === 0
-        ? moreFills
-        : _.dropWhile(
-            moreFills,
-            (fill) => fill.sequenceNumber.toNumber() <= cursor
-          );
-    fills = fills.concat(fillsSince.map(convert));
-    cursor =
-      fillsSince[fillsSince.length - 1]?.sequenceNumber.toNumber() ?? cursor;
-    if (fillsSince.length === 0 || fillsSince.length < moreFills.length) {
-      break;
-    }
+    await Promise.all(
+      marketInputs.map((marketInput) =>
+        publishMarketEvents(marketInput, keyToCursor)
+      )
+    );
+    await redisClient.set("cursors", JSON.stringify(keyToCursor));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-
-  const prices = fills.map((fill) => fill.price);
-  const bar: Bar = {
-    open: _.first(prices),
-    high: _.max(prices),
-    low: _.max(prices),
-    close: _.last(prices),
-    volume: _(fills)
-      .map((fill) => fill.price * fill.quantity)
-      .sum(),
-    fills,
-    cursor,
-  };
-
-  fs.writeFileSync(PATH, JSON.stringify(bar));
-  return bar;
 }
 
-function resolutionSeconds(resolution: Resolution): number {
+async function publishMarketEvents(
+  marketInput: MarketInput,
+  keyToCursor: Record<string, number>
+): Promise<void> {
+  if (
+    marketInput.baseCoinType !== auxClient.getWrappedFakeCoinType(FakeCoin.ETH)
+  ) {
+    return;
+  }
+  if (
+    marketInput.quoteCoinType !==
+    auxClient.getWrappedFakeCoinType(FakeCoin.USDC)
+  ) {
+    return;
+  }
+
+  const { baseCoinType, quoteCoinType } = marketInput;
+
+  // publish orderbook
+  const market = await aux.Market.read(auxClient, marketInput);
+  const bids = market.l2.bids.map((level) => ({
+    price: level.price.toNumber(),
+    quantity: level.quantity.toNumber(),
+  }));
+  const asks = market.l2.asks.map((level) => ({
+    price: level.price.toNumber(),
+    quantity: level.quantity.toNumber(),
+  }));
+  await redisPubSub.publish("ORDERBOOK", {
+    baseCoinType,
+    quoteCoinType,
+    bids,
+    asks,
+  });
+
+  // publish trades
+  const key = `${baseCoinType}-${quoteCoinType}`;
+  const fills = _(await market.fills())
+    .filter((fill) => fill.sequenceNumber.toNumber() >= keyToCursor[key]!)
+    .value();
+  const cursor = fills[fills.length - 1]?.sequenceNumber.toNumber();
+
+  await publishFills(
+    fills.map((fill) =>
+      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+    ),
+    key
+  );
+
+  if (!_.isUndefined(cursor)) {
+    keyToCursor[key] = cursor;
+    // publish bars
+    await Promise.all(
+      RESOLUTIONS.map((resolution) => publishBar(resolution, key))
+    );
+  }
+}
+
+function publishFills(fills: Order[], key: string) {
+  return Promise.all([
+    fills.forEach(async (fill) => await redisPubSub.publish("TRADE", fill)),
+    fills.forEach(
+      async (fill) => await redisPubSub.publish("LAST_TRADE_PRICE", fill.price)
+    ),
+    redisClient.rPush(
+      `${key}-fills-24h`,
+      fills.map((fill) =>
+        JSON.stringify({
+          time: fill.time,
+          price: fill.price,
+          quantity: fill.quantity,
+        })
+      )
+    ),
+    Promise.all(
+      RESOLUTIONS.map((resolution) => {
+        redisClient.rPush(
+          `${key}-fills-${resolution}`,
+          fills.map((fill) =>
+            JSON.stringify({
+              time: fill.time,
+              price: fill.price,
+              quantity: fill.quantity,
+            })
+          )
+        );
+      })
+    ),
+  ]);
+}
+
+async function publishBar(resolution: Resolution, key: string): Promise<void> {
+  key = `${key}-fills-${resolution}`;
+  const now = Date.now();
+  const delta = now % (resolutionToSeconds(resolution) * 1000);
+  const time = now - delta;
+
+  const len = await redisClient.lLen(key);
+  const rawFills = await redisClient.lPopCount(key, len) ?? [];
+  const fills: Order[] = rawFills
+    .map((s) => JSON.parse(s))
+    .filter((fill: Order) => Number(fill.time) >= time);
+
+  if (_.isEmpty(fills)) {
+    await redisPubSub.publish("BAR", { resolution, time, ohlcv: null });
+    return;
+  }
+  const prices = fills.map((fill) => fill.price);
+  const bar: Bar = {
+    resolution,
+    time,
+    ohlcv: {
+      open: _.first(prices)!,
+      high: _.max(prices)!,
+      low: _.max(prices)!,
+      close: _.last(prices)!,
+      volume: _(fills)
+        .map((fill) => fill.price * fill.quantity)
+        .sum(),
+    },
+  };
+  await redisPubSub.publish("BAR", bar);
+  await redisClient.lPush(
+    key,
+    fills.map((fill) => JSON.stringify(fill))
+  );
+}
+
+function resolutionToSeconds(resolution: Resolution): number {
   switch (resolution) {
     case "15s":
       return 15;
@@ -292,9 +266,9 @@ function resolutionSeconds(resolution: Resolution): number {
 }
 
 async function main() {
+  await redisClient.connect();
   publishAmmEvents;
   publishClobEvents();
-  publishBarEvents;
 }
 
 main();

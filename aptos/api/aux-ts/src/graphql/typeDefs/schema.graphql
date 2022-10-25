@@ -47,7 +47,7 @@ type Subscription {
   orderbook(marketInputs: [MarketInput!]): Orderbook!
   trade(marketInputs: [MarketInput!]): Order!
   lastTradePrice(marketInputs: [MarketInput!]): Float!
-  bar(resolution: String!): Bar!
+  bar(marketInputs: [MarketInput!], resolution: String!): Bar!
 }
 
 type CoinInfo {
