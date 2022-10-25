@@ -6,23 +6,41 @@ import * as BN from "bn.js";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import _ from "lodash";
 import { orderEventToOrder } from "../graphql/conversion";
-import type { MarketInput, Order } from "../graphql/generated/types";
+import type { MarketInput, Maybe, Side } from "../graphql/generated/types";
+import type { Types } from "aptos";
 
 const [auxClient, _moduleAuthority] = AuxClient.createFromEnvForTesting({});
 const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));
 const redisPubSub = new RedisPubSub();
 
-export interface Bar {
+// All time in milliseconds since unix epoch
+
+interface Bar {
+  baseCoinType: Types.MoveStructTag;
+  quoteCoinType: Types.MoveStructTag;
   resolution: Resolution;
-  time: number;
-  ohlcv: {
+  ohlcv: Maybe<{
     open: number;
     high: number;
     low: number;
     close: number;
     volume: number;
-  } | null;
+  }>;
+  time: number;
+}
+
+interface Trade {
+  side: Side;
+  price: number;
+  quantity: number;
+  time: number;
+}
+
+interface Bbo {
+  bid: Maybe<number>;
+  ask: Maybe<number>;
+  time: number;
 }
 
 type Resolution = "15s" | "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w";
@@ -96,8 +114,8 @@ async function publishClobEvents() {
   const rawCursors = await redisClient.get("cursors");
   const cursors: Record<string, number> = JSON.parse(rawCursors ?? "{}");
   const keyToCursor = Object.fromEntries(
-    marketInputs.map((marketInput) => {
-      const key = `${marketInput.baseCoinType}-${marketInput.quoteCoinType}`;
+    marketInputs.map(({ baseCoinType, quoteCoinType }) => {
+      const key = `${baseCoinType}-${quoteCoinType}`;
       return [key, cursors[key] ?? 0];
     })
   );
@@ -114,25 +132,16 @@ async function publishClobEvents() {
 }
 
 async function publishMarketEvents(
-  marketInput: MarketInput,
+  { baseCoinType, quoteCoinType }: MarketInput,
   keyToCursor: Record<string, number>
 ): Promise<void> {
-  if (
-    marketInput.baseCoinType !== auxClient.getWrappedFakeCoinType(FakeCoin.ETH)
-  ) {
-    return;
-  }
-  if (
-    marketInput.quoteCoinType !==
-    auxClient.getWrappedFakeCoinType(FakeCoin.USDC)
-  ) {
-    return;
-  }
-
-  const { baseCoinType, quoteCoinType } = marketInput;
+  const key = `${baseCoinType}-${quoteCoinType}`;
 
   // publish orderbook
-  const market = await aux.Market.read(auxClient, marketInput);
+  const market = await aux.Market.read(auxClient, {
+    baseCoinType,
+    quoteCoinType,
+  });
   const bids = market.l2.bids.map((level) => ({
     price: level.price.toNumber(),
     quantity: level.quantity.toNumber(),
@@ -148,97 +157,121 @@ async function publishMarketEvents(
     asks,
   });
 
-  // publish trades
-  const key = `${baseCoinType}-${quoteCoinType}`;
-  const fills = _(await market.fills())
-    .filter((fill) => fill.sequenceNumber.toNumber() >= keyToCursor[key]!)
-    .value();
-  const cursor = fills[fills.length - 1]?.sequenceNumber.toNumber();
-
-  await publishFills(
-    fills.map((fill) =>
-      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
-    ),
-    key
+  // publish bbo
+  const bbo: Bbo = {
+    time: Date.now(),
+    bid: _.max(market.l2.bids.map((level) => level.price.toNumber())) ?? null,
+    ask: _.min(market.l2.asks.map((level) => level.price.toNumber())) ?? null,
+  };
+  await Promise.all(
+    _.concat("24h", RESOLUTIONS).map((resolution) =>
+      redisClient.rPush(`${key}-bbo-${resolution}`, JSON.stringify(bbo))
+    )
   );
 
+  const fills = (await market.fills()).filter(
+    (fill) => fill.sequenceNumber.toNumber() >= keyToCursor[key]!
+  );
+  const cursor = fills[fills.length - 1]?.sequenceNumber.toNumber();
+
+  // publish trades
+  const trades = fills
+    .map((trade) =>
+      orderEventToOrder(trade, market.baseCoinInfo, market.quoteCoinInfo)
+    )
+    .map((order) =>
+      _.pick(order, "side", "price", "quantity", "value", "time")
+    );
+  await publishTrades(trades, key);
+
+  // publish bars
   if (!_.isUndefined(cursor)) {
     keyToCursor[key] = cursor;
-    // publish bars
     await Promise.all(
-      RESOLUTIONS.map((resolution) => publishBar(resolution, key))
+      RESOLUTIONS.map((resolution) =>
+        publishBar(resolution, key, { baseCoinType, quoteCoinType })
+      )
     );
   }
 }
 
-function publishFills(fills: Order[], key: string) {
+function publishTrades(trades: Trade[], key: string) {
   return Promise.all([
-    fills.forEach(async (fill) => await redisPubSub.publish("TRADE", fill)),
-    fills.forEach(
-      async (fill) => await redisPubSub.publish("LAST_TRADE_PRICE", fill.price)
-    ),
-    redisClient.rPush(
-      `${key}-fills-24h`,
-      fills.map((fill) =>
-        JSON.stringify({
-          time: fill.time,
-          price: fill.price,
-          quantity: fill.quantity,
-        })
-      )
+    trades.forEach(async (trade) => await redisPubSub.publish("TRADE", trade)),
+    trades.forEach(
+      async (trade) =>
+        await redisPubSub.publish("LAST_TRADE_PRICE", trade.price)
     ),
     Promise.all(
-      RESOLUTIONS.map((resolution) => {
+      _.concat("24h", RESOLUTIONS).map((resolution) => {
         redisClient.rPush(
-          `${key}-fills-${resolution}`,
-          fills.map((fill) =>
-            JSON.stringify({
-              time: fill.time,
-              price: fill.price,
-              quantity: fill.quantity,
-            })
-          )
+          `${key}-trade-${resolution}`,
+          trades.map((trade) => JSON.stringify(trade))
         );
       })
     ),
   ]);
 }
 
-async function publishBar(resolution: Resolution, key: string): Promise<void> {
-  key = `${key}-fills-${resolution}`;
+async function publishBar(
+  resolution: Resolution,
+  prefix: string,
+  { baseCoinType, quoteCoinType }: MarketInput
+): Promise<void> {
+  const key = (k: "bbo" | "trade") => `${prefix}-${k}-${resolution}`;
+
   const now = Date.now();
   const delta = now % (resolutionToSeconds(resolution) * 1000);
   const time = now - delta;
 
-  const len = await redisClient.lLen(key);
-  const rawFills = await redisClient.lPopCount(key, len) ?? [];
-  const fills: Order[] = rawFills
-    .map((s) => JSON.parse(s))
-    .filter((fill: Order) => Number(fill.time) >= time);
+  const [rawBbos, rawTrades] = await Promise.all([
+    redisClient.lRange(key("bbo"), 0, -1),
+    redisClient.lRange(key("trade"), 0, -1),
+  ]);
+  const [rawBbosLen, rawTradesLen] = [rawBbos.length, rawTrades.length];
 
-  if (_.isEmpty(fills)) {
+  const bbos: Bbo[] = rawBbos
+    .map((s) => JSON.parse(s))
+    .filter((item) => item.time >= time);
+  const trades: Trade[] = rawTrades
+    .map((s) => JSON.parse(s))
+    .filter((item) => item.time >= time);
+
+  const midpoint = (bid: number, ask: number) => (bid + ask) / 2;
+  const midpoints = bbos.map(({ bid, ask }: Bbo) =>
+    bid && ask ? midpoint(bid, ask) : null
+  );
+
+  if (!midpoints) {
     await redisPubSub.publish("BAR", { resolution, time, ohlcv: null });
-    return;
   }
-  const prices = fills.map((fill) => fill.price);
+  const open = _.first(midpoints)!;
+  const high = _.max(bbos.map((bbo) => bbo.ask))!;
+  const low = _.min(bbos.map((bbo) => bbo.bid))!;
+  const close = _.last(midpoints)!;
+
   const bar: Bar = {
+    baseCoinType,
+    quoteCoinType,
     resolution,
     time,
     ohlcv: {
-      open: _.first(prices)!,
-      high: _.max(prices)!,
-      low: _.max(prices)!,
-      close: _.last(prices)!,
-      volume: _(fills)
-        .map((fill) => fill.price * fill.quantity)
+      open,
+      high,
+      low,
+      close,
+      volume: _(trades)
+        .map((trade) => trade.price * trade.quantity)
         .sum(),
     },
   };
   await redisPubSub.publish("BAR", bar);
-  await redisClient.lPush(
-    key,
-    fills.map((fill) => JSON.stringify(fill))
-  );
+
+  // this happens atomically in a Redis pipeline
+  await Promise.all([
+    redisClient.lPopCount(key("bbo"), rawBbosLen),
+    redisClient.lPopCount(key("trade"), rawTradesLen),
+  ]);
 }
 
 function resolutionToSeconds(resolution: Resolution): number {
