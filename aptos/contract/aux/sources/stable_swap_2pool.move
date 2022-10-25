@@ -76,6 +76,14 @@ module aux::stable_swap_2pool {
         // Atomic units of y coin in the pool.
         y_reserve: coin::Coin<Y>,
 
+        // To derive actual x that used for compute D and output token for swap
+        // x_reserve * x_ramp_up
+        x_ramp_up: u64,
+        
+        // To derive actual y that used for compute D and output token for swap
+        // y_reserve * y_ramp_up
+        y_ramp_up: u64,
+
         // LP token handling.
         lp_mint: coin::MintCapability<LP<X, Y>>,
         lp_burn: coin::BurnCapability<LP<X, Y>>,
@@ -150,7 +158,8 @@ module aux::stable_swap_2pool {
 
     /// Creates an empty pool for coins of type X and Y. Charge the given basis
     /// point fee on swaps.
-    public entry fun create_pool<X, Y>(sender: &signer, fee_bps: u64, start_A: u128) {
+    // if X has 8 decimals, Y has 6 decimals, then x_ramp_up should be 10**0, and y_ramp_up is 10**2
+    public entry fun create_pool<X, Y>(sender: &signer, fee_bps: u64, start_A: u128, x_ramp_up: u64, y_ramp_up: u64) {
         assert!(fee_bps <= 10000, error::invalid_argument(EINVALID_FEE));
         assert!(!exists<Pool<X, Y>>(@aux), error::already_exists(EPOOL_ALREADY_EXISTS));
         assert!(!exists<Pool<Y, X>>(@aux), error::already_exists(ETYPE_ARGS_WRONG_ORDER));
@@ -200,6 +209,8 @@ module aux::stable_swap_2pool {
             stop_ramp_A_events: account::new_event_handle<StopRampAEvent>(amm_signer),
             x_reserve: coin::zero(),
             y_reserve: coin::zero(),
+            x_ramp_up,
+            y_ramp_up,
             lp_mint,
             lp_burn,
             start_A,
@@ -286,6 +297,8 @@ module aux::stable_swap_2pool {
 
         let x_reserve = coin::value(&pool.x_reserve);
         let y_reserve = coin::value(&pool.y_reserve);
+        let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+        let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
         let pool_lp_au = option::get_with_default(
             &coin::supply<LP<X, Y>>(), 
             0
@@ -293,11 +306,11 @@ module aux::stable_swap_2pool {
         let is_new_pool = x_reserve == 0 || y_reserve == 0;
 
         let lp = calculate_lp_token_exact(
-            x_reserve,
-            y_reserve,
+            x_reserve_ramp_up,
+            y_reserve_ramp_up,
             pool_lp_au,
-            coin::value(&user_x),
-            coin::value(&user_y),
+            coin::value(&user_x) * pool.x_ramp_up,
+            coin::value(&user_y) * pool.y_ramp_up,
             compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds()),
         );
 
@@ -454,14 +467,19 @@ module aux::stable_swap_2pool {
 
         let x_reserve = coin::value(&pool.x_reserve);
         let y_reserve = coin::value(&pool.y_reserve);
+        let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+        let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
         let lp_au = coin::value(&lp);
         let pool_lp_au = option::get_with_default(&coin::supply<LP<X, Y>>(), 0);
 
-        let dx = ((lp_au as u128) * (x_reserve as u128)) / pool_lp_au;
-        let dy = ((lp_au as u128) * (y_reserve as u128)) / pool_lp_au;
+        let dx_ramp_up = ((lp_au as u128) * (x_reserve_ramp_up as u128)) / pool_lp_au;
+        let dy_ramp_up = ((lp_au as u128) * (y_reserve_ramp_up as u128)) / pool_lp_au;
 
-        assert!(dx != 0, error::invalid_state(EREMOVE_LIQUIDITY_UNDERFLOW));
-        assert!(dy != 0, error::invalid_state(EREMOVE_LIQUIDITY_UNDERFLOW));
+        assert!(dx_ramp_up != 0, error::invalid_state(EREMOVE_LIQUIDITY_UNDERFLOW));
+        assert!(dy_ramp_up != 0, error::invalid_state(EREMOVE_LIQUIDITY_UNDERFLOW));
+
+        let dx = dx_ramp_up / (pool.x_ramp_up as u128);
+        let dy = dy_ramp_up / (pool.y_ramp_up as u128);
 
         let x = coin::extract<X>(&mut pool.x_reserve, (dx as u64));
         let y = coin::extract<Y>(&mut pool.y_reserve, (dy as u64));
@@ -481,7 +499,7 @@ module aux::stable_swap_2pool {
         );
         pool.timestamp = now;
         let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
-        pool.current_D =  compute_d_curve_standard(coin::value(&pool.x_reserve), coin::value(&pool.y_reserve), current_A);
+        pool.current_D =  compute_d_curve_standard(coin::value(&pool.x_reserve) * pool.x_ramp_up, coin::value(&pool.y_reserve) * pool.y_ramp_up, current_A);
         (x, y)
     }
 
@@ -584,9 +602,13 @@ module aux::stable_swap_2pool {
 
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
             let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
             // Update pool balances
-            let au_out = get_amount_out(au_in, x_reserve, y_reserve, pool.fee_bps, current_A);
+            let au_in_ramp_up = au_in * pool.x_ramp_up;
+            let au_out_ramp_up = get_amount_out(au_in_ramp_up, x_reserve_ramp_up, y_reserve_ramp_up, pool.fee_bps, current_A);
+            let au_out = au_out_ramp_up / pool.y_ramp_up;
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
            
             // transfer tokens
@@ -612,7 +634,7 @@ module aux::stable_swap_2pool {
 
             let new_x_reserve = coin::value(&pool.x_reserve);
             let new_y_reserve = coin::value(&pool.y_reserve);
-            let new_d = compute_d_curve_standard(new_x_reserve, new_y_reserve, current_A);
+            let new_d = compute_d_curve_standard(new_x_reserve * pool.x_ramp_up, new_y_reserve * pool.y_ramp_up, current_A);
             pool.current_D = new_d;
             pool.timestamp = now;
             (au_out, au_in, new_y_reserve, new_x_reserve)
@@ -620,12 +642,16 @@ module aux::stable_swap_2pool {
             let pool = borrow_global_mut<Pool<CoinOut, CoinIn>>(@aux);
             assert!(!pool.frozen, EPOOL_FROZEN);
 
-            let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
+            
             // Update pool balances
-            let au_out = get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps, current_A);
+            let au_in_ramp_up = au_in * pool.y_ramp_up;
+            let au_out_ramp_up = get_amount_out(au_in_ramp_up, y_reserve_ramp_up, x_reserve_ramp_up, pool.fee_bps, current_A);
+            let au_out = au_out_ramp_up / pool.x_ramp_up;
             assert!(au_out >= min_au_out, EINSUFFICIENT_MIN_QUANTITY);
 
             // transfer tokens
@@ -651,7 +677,7 @@ module aux::stable_swap_2pool {
             
             let new_x_reserve = coin::value(&pool.x_reserve);
             let new_y_reserve = coin::value(&pool.y_reserve);
-            let new_d = compute_d_curve_standard(new_x_reserve, new_y_reserve, current_A);
+            let new_d = compute_d_curve_standard(new_x_reserve * pool.x_ramp_up, new_y_reserve * pool.y_ramp_up, current_A);
             pool.current_D = new_d;
             pool.timestamp = now;
             (au_out, au_in, new_x_reserve, new_y_reserve)
@@ -680,9 +706,12 @@ module aux::stable_swap_2pool {
             let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_out_ramp_up = au_out * pool.y_ramp_up;
 
-            let au_in = get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps, current_A);
-
+            let au_in_ramp_up = get_amount_in(au_out_ramp_up, x_reserve_ramp_up, y_reserve_ramp_up, pool.fee_bps, current_A);
+            let au_in = au_in_ramp_up / pool.x_ramp_up;
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
             let in = coin::extract<CoinIn>(user_in, au_in);
@@ -707,7 +736,7 @@ module aux::stable_swap_2pool {
 
             let new_x_reserve = coin::value(&pool.x_reserve);
             let new_y_reserve = coin::value(&pool.y_reserve);
-            let new_d = compute_d_curve_standard(new_x_reserve, new_y_reserve, current_A);
+            let new_d = compute_d_curve_standard(new_x_reserve * pool.x_ramp_up, new_y_reserve * pool.y_ramp_up, current_A);
             pool.current_D = new_d;
             pool.timestamp = now;
             (au_out, au_in, new_y_reserve, new_x_reserve)
@@ -716,7 +745,11 @@ module aux::stable_swap_2pool {
             let current_A = compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds());
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            let au_in = get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps, current_A);
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_out_ramp_up = au_out * pool.x_ramp_up;
+            let au_in_ramp_up = get_amount_in(au_out_ramp_up, y_reserve_ramp_up, x_reserve_ramp_up, pool.fee_bps, current_A);
+            let au_in = au_in_ramp_up / pool.y_ramp_up;
             assert!(au_in <= max_au_in, EINSUFFICIENT_MAX_QUANTITY);
 
             let in = coin::extract<CoinIn>(user_in, au_in);
@@ -741,7 +774,7 @@ module aux::stable_swap_2pool {
 
             let new_x_reserve = coin::value(&pool.x_reserve);
             let new_y_reserve = coin::value(&pool.y_reserve);
-            let new_d = compute_d_curve_standard(new_x_reserve, new_y_reserve, current_A);
+            let new_d = compute_d_curve_standard(new_x_reserve * pool.x_ramp_up, new_y_reserve * pool.y_ramp_up, current_A);
             pool.current_D = new_d;
             pool.timestamp = now;
             (au_out, au_in, new_x_reserve, new_y_reserve)
@@ -758,19 +791,32 @@ module aux::stable_swap_2pool {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_out(
-                au_in, 
-                x_reserve, 
-                y_reserve, 
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_in_ramp_up = au_in * pool.x_ramp_up;
+            let out_ramp_up = get_amount_out(
+                au_in_ramp_up, 
+                x_reserve_ramp_up, 
+                y_reserve_ramp_up, 
                 pool.fee_bps,
                 compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds())
-            )
+            );
+            out_ramp_up / pool.y_ramp_up
         } else if (exists<Pool<CoinOut, CoinIn>>(@aux)) {
             let pool = borrow_global<Pool<CoinOut, CoinIn>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_out(au_in, y_reserve, x_reserve, pool.fee_bps, 
-            compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds()))
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_in_ramp_up = au_in * pool.y_ramp_up;
+            let out_ramp_up = get_amount_out(
+                au_in_ramp_up, 
+                y_reserve_ramp_up, 
+                x_reserve_ramp_up, 
+                pool.fee_bps, 
+                compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds())
+            );
+            out_ramp_up / pool.x_ramp_up
         } else {
             abort(EPOOL_NOT_FOUND)
         }
@@ -782,14 +828,32 @@ module aux::stable_swap_2pool {
             let pool = borrow_global<Pool<CoinIn, CoinOut>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_in(au_out, x_reserve, y_reserve, pool.fee_bps, 
-            compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds()))
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_out_ramp_up = au_out * pool.y_ramp_up;
+            let in_ramp_up = get_amount_in(
+                au_out_ramp_up, 
+                x_reserve_ramp_up, 
+                y_reserve_ramp_up, 
+                pool.fee_bps, 
+                compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds())
+            );
+            in_ramp_up / pool.x_ramp_up
         } else if (exists<Pool<CoinOut, CoinIn>>(@aux)) {
             let pool = borrow_global<Pool<CoinOut, CoinIn>>(@aux);
             let x_reserve = coin::value(&pool.x_reserve);
             let y_reserve = coin::value(&pool.y_reserve);
-            get_amount_in(au_out, y_reserve, x_reserve, pool.fee_bps, 
-            compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds()))
+            let x_reserve_ramp_up = x_reserve * pool.x_ramp_up;
+            let y_reserve_ramp_up = y_reserve * pool.y_ramp_up;
+            let au_out_ramp_up = au_out * pool.x_ramp_up;
+            let in_ramp_up = get_amount_in(
+                au_out_ramp_up, 
+                y_reserve_ramp_up, 
+                x_reserve_ramp_up, 
+                pool.fee_bps, 
+                compute_A(pool.start_A, pool.target_A, pool.start_A_ts, pool.end_A_ts, timestamp::now_microseconds())
+            );
+            in_ramp_up / pool.y_ramp_up
         } else {
             abort(EPOOL_NOT_FOUND)
         }
@@ -863,14 +927,14 @@ module aux::stable_swap_2pool {
     /// lp_reserve is current amount of LP tokens in the pool
     /// x_au is intend to add amount in the pool
     /// y_au is intend to add amount in the pool
-    public fun calculate_lp_token_exact(x_reserve: u64, y_reserve: u64, lp_reserve: u128,  x_au: u64, y_au: u64, current_A: u128): u128 {
-        assert!(x_au != 0, error::invalid_argument(EINVALID_AMM_RATIO));
-        assert!(y_au != 0, error::invalid_argument(EINVALID_AMM_RATIO));
+    public fun calculate_lp_token_exact(x_reserve_ramp_up: u64, y_reserve_ramp_up: u64, lp_reserve: u128,  x_au_ramp_up: u64, y_au_ramp_up: u64, current_A: u128): u128 {
+        assert!(x_au_ramp_up != 0, error::invalid_argument(EINVALID_AMM_RATIO));
+        assert!(y_au_ramp_up != 0, error::invalid_argument(EINVALID_AMM_RATIO));
         
-        let d0 = compute_d_curve_standard(x_reserve, y_reserve, current_A);
+        let d0 = compute_d_curve_standard(x_reserve_ramp_up, y_reserve_ramp_up, current_A);
         // we don't worry about overflow here since we need to store it as u128 anyway, if it overflows, then no way to prevent the inaccuracy
-        let new_x = x_reserve + x_au;
-        let new_y = y_reserve + y_au;
+        let new_x = x_reserve_ramp_up + x_au_ramp_up;
+        let new_y = y_reserve_ramp_up + y_au_ramp_up;
         let d1 = compute_d_curve_standard(new_x, new_y, current_A);
         assert!(d1 >= d0, ED_INVARIANT_BROKEN);
         if (lp_reserve == 0) {
@@ -1208,6 +1272,8 @@ module aux::stable_swap_2pool {
 
             x_reserve,
             y_reserve,
+            x_ramp_up: _,
+            y_ramp_up: _,
             lp_mint,
             lp_burn,
 
@@ -1266,7 +1332,7 @@ module aux::stable_swap_2pool {
 
         aux::aux_coin::initialize_aux_coin(sender);
         aux::aux_coin::initialize_aux_test_coin(sender);
-        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85);
+        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85, 1, 1);
         assert!(exists<Pool<AuxCoin, AuxTestCoin>>(
             resource_account_addr), aptos_framework::error::not_found(ETEST_FAILED));
         // reverse pair should not exist
@@ -1302,7 +1368,7 @@ module aux::stable_swap_2pool {
     #[test_only]
     fun setup_pool_for_test(sender: &signer, fee_bps: u64, sender_init_x: u64, sender_init_y: u64, current_A: u128) {
         one_time_setup(sender, sender_init_x, sender_init_y);
-        create_pool<AuxCoin, AuxTestCoin>(sender, fee_bps, current_A);
+        create_pool<AuxCoin, AuxTestCoin>(sender, fee_bps, current_A, 1, 1);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
@@ -1325,7 +1391,7 @@ module aux::stable_swap_2pool {
 
         register_and_mint<BTC>(sender, 200000000);
 
-        create_pool<AuxCoin, FakeCoin<BTC>>(sender, 0, 85);
+        create_pool<AuxCoin, FakeCoin<BTC>>(sender, 0, 85, 1, 1);
 
         {
             let pool = borrow_global<Pool<AuxCoin, FakeCoin<BTC>>>(@aux);
@@ -1596,8 +1662,8 @@ module aux::stable_swap_2pool {
         aux::aux_coin::initialize_aux_coin(sender);
         aux::aux_coin::initialize_aux_test_coin(sender);
 
-        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85);
-        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85);
+        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85, 1, 1);
+        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85, 1, 1);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
@@ -1610,8 +1676,8 @@ module aux::stable_swap_2pool {
         aux::aux_coin::initialize_aux_coin(sender);
         aux::aux_coin::initialize_aux_test_coin(sender);
 
-        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85);
-        create_pool<AuxTestCoin, AuxCoin>(sender, 0, 85);
+        create_pool<AuxCoin, AuxTestCoin>(sender, 0, 85, 1, 1);
+        create_pool<AuxTestCoin, AuxCoin>(sender, 0, 85, 1, 1);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
@@ -1748,7 +1814,7 @@ module aux::stable_swap_2pool {
         if (!account::exists_at(signer::address_of(sender))) {
             one_time_setup(sender, 200000000, 200000000);
         };
-        create_pool<AuxCoin, AuxTestCoin>(sender, input.fee_bps, 85);
+        create_pool<AuxCoin, AuxTestCoin>(sender, input.fee_bps, 85, 1, 1);
         add_liquidity<AuxCoin, AuxTestCoin>(sender, input.init_x, input.init_y);
         let lp_tokens = option::get_with_default(&coin::supply<LP<AuxCoin, AuxTestCoin>>(), 0);
         let in = coin::withdraw<CoinIn>(sender, input.au_in);
