@@ -8,15 +8,22 @@
 
 This is to setup a full local dev environment.
 
-- `redis-server` (or `brew services start redis` if installed with Homebrew)
-- `go run ./go-util/aptos/cmd/setup-aux -f`
-- `APTOS_PROFILE=localnet yarn sim:live`
-- `APTOS_PROFILE=localnet yarn start:graphql`
-- `APTOS_PROFILE=localnet yarn start:indexer`
+```sh
+# cwd: `aux-exchange`
+redis-server  # or `brew services start redis` if installed with Homebrew
+go run ./go-util/aptos/cmd/setup-aux -f
+
+# cwd: `aux-exchange/aptos/api/aux-ts`
+APTOS_PROFILE=localnet yarn sim:live
+APTOS_PROFILE=localnet yarn start:graphql
+-APTOS_PROFILE=localnet yarn start:indexer
+```
 
 #### Check data is populating in Redis
-- `redis-cli`
-- `keys *`
+
+```sh
+redis-cli keys \*
+```
 
 #### Subscribe via GraphQL
 - Navigate to http://localhost:4000/graphql
