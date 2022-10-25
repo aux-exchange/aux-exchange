@@ -11,7 +11,7 @@ type Account {
   poolPositions(poolInputs: [PoolInput!]): [Position!]!
   openOrders(marketInputs: [MarketInput!]): [Order!]!
   orderHistory(marketInputs: [MarketInput!]): [Order!]!
-  tradeHistory(marketInputs: [MarketInput!]): [Order!]!
+  tradeHistory(marketInputs: [MarketInput!]): [Trade!]!
 }
 
 type RegisteredCoinInfo {

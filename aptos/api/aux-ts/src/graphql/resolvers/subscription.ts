@@ -1,112 +1,104 @@
+import type { Types } from "aptos";
 import { withFilter } from "graphql-subscriptions";
 import _ from "lodash";
 import { pubsub } from "../connection";
-import type { SubscriptionOrderbookArgs } from "../generated/types";
+import type {
+  InputMaybe,
+  MarketInput,
+  PoolInput,
+  SubscriptionBarArgs,
+} from "../generated/types";
 
 export const subscription = {
   swap: {
-    resolve: (payload: any) => {
-      return payload;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["SWAP"]),
-      (payload: any, variables: any) => {
-        return (
-          variables.poolInputs.find(
-            (k: any) =>
-              k.coinTypeX === payload.coinTypeX &&
-              k.coinTypeY === payload.coinTypeY
-          ) !== undefined
-        );
-      }
+      poolInputsFilterFn
     ),
   },
   addLiquidity: {
-    resolve: (payload: any) => {
-      return payload;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["ADD_LIQUIDITY"]),
-      (payload: any, variables: any) => {
-        return (
-          variables.poolInputs.find(
-            (k: any) =>
-              k.coinTypeX === payload.coinTypeX &&
-              k.coinTypeY === payload.coinTypeY
-          ) !== undefined
-        );
-      }
+      poolInputsFilterFn
     ),
   },
   removeLiquidity: {
-    resolve: (payload: any) => {
-      return payload;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["REMOVE_LIQUIDITY"]),
-      (payload: any, variables: any) => {
-        return (
-          variables.poolInputs.find(
-            (k: any) =>
-              k.coinTypeX === payload.coinTypeX &&
-              k.coinTypeY === payload.coinTypeY
-          ) !== undefined
-        );
-      }
+      poolInputsFilterFn
     ),
   },
   orderbook: {
-    resolve: (payload: any) => {
-      return payload;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["ORDERBOOK"]),
-      (payload: any, { marketInputs }: SubscriptionOrderbookArgs) => {
-        console.log(marketInputs);
-        return (
-          _.isNull(marketInputs) ||
-          _.isUndefined(marketInputs) ||
-          marketInputs.find(
-            (k: any) =>
-              k.baseCoinType === payload.baseCoinType &&
-              k.quoteCoinType === payload.quoteCoinType
-          ) !== undefined
-        );
-      }
+      marketInputsFilterFn
     ),
   },
   trade: {
-    resolve: (payload: any) => {
-      return payload;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["TRADE"]),
-      (payload: any, variables: any) => {
-        return (
-          variables.marketInputs.find(
-            (k: any) =>
-              k.baseCoinType === payload.baseCoinType &&
-              k.quoteCoinType === payload.quoteCoinType
-          ) !== undefined
-        );
-      }
+      marketInputsFilterFn
     ),
   },
   lastTradePrice: {
-    resolve: (payload: any) => {
-      return payload.price;
-    },
+    resolve: _.identity,
     subscribe: withFilter(
       () => pubsub.asyncIterator(["LAST_TRADE_PRICE"]),
-      (payload: any, variables: any) => {
-        return (
-          variables.marketInputs.find(
-            (k: any) =>
-              k.baseCoinType === payload.baseCoinType &&
-              k.quoteCoinType === payload.quoteCoinType
-          ) !== undefined
-        );
-      }
+      marketInputsFilterFn
+    ),
+  },
+  bar: {
+    resolve: _.identity,
+    subscribe: withFilter(
+      () => pubsub.asyncIterator(["BAR"]),
+      (payload: any, variables: SubscriptionBarArgs) =>
+        marketInputsFilterFn(payload, variables) &&
+        payload.resolution === variables.resolution
     ),
   },
 };
+
+function poolInputsFilterFn(
+  payload: { coinTypeX: Types.MoveStructTag; coinTypeY: Types.MoveStructTag },
+  {
+    poolInputs,
+  }: {
+    poolInputs?: InputMaybe<Array<PoolInput>>;
+  }
+) {
+  return (
+    _.isNull(poolInputs) ||
+    _.isUndefined(poolInputs) ||
+    poolInputs.find(
+      (k) =>
+        k.coinTypeX === payload.coinTypeX && k.coinTypeY === payload.coinTypeY
+    ) !== undefined
+  );
+}
+
+function marketInputsFilterFn(
+  payload: {
+    baseCoinType: Types.MoveStructTag;
+    quoteCoinType: Types.MoveStructTag;
+  },
+  {
+    marketInputs,
+  }: {
+    marketInputs?: InputMaybe<Array<MarketInput>>;
+  }
+) {
+  return (
+    _.isNull(marketInputs) ||
+    _.isUndefined(marketInputs) ||
+    marketInputs.find(
+      (k: any) =>
+        k.baseCoinType === payload.baseCoinType &&
+        k.quoteCoinType === payload.quoteCoinType
+    ) !== undefined
+  );
+}

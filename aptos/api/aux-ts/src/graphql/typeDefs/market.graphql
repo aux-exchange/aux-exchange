@@ -11,7 +11,7 @@ type Market {
   orderbook: Orderbook!
   openOrders(owner: Address): [Order!]!
   orderHistory(owner: Address): [Order!]!
-  tradeHistory(owner: Address): [Order!]!
+  tradeHistory(owner: Address): [Trade!]!
   high24h: Float
   low24h: Float
   volume24h: Float
@@ -97,6 +97,16 @@ type Order {
   quantity: Float!
   value: Float!
   auxBurned: Float!
+  time: Timestamp!
+}
+
+type Trade {
+  baseCoinType: String!
+  quoteCoinType: String!
+  side: Side!
+  price: Float!
+  quantity: Float!
+  value: Float!
   time: Timestamp!
 }
 

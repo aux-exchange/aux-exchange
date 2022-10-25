@@ -28,7 +28,7 @@ export type Account = {
   orderHistory: Array<Order>;
   poolPositions: Array<Position>;
   registeredCoins: Array<RegisteredCoinInfo>;
-  tradeHistory: Array<Order>;
+  tradeHistory: Array<Trade>;
   transfers: Array<Transfer>;
   walletBalances: Array<Balance>;
   withdrawals: Array<Withdrawal>;
@@ -159,7 +159,7 @@ export type Market = {
   tickSize: Scalars['Float'];
   tickSizeDecimals: Scalars['String'];
   tickSizeString: Scalars['String'];
-  tradeHistory: Array<Order>;
+  tradeHistory: Array<Trade>;
   volume24h?: Maybe<Scalars['Float']>;
 };
 
@@ -532,6 +532,7 @@ export enum Side {
 export type Subscription = {
   __typename?: 'Subscription';
   addLiquidity: AddLiquidity;
+  bar: Bar;
   lastTradePrice: Scalars['Float'];
   orderbook: Orderbook;
   removeLiquidity: RemoveLiquidity;
@@ -542,6 +543,12 @@ export type Subscription = {
 
 export type SubscriptionAddLiquidityArgs = {
   poolInputs?: InputMaybe<Array<PoolInput>>;
+};
+
+
+export type SubscriptionBarArgs = {
+  marketInputs?: InputMaybe<Array<MarketInput>>;
+  resolution: Scalars['String'];
 };
 
 
@@ -592,6 +599,17 @@ export type SwapExactOutInput = {
   poolInput: PoolInput;
   quoteAmountIn: Scalars['Float'];
   slippage?: InputMaybe<Scalars['Float']>;
+};
+
+export type Trade = {
+  __typename?: 'Trade';
+  baseCoinType: Scalars['String'];
+  price: Scalars['Float'];
+  quantity: Scalars['Float'];
+  quoteCoinType: Scalars['String'];
+  side: Side;
+  time: Scalars['Timestamp'];
+  value: Scalars['Float'];
 };
 
 export type Transfer = {
@@ -743,6 +761,7 @@ export type ResolversTypes = {
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
+  Trade: ResolverTypeWrapper<Trade>;
   Transfer: ResolverTypeWrapper<Transfer>;
   TransferInput: TransferInput;
   Wallet: ResolverTypeWrapper<Wallet>;
@@ -792,6 +811,7 @@ export type ResolversParentTypes = {
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
   Timestamp: Scalars['Timestamp'];
+  Trade: Trade;
   Transfer: Transfer;
   TransferInput: TransferInput;
   Wallet: Wallet;
@@ -809,7 +829,7 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
   orderHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountOrderHistoryArgs>>;
   poolPositions?: Resolver<Array<ResolversTypes['Position']>, ParentType, ContextType, Partial<AccountPoolPositionsArgs>>;
   registeredCoins?: Resolver<Array<ResolversTypes['RegisteredCoinInfo']>, ParentType, ContextType>;
-  tradeHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<AccountTradeHistoryArgs>>;
+  tradeHistory?: Resolver<Array<ResolversTypes['Trade']>, ParentType, ContextType, Partial<AccountTradeHistoryArgs>>;
   transfers?: Resolver<Array<ResolversTypes['Transfer']>, ParentType, ContextType>;
   walletBalances?: Resolver<Array<ResolversTypes['Balance']>, ParentType, ContextType>;
   withdrawals?: Resolver<Array<ResolversTypes['Withdrawal']>, ParentType, ContextType>;
@@ -887,7 +907,7 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
   tickSize?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   tickSizeDecimals?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tickSizeString?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tradeHistory?: Resolver<Array<ResolversTypes['Order']>, ParentType, ContextType, Partial<MarketTradeHistoryArgs>>;
+  tradeHistory?: Resolver<Array<ResolversTypes['Trade']>, ParentType, ContextType, Partial<MarketTradeHistoryArgs>>;
   volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1006,6 +1026,7 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   addLiquidity?: SubscriptionResolver<ResolversTypes['AddLiquidity'], "addLiquidity", ParentType, ContextType, Partial<SubscriptionAddLiquidityArgs>>;
+  bar?: SubscriptionResolver<ResolversTypes['Bar'], "bar", ParentType, ContextType, RequireFields<SubscriptionBarArgs, 'resolution'>>;
   lastTradePrice?: SubscriptionResolver<ResolversTypes['Float'], "lastTradePrice", ParentType, ContextType, Partial<SubscriptionLastTradePriceArgs>>;
   orderbook?: SubscriptionResolver<ResolversTypes['Orderbook'], "orderbook", ParentType, ContextType, Partial<SubscriptionOrderbookArgs>>;
   removeLiquidity?: SubscriptionResolver<ResolversTypes['RemoveLiquidity'], "removeLiquidity", ParentType, ContextType, Partial<SubscriptionRemoveLiquidityArgs>>;
@@ -1025,6 +1046,17 @@ export type SwapResolvers<ContextType = any, ParentType extends ResolversParentT
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
+
+export type TradeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Trade'] = ResolversParentTypes['Trade']> = {
+  baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  quoteCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  side?: Resolver<ResolversTypes['Side'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type TransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transfer'] = ResolversParentTypes['Transfer']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1070,8 +1102,8 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
+  Trade?: TradeResolvers<ContextType>;
   Transfer?: TransferResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
-

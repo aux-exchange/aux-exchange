@@ -19,11 +19,12 @@
     "start:localnet-clob-trader": "APTOS_LOCAL=true ts-node examples/localnet-clob-trader.ts",
     "start:devnet-clob-trader": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-trader.ts",
     "start:devnet-clob-orders": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-orders.ts",
-    "start:graphql": "pm2 start src/graphql/index.ts",
-    "restart:graphql": "nodemon --ignore src/indexer/data src/graphql/index.ts",
+    "start:graphql": "ts-node src/graphql/index.ts",
+    "restart:graphql": "nodemon --ignore src/indexer/data/analytics.json src/graphql/index.ts",
+    "pm2:graphql": "pm2 start src/graphql/index.ts",
     "codegen:graphql": "graphql-codegen --config codegen.ts",
     "start:indexer": "ts-node src/indexer/index.ts",
-    "restart:indexer": "nodemon src/indexer/index.ts",
+    "restart:indexer": "nodemon --ignore src/indexer/data/analytics.json src/indexer/index.ts",
     "start:heartbeat": "ts-node scripts/sentry.ts"
   },
   "dependencies": {
