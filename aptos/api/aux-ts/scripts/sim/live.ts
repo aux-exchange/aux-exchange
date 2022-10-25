@@ -11,6 +11,7 @@ import {
 import { OrderType } from "../../src/clob/core/mutation";
 import { AU, DU } from "../../src/units";
 import _ from "lodash";
+import { assert } from "console";
 
 const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
 
@@ -236,21 +237,17 @@ async function logPool(productId: string, pool: Pool) {
 }
 
 async function logMarket(productId: string, market: Market) {
-  const m = await Market.read(auxClient, {
+  const m: Market = await Market.read(auxClient, {
     baseCoinType: market.baseCoinInfo.coinType,
     quoteCoinType: market.quoteCoinInfo.coinType,
   });
   const l2 = {
-    // @ts-ignore
-    bids: m.level2.bids
-      // @ts-ignore
+    bids: m.l2.bids
       .map((l2) => [l2.price.toNumber(), l2.quantity.toNumber()])
       // .reverse()
       // .filter(([price, _]) => price! > 1300 && price! < 1400)
       .slice(0, 5),
-    // @ts-ignore
-    asks: m.level2.asks
-      // @ts-ignore
+    asks: m.l2.asks
       .map((l2) => [l2.price.toNumber(), l2.quantity.toNumber()])
       // .reverse()
       // .filter(([price, _]) => price! > 1300 && price! < 1400)
@@ -258,10 +255,8 @@ async function logMarket(productId: string, market: Market) {
   };
   console.log({
     productId,
-    // @ts-ignore
-    numBids: m.level2.bids.length,
-    // @ts-ignore
-    numAsks: m.level2.asks.length,
+    numBids: m.l2.bids.length,
+    numAsks: m.l2.asks.length,
     bids: l2.bids,
     asks: l2.asks,
   });
@@ -269,6 +264,7 @@ async function logMarket(productId: string, market: Market) {
 }
 
 async function main() {
+  assert(process.env["APTOS_PROFILE"] !== "mainnet");
   const privateKeyHexs: string[] = [
     "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49", // mnemoic: observe stairs visual bracket sick clog sport erode domain concert ecology strike, address: 0x767b7442b8547fa5cf50989b9b761760ca6687b83d1c23d3589a5ac8acb50639
     "0xe2326b7116633f8cb150e7ad56affd631e20789440317c47721862a62bcf362e", // mnemoic: rack ahead main cabin damp elephant script border rhythm sustain evil ivory, address: 0x574f99ff4a373ce168ea203f10b2bf815564fac19f516077f7c19b6e2b4322d0
@@ -293,7 +289,7 @@ async function main() {
     "0xc3e93b39ee053ab6657da76abf850d341147c3bfea40b9f6c80a57d38bfde130", // mnemoic: detail kingdom cancel river cash once hello cabbage stay attack spoon cream, address: 0xe63b71ed258117e392db9321a43c4fe976b2d34359e3875ce42627e4632c0b5c
   ];
 
-  const traders = await setupTraders(privateKeyHexs, 5);
+  const traders = await setupTraders(privateKeyHexs, 10);
   await simulateTransfers(traders);
 
   const output = traders.map((trader) => {
@@ -310,7 +306,7 @@ async function main() {
   console.log(output);
 
   const convert = {
-    "BTC-USD": FakeCoin.BTC,
+    // "BTC-USD": FakeCoin.BTC,
     "ETH-USD": FakeCoin.ETH,
     // "SOL-USD": FakeCoin.SOL,
   };

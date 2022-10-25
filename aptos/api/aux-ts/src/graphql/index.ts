@@ -10,7 +10,6 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import http from "http";
 import path from "path";
 import { WebSocketServer } from "ws";
-import { publishAmmEvents, publishClobEvents } from "./feed";
 import { account } from "./resolvers/account";
 import { market } from "./resolvers/market";
 import { mutation } from "./resolvers/mutation";
@@ -72,6 +71,4 @@ async function startApolloServer() {
   });
 }
 
-publishAmmEvents();
-publishClobEvents();
 startApolloServer().then(() => {});

@@ -8,7 +8,6 @@ import {
   WaitForTransactionError,
   TxnBuilderTypes,
 } from "aptos";
-import {} from "aptos";
 import type BN from "bn.js";
 import * as fs from "fs";
 import * as SHA3 from "js-sha3";

@@ -1,5 +1,7 @@
 import { withFilter } from "graphql-subscriptions";
+import _ from "lodash";
 import { pubsub } from "../connection";
+import type { SubscriptionOrderbookArgs } from "../generated/types";
 
 export const subscription = {
   swap: {
@@ -59,9 +61,12 @@ export const subscription = {
     },
     subscribe: withFilter(
       () => pubsub.asyncIterator(["ORDERBOOK"]),
-      (payload: any, variables: any) => {
+      (payload: any, { marketInputs }: SubscriptionOrderbookArgs) => {
+        console.log(marketInputs);
         return (
-          variables.marketInputs.find(
+          _.isNull(marketInputs) ||
+          _.isUndefined(marketInputs) ||
+          marketInputs.find(
             (k: any) =>
               k.baseCoinType === payload.baseCoinType &&
               k.quoteCoinType === payload.quoteCoinType
