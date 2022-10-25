@@ -176,11 +176,12 @@ async function publishMarketEvents(
 
   // publish trades
   const trades = fills
-    .map((trade) =>
-      orderEventToOrder(trade, market.baseCoinInfo, market.quoteCoinInfo)
+    .filter((fill) => fill.sequenceNumber.toNumber() % 2 === 0)
+    .map((fill) =>
+      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
     )
-    .map((order) =>
-      _.pick(order, "side", "price", "quantity", "value", "time")
+    .map((fill) =>
+      _.pick(fill, "side", "price", "quantity", "value", "time")
     );
   await publishTrades(trades, key);
 
