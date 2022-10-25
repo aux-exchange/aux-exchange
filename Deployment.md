@@ -9,6 +9,25 @@
 - Install the v1.0.0 version of [`aptos` cli](https://github.com/aptos-labs/aptos-core)
 - [node.js](https://nodejs.org/)(with [nvm](https://github.com/nvm-sh/nvm)) and yarn are unnecessary when not interacting with the contract through typescript api.
 
+Copy-paste commands for Linux:
+```sh
+# Install and enable nvm (see https://github.com/nvm-sh/nvm#install--update-script)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+source ~/.bashrc
+nvm install 18
+nvm use 18
+corepack enable
+yarn set version berry
+echo 'nvm use 18; corepack enable' >> ~/.bashrc
+
+# Install go (see https://go.dev)
+curl -s https://go.dev/dl/go1.19.2.linux-amd64.tar.gz | tar xvz -C $HOME
+echo 'export PATH=$HOME/go/bin:$PATH' >> ~/.bashrc
+
+# Install rust (see https://www.rust-lang.org)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+```
+
 ## Account/Address necessary
 
 The contract code needs to sign for itself, and therefore deployed into a resource account. The original creator of the resource account is the first owner of the exchange, and can make certain changes/updates to the account. The aux resource account is always created with seed "aux".
