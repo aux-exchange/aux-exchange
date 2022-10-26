@@ -2,6 +2,14 @@ import fs from "fs";
 import readline from "readline";
 import * as aux from "../../";
 import { FakeCoin } from "../../../src/client";
+import {
+  ALL_USD_STABLES,
+  COIN_MAPPING,
+  SOL,
+  USDC_eth,
+  WBTC,
+  WETH,
+} from "../../coins";
 import { auxClient, pythClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
@@ -21,6 +29,7 @@ import {
   PythRatingColor,
   Side,
 } from "../generated/types";
+import { LATEST_PYTH_PRICE } from "../pyth";
 
 /**
  * Returns the symbol name in the data feed corresponding to the symbol name in
@@ -77,7 +86,7 @@ export const market = {
     );
   },
   async high24h(parent: Market): Promise<Maybe<number>> {
-    parent
+    parent;
     return null;
     // const bar = await publishBarEvents({
     //   baseCoinType: parent.baseCoinInfo.coinType,
@@ -87,7 +96,7 @@ export const market = {
     // return bar.high;
   },
   async low24h(parent: Market): Promise<Maybe<number>> {
-    parent
+    parent;
     return null;
     // const bar = await publishBarEvents({
     //   baseCoinType: parent.baseCoinInfo.coinType,
@@ -97,7 +106,7 @@ export const market = {
     // return bar.low;
   },
   async volume24h(parent: Market): Promise<Maybe<number>> {
-    parent
+    parent;
     return null;
     // const bar = await publishBarEvents({
     //   baseCoinType: parent.baseCoinInfo.coinType,
@@ -216,53 +225,44 @@ export const market = {
     parent: Market,
     { price, side }: MarketPythRatingArgs
   ): Promise<Maybe<PythRating>> {
-    const data = await pythClient.getData();
     const [fakeBtc, fakeEth, fakeSol, fakeUsdc] = await Promise.all([
       auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
       auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
       auxClient.getWrappedFakeCoinType(FakeCoin.SOL),
       auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
     ]);
-    // wormhole
-    const [btc, eth, sol, usdcet, usda] = [
-      "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T",
-      "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T",
-      "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13::coin::T",
-      "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
-      "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA",
-    ];
-    let pythPriceObj;
-    if (
-      (parent.baseCoinInfo.coinType === fakeBtc &&
-        parent.quoteCoinInfo.coinType === fakeUsdc) ||
-      (parent.baseCoinInfo.coinType === btc &&
-        (parent.quoteCoinInfo.coinType === usdcet ||
-          parent.quoteCoinInfo.coinType === usda))
-    ) {
-      pythPriceObj = data.productPrice.get("Crypto.BTC/USD");
-    } else if (
-      (parent.baseCoinInfo.coinType === fakeEth &&
-        parent.quoteCoinInfo.coinType === fakeUsdc) ||
-      (parent.baseCoinInfo.coinType === eth &&
-        (parent.quoteCoinInfo.coinType === usdcet ||
-          parent.quoteCoinInfo.coinType === usda))
-    ) {
-      pythPriceObj = data.productPrice.get("Crypto.ETH/USD");
-    } else if (
-      (parent.baseCoinInfo.coinType === fakeSol &&
-        parent.quoteCoinInfo.coinType === fakeUsdc) ||
-      (parent.baseCoinInfo.coinType === sol &&
-        (parent.quoteCoinInfo.coinType === usdcet ||
-          parent.quoteCoinInfo.coinType === usda))
-    ) {
-      pythPriceObj = data.productPrice.get("Crypto.SOL/USD");
-    } else {
+
+    const FAKE_MAPPING = new Map<string, string>();
+    FAKE_MAPPING.set(fakeBtc, WBTC);
+    FAKE_MAPPING.set(fakeEth, WETH);
+    FAKE_MAPPING.set(fakeSol, SOL);
+    FAKE_MAPPING.set(fakeUsdc, USDC_eth);
+
+    const mappedQuote =
+      FAKE_MAPPING.get(parent.quoteCoinInfo.coinType) ??
+      parent.quoteCoinInfo.coinType;
+
+    let pythPrice = undefined;
+    if (ALL_USD_STABLES.includes(mappedQuote)) {
+      const mappedBase =
+        FAKE_MAPPING.get(parent.baseCoinInfo.coinType) ??
+        parent.baseCoinInfo.coinType;
+      const pythSymbol = COIN_MAPPING.get(mappedBase)?.pythSymbol;
+      if (pythSymbol !== undefined) {
+        pythPrice = LATEST_PYTH_PRICE.get(pythSymbol);
+        if (pythPrice === undefined) {
+          const data = await pythClient.getData();
+          const pythPriceObj = data.productPrice.get(pythSymbol);
+          pythPrice = pythPriceObj!.price ?? pythPriceObj!.previousPrice;
+          LATEST_PYTH_PRICE.set(pythSymbol, pythPrice);
+        }
+      }
+    }
+
+    if (pythPrice === undefined) {
       return null;
     }
-    const pythPrice = pythPriceObj!.price ?? pythPriceObj!.previousPrice;
-    if (!pythPrice) {
-      return null;
-    }
+
     if (side === Side.Buy) {
       const ratio = (price - pythPrice) / pythPrice;
       return ratio > 0.005
