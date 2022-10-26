@@ -1,4 +1,4 @@
-import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, I as ArrowLongLeftIcon, J as useLazyQuery, K as linear, T as Tooltip, N as InformationCircleIcon, O as NavLink, P as HttpLink, Q as GraphQLWsLink, U as createClient, V as split, Y as getMainDefinition, Z as ApolloClient, _ as InMemoryCache, $ as useGeoLocation, a0 as ApolloProvider, a1 as BrowserRouter, a2 as Routes, a3 as Route, a4 as client$1 } from "./vendor.358fbde2.js";
+import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, T as Tooltip, I as InformationCircleIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, J as ArrowLongLeftIcon, K as useLazyQuery, N as linear, O as InformationCircleIcon$1, P as NavLink, Q as HttpLink, U as GraphQLWsLink, V as createClient, Y as split, Z as getMainDefinition, _ as ApolloClient, $ as InMemoryCache, a0 as useGeoLocation, a1 as ApolloProvider, a2 as BrowserRouter, a3 as Routes, a4 as Route, a5 as client$1 } from "./vendor.11f9db3c.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -55,7 +55,7 @@ var et = { exports: {} }, Le = {};
  * LICENSE file in the root directory of this source tree.
  */
 var er;
-function Jo() {
+function Qo() {
   if (er)
     return Le;
   er = 1;
@@ -73,7 +73,7 @@ function Jo() {
   return Le.Fragment = n2, Le.jsx = s2, Le.jsxs = s2, Le;
 }
 (function(e2) {
-  e2.exports = Jo();
+  e2.exports = Qo();
 })(et);
 const Q = et.exports.Fragment, a = et.exports.jsx, y = et.exports.jsxs;
 function rl({
@@ -103,7 +103,7 @@ function rl({
     })
   });
 }
-function ea({
+function ta({
   title: e2,
   titleId: t2,
   ...n2
@@ -129,8 +129,8 @@ function ea({
     })]
   });
 }
-const ta = react.exports.forwardRef(ea), ra = ta;
-function na({
+const ra = react.exports.forwardRef(ta), na = ra;
+function oa({
   title: e2,
   titleId: t2,
   ...n2
@@ -156,8 +156,8 @@ function na({
     })]
   });
 }
-const oa = react.exports.forwardRef(na), aa = oa;
-function ia({
+const aa = react.exports.forwardRef(oa), ia = aa;
+function sa({
   title: e2,
   titleId: t2,
   ...n2
@@ -183,8 +183,8 @@ function ia({
     })]
   });
 }
-const sa = react.exports.forwardRef(ia), Er = sa;
-function la({
+const la = react.exports.forwardRef(sa), Er = la;
+function ca({
   title: e2,
   titleId: t2,
   ...n2
@@ -210,8 +210,8 @@ function la({
     })]
   });
 }
-const ca = react.exports.forwardRef(la), da = ca;
-function ua({
+const da = react.exports.forwardRef(ca), ua = da;
+function fa({
   title: e2,
   titleId: t2,
   ...n2
@@ -237,8 +237,8 @@ function ua({
     })]
   });
 }
-const fa = react.exports.forwardRef(ua), ga = fa;
-function ha({
+const ga = react.exports.forwardRef(fa), ha = ga;
+function ma({
   title: e2,
   titleId: t2,
   ...n2
@@ -264,8 +264,8 @@ function ha({
     })]
   });
 }
-const ma = react.exports.forwardRef(ha), Rr = ma;
-function ba({
+const ba = react.exports.forwardRef(ma), Rr = ba;
+function pa({
   title: e2,
   titleId: t2,
   ...n2
@@ -291,8 +291,8 @@ function ba({
     })]
   });
 }
-const pa = react.exports.forwardRef(ba), Tr = pa;
-function ya({
+const ya = react.exports.forwardRef(pa), Tr = ya;
+function va({
   title: e2,
   titleId: t2,
   ...n2
@@ -318,8 +318,8 @@ function ya({
     })]
   });
 }
-const va = react.exports.forwardRef(ya), Sr = va;
-function wa({
+const wa = react.exports.forwardRef(va), Sr = wa;
+function xa({
   title: e2,
   titleId: t2,
   ...n2
@@ -345,7 +345,7 @@ function wa({
     })]
   });
 }
-const xa = react.exports.forwardRef(wa), ka = xa;
+const ka = react.exports.forwardRef(xa), Ca = ka;
 function Or({
   title: e2,
   message: t2,
@@ -385,7 +385,7 @@ function Or({
     })]
   });
 }
-function Ca({}) {
+function Na({}) {
   return /* @__PURE__ */ y("div", {
     role: "status",
     className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
@@ -437,7 +437,7 @@ function rr({}) {
     })]
   });
 }
-function Na({}) {
+function Ea({}) {
   return /* @__PURE__ */ y("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700",
@@ -467,7 +467,7 @@ function Na({}) {
     })]
   });
 }
-function Ea({}) {
+function Ra({}) {
   return /* @__PURE__ */ y("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-primary-200 shadow animate-pulse md:p-6 dark:border-primary-700",
@@ -504,13 +504,13 @@ function Lr({
   return (() => {
     switch (e2) {
       case "table":
-        return /* @__PURE__ */ a(Ca, {});
+        return /* @__PURE__ */ a(Na, {});
       case "list":
         return /* @__PURE__ */ a(rr, {});
       case "card":
-        return /* @__PURE__ */ a(Na, {});
-      case "tv":
         return /* @__PURE__ */ a(Ea, {});
+      case "tv":
+        return /* @__PURE__ */ a(Ra, {});
       default:
         return /* @__PURE__ */ a(rr, {});
     }
@@ -530,33 +530,33 @@ function we(e2, t2) {
   return true;
 }
 let Be;
-const Ra = new Uint8Array(16);
-function Ta() {
+const Ta = new Uint8Array(16);
+function Sa() {
   if (!Be && (Be = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Be))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return Be(Ra);
+  return Be(Ta);
 }
 const G = [];
 for (let e2 = 0; e2 < 256; ++e2)
   G.push((e2 + 256).toString(16).slice(1));
-function Sa(e2, t2 = 0) {
+function Oa(e2, t2 = 0) {
   return (G[e2[t2 + 0]] + G[e2[t2 + 1]] + G[e2[t2 + 2]] + G[e2[t2 + 3]] + "-" + G[e2[t2 + 4]] + G[e2[t2 + 5]] + "-" + G[e2[t2 + 6]] + G[e2[t2 + 7]] + "-" + G[e2[t2 + 8]] + G[e2[t2 + 9]] + "-" + G[e2[t2 + 10]] + G[e2[t2 + 11]] + G[e2[t2 + 12]] + G[e2[t2 + 13]] + G[e2[t2 + 14]] + G[e2[t2 + 15]]).toLowerCase();
 }
-const Oa = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), nr = {
-  randomUUID: Oa
+const La = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), nr = {
+  randomUUID: La
 };
-function La(e2, t2, n2) {
+function Pa(e2, t2, n2) {
   if (nr.randomUUID && !t2 && !e2)
     return nr.randomUUID();
   e2 = e2 || {};
-  const r = e2.random || (e2.rng || Ta)();
+  const r = e2.random || (e2.rng || Sa)();
   if (r[6] = r[6] & 15 | 64, r[8] = r[8] & 63 | 128, t2) {
     n2 = n2 || 0;
     for (let o2 = 0; o2 < 16; ++o2)
       t2[n2 + o2] = r[o2];
     return t2;
   }
-  return Sa(r);
+  return Oa(r);
 }
 var oe = /* @__PURE__ */ ((e2) => (e2.basic = "basic", e2.error = "error", e2.warning = "warning", e2.info = "info", e2.success = "success", e2))(oe || {});
 const mt = create$1((e2) => ({
@@ -566,7 +566,7 @@ const mt = create$1((e2) => ({
       ...n2,
       notifications: n2.notifications.concat({
         ...t2,
-        id: La()
+        id: Pa()
       })
     }));
   },
@@ -577,7 +577,7 @@ const mt = create$1((e2) => ({
     }));
   }
 }));
-function Pa() {
+function Ma() {
   const e2 = mt((i2) => i2.notifications, we), t2 = mt((i2) => i2.addNotification, we), n2 = (i2) => t2({
     title: "Success",
     type: "success",
@@ -638,7 +638,9 @@ function ol() {
   const e2 = useNavigate(), t2 = useLocation(), n2 = ze((s2) => s2.params, we), r = ze((s2) => s2.setParams, we), o2 = ze((s2) => s2.addParams, we), i2 = ze((s2) => s2.removeParams, we);
   return react.exports.useEffect(() => {
     const s2 = `${t2.pathname}?${new URLSearchParams(t2.search).toString()}`;
-    `${t2.pathname}?${n2.toString()}` !== s2 && e2(`${t2.pathname}?${n2.toString()}`);
+    `${t2.pathname}?${n2.toString()}` !== s2 && e2(`${t2.pathname}?${n2.toString()}`, {
+      replace: true
+    });
   }, [n2.toString(), t2]), {
     params: n2,
     setParams: r,
@@ -659,13 +661,13 @@ function Pr(e2) {
         e2[t2] && (r && (r += " "), r += t2);
   return r;
 }
-function Ma() {
+function _a() {
   for (var e2, t2, n2 = 0, r = ""; n2 < arguments.length; )
     (e2 = arguments[n2++]) && (t2 = Pr(e2)) && (r && (r += " "), r += t2);
   return r;
 }
-const _a = (e2) => typeof e2 == "boolean", Ia = (e2) => _a(e2) ? String(e2) : e2, Aa = (e2, t2) => Object.entries(e2).every(([n2, r]) => t2[n2] === r);
-function ja(e2) {
+const Ia = (e2) => typeof e2 == "boolean", Aa = (e2) => Ia(e2) ? String(e2) : e2, ja = (e2, t2) => Object.entries(e2).every(([n2, r]) => t2[n2] === r);
+function Fa(e2) {
   return (t2, n2) => {
     const r = Object.entries(t2).reduce((l, [c, u]) => u === void 0 ? l : {
       ...l,
@@ -675,15 +677,15 @@ function ja(e2) {
       ...r
     }, i2 = Object.keys(e2.variants).map((l) => {
       var c;
-      return (c = e2.variants[l]) == null ? void 0 : c[Ia(t2[l]) || e2.defaultVariants[l]];
+      return (c = e2.variants[l]) == null ? void 0 : c[Aa(t2[l]) || e2.defaultVariants[l]];
     }), s2 = e2.compoundVariants.reduce((l, {
       classes: c,
       ...u
-    }) => (Aa(u, o2) && c && l.push(c), l), []);
-    return Ma([e2.base, i2, s2, n2]);
+    }) => (ja(u, o2) && c && l.push(c), l), []);
+    return _a([e2.base, i2, s2, n2]);
   };
 }
-const Fa = ja({
+const $a = Fa({
   base: "text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer disabled:cursor-auto disabled:opacity-50",
   variants: {
     variant: {
@@ -713,7 +715,7 @@ function or({
   onClick: o2,
   disabled: i2
 }) {
-  const s2 = Fa({
+  const s2 = $a({
     size: r,
     variant: n2
   }, e2);
@@ -730,7 +732,7 @@ function al() {
   const {
     removeNotification: e2,
     notifications: t2
-  } = Pa(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", l = {
+  } = Ma(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", l = {
     [oe.basic]: " border-l-secondary-400",
     [oe.error]: " border-l-red-400",
     [oe.success]: " border-l-green-400",
@@ -798,7 +800,7 @@ function al() {
           variant: "basic",
           className: "border-0 bg-none",
           onClick: g,
-          children: /* @__PURE__ */ a(ka, {
+          children: /* @__PURE__ */ a(Ca, {
             className: "w-4 h-4"
           })
         })]
@@ -837,7 +839,7 @@ function tt({
     children: e2
   });
 }
-const $a = ({
+const Da = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   width: e2,
@@ -913,7 +915,7 @@ const $a = ({
       })]
     })]
   })
-}), Da = ({
+}), Ba = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   width: e2,
@@ -955,7 +957,7 @@ const $a = ({
       })]
     })]
   })
-}), Ba = ({
+}), za = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -975,7 +977,7 @@ const $a = ({
       d: "M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.88.173 6.775.85 6.775 1.658 0 .81-2.895 1.485-6.775 1.657m0-3.59v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v7.582h3.913v-7.584c4.393-.202 7.694-1.073 7.694-2.116 0-1.043-3.301-1.914-7.694-2.117"
     })]
   })
-}), za = ({
+}), Ha = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1012,7 +1014,7 @@ const $a = ({
     ry: ".4999994",
     fill: "#1e293b"
   })]
-}), Ha = ({
+}), Va = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   width: e2,
@@ -1085,7 +1087,7 @@ const $a = ({
       })]
     })]
   })]
-}), Va = ({
+}), Ua = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   width: e2,
@@ -1105,7 +1107,7 @@ const $a = ({
     d: "M304.903 59.8335C304.669 60.0192 303.691 61.4258 302.728 62.9593C292.436 79.3562 265.475 115.573 255.731 126.091C255.212 126.651 254.982 126.415 249.356 119.557C233.063 99.697 218.323 79.6886 208.226 63.726C205.147 58.8583 205.873 58.4236 180.902 80.0814C148.214 108.432 148.911 107.548 155.809 111.88C166.925 118.861 178.223 126.717 191.076 136.402C204.146 146.251 223.281 161.764 223.281 162.512C223.281 164.346 164.951 222.577 163.113 222.577C162.54 222.577 157.691 216.865 148.676 205.57C133.622 186.709 121.877 170.342 111.963 154.408C109.111 149.826 108.845 149.487 108.261 149.711C107.894 149.852 98.5034 159.945 91.957 167.233C63.0165 199.456 59.3262 204.506 63.0215 206.833C80.4551 217.813 108.324 238.491 124.931 252.769C127.395 254.887 127.728 254.334 120.331 260.398C99.7553 277.266 79.0772 292.423 61.8151 303.292C60.8409 303.905 60.007 304.601 59.9621 304.837C59.7382 306.016 91.3208 342.477 105.838 357.799C108.58 360.693 108.343 360.773 111.282 355.966C122.203 338.104 139.222 314.921 158.293 291.93C163.836 285.248 161.318 283.538 193.882 316.102C226.192 348.412 224.583 346.116 218.471 351.195C195.678 370.137 173.576 386.417 155.015 397.936C152.202 399.682 149.827 401.299 149.739 401.529C149.161 403.037 203.416 450.8 205.011 450.188C205.229 450.104 206.254 448.698 207.29 447.063C217.014 431.709 229.397 414.598 243.742 396.693C249 390.129 254.657 383.283 254.993 383.075C255.388 382.832 255.64 383.103 260.409 388.886C276.265 408.117 293.038 430.85 302.323 445.693C303.25 447.175 303.844 447.854 304.213 447.854C306.241 447.854 358.95 401.466 358.438 400.132C358.348 399.899 356.413 398.535 354.137 397.102C335.604 385.431 314.034 369.503 292.495 351.584C286.4 346.513 286.715 347.014 288.434 345.142C305.293 326.782 345.735 286.703 347.404 286.703C347.679 286.703 350.01 289.285 353.004 292.906C371.024 314.705 386.987 336.382 397.813 353.756C400.53 358.116 400.791 358.444 401.311 358.129C402.639 357.327 422.978 334.854 433.531 322.53C451.518 301.523 450.659 304.682 440.263 297.772C422.869 286.212 398.702 268.003 385.338 256.386C383.116 254.455 382.841 254.993 388.405 250.371C407.967 234.119 428.585 218.866 446.031 207.74C450.757 204.726 451.04 204.455 450.422 203.533C449.294 201.849 437.614 187.896 429.618 178.68C420.699 168.402 403.618 149.695 402.663 149.161C402.035 148.809 401.908 148.974 398.161 154.966C388.713 170.077 376.168 187.546 362.195 205.051C355.293 213.697 347.708 222.856 347.451 222.856C345.787 222.856 287.128 164.137 287.128 162.471C287.128 161.757 308.468 144.555 321.56 134.714C333.446 125.781 350.297 114.298 358.569 109.496C361.173 107.984 361.21 107.672 359.029 105.654C334.012 82.5093 306.1 58.8809 304.903 59.8335ZM261.533 134.125C267.441 141.003 278.114 153.046 283.462 158.869C287.014 162.736 287.248 162.002 280.645 167.677C274.187 173.227 264.048 182.206 259.036 186.815C254.951 190.57 255.514 190.51 252.268 187.542C246.922 182.654 234.397 171.567 229.332 167.238C223.048 161.867 222.98 163.309 229.875 155.732C235.659 149.377 246.195 137.403 251.833 130.779C255.588 126.367 254.565 126.014 261.533 134.125ZM263.07 197.617C272.393 206.31 302.476 236.349 310.823 245.3C314.255 248.98 317.625 252.581 318.312 253.302L319.562 254.614L317.076 257.324C303.785 271.819 278.692 297.049 262.521 312.178C258.572 315.873 255.373 318.983 255.412 319.089C255.579 319.541 272.02 334.231 280.785 341.76C287.403 347.445 287.384 346.135 280.954 353.198C274.656 360.118 265.747 370.225 259.943 377.037C255.576 382.16 255.364 382.38 255.01 382.16C254.888 382.085 252.188 378.988 249.011 375.278C243.154 368.441 232.482 356.402 227.089 350.55C223.474 346.627 223.465 347.055 227.235 343.856C235.907 336.497 255.065 319.415 255.065 319.041C255.065 318.942 251.332 315.361 246.77 311.083C242.208 306.805 231.565 296.402 223.12 287.964C209.161 274.019 204.122 268.834 194.18 258.185L190.87 254.64L194.459 250.815C213.053 231.001 230.406 213.631 250.883 194.337C255.76 189.741 254.161 189.31 263.07 197.617ZM168.102 229.059C173.294 235.101 181.87 244.793 187.318 250.775C191.249 255.092 191.082 254.456 188.902 256.795C183.977 262.084 170.908 276.864 165.479 283.288C162.92 286.315 163.144 286.256 161.145 284.425C152.644 276.629 140.691 266.041 132.459 259.011C126.654 254.054 126.402 255.482 134.271 248.748C141.427 242.623 153.553 231.868 159.155 226.676C163.449 222.696 162.391 222.415 168.102 229.059ZM350.975 226.386C356.648 231.614 368.764 242.357 375.874 248.465C379.679 251.732 382.752 254.558 382.705 254.745C382.658 254.931 379.42 257.83 375.51 261.187C368.027 267.611 359.316 275.321 352.09 281.918C346.834 286.717 348.198 287.035 341.728 279.506C335.885 272.708 328.745 264.648 323.171 258.556C321.284 256.494 319.773 254.713 319.813 254.6C319.854 254.487 322.477 251.533 325.641 248.035C331.996 241.012 340.548 231.282 344.566 226.506C347.695 222.785 347.08 222.797 350.975 226.386Z",
     fill: "white"
   })]
-}), Ua = ({
+}), Wa = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   width: e2,
@@ -1164,7 +1166,7 @@ const $a = ({
       })
     })]
   })]
-}), Wa = ({
+}), Ya = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1179,7 +1181,7 @@ const $a = ({
     fill: "#ff5f5f",
     d: "M526.27,576.86h0c158.66,0,287.28-128.62,287.28-287.28v-118.81s-287.28-104.47-287.28-104.47v510.56Z"
   })]
-}), Ya = ({
+}), Ga = ({
   size: e2
 }) => /* @__PURE__ */ y("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1209,13 +1211,13 @@ const $a = ({
     })
   })]
 });
-function Ga({
+function Za({
   symbol: e2,
   size: t2
 }) {
   switch (e2.toLowerCase()) {
     case "apt":
-      return /* @__PURE__ */ a($a, {
+      return /* @__PURE__ */ a(Da, {
         size: t2
       });
     case "btc":
@@ -1235,11 +1237,11 @@ function Ga({
         size: t2
       });
     case "sol":
-      return /* @__PURE__ */ a(Da, {
+      return /* @__PURE__ */ a(Ba, {
         size: t2
       });
     case "usdt":
-      return /* @__PURE__ */ a(Ba, {
+      return /* @__PURE__ */ a(za, {
         size: t2
       });
     case "usdc":
@@ -1259,38 +1261,38 @@ function Ga({
         size: t2
       });
     case "aux":
-      return /* @__PURE__ */ a(za, {
-        size: t2
-      });
-    case "martian":
-      return /* @__PURE__ */ a(Va, {
-        size: t2
-      });
-    case "tapt":
       return /* @__PURE__ */ a(Ha, {
         size: t2
       });
-    case "usda":
+    case "martian":
       return /* @__PURE__ */ a(Ua, {
         size: t2
       });
-    case "petra":
+    case "tapt":
+      return /* @__PURE__ */ a(Va, {
+        size: t2
+      });
+    case "usda":
       return /* @__PURE__ */ a(Wa, {
         size: t2
       });
-    case "mojo":
+    case "petra":
       return /* @__PURE__ */ a(Ya, {
+        size: t2
+      });
+    case "mojo":
+      return /* @__PURE__ */ a(Ga, {
         size: t2
       });
     default:
       return console.warn("No icon present for coin:", e2), null;
   }
 }
-function Za({
+function Xa({
   coin: e2,
   size: t2
 }) {
-  return e2 ? /* @__PURE__ */ a(Ga, {
+  return e2 ? /* @__PURE__ */ a(Za, {
     symbol: e2,
     size: t2 != null ? t2 : 32
   }) : null;
@@ -1303,7 +1305,7 @@ function sl({
     className: "flex items-center -space-x-2",
     children: e2.map((n2, r) => /* @__PURE__ */ a("div", {
       className: "inline-block rounded-full drop-shadow-lg ring-2 ring-primary-200",
-      children: /* @__PURE__ */ a(Za, {
+      children: /* @__PURE__ */ a(Xa, {
         coin: n2,
         size: t2
       })
@@ -1355,7 +1357,7 @@ function ll({
     children: e2
   });
 }
-function Xa({
+function Ka({
   valueChange: e2,
   percentChange: t2,
   priceDirection: n2
@@ -1366,9 +1368,9 @@ function Xa({
   })();
   return /* @__PURE__ */ y("div", {
     className: o2,
-    children: [n2 && n2 === "up" ? /* @__PURE__ */ a(aa, {
+    children: [n2 && n2 === "up" ? /* @__PURE__ */ a(ia, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : n2 && n2 === "down" ? /* @__PURE__ */ a(ra, {
+    }) : n2 && n2 === "down" ? /* @__PURE__ */ a(na, {
       className: "w-[14px] h-[14px] mr-1"
     }) : null, t2 && /* @__PURE__ */ y("div", {
       className: "mr-2",
@@ -1409,62 +1411,11 @@ function cl({
     }), /* @__PURE__ */ a("div", {
       className: "text-2xl",
       children: t2
-    }), r || n2 ? /* @__PURE__ */ a(Xa, {
+    }), r || n2 ? /* @__PURE__ */ a(Ka, {
       percentChange: r,
       valueChange: n2,
       priceDirection: o2
     }) : null]
-  });
-}
-function Ka(...e2) {
-  return e2.filter(Boolean).join(" ");
-}
-function dl({
-  options: e2,
-  onChange: t2,
-  label: n2,
-  value: r,
-  className: o2,
-  inputClass: i2
-}) {
-  const [s2, l] = react.exports.useState(r), c = react.exports.useCallback((f) => {
-    t2 == null || t2(f.value), l(f);
-  }, [t2]), g = (() => `text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm ${i2}`)();
-  return /* @__PURE__ */ a(pt$1, {
-    value: s2,
-    onChange: c,
-    children: ({
-      open: f
-    }) => /* @__PURE__ */ a(Q, {
-      children: /* @__PURE__ */ y("div", {
-        className: `relative mt-1 w-56 ${o2}`,
-        children: [n2 && /* @__PURE__ */ a(tt, {
-          className: "block",
-          children: n2
-        }), /* @__PURE__ */ y(pt$1.Button, {
-          className: g,
-          children: [s2.label, /* @__PURE__ */ a("span", {
-            className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-            children: f ? /* @__PURE__ */ a(ga, {
-              className: "h-4 w-4 text-primary-400",
-              "aria-hidden": "true"
-            }) : /* @__PURE__ */ a(da, {
-              className: "h-4 w-4 text-primary-400",
-              "aria-hidden": "true"
-            })
-          })]
-        }), /* @__PURE__ */ a(pt$1.Options, {
-          className: " absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-primary-700 py-1 text-white shadow-lg ring-1 border-none ring-black ring-opacity-5 outline-none sm:text-sm ",
-          children: e2.map((h) => /* @__PURE__ */ a(pt$1.Option, {
-            value: h,
-            className: ({
-              active: m
-            }) => Ka(m ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
-            children: h.label
-          }, h.label))
-        })]
-      })
-    })
   });
 }
 function qa({
@@ -4580,7 +4531,7 @@ uo.displayName = "Toast.Toggle";
 Object.assign(fo, {
   Toggle: uo
 });
-const Ss = react.exports.memo(function({
+const go = react.exports.memo(function({
   tip: t2,
   children: n2
 }) {
@@ -4613,7 +4564,7 @@ const Ss = react.exports.memo(function({
     }, t2)
   });
 });
-function ul({
+function dl({
   value: e2,
   onChange: t2,
   name: n2,
@@ -4632,7 +4583,7 @@ function ul({
     className: l,
     children: [o2 ? /* @__PURE__ */ y(tt, {
       htmlFor: n2,
-      children: [o2, g ? /* @__PURE__ */ a(Ss, {
+      children: [o2, g ? /* @__PURE__ */ a(go, {
         tip: g
       }) : null]
     }) : null, /* @__PURE__ */ y("div", {
@@ -4654,6 +4605,63 @@ function ul({
         children: s2
       })]
     })]
+  });
+}
+function Ss(...e2) {
+  return e2.filter(Boolean).join(" ");
+}
+function ul({
+  options: e2,
+  onChange: t2,
+  label: n2,
+  value: r,
+  className: o2,
+  inputClass: i2,
+  toolTip: s2
+}) {
+  const [l, c] = react.exports.useState(r), u = react.exports.useCallback((h) => {
+    t2 == null || t2(h.value), c(h);
+  }, [t2]), f = (() => `text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm ${i2}`)();
+  return /* @__PURE__ */ a(pt$1, {
+    value: l,
+    onChange: u,
+    children: ({
+      open: h
+    }) => /* @__PURE__ */ a(Q, {
+      children: /* @__PURE__ */ y("div", {
+        className: `relative mt-1 w-56 ${o2}`,
+        children: [n2 && /* @__PURE__ */ y("div", {
+          className: "flex gap-3 items-end mb-1",
+          children: [/* @__PURE__ */ a(tt, {
+            className: "block",
+            children: n2
+          }), s2 ? /* @__PURE__ */ a(go, {
+            tip: s2
+          }) : null]
+        }), /* @__PURE__ */ y(pt$1.Button, {
+          className: f,
+          children: [l.label, /* @__PURE__ */ a("span", {
+            className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
+            children: h ? /* @__PURE__ */ a(ha, {
+              className: "h-4 w-4 text-primary-400",
+              "aria-hidden": "true"
+            }) : /* @__PURE__ */ a(ua, {
+              className: "h-4 w-4 text-primary-400",
+              "aria-hidden": "true"
+            })
+          })]
+        }), /* @__PURE__ */ a(pt$1.Options, {
+          className: " absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-primary-700 py-1 text-white shadow-lg ring-1 border-none ring-black ring-opacity-5 outline-none sm:text-sm ",
+          children: e2.map((m) => /* @__PURE__ */ a(pt$1.Option, {
+            value: m,
+            className: ({
+              active: b
+            }) => Ss(b ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+            children: m.label
+          }, m.label))
+        })]
+      })
+    })
   });
 }
 function fl({
@@ -5382,6 +5390,12 @@ const CoinXYParamCtxProvider = ({
   children
 }) => {
   var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2;
+  const location = useLocation();
+  react.exports.useEffect(() => {
+    console.log({
+      location
+    });
+  }, [location]);
   const {
     params,
     setParams
@@ -5417,7 +5431,7 @@ const CoinXYParamCtxProvider = ({
       params.set("coiny", secondCoin == null ? void 0 : secondCoin.coinType);
       setParams(params);
     }
-  }, [secondCoin, coinx, setParams, params]);
+  }, [secondCoin, coiny, setParams, params]);
   const onFirstCoinSelect = (coin) => {
     setFirstCoin(coin);
     params.set("coinx", coin.coinType);
@@ -5436,6 +5450,8 @@ const CoinXYParamCtxProvider = ({
     value: {
       firstCoin,
       secondCoin,
+      setFirstCoin,
+      setSecondCoin,
       onFirstCoinSelect,
       onSecondCoinSelect,
       coins,
@@ -5981,7 +5997,7 @@ function CoinListItem({
   return /* @__PURE__ */ jsxs(Do.Option, {
     value: coinInfo,
     className: "h-[60px] w-full flex items-center space-x-4 bg-primary-800 cursor-pointer p-4 my-2 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(Za, {
+    children: [/* @__PURE__ */ jsx(Xa, {
       coin: coinInfo.symbol
     }), /* @__PURE__ */ jsx("p", {
       className: "text-xl font-medium text-primary-100",
@@ -6111,7 +6127,7 @@ function CoinSelectButton({
     className,
     children: /* @__PURE__ */ jsxs("button", {
       className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(Za, {
+      children: [coin ? /* @__PURE__ */ jsx(Xa, {
         coin: coin.symbol,
         size: 24
       }) : null, /* @__PURE__ */ jsx("span", {
@@ -6340,6 +6356,38 @@ function DepositInput({
     })]
   });
 }
+react.exports.memo(function OrderTip({
+  tip
+}) {
+  return /* @__PURE__ */ jsx("div", {
+    style: {
+      cursor: "pointer",
+      zIndex: 9
+    },
+    children: /* @__PURE__ */ jsx(Tooltip, {
+      id: tip,
+      content: /* @__PURE__ */ jsx("span", {
+        className: "opacity-100 font-bold",
+        children: tip
+      }),
+      placement: "right",
+      animation: false,
+      children: /* @__PURE__ */ jsx("div", {
+        style: {
+          width: 24,
+          height: 24,
+          padding: 3,
+          maxWidth: 24,
+          pointerEvents: "none"
+        },
+        children: /* @__PURE__ */ jsx(InformationCircleIcon, {
+          fontSize: 32,
+          color: "white"
+        })
+      })
+    }, tip)
+  });
+});
 function CreatePoolView({
   coins,
   createPool,
@@ -6385,9 +6433,10 @@ function CreatePoolView({
         onCoinSelect: onSecondCoinSelect,
         onChange: handleChangeSecondCoinAu,
         value: secondCoinAu
-      }), /* @__PURE__ */ jsx(dl, {
+      }), /* @__PURE__ */ jsx(ul, {
         className: "min-w-full",
-        label: "Pool Bps",
+        label: "Fee Tier",
+        toolTip: "When swapping, this fee is paid by the swapper to the liquidity providers in the pool. Higher fees can attract liquidity providers but may reduce swap volume. Lower fees may attract swap volume but reduce incentives for liquidity providers.",
         options,
         value,
         onChange: (e2) => setFee(e2)
@@ -6434,7 +6483,7 @@ function CreatePoolContainer({}) {
   });
   const conversionIn = firstCoinAu * ((_g = (_f = (_e2 = coinSpotPrice.data) == null ? void 0 : _e2.pool) == null ? void 0 : _f.priceX) != null ? _g : 0);
   const conversionOut = secondCoinAu * ((_j = (_i2 = (_h = coinSpotPrice.data) == null ? void 0 : _h.pool) == null ? void 0 : _i2.priceY) != null ? _j : 0);
-  const notifications = Pa();
+  const notifications = Ma();
   async function createPoolHandler() {
     return await createPool({
       variables: {
@@ -6499,7 +6548,7 @@ function SlippagePopoverView({
       }),
       children: /* @__PURE__ */ jsx("div", {
         className: "bg-slate-700 p-6 text-white max-w-sm rounded-xl",
-        children: /* @__PURE__ */ jsx(ul, {
+        children: /* @__PURE__ */ jsx(dl, {
           placeholder: "0.00",
           type: "number",
           label: "Slippage Tolerance",
@@ -6811,7 +6860,7 @@ function CreateAccountStep({
   const wallet = dist.useWallet();
   const account = useHasAccount();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
-  const notifications = Pa();
+  const notifications = Ma();
   react.exports.useEffect(() => {
     var _a3, _b2, _c, _d;
     ((_b2 = (_a3 = account == null ? void 0 : account.data) == null ? void 0 : _a3.account) == null ? void 0 : _b2.hasAuxAccount) ? setActiveAccount((_d = (_c = account == null ? void 0 : account.data) == null ? void 0 : _c.account) == null ? void 0 : _d.hasAuxAccount) : null;
@@ -7285,7 +7334,7 @@ function RegisterCoinList({
   const registeredCoins = useRegisteredCoins();
   const [registerCoin] = useMutation(RegisterCoinDocument);
   const [updatedCoins, setUpdatedCoins] = react.exports.useState();
-  const notifications = Pa();
+  const notifications = Ma();
   react.exports.useEffect(() => {
     var _a2, _b, _c, _d, _e2, _f;
     if ((_b = (_a2 = registeredCoins == null ? void 0 : registeredCoins.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.registeredCoins) {
@@ -7338,7 +7387,7 @@ function RegisterCoinList({
     className: "pt-3",
     children: coins == null ? void 0 : coins.map((c, idx) => /* @__PURE__ */ jsxs("div", {
       className: "flex flex-row items-center w-full p-3 my-2 bg-primary-800 rounded-lg",
-      children: [/* @__PURE__ */ jsx(Za, {
+      children: [/* @__PURE__ */ jsx(Xa, {
         coin: c.coinInfo.symbol
       }), /* @__PURE__ */ jsx("div", {
         className: "ml-2",
@@ -7668,10 +7717,8 @@ function usePoolsTable() {
       columns: [columnHelper$1.accessor("name", {
         header: "Pool",
         cell: (cell) => {
-          var _a4, _b2, _c, _d, _e2, _f, _g, _h;
-          cell.getValue();
+          var _a4, _b2, _c, _d, _e2, _f;
           const rowValues = cell.row.original;
-          `/pool?coinx=${(_a4 = rowValues.coinInfoX) == null ? void 0 : _a4.coinType}?coiny=${(_b2 = rowValues.coinInfoY) == null ? void 0 : _b2.coinType}`;
           const onClick = () => {
             navigate("/pool");
             onFirstCoinSelect(rowValues.coinInfoX);
@@ -7686,12 +7733,12 @@ function usePoolsTable() {
               children: [/* @__PURE__ */ jsx("div", {
                 className: "flex items-center",
                 children: /* @__PURE__ */ jsx(sl, {
-                  coins: [(_d = (_c = rowValues.coinInfoX) == null ? void 0 : _c.symbol) != null ? _d : "", (_f = (_e2 = rowValues.coinInfoY) == null ? void 0 : _e2.symbol) != null ? _f : ""],
+                  coins: [(_b2 = (_a4 = rowValues.coinInfoX) == null ? void 0 : _a4.symbol) != null ? _b2 : "", (_d = (_c = rowValues.coinInfoY) == null ? void 0 : _c.symbol) != null ? _d : ""],
                   size: 32
                 })
               }), /* @__PURE__ */ jsx("div", {
                 className: "self-center ml-4 mr-2 text-lg",
-                children: `${(_g = rowValues.coinInfoX) == null ? void 0 : _g.name} / ${(_h = rowValues.coinInfoY) == null ? void 0 : _h.name}`
+                children: `${(_e2 = rowValues.coinInfoX) == null ? void 0 : _e2.name} / ${(_f = rowValues.coinInfoY) == null ? void 0 : _f.name}`
               }), rowValues.featuredStatus !== "NONE" ? /* @__PURE__ */ jsx(ll, {
                 variant: "success",
                 size: "sm",
@@ -7847,7 +7894,7 @@ function RegisterCoinModalView({
 }) {
   const [registerCoin] = useMutation(RegisterCoinDocument);
   const wallet = dist.useWallet();
-  const notifications = Pa();
+  const notifications = Ma();
   const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
   const clearRegistered = (_coins) => {
     const state = /* @__PURE__ */ new Map();
@@ -7908,7 +7955,7 @@ function RegisterCoinModalView({
           children: "Please register your coin(s) to transact within the DEX."
         }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
           className: " flex gap-4 items-center font-semibold text-xl bg-primary-800 p-4 rounded-lg text-primary-300",
-          children: [/* @__PURE__ */ jsx(Za, {
+          children: [/* @__PURE__ */ jsx(Xa, {
             coin: c == null ? void 0 : c.symbol
           }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(ll, {
             size: "sm",
@@ -8324,7 +8371,7 @@ function SwapFormContainer({}) {
       unregistered.push(firstCoin);
     setUnregisteredCoins(unregistered);
   }, [isScRegistered, isFcRegistered, firstCoin, secondCoin]);
-  const notifications = Pa();
+  const notifications = Ma();
   const [valueIn, setValueIn] = react.exports.useState(1);
   const [valueOut, setValueOut] = react.exports.useState(1);
   const firstCoinPrice = usePoolPriceIn({
@@ -8452,7 +8499,7 @@ function SwapModalContainer({}) {
 }
 function CreateAuxAccountContainer({}) {
   const wallet = dist.useWallet();
-  const notifications = Pa();
+  const notifications = Ma();
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const createAccount = async () => {
     const tx = await createAuxAccount().then((x) => {
@@ -8489,7 +8536,7 @@ function NetworkToggle({}) {
   const currentNetwork = networkOptions.find((n2) => location.origin === n2.value);
   const onNetworkChange = (e2) => location.assign(e2 + location.pathname);
   return /* @__PURE__ */ jsx(Fragment, {
-    children: currentNetwork && /* @__PURE__ */ jsx(dl, {
+    children: currentNetwork && /* @__PURE__ */ jsx(ul, {
       label: "",
       className: "w-[120px] mt-0 mr-3 bg-slate-900",
       inputClass: "rounded-full border-2 border-slate-700 py-2 h-[40px]",
@@ -8886,7 +8933,7 @@ function useBalancesTable() {
             const coinInfo = cell.getValue();
             return /* @__PURE__ */ jsxs("div", {
               className: "flex items-center gap-3",
-              children: [/* @__PURE__ */ jsx(Za, {
+              children: [/* @__PURE__ */ jsx(Xa, {
                 coin: coinInfo == null ? void 0 : coinInfo.symbol,
                 size: 32
               }), coinInfo == null ? void 0 : coinInfo.symbol]
@@ -10822,7 +10869,7 @@ function WithdrawalView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = Pa();
+  const notifications = Ma();
   return /* @__PURE__ */ jsx(bl, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(or, {
@@ -11113,7 +11160,7 @@ function DepositView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = Pa();
+  const notifications = Ma();
   return /* @__PURE__ */ jsx(bl, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(or, {
@@ -11570,7 +11617,7 @@ function MarketSelector({
                   className: "relative grid bg-primary-800",
                   children: [/* @__PURE__ */ jsx("div", {
                     className: "px-4 pt-4 pb-4 border-b border-b-primary-700",
-                    children: /* @__PURE__ */ jsx(ul, {
+                    children: /* @__PURE__ */ jsx(dl, {
                       value: searchQuery,
                       name: "marketSearch",
                       placeholder: "Search Markets",
@@ -12161,7 +12208,7 @@ function AddLiquidityContainer({}) {
   });
   const conversionIn = firstCoinAu * ((_e2 = (_d = (_c = coinSpotPrice.data) == null ? void 0 : _c.pool) == null ? void 0 : _d.priceX) != null ? _e2 : 0);
   const conversionOut = secondCoinAu * ((_h = (_g = (_f = coinSpotPrice.data) == null ? void 0 : _f.pool) == null ? void 0 : _g.priceY) != null ? _h : 0);
-  const notifications = Pa();
+  const notifications = Ma();
   async function addLiquidityHandler() {
     return await addLiquidity({
       variables: {
@@ -12568,12 +12615,12 @@ function RemoveLiquidityView({
           className: "flex flex-row gap-6",
           children: [/* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2",
-            children: [/* @__PURE__ */ jsx(Za, {
+            children: [/* @__PURE__ */ jsx(Xa, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), firstCoinAmount]
           }), /* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2 w-full justify-center",
-            children: [/* @__PURE__ */ jsx(Za, {
+            children: [/* @__PURE__ */ jsx(Xa, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), secondCoinAmount]
           })]
@@ -12652,7 +12699,7 @@ function RemoveLiquidityView({
         children: [/* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (firstCoin == null ? void 0 : firstCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(Za, {
+            children: [/* @__PURE__ */ jsx(Xa, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), " ", firstCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -12661,7 +12708,7 @@ function RemoveLiquidityView({
         }), /* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (secondCoin == null ? void 0 : secondCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(Za, {
+            children: [/* @__PURE__ */ jsx(Xa, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), " ", secondCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -12879,6 +12926,7 @@ function PoolView({
 }
 function PoolContainer({}) {
   var _a2, _b;
+  useNavigate();
   const {
     firstCoin,
     secondCoin
@@ -13293,7 +13341,7 @@ const TradeControlsProvider = function TradeControlProvider({
   const {
     addSuccessNotification,
     addErrorNotification
-  } = Pa();
+  } = Ma();
   const submitTrade = async () => {
     var _a3;
     if (firstCoin && secondCoin && wallet.account) {
@@ -14502,7 +14550,7 @@ function useCreateTradingView() {
     setInterval2(interval2);
   };
 }
-const OrderTip = react.exports.memo(function OrderTip2({
+const OrderTip2 = react.exports.memo(function OrderTip22({
   tip,
   children
 }) {
@@ -14527,7 +14575,7 @@ const OrderTip = react.exports.memo(function OrderTip2({
           maxWidth: 24,
           pointerEvents: "none"
         },
-        children: /* @__PURE__ */ jsx(InformationCircleIcon, {
+        children: /* @__PURE__ */ jsx(InformationCircleIcon$1, {
           fontSize: 32,
           color: "white"
         })
@@ -14584,7 +14632,7 @@ function TradingForm() {
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-3 px-4",
       children: [/* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(ul, {
+        children: [/* @__PURE__ */ jsx(dl, {
           className: "w-full",
           value: priceInput,
           onChange: onChangePrice,
@@ -14598,7 +14646,7 @@ function TradingForm() {
           children: [secondCoin == null ? void 0 : secondCoin.symbol, " must be in increments of ", tick.toString()]
         })]
       }), /* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(ul, {
+        children: [/* @__PURE__ */ jsx(dl, {
           value: cxAmount,
           onChange: onChangeCxAmount,
           name: "coinx",
@@ -14642,7 +14690,7 @@ function TradingForm() {
           children: [/* @__PURE__ */ jsx(fl, {
             enabled: ioc,
             onChange: onChangeIOC
-          }), "Immediate Or Cancel", /* @__PURE__ */ jsx(OrderTip, {
+          }), "Immediate Or Cancel", /* @__PURE__ */ jsx(OrderTip2, {
             tip: `
             Place an aggressive order. The portion of the order that does not fill
             immediately is cancelled.
@@ -14653,7 +14701,7 @@ function TradingForm() {
           children: [/* @__PURE__ */ jsx(fl, {
             enabled: post,
             onChange: onChangePost
-          }), "Post", /* @__PURE__ */ jsx(OrderTip, {
+          }), "Post", /* @__PURE__ */ jsx(OrderTip2, {
             tip: `
                 Place a passive order. If the order would be aggressive, optionally slide
                 it to become passive. Otherwise, cancel the order.
@@ -14664,7 +14712,7 @@ function TradingForm() {
           children: [/* @__PURE__ */ jsx(fl, {
             enabled: fok,
             onChange: onChangeFok
-          }), "Fill or Kill", /* @__PURE__ */ jsx(OrderTip, {
+          }), "Fill or Kill", /* @__PURE__ */ jsx(OrderTip2, {
             tip: `
             Place an aggressive order. If the entire order cannot fill immediately,
             cancel the entire order.
@@ -14675,7 +14723,7 @@ function TradingForm() {
           children: [/* @__PURE__ */ jsx(fl, {
             enabled: passiveJoin,
             onChange: onChangePassiveJoin
-          }), "Passive Join", /* @__PURE__ */ jsx(OrderTip, {
+          }), "Passive Join", /* @__PURE__ */ jsx(OrderTip2, {
             tip: `
              Join the best bid or best ask level. Optionally place the order more or
              less aggressive than the best bid or ask up to the limit price.
@@ -15118,7 +15166,7 @@ function PoolsView({
           className: "text-4xl",
           children: "Pools"
         })
-      }), /* @__PURE__ */ jsx(ul, {
+      }), /* @__PURE__ */ jsx(dl, {
         value: searchQuery,
         name: "marketSearch",
         placeholder: "Search Pools",
