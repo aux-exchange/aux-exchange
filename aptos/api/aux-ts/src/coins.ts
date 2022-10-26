@@ -15,3 +15,13 @@ export const USDA =
   "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA";
 
 export const ALL_USD_STABLES = [USDC_eth, USDC_sol, USDA];
+
+export interface CoinMapping {
+  pythSymbol?: string;
+}
+
+export const COIN_MAPPING: Map<string, CoinMapping> = new Map();
+COIN_MAPPING.set(APT, { pythSymbol: "Crypto.APT/USD" });
+COIN_MAPPING.set(SOL, { pythSymbol: "Crypto.SOL/USD" });
+COIN_MAPPING.set(WETH, { pythSymbol: "Crypto.ETH/USD" });
+COIN_MAPPING.set(WBTC, { pythSymbol: "Crypto.BTC/USD" });

@@ -18,6 +18,7 @@ import {
   QueryPoolsArgs,
 } from "../generated/types";
 import type { Types } from "aptos";
+import { getRecognizedTVL } from "../pyth";
 
 function getFeaturedPriority(status: FeaturedStatus): number {
   switch (status) {
@@ -57,12 +58,8 @@ function formatPool(
   }
 
   const recognizedLiquidity = Math.max(
-    coins.ALL_USD_STABLES.includes(pool.coinInfoX.coinType)
-      ? pool.amountX.toNumber()
-      : 0,
-    coins.ALL_USD_STABLES.includes(pool.coinInfoY.coinType)
-      ? pool.amountY.toNumber()
-      : 0
+    getRecognizedTVL(pool.coinInfoX.coinType, pool.amountX.toNumber()),
+    getRecognizedTVL(pool.coinInfoY.coinType, pool.amountY.toNumber())
   );
 
   const auLiquidity = Math.max(
