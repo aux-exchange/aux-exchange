@@ -10,6 +10,7 @@ pythConnection.onPriceChange((productAccount, priceAccount) => {
     LATEST_PYTH_PRICE.set(symbol, price);
   }
 });
+pythConnection.start();
 
 export function getRecognizedTVL(coinType: string, amount: number): number {
   if (ALL_USD_STABLES.includes(coinType)) {
