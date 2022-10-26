@@ -1,4 +1,4 @@
-import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as Link, z as createColumnHelper, A as ArrowsUpDownIcon, B as DateTime, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, I as ArrowLongLeftIcon, J as useLazyQuery, K as linear, T as Tooltip, N as InformationCircleIcon, O as NavLink, P as HttpLink, Q as GraphQLWsLink, U as createClient, V as split, Y as getMainDefinition, Z as ApolloClient, _ as InMemoryCache, $ as useGeoLocation, a0 as ApolloProvider, a1 as BrowserRouter, a2 as Routes, a3 as Route, a4 as client$1 } from "./vendor.1a7ff069.js";
+import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, I as ArrowLongLeftIcon, J as useLazyQuery, K as linear, T as Tooltip, N as InformationCircleIcon, O as NavLink, P as HttpLink, Q as GraphQLWsLink, U as createClient, V as split, Y as getMainDefinition, Z as ApolloClient, _ as InMemoryCache, $ as useGeoLocation, a0 as ApolloProvider, a1 as BrowserRouter, a2 as Routes, a3 as Route, a4 as client$1 } from "./vendor.358fbde2.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -265,7 +265,7 @@ function ha({
   });
 }
 const ma = react.exports.forwardRef(ha), Rr = ma;
-function pa({
+function ba({
   title: e2,
   titleId: t2,
   ...n2
@@ -291,7 +291,7 @@ function pa({
     })]
   });
 }
-const ba = react.exports.forwardRef(pa), Tr = ba;
+const pa = react.exports.forwardRef(ba), Tr = pa;
 function ya({
   title: e2,
   titleId: t2,
@@ -753,7 +753,7 @@ function al() {
     if (t2.length && JSON.stringify(n2.current) !== JSON.stringify(t2[0])) {
       const m = t2[0];
       i2(m), n2.current = m;
-      const p = setTimeout(async () => {
+      const b = setTimeout(async () => {
         await r.start({
           opacity: [1, 0],
           x: [0, 200],
@@ -761,7 +761,7 @@ function al() {
         }), e2(m), i2(void 0);
       }, (h = m.dismissAfter) != null ? h : 3e3);
       return () => {
-        r.stop(), u.current || clearTimeout(p);
+        r.stop(), u.current || clearTimeout(b);
       };
     }
   }, [t2, e2, r]);
@@ -1424,16 +1424,17 @@ function dl({
   onChange: t2,
   label: n2,
   value: r,
-  className: o2
+  className: o2,
+  inputClass: i2
 }) {
-  const [i2, s2] = react.exports.useState(r), l = react.exports.useCallback((c) => {
-    t2 == null || t2(c.value), s2(c);
-  }, [t2]);
+  const [s2, l] = react.exports.useState(r), c = react.exports.useCallback((f) => {
+    t2 == null || t2(f.value), l(f);
+  }, [t2]), g = (() => `text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm ${i2}`)();
   return /* @__PURE__ */ a(pt$1, {
-    value: i2,
-    onChange: l,
+    value: s2,
+    onChange: c,
     children: ({
-      open: c
+      open: f
     }) => /* @__PURE__ */ a(Q, {
       children: /* @__PURE__ */ y("div", {
         className: `relative mt-1 w-56 ${o2}`,
@@ -1441,10 +1442,10 @@ function dl({
           className: "block",
           children: n2
         }), /* @__PURE__ */ y(pt$1.Button, {
-          className: " text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm",
-          children: [i2.label, /* @__PURE__ */ a("span", {
+          className: g,
+          children: [s2.label, /* @__PURE__ */ a("span", {
             className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-            children: c ? /* @__PURE__ */ a(ga, {
+            children: f ? /* @__PURE__ */ a(ga, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
             }) : /* @__PURE__ */ a(da, {
@@ -1454,13 +1455,13 @@ function dl({
           })]
         }), /* @__PURE__ */ a(pt$1.Options, {
           className: " absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-primary-700 py-1 text-white shadow-lg ring-1 border-none ring-black ring-opacity-5 outline-none sm:text-sm ",
-          children: e2.map((u) => /* @__PURE__ */ a(pt$1.Option, {
-            value: u,
+          children: e2.map((h) => /* @__PURE__ */ a(pt$1.Option, {
+            value: h,
             className: ({
-              active: g
-            }) => Ka(g ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
-            children: u.label
-          }, u.label))
+              active: m
+            }) => Ka(m ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+            children: h.label
+          }, h.label))
         })]
       })
     })
@@ -2529,8 +2530,8 @@ const Xr = ({ children: e2, outline: t2, pill: n2, ...r }) => {
 Xr.displayName = "Button.Group";
 const Kr = ({ children: e2, color: t2 = "info", disabled: n2 = false, gradientDuoTone: r, gradientMonochrome: o2, href: i2, label: s2, outline: l = false, pill: c = false, positionInGroup: u = "none", size: g = "md", ...f }) => {
   var N;
-  const h = typeof i2 < "u", m = L(f), { buttonGroup: p, button: v } = E().theme;
-  return a(h ? "a" : "button", { className: T(n2 && v.disabled, !r && !o2 && v.color[t2], r && !o2 && v.gradientDuoTone[r], !r && o2 && v.gradient[o2], p.position[u], l && ((N = v.outline.color[t2]) != null ? N : v.outline.color.default), v.base, v.pill[c ? "on" : "off"]), disabled: n2, href: i2, type: h ? void 0 : "button", ...m, children: a("span", { className: T(v.inner.base, v.inner.position[u], v.outline[l ? "on" : "off"], v.outline.pill[l && c ? "on" : "off"], v.size[g], l && !v.outline.color[t2] && v.inner.outline), children: y(Q, { children: [typeof e2 < "u" && e2, typeof s2 < "u" && a("span", { className: v.label, "data-testid": "flowbite-button-label", children: s2 })] }) }) });
+  const h = typeof i2 < "u", m = L(f), { buttonGroup: b, button: v } = E().theme;
+  return a(h ? "a" : "button", { className: T(n2 && v.disabled, !r && !o2 && v.color[t2], r && !o2 && v.gradientDuoTone[r], !r && o2 && v.gradient[o2], b.position[u], l && ((N = v.outline.color[t2]) != null ? N : v.outline.color.default), v.base, v.pill[c ? "on" : "off"]), disabled: n2, href: i2, type: h ? void 0 : "button", ...m, children: a("span", { className: T(v.inner.base, v.inner.position[u], v.outline[l ? "on" : "off"], v.outline.pill[l && c ? "on" : "off"], v.size[g], l && !v.outline.color[t2] && v.inner.outline), children: y(Q, { children: [typeof e2 < "u" && e2, typeof s2 < "u" && a("span", { className: v.label, "data-testid": "flowbite-button-label", children: s2 })] }) }) });
 };
 Kr.displayName = "Button";
 const ui = Object.assign(Kr, {
@@ -2648,12 +2649,12 @@ var hi = wt;
   cursor: -webkit-grab;
   cursor: grab; }
 `);
-var pt, mi = (pt = "indiana-scroll-container", function(e2, t2) {
+var bt, mi = (bt = "indiana-scroll-container", function(e2, t2) {
   if (!e2)
-    return pt;
+    return bt;
   var n2;
   typeof e2 == "string" ? n2 = e2 : t2 = e2;
-  var r = pt;
+  var r = bt;
   return n2 && (r += "__" + n2), r + (t2 ? Object.keys(t2).reduce(function(o2, i2) {
     var s2 = t2[i2];
     return s2 && (o2 += " " + (typeof s2 == "boolean" ? r + "--" + i2 : r + "--" + i2 + "_" + s2)), o2;
@@ -2838,7 +2839,7 @@ function lr(e2, t2, n2) {
   }
   return h;
 }
-const pi = async (e2, t2, n2) => {
+const bi = async (e2, t2, n2) => {
   const {
     placement: r = "bottom",
     strategy: o2 = "absolute",
@@ -2853,11 +2854,11 @@ const pi = async (e2, t2, n2) => {
     x: u,
     y: g
   } = lr(c, r, l), f = r, h = {}, m = 0;
-  for (let p = 0; p < i2.length; p++) {
+  for (let b = 0; b < i2.length; b++) {
     const {
       name: v,
       fn: C
-    } = i2[p], {
+    } = i2[b], {
       x: N,
       y: R,
       data: S,
@@ -2890,7 +2891,7 @@ const pi = async (e2, t2, n2) => {
       }) : w.rects), {
         x: u,
         y: g
-      } = lr(c, f, l)), p = -1;
+      } = lr(c, f, l)), b = -1;
       continue;
     }
   }
@@ -2902,7 +2903,7 @@ const pi = async (e2, t2, n2) => {
     middlewareData: h
   };
 };
-function bi(e2) {
+function pi(e2) {
   return {
     top: 0,
     right: 0,
@@ -2912,7 +2913,7 @@ function bi(e2) {
   };
 }
 function Jr(e2) {
-  return typeof e2 != "number" ? bi(e2) : {
+  return typeof e2 != "number" ? pi(e2) : {
     top: e2,
     right: e2,
     bottom: e2,
@@ -2944,7 +2945,7 @@ async function St(e2, t2) {
     elementContext: f = "floating",
     altBoundary: h = false,
     padding: m = 0
-  } = t2, p = Jr(m), C = l[h ? f === "floating" ? "reference" : "floating" : f], N = Ze(await i2.getClippingRect({
+  } = t2, b = Jr(m), C = l[h ? f === "floating" ? "reference" : "floating" : f], N = Ze(await i2.getClippingRect({
     element: (n2 = await (i2.isElement == null ? void 0 : i2.isElement(C))) == null || n2 ? C : C.contextElement || await (i2.getDocumentElement == null ? void 0 : i2.getDocumentElement(l.floating)),
     boundary: u,
     rootBoundary: g,
@@ -2959,10 +2960,10 @@ async function St(e2, t2) {
     strategy: c
   }) : s2[f]);
   return {
-    top: N.top - R.top + p.top,
-    bottom: R.bottom - N.bottom + p.bottom,
-    left: N.left - R.left + p.left,
-    right: R.right - N.right + p.right
+    top: N.top - R.top + b.top,
+    bottom: R.bottom - N.bottom + b.bottom,
+    left: N.left - R.left + b.left,
+    right: R.right - N.right + b.right
   };
 }
 const yi = Math.min, vi = Math.max;
@@ -2988,10 +2989,10 @@ const wi = (e2) => ({
     const u = Jr(r), g = {
       x: o2,
       y: i2
-    }, f = _e(s2), h = xe(s2), m = Tt(f), p = await c.getDimensions(n2), v = f === "y" ? "top" : "left", C = f === "y" ? "bottom" : "right", N = l.reference[m] + l.reference[f] - g[f] - l.floating[m], R = g[f] - l.reference[f], S = await (c.getOffsetParent == null ? void 0 : c.getOffsetParent(n2));
+    }, f = _e(s2), h = xe(s2), m = Tt(f), b = await c.getDimensions(n2), v = f === "y" ? "top" : "left", C = f === "y" ? "bottom" : "right", N = l.reference[m] + l.reference[f] - g[f] - l.floating[m], R = g[f] - l.reference[f], S = await (c.getOffsetParent == null ? void 0 : c.getOffsetParent(n2));
     let w = S ? f === "y" ? S.clientHeight || 0 : S.clientWidth || 0 : 0;
     w === 0 && (w = l.floating[m]);
-    const _ = N / 2 - R / 2, F = u[v], U = w - p[m] - u[C], V = w / 2 - p[m] / 2 + _, D = xt(F, V, U), Y = (h === "start" ? u[v] : u[C]) > 0 && V !== D && l.reference[m] <= l.floating[m] ? V < F ? F - V : U - V : 0;
+    const _ = N / 2 - R / 2, F = u[v], U = w - b[m] - u[C], V = w / 2 - b[m] / 2 + _, D = xt(F, V, U), Y = (h === "start" ? u[v] : u[C]) > 0 && V !== D && l.reference[m] <= l.floating[m] ? V < F ? F - V : U - V : 0;
     return {
       [f]: g[f] - Y,
       data: {
@@ -3044,11 +3045,11 @@ const Ri = function(e2) {
         platform: h,
         elements: m
       } = t2, {
-        alignment: p = null,
+        alignment: b = null,
         allowedPlacements: v = Ni,
         autoAlignment: C = true,
         ...N
-      } = e2, R = Ei(p, C, v), S = await St(t2, N), w = (n2 = (r = g.autoPlacement) == null ? void 0 : r.index) != null ? n2 : 0, _ = R[w];
+      } = e2, R = Ei(b, C, v), S = await St(t2, N), w = (n2 = (r = g.autoPlacement) == null ? void 0 : r.index) != null ? n2 : 0, _ = R[w];
       if (_ == null)
         return {};
       const {
@@ -3118,8 +3119,8 @@ const Si = function(e2) {
         fallbackPlacements: f,
         fallbackStrategy: h = "bestFit",
         flipAlignment: m = true,
-        ...p
-      } = e2, v = Ee(r), N = f || (v === s2 || !m ? [Xe(s2)] : Ti(s2)), R = [s2, ...N], S = await St(t2, p), w = [];
+        ...b
+      } = e2, v = Ee(r), N = f || (v === s2 || !m ? [Xe(s2)] : Ti(s2)), R = [s2, ...N], S = await St(t2, b), w = [];
       let _ = ((n2 = o2.flip) == null ? void 0 : n2.overflows) || [];
       if (u && w.push(S[v]), g) {
         const {
@@ -3176,7 +3177,7 @@ async function Oi(e2, t2) {
   let {
     mainAxis: h,
     crossAxis: m,
-    alignmentAxis: p
+    alignmentAxis: b
   } = typeof f == "number" ? {
     mainAxis: f,
     crossAxis: 0,
@@ -3187,7 +3188,7 @@ async function Oi(e2, t2) {
     alignmentAxis: null,
     ...f
   };
-  return l && typeof p == "number" && (m = l === "end" ? p * -1 : p), c ? {
+  return l && typeof b == "number" && (m = l === "end" ? b * -1 : b), c ? {
     x: m * g,
     y: h * u
   } : {
@@ -3244,19 +3245,19 @@ const Mi = function(e2) {
         x: n2,
         y: r
       }, g = await St(t2, c), f = _e(Ee(o2)), h = Pi(f);
-      let m = u[f], p = u[h];
+      let m = u[f], b = u[h];
       if (i2) {
         const C = f === "y" ? "top" : "left", N = f === "y" ? "bottom" : "right", R = m + g[C], S = m - g[N];
         m = xt(R, m, S);
       }
       if (s2) {
-        const C = h === "y" ? "top" : "left", N = h === "y" ? "bottom" : "right", R = p + g[C], S = p - g[N];
-        p = xt(R, p, S);
+        const C = h === "y" ? "top" : "left", N = h === "y" ? "bottom" : "right", R = b + g[C], S = b - g[N];
+        b = xt(R, b, S);
       }
       const v = l.fn({
         ...t2,
         [f]: m,
-        [h]: p
+        [h]: b
       });
       return {
         ...v,
@@ -3280,7 +3281,7 @@ function ge(e2) {
   }
   return e2;
 }
-function pe(e2) {
+function be(e2) {
   return ge(e2).getComputedStyle(e2);
 }
 function de(e2) {
@@ -3293,7 +3294,7 @@ function tn() {
 function ie(e2) {
   return e2 instanceof ge(e2).HTMLElement;
 }
-function be(e2) {
+function pe(e2) {
   return e2 instanceof ge(e2).Element;
 }
 function _i(e2) {
@@ -3310,14 +3311,14 @@ function rt(e2) {
     overflow: t2,
     overflowX: n2,
     overflowY: r
-  } = pe(e2);
+  } = be(e2);
   return /auto|scroll|overlay|hidden/.test(t2 + r + n2);
 }
 function Ii(e2) {
   return ["table", "td", "th"].includes(de(e2));
 }
 function rn(e2) {
-  const t2 = /firefox/i.test(tn()), n2 = pe(e2);
+  const t2 = /firefox/i.test(tn()), n2 = be(e2);
   return n2.transform !== "none" || n2.perspective !== "none" || n2.contain === "paint" || ["transform", "perspective"].includes(n2.willChange) || t2 && n2.willChange === "filter" || t2 && (n2.filter ? n2.filter !== "none" : false);
 }
 function nn() {
@@ -3330,12 +3331,12 @@ function ue(e2, t2, n2) {
   const l = e2.getBoundingClientRect();
   let c = 1, u = 1;
   t2 && ie(e2) && (c = e2.offsetWidth > 0 && qe(l.width) / e2.offsetWidth || 1, u = e2.offsetHeight > 0 && qe(l.height) / e2.offsetHeight || 1);
-  const g = be(e2) ? ge(e2) : window, f = !nn() && n2, h = (l.left + (f && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / c, m = (l.top + (f && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, p = l.width / c, v = l.height / u;
+  const g = pe(e2) ? ge(e2) : window, f = !nn() && n2, h = (l.left + (f && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / c, m = (l.top + (f && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, b = l.width / c, v = l.height / u;
   return {
-    width: p,
+    width: b,
     height: v,
     top: m,
-    right: h + p,
+    right: h + b,
     bottom: m + v,
     left: h,
     x: h,
@@ -3346,7 +3347,7 @@ function ye(e2) {
   return ((_i(e2) ? e2.ownerDocument : e2.document) || window.document).documentElement;
 }
 function nt(e2) {
-  return be(e2) ? {
+  return pe(e2) ? {
     scrollLeft: e2.scrollLeft,
     scrollTop: e2.scrollTop
   } : {
@@ -3392,7 +3393,7 @@ function an(e2) {
   return de(e2) === "html" ? e2 : e2.assignedSlot || e2.parentNode || (Ke(e2) ? e2.host : null) || ye(e2);
 }
 function dr(e2) {
-  return !ie(e2) || pe(e2).position === "fixed" ? null : e2.offsetParent;
+  return !ie(e2) || be(e2).position === "fixed" ? null : e2.offsetParent;
 }
 function Fi(e2) {
   let t2 = an(e2);
@@ -3409,9 +3410,9 @@ function Fi(e2) {
 function Ct(e2) {
   const t2 = ge(e2);
   let n2 = dr(e2);
-  for (; n2 && Ii(n2) && pe(n2).position === "static"; )
+  for (; n2 && Ii(n2) && be(n2).position === "static"; )
     n2 = dr(n2);
-  return n2 && (de(n2) === "html" || de(n2) === "body" && pe(n2).position === "static" && !rn(n2)) ? t2 : n2 || Fi(e2) || t2;
+  return n2 && (de(n2) === "html" || de(n2) === "body" && be(n2).position === "static" && !rn(n2)) ? t2 : n2 || Fi(e2) || t2;
 }
 function ur(e2) {
   if (ie(e2))
@@ -3472,7 +3473,7 @@ function Bi(e2) {
   const n2 = ye(e2), r = nt(e2), o2 = (t2 = e2.ownerDocument) == null ? void 0 : t2.body, i2 = Me(n2.scrollWidth, n2.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), s2 = Me(n2.scrollHeight, n2.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0);
   let l = -r.scrollLeft + on(e2);
   const c = -r.scrollTop;
-  return pe(o2 || n2).direction === "rtl" && (l += Me(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
+  return be(o2 || n2).direction === "rtl" && (l += Me(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
     width: i2,
     height: s2,
     x: l,
@@ -3517,11 +3518,11 @@ function Hi(e2, t2) {
   };
 }
 function fr(e2, t2, n2) {
-  return t2 === "viewport" ? Ze(Di(e2, n2)) : be(t2) ? Hi(t2, n2) : Ze(Bi(ye(e2)));
+  return t2 === "viewport" ? Ze(Di(e2, n2)) : pe(t2) ? Hi(t2, n2) : Ze(Bi(ye(e2)));
 }
 function Vi(e2) {
-  const t2 = Je(e2), r = ["absolute", "fixed"].includes(pe(e2).position) && ie(e2) ? Ct(e2) : e2;
-  return be(r) ? t2.filter((o2) => be(o2) && zi(o2, r) && de(o2) !== "body") : [];
+  const t2 = Je(e2), r = ["absolute", "fixed"].includes(be(e2).position) && ie(e2) ? Ct(e2) : e2;
+  return pe(r) ? t2.filter((o2) => pe(o2) && zi(o2, r) && de(o2) !== "body") : [];
 }
 function Ui(e2) {
   let {
@@ -3544,7 +3545,7 @@ function Ui(e2) {
 const Wi = {
   getClippingRect: Ui,
   convertOffsetParentRelativeRectToViewportRelativeRect: $i,
-  isElement: be,
+  isElement: pe,
   getDimensions: ur,
   getOffsetParent: Ct,
   getDocumentElement: ye,
@@ -3564,7 +3565,7 @@ const Wi = {
     };
   },
   getClientRects: (e2) => Array.from(e2.getClientRects()),
-  isRTL: (e2) => pe(e2).direction === "rtl"
+  isRTL: (e2) => be(e2).direction === "rtl"
 };
 function Yi(e2, t2, n2, r) {
   r === void 0 && (r = {});
@@ -3573,7 +3574,7 @@ function Yi(e2, t2, n2, r) {
     ancestorResize: i2 = true,
     elementResize: s2 = true,
     animationFrame: l = false
-  } = r, c = o2 && !l, u = i2 && !l, g = c || u ? [...be(e2) ? Je(e2) : [], ...Je(t2)] : [];
+  } = r, c = o2 && !l, u = i2 && !l, g = c || u ? [...pe(e2) ? Je(e2) : [], ...Je(t2)] : [];
   g.forEach((v) => {
     c && v.addEventListener("scroll", n2, {
       passive: true
@@ -3584,13 +3585,13 @@ function Yi(e2, t2, n2, r) {
     let v = true;
     f = new ResizeObserver(() => {
       v || n2(), v = false;
-    }), be(e2) && !l && f.observe(e2), f.observe(t2);
+    }), pe(e2) && !l && f.observe(e2), f.observe(t2);
   }
   let h, m = l ? ue(e2) : null;
-  l && p();
-  function p() {
+  l && b();
+  function b() {
     const v = ue(e2);
-    m && (v.x !== m.x || v.y !== m.y || v.width !== m.width || v.height !== m.height) && n2(), m = v, h = requestAnimationFrame(p);
+    m && (v.x !== m.x || v.y !== m.y || v.width !== m.width || v.height !== m.height) && n2(), m = v, h = requestAnimationFrame(b);
   }
   return n2(), () => {
     var v;
@@ -3599,7 +3600,7 @@ function Yi(e2, t2, n2, r) {
     }), (v = f) == null || v.disconnect(), f = null, l && cancelAnimationFrame(h);
   };
 }
-const Gi = (e2, t2, n2) => pi(e2, t2, {
+const Gi = (e2, t2, n2) => bi(e2, t2, {
   platform: Wi,
   ...n2
 });
@@ -3674,7 +3675,7 @@ function Xi(e2) {
       options: F
     };
   })) || c(t2);
-  const u = react.exports.useRef(null), g = react.exports.useRef(null), f = react.exports.useRef(null), h = react.exports.useRef(i2), m = Zi(o2), p = react.exports.useCallback(() => {
+  const u = react.exports.useRef(null), g = react.exports.useRef(null), f = react.exports.useRef(null), h = react.exports.useRef(i2), m = Zi(o2), b = react.exports.useCallback(() => {
     !u.current || !g.current || Gi(u.current, g.current, {
       middleware: l,
       placement: n2,
@@ -3686,8 +3687,8 @@ function Xi(e2) {
     });
   }, [l, n2, r]);
   Nt(() => {
-    v.current && p();
-  }, [p]);
+    v.current && b();
+  }, [b]);
   const v = react.exports.useRef(false);
   Nt(() => (v.current = true, () => {
     v.current = false;
@@ -3695,11 +3696,11 @@ function Xi(e2) {
   const C = react.exports.useCallback(() => {
     if (typeof f.current == "function" && (f.current(), f.current = null), u.current && g.current)
       if (m.current) {
-        const w = m.current(u.current, g.current, p);
+        const w = m.current(u.current, g.current, b);
         f.current = w;
       } else
-        p();
-  }, [p, m]), N = react.exports.useCallback((w) => {
+        b();
+  }, [b, m]), N = react.exports.useCallback((w) => {
     u.current = w, C();
   }, [C]), R = react.exports.useCallback((w) => {
     g.current = w, C();
@@ -3709,11 +3710,11 @@ function Xi(e2) {
   }), []);
   return react.exports.useMemo(() => ({
     ...i2,
-    update: p,
+    update: b,
     refs: S,
     reference: N,
     floating: R
-  }), [i2, p, S, N, R]);
+  }), [i2, b, S, N, R]);
 }
 var Se = typeof document < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
 function Ki() {
@@ -3731,14 +3732,14 @@ function Ki() {
     }
   };
 }
-let bt = false, qi = 0;
+let pt = false, qi = 0;
 const gr = () => "floating-ui-" + qi++;
 function Ji() {
-  const [e2, t2] = react.exports.useState(() => bt ? gr() : void 0);
+  const [e2, t2] = react.exports.useState(() => pt ? gr() : void 0);
   return Se(() => {
     e2 == null && t2(gr());
   }, []), react.exports.useEffect(() => {
-    bt || (bt = true);
+    pt || (pt = true);
   }, []), e2;
 }
 const hr = React$1[/* @__PURE__ */ "useId".toString()], mr = hr != null ? hr : Ji, Qi = /* @__PURE__ */ react.exports.createContext(null), es = /* @__PURE__ */ react.exports.createContext(null), ts = () => {
@@ -3759,11 +3760,11 @@ function Et(e2) {
 function Ot(e2) {
   return e2 ? e2 instanceof cn(e2).HTMLElement : false;
 }
-const pr = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
+const br = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
 function rs(e2) {
   const t2 = react.exports.useRef(() => {
   });
-  return pr ? pr(() => {
+  return br ? br(() => {
     t2.current = e2;
   }) : t2.current = e2, react.exports.useCallback(function() {
     for (var n2 = arguments.length, r = new Array(n2), o2 = 0; o2 < n2; o2++)
@@ -3781,16 +3782,16 @@ function ns(e2) {
     strategy: s2,
     nodeId: l
   } = e2 === void 0 ? {} : e2;
-  const [c, u] = react.exports.useState(null), g = ln(), f = react.exports.useRef(null), h = react.exports.useRef({}), m = react.exports.useState(() => Ki())[0], p = Xi({
+  const [c, u] = react.exports.useState(null), g = ln(), f = react.exports.useRef(null), h = react.exports.useRef({}), m = react.exports.useState(() => Ki())[0], b = Xi({
     placement: o2,
     middleware: i2,
     strategy: s2,
     whileElementsMounted: r
   }), v = rs(n2), C = react.exports.useMemo(() => ({
-    ...p.refs,
+    ...b.refs,
     domReference: f
-  }), [p.refs]), N = react.exports.useMemo(() => ({
-    ...p,
+  }), [b.refs]), N = react.exports.useMemo(() => ({
+    ...b,
     refs: C,
     dataRef: h,
     nodeId: l,
@@ -3800,22 +3801,22 @@ function ns(e2) {
     _: {
       domReference: c
     }
-  }), [p, l, m, t2, v, C, c]);
+  }), [b, l, m, t2, v, C, c]);
   Se(() => {
     const w = g == null ? void 0 : g.nodesRef.current.find((_) => _.id === l);
     w && (w.context = N);
   });
   const {
     reference: R
-  } = p, S = react.exports.useCallback((w) => {
+  } = b, S = react.exports.useCallback((w) => {
     (Et(w) || w === null) && (N.refs.domReference.current = w, u(w)), R(w);
   }, [R, N.refs]);
   return react.exports.useMemo(() => ({
-    ...p,
+    ...b,
     context: N,
     refs: C,
     reference: S
-  }), [p, C, N, S]);
+  }), [b, C, N, S]);
 }
 function yt(e2, t2, n2) {
   const r = /* @__PURE__ */ new Map();
@@ -3832,7 +3833,7 @@ function yt(e2, t2, n2) {
           (u = r.get(l)) == null || u.push(c), o2[l] = function() {
             for (var g, f = arguments.length, h = new Array(f), m = 0; m < f; m++)
               h[m] = arguments[m];
-            (g = r.get(l)) == null || g.forEach((p) => p(...h));
+            (g = r.get(l)) == null || g.forEach((b) => b(...h));
           };
         }
       } else
@@ -3850,7 +3851,7 @@ const os = function(e2) {
 function is(e2) {
   return Ot(e2) && e2.matches(as);
 }
-function br(e2) {
+function pr(e2) {
   const t2 = react.exports.useRef(e2);
   return Se(() => {
     t2.current = e2;
@@ -3881,7 +3882,7 @@ const ls = function(e2, t2) {
     events: f,
     refs: h,
     _: m
-  } = e2, p = ln(), v = ts(), C = br(o2), N = br(r), R = ss(c), S = react.exports.useRef(), w = react.exports.useRef(), _ = react.exports.useRef(), F = react.exports.useRef(), U = react.exports.useRef(true), V = react.exports.useRef(false), D = react.exports.useCallback(() => {
+  } = e2, b = ln(), v = ts(), C = pr(o2), N = pr(r), R = ss(c), S = react.exports.useRef(), w = react.exports.useRef(), _ = react.exports.useRef(), F = react.exports.useRef(), U = react.exports.useRef(true), V = react.exports.useRef(false), D = react.exports.useCallback(() => {
     var P;
     const j = (P = g.current.openEvent) == null ? void 0 : P.type;
     return (j == null ? void 0 : j.includes("mouse")) && j !== "mousedown";
@@ -3937,7 +3938,7 @@ const ls = function(e2, t2) {
       if (clearTimeout(F.current), C.current) {
         clearTimeout(w.current), _.current && he.removeEventListener("pointermove", _.current), _.current = C.current({
           ...e2,
-          tree: p,
+          tree: b,
           x: re.clientX,
           y: re.clientY,
           onClose() {
@@ -3951,7 +3952,7 @@ const ls = function(e2, t2) {
     function te(re) {
       P() || C.current == null || C.current({
         ...e2,
-        tree: p,
+        tree: b,
         x: re.clientX,
         y: re.clientY,
         leave: true,
@@ -3979,7 +3980,7 @@ const ls = function(e2, t2) {
     Y,
     u,
     c,
-    p,
+    b,
     h,
     N,
     C,
@@ -3990,13 +3991,13 @@ const ls = function(e2, t2) {
       const ee = h.domReference.current, te = h.floating.current;
       if (Et(ee) && te) {
         var P, j;
-        const ne = p == null || (P = p.nodesRef.current.find((K) => K.id === v)) == null || (j = P.context) == null ? void 0 : j.refs.floating.current;
+        const ne = b == null || (P = b.nodesRef.current.find((K) => K.id === v)) == null || (j = P.context) == null ? void 0 : j.refs.floating.current;
         return ne && (ne.style.pointerEvents = ""), ee.style.pointerEvents = "auto", te.style.pointerEvents = "auto", () => {
           ee.style.pointerEvents = "", te.style.pointerEvents = "";
         };
       }
     }
-  }, [n2, c, v, h, p, C, g, D]), Se(() => {
+  }, [n2, c, v, h, b, C, g, D]), Se(() => {
     R && !c && (S.current = void 0, W(), Y());
   }), react.exports.useEffect(() => () => {
     W(), clearTimeout(w.current), clearTimeout(F.current), V.current && Y();
@@ -4119,12 +4120,12 @@ const ds = function(e2, t2) {
     var h;
     if (!l)
       return;
-    const p = (h = ve(i2.floating.current).defaultView) != null ? h : window;
+    const b = (h = ve(i2.floating.current).defaultView) != null ? h : window;
     function v() {
       !n2 && Ot(i2.domReference.current) && i2.domReference.current.blur();
     }
-    return p.addEventListener("blur", v), () => {
-      p.removeEventListener("blur", v);
+    return b.addEventListener("blur", v), () => {
+      b.removeEventListener("blur", v);
     };
   }, [i2, n2, l]), react.exports.useEffect(() => {
     if (!l)
@@ -4149,14 +4150,14 @@ const ds = function(e2, t2) {
         g.current = false;
       },
       onFocus(h) {
-        var m, p, v;
-        g.current || h.type === "focus" && ((m = o2.current.openEvent) == null ? void 0 : m.type) === "mousedown" && (p = i2.domReference.current) != null && p.contains((v = o2.current.openEvent) == null ? void 0 : v.target) || (o2.current.openEvent = h.nativeEvent, r(true));
+        var m, b, v;
+        g.current || h.type === "focus" && ((m = o2.current.openEvent) == null ? void 0 : m.type) === "mousedown" && (b = i2.domReference.current) != null && b.contains((v = o2.current.openEvent) == null ? void 0 : v.target) || (o2.current.openEvent = h.nativeEvent, r(true));
       },
       onBlur(h) {
         const m = h.relatedTarget;
         f.current = setTimeout(() => {
-          var p, v;
-          (p = i2.floating.current) != null && p.contains(m) || (v = i2.domReference.current) != null && v.contains(m) || (g.current = false, r(false));
+          var b, v;
+          (b = i2.floating.current) != null && b.contains(m) || (v = i2.domReference.current) != null && v.contains(m) || (g.current = false, r(false));
         });
       }
     }
@@ -4175,11 +4176,11 @@ const ds = function(e2, t2) {
     onOpenChange: h,
     open: f,
     placement: gs({ placement: i2 })
-  }), { context: p, floating: v, middlewareData: { arrow: { x: C, y: N } = {} }, reference: R, refs: S, strategy: w, update: _, x: F, y: U } = m, { getFloatingProps: V, getReferenceProps: D } = os([
-    ds(p, { enabled: l === "click" }),
-    us(p),
-    ls(p, { enabled: l === "hover" }),
-    cs(p, { role: "tooltip" })
+  }), { context: b, floating: v, middlewareData: { arrow: { x: C, y: N } = {} }, reference: R, refs: S, strategy: w, update: _, x: F, y: U } = m, { getFloatingProps: V, getReferenceProps: D } = os([
+    ds(b, { enabled: l === "click" }),
+    us(b),
+    ls(b, { enabled: l === "hover" }),
+    cs(b, { role: "tooltip" })
   ]);
   return react.exports.useEffect(() => {
     if (S.reference.current && S.floating.current && f)
@@ -4221,9 +4222,9 @@ const ds = function(e2, t2) {
 }, gn = ({ children: e2, ...t2 }) => {
   const n2 = E().theme.dropdown, r = L(t2), { placement: o2 = t2.inline ? "bottom-start" : "bottom", trigger: i2 = "click", label: s2, inline: l, floatingArrow: c = false, arrowIcon: u = true, ...g } = r, f = react.exports.useMemo(() => {
     var v;
-    const [p] = o2.split("-");
-    return (v = ms[p]) != null ? v : jr;
-  }, [o2]), h = react.exports.useMemo(() => a("ul", { className: n2.content, children: e2 }), [e2, n2]), m = ({ children: p }) => l ? a("button", { className: n2.inlineWrapper, children: p }) : a(ui, { ...g, children: p });
+    const [b] = o2.split("-");
+    return (v = ms[b]) != null ? v : jr;
+  }, [o2]), h = react.exports.useMemo(() => a("ul", { className: n2.content, children: e2 }), [e2, n2]), m = ({ children: b }) => l ? a("button", { className: n2.inlineWrapper, children: b }) : a(ui, { ...g, children: b });
   return a(dn, { content: h, style: "auto", animation: "duration-100", placement: o2, arrow: c, trigger: i2, theme: n2.floating, children: y(m, { children: [s2, u && a(f, { className: n2.arrowIcon })] }) });
 };
 gn.displayName = "Dropdown";
@@ -4241,10 +4242,10 @@ const hn = ({ alt: e2, children: t2, href: n2, name: r, src: o2 }) => {
 }, mn = ({ href: e2, by: t2, year: n2 }) => {
   const r = E().theme.footer.copyright;
   return a("div", { children: y("span", { className: r.base, "data-testid": "flowbite-footer-copyright", children: ["\xA9 ", n2, e2 ? a("a", { href: e2, className: r.href, children: t2 }) : a("span", { "data-testid": "flowbite-footer-copyright-span", className: r.span, children: t2 })] }) });
-}, pn = () => {
+}, bn = () => {
   const e2 = E().theme.footer.divider;
   return a("hr", { "data-testid": "footer-divider", className: e2.base });
-}, bn = ({ href: e2, ariaLabel: t2, icon: n2 }) => {
+}, pn = ({ href: e2, ariaLabel: t2, icon: n2 }) => {
   const r = E().theme.footer.icon;
   return a("div", { children: e2 ? a("a", { "aria-label": t2, "data-testid": "flowbite-footer-icon", href: e2, className: r.base, children: a(n2, { className: r.size }) }) : a(n2, { "data-testid": "flowbite-footer-icon", className: r.size }) });
 }, yn = ({ children: e2, href: t2 }) => {
@@ -4265,32 +4266,32 @@ mn.displayName = "Footer.Copyright";
 yn.displayName = "Footer.Link";
 hn.displayName = "Footer.Brand";
 vn.displayName = "Footer.LinkGroup";
-bn.displayName = "Footer.Icon";
+pn.displayName = "Footer.Icon";
 wn.displayName = "Footer.Title";
-pn.displayName = "Footer.Divider";
+bn.displayName = "Footer.Divider";
 Object.assign(xn, {
   Copyright: mn,
   Link: yn,
   LinkGroup: vn,
   Brand: hn,
-  Icon: bn,
+  Icon: pn,
   Title: wn,
-  Divider: pn
+  Divider: bn
 });
-const ps = react.exports.forwardRef((e2, t2) => {
+const bs = react.exports.forwardRef((e2, t2) => {
   const n2 = E().theme.formControls.checkbox, r = L(e2);
   return a("input", { ref: t2, className: n2.base, type: "checkbox", ...r });
 });
-ps.displayName = "Checkbox";
+bs.displayName = "Checkbox";
 const ot = ({ value: e2, children: t2, color: n2 = "default", ...r }) => {
   var s2;
   const o2 = E().theme.formControls.helperText, i2 = L(r);
   return a("p", { className: T(o2.base, o2.colors[n2]), ...i2, children: (s2 = e2 != null ? e2 : t2) != null ? s2 : "" });
-}, bs = react.exports.forwardRef(({ sizing: e2 = "md", helperText: t2, color: n2 = "gray", ...r }, o2) => {
+}, ps = react.exports.forwardRef(({ sizing: e2 = "md", helperText: t2, color: n2 = "gray", ...r }, o2) => {
   const i2 = E().theme.formControls.fileInput, s2 = L(r);
   return y(Q, { children: [a("div", { className: i2.base, children: a("div", { className: i2.field.base, children: a("input", { className: T(i2.field.input.base, i2.field.input.colors[n2], i2.field.input.sizes[e2]), ...s2, type: "file", ref: o2 }) }) }), t2 && a(ot, { color: n2, children: t2 })] });
 });
-bs.displayName = "FileInput";
+ps.displayName = "FileInput";
 const ys = react.exports.forwardRef((e2, t2) => {
   const n2 = E().theme.formControls.radio, r = L(e2);
   return a("input", { ref: t2, className: n2.base, type: "radio", ...r });
@@ -4455,8 +4456,8 @@ const Hn = ({ children: e2, color: t2 = "info", ...n2 }) => {
 Hn.displayName = "Sidebar.CTA";
 const Vn = ({ as: e2 = "a", children: t2, icon: n2, active: r, label: o2, labelColor: i2 = "info", ...s2 }) => {
   var v;
-  const l = L(s2), c = react.exports.useId(), { isCollapsed: u } = at(), { isInsideCollapse: g } = Ns(), f = E().theme.sidebar.item, h = ({ children: C }) => a("li", { children: u ? a(Mt, { content: a(m, { children: t2 }), placement: "right", children: C }) : C }), m = ({ children: C }) => a(p, { children: C }), p = ({ children: C }) => a("span", { className: T(f.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${c}`, children: C });
-  return a(h, { children: y(e2, { "aria-labelledby": `flowbite-sidebar-item-${c}`, className: T(f.base, r && f.active, !u && g && f.collapsed.insideCollapse), ...l, children: [n2 && a(n2, { "aria-hidden": true, className: T(f.icon.base, r && f.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: f.collapsed.noIcon, children: (v = t2.charAt(0).toLocaleUpperCase()) != null ? v : "?" }), !u && a(p, { children: t2 }), !u && o2 && a(di, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
+  const l = L(s2), c = react.exports.useId(), { isCollapsed: u } = at(), { isInsideCollapse: g } = Ns(), f = E().theme.sidebar.item, h = ({ children: C }) => a("li", { children: u ? a(Mt, { content: a(m, { children: t2 }), placement: "right", children: C }) : C }), m = ({ children: C }) => a(b, { children: C }), b = ({ children: C }) => a("span", { className: T(f.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${c}`, children: C });
+  return a(h, { children: y(e2, { "aria-labelledby": `flowbite-sidebar-item-${c}`, className: T(f.base, r && f.active, !u && g && f.collapsed.insideCollapse), ...l, children: [n2 && a(n2, { "aria-hidden": true, className: T(f.icon.base, r && f.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: f.collapsed.noIcon, children: (v = t2.charAt(0).toLocaleUpperCase()) != null ? v : "?" }), !u && a(b, { children: t2 }), !u && o2 && a(di, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
 };
 Vn.displayName = "Sidebar.Item";
 const Un = ({ children: e2, ...t2 }) => {
@@ -4772,7 +4773,7 @@ const ml = ({
     children: e2
   })
 });
-const pl = react.exports.forwardRef(function({
+const bl = react.exports.forwardRef(function({
   children: t2,
   trigger: n2
 }, r) {
@@ -4862,8 +4863,8 @@ function Ue(e2, t2, n2) {
     r = s2;
     let c;
     if (n2.key && n2.debug != null && n2.debug() && (c = Date.now()), o2 = t2(...s2), n2 == null || n2.onChange == null || n2.onChange(o2), n2.key && n2.debug != null && n2.debug()) {
-      const u = Math.round((Date.now() - i2) * 100) / 100, g = Math.round((Date.now() - c) * 100) / 100, f = g / 16, h = (m, p) => {
-        for (m = String(m); m.length < p; )
+      const u = Math.round((Date.now() - i2) * 100) / 100, g = Math.round((Date.now() - c) * 100) / 100, f = g / 16, h = (m, b) => {
+        for (m = String(m); m.length < b; )
           m = " " + m;
         return m;
       };
@@ -4971,12 +4972,12 @@ class js {
       this.pendingMeasuredCacheIndexes = [];
       const c = this.measurementsCache.slice(0, l);
       for (let u = l; u < r; u++) {
-        const g = i2(u), f = s2[g], h = c[u - 1] ? c[u - 1].end : o2, m = typeof f == "number" ? f : this.options.estimateSize(u), p = h + m;
+        const g = i2(u), f = s2[g], h = c[u - 1] ? c[u - 1].end : o2, m = typeof f == "number" ? f : this.options.estimateSize(u), b = h + m;
         c[u] = {
           index: u,
           start: h,
           size: m,
-          end: p,
+          end: b,
           key: g
         };
       }
@@ -5007,19 +5008,19 @@ class js {
         const m = this.measurementsCache[g];
         if (!f)
           return;
-        const p = i2(f, this), v = (h = this.itemMeasurementsCache[m.key]) != null ? h : m.size;
-        p !== v && (m.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (p - v), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
+        const b = i2(f, this), v = (h = this.itemMeasurementsCache[m.key]) != null ? h : m.size;
+        b !== v && (m.start < this.scrollOffset && (this.destinationOffset || this._scrollToOffset(this.scrollOffset + (b - v), false)), this.pendingMeasuredCacheIndexes.push(g), this.itemMeasurementsCache = {
           ...this.itemMeasurementsCache,
-          [m.key]: p
+          [m.key]: b
         }, this.notify());
       }, l = [], c = {};
       for (let g = 0, f = r.length; g < f; g++) {
         var u;
-        const h = r[g], p = {
+        const h = r[g], b = {
           ...o2[h],
           measureElement: c[h] = (u = this.measureElementCache[h]) != null ? u : s2(h)
         };
-        l.push(p);
+        l.push(b);
       }
       return this.measureElementCache = c, l;
     }, {
@@ -5175,7 +5176,7 @@ function Ws({
   });
 }
 const Ys = react.exports.forwardRef(Ws), Gs = Ys;
-function bl({
+function pl({
   data: e2,
   columns: t2,
   customRowRender: n2,
@@ -5197,7 +5198,7 @@ function bl({
     }
   }), h = react.exports.useRef(null), {
     rows: m
-  } = f.getRowModel(), p = zs(r != null ? r : {
+  } = f.getRowModel(), b = zs(r != null ? r : {
     getScrollElement: () => h.current,
     count: m.length,
     estimateSize: () => m.length,
@@ -5206,7 +5207,7 @@ function bl({
     getVirtualItems: v,
     getTotalSize: C,
     scrollToIndex: N
-  } = p, R = v();
+  } = b, R = v();
   return react.exports.useEffect(() => {
     c && N(c);
   }, [c, N]), C(), /* @__PURE__ */ a(Q, {
@@ -5979,7 +5980,7 @@ function CoinListItem({
   react.exports.useCallback(() => onCoinSelect(coinInfo), [onCoinSelect, coinInfo]);
   return /* @__PURE__ */ jsxs(Do.Option, {
     value: coinInfo,
-    className: "h-[60px] w-full flex items-center space-x-4 bg-transparent cursor-pointer p-4 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
+    className: "h-[60px] w-full flex items-center space-x-4 bg-primary-800 cursor-pointer p-4 my-2 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
     children: [/* @__PURE__ */ jsx(Za, {
       coin: coinInfo.symbol
     }), /* @__PURE__ */ jsx("p", {
@@ -6028,7 +6029,7 @@ function CoinSearchModalView({
     onCoinSelect(coin);
     (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
   }, []);
-  return /* @__PURE__ */ jsx(pl, {
+  return /* @__PURE__ */ jsx(bl, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx(ModalContents, {
@@ -6059,7 +6060,7 @@ function ModalContents({
     return () => clearInterval(interval);
   }, []);
   return /* @__PURE__ */ jsxs(ml, {
-    className: "bg-primary-700 min-w-[400px] min-h-[200px] max-h-[700px] overflow-y-auto",
+    className: "min-w-[400px] max-w-[700px] min-h-[200px] max-h-[700px] overflow-y-auto mx-auto border border-slate-700",
     children: [/* @__PURE__ */ jsx(il, {
       id: "headlessui-dialog-title-:rh:",
       children: "Select Token"
@@ -6355,10 +6356,10 @@ function CreatePoolView({
 }) {
   var _a2;
   const options = [{
-    label: "0.01%",
+    label: "0.10%",
     value: "10"
   }, {
-    label: "0.03%",
+    label: "0.30%",
     value: "30"
   }];
   const value = (_a2 = options.find((o2) => o2.value === fee)) != null ? _a2 : void 0;
@@ -6526,7 +6527,7 @@ function SlippagePopoverContainer({}) {
 const ConnectWalletView = function ConnectWalletView2({
   trigger
 }) {
-  var _a2, _b, _c, _d, _e2, _f, _g, _h;
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j;
   const modalRef = react.exports.useRef(null);
   const [options, setOptions] = react.exports.useState([]);
   const wallet = dist.useWallet();
@@ -6632,16 +6633,39 @@ const ConnectWalletView = function ConnectWalletView2({
     return defaultTrigger;
   };
   return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(pl, {
+    children: /* @__PURE__ */ jsx(bl, {
       trigger: renderTrigger(trigger, (_a2 = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _a2.adapter.name, (_e2 = (_d = (_c = (_b = wallet.wallet) == null ? void 0 : _b.adapter) == null ? void 0 : _c.publicAccount) == null ? void 0 : _d.address) != null ? _e2 : "", true, (_f = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _f.adapter.icon),
       ref: modalRef,
       children: /* @__PURE__ */ jsxs(ml, {
-        className: "h-[600px] bg-primary-800 border border-primary-700",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "pb-3 text-xl bg-stripes-secondary",
-          children: "Select Wallet"
+        className: "h-[575px] max-w-[700px] mx-auto border border-primary-700 overflow-hidden",
+        padding: 0,
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex flex-row items-center justify-between p-4  border-b border-b-slate-700",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "text-xl bg-stripes-secondary",
+            children: "Select Wallet"
+          }), ((_g = wallet.account) == null ? void 0 : _g.address) ? /* @__PURE__ */ jsxs("div", {
+            className: "inline-flex items-center gap-2",
+            children: [/* @__PURE__ */ jsx("span", {
+              children: "Active Wallet:"
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "pl-2 pt-1 pb-1 pr-1 text-sm rounded-full bg-primary-900 border border-primary-700 flex justify-between items-center",
+              children: [/* @__PURE__ */ jsx("img", {
+                src: (_h = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _h.adapter.icon,
+                height: 24,
+                width: 24
+              }), /* @__PURE__ */ jsx("span", {
+                className: "ml-2 mr-4",
+                children: (_j = (_i2 = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _i2.adapter.name) != null ? _j : "None"
+              }), /* @__PURE__ */ jsx(or, {
+                size: "xs",
+                onClick: async () => await wallet.disconnect(),
+                children: "Disconnect"
+              })]
+            })]
+          }) : null]
         }), /* @__PURE__ */ jsx("div", {
-          className: "overflow-y-scroll max-h-[400px]",
+          className: "overflow-y-scroll max-h-[500px]",
           children: options.map((w) => {
             var _a3;
             return /* @__PURE__ */ jsx("div", {
@@ -6670,15 +6694,6 @@ const ConnectWalletView = function ConnectWalletView2({
               })
             }, w.name);
           })
-        }), /* @__PURE__ */ jsxs("div", {
-          className: "p-6 mt-6 rounded-xl bg-primary-900 border border-primary-700 flex justify-between items-center",
-          children: [/* @__PURE__ */ jsxs("span", {
-            children: ["Active Wallet: ", (_h = (_g = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _g.adapter.name) != null ? _h : "None"]
-          }), wallet ? /* @__PURE__ */ jsx(or, {
-            size: "sm",
-            onClick: async () => await wallet.disconnect(),
-            children: "Disconnect"
-          }) : null]
         })]
       })
     })
@@ -7632,6 +7647,11 @@ const columnHelper$1 = createColumnHelper();
 function usePoolsTable() {
   var _a2;
   const poolsQuery = usePools();
+  const navigate = useNavigate();
+  const {
+    onFirstCoinSelect,
+    onSecondCoinSelect
+  } = useCoinXYParamState();
   const pools = (_a2 = poolsQuery.data) == null ? void 0 : _a2.pools;
   const tableRef = react.exports.useRef(null);
   const tableProps = react.exports.useMemo(() => {
@@ -7644,28 +7664,34 @@ function usePoolsTable() {
         variant: "basic"
       }),
       data: pools != null ? pools : [],
-      className: "border border-primary-700 rounded-lg",
+      className: "border border-primary-700 rounded-lg overflow-hidden",
       columns: [columnHelper$1.accessor("name", {
         header: "Pool",
         cell: (cell) => {
-          var _a4, _b2, _c, _d, _e2, _f;
+          var _a4, _b2, _c, _d, _e2, _f, _g, _h;
           cell.getValue();
           const rowValues = cell.row.original;
-          const poolUrl = `/pool?coinx=${rowValues.coinInfoX}?coiny=${rowValues.coinInfoY}`;
-          return /* @__PURE__ */ jsx(Link, {
-            to: poolUrl,
+          `/pool?coinx=${(_a4 = rowValues.coinInfoX) == null ? void 0 : _a4.coinType}?coiny=${(_b2 = rowValues.coinInfoY) == null ? void 0 : _b2.coinType}`;
+          const onClick = () => {
+            navigate("/pool");
+            onFirstCoinSelect(rowValues.coinInfoX);
+            onSecondCoinSelect(rowValues.coinInfoY);
+          };
+          return /* @__PURE__ */ jsx("a", {
+            role: "button",
             className: "flex items-center gap-3 py-2",
+            onClick,
             children: /* @__PURE__ */ jsxs("div", {
               className: "flex py-3",
               children: [/* @__PURE__ */ jsx("div", {
                 className: "flex items-center",
                 children: /* @__PURE__ */ jsx(sl, {
-                  coins: [(_b2 = (_a4 = rowValues.coinInfoX) == null ? void 0 : _a4.symbol) != null ? _b2 : "", (_d = (_c = rowValues.coinInfoY) == null ? void 0 : _c.symbol) != null ? _d : ""],
+                  coins: [(_d = (_c = rowValues.coinInfoX) == null ? void 0 : _c.symbol) != null ? _d : "", (_f = (_e2 = rowValues.coinInfoY) == null ? void 0 : _e2.symbol) != null ? _f : ""],
                   size: 32
                 })
               }), /* @__PURE__ */ jsx("div", {
                 className: "self-center ml-4 mr-2 text-lg",
-                children: `${(_e2 = rowValues.coinInfoX) == null ? void 0 : _e2.name} / ${(_f = rowValues.coinInfoY) == null ? void 0 : _f.name}`
+                children: `${(_g = rowValues.coinInfoX) == null ? void 0 : _g.name} / ${(_h = rowValues.coinInfoY) == null ? void 0 : _h.name}`
               }), rowValues.featuredStatus !== "NONE" ? /* @__PURE__ */ jsx(ll, {
                 variant: "success",
                 size: "sm",
@@ -7739,7 +7765,7 @@ function PoolsTable({
     return globalFilter && globalFilter.length > 1 ? p.coinInfoX.name.toLowerCase().match(globalFilter.toLowerCase()) || p.coinInfoY.name.toLowerCase().match(globalFilter.toLowerCase()) || p.coinInfoX.symbol.toLowerCase().match(globalFilter.toLowerCase()) || p.coinInfoY.symbol.toLowerCase().match(globalFilter.toLowerCase()) : true;
   });
   return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(bl, {
+    children: /* @__PURE__ */ jsx(pl, {
       loading: poolsTableProps.loading,
       error: poolsTableProps.error,
       noData: poolsTableProps.noData,
@@ -7865,7 +7891,7 @@ function RegisterCoinModalView({
       modalRef.current.closeModal();
     }).catch((err) => notifications.addErrorNotification("Failed to execute swap."));
   };
-  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(pl, {
+  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(bl, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx("div", {
@@ -7933,7 +7959,7 @@ function SwapFormView({
 }) {
   const wallet = dist.useWallet();
   return /* @__PURE__ */ jsxs(ml, {
-    className: "w-[700px] mx-auto self-center justify-self-center",
+    className: "w-[700px] mx-auto self-center justify-self-center border border-primary-700",
     children: [/* @__PURE__ */ jsxs(il, {
       className: "mb-4 flex justify-between",
       children: [/* @__PURE__ */ jsx("span", {
@@ -8411,7 +8437,7 @@ function SwapFormContainer({}) {
   });
 }
 function SwapModalView({}) {
-  return /* @__PURE__ */ jsx(pl, {
+  return /* @__PURE__ */ jsx(bl, {
     trigger: /* @__PURE__ */ jsx(or, {
       size: "sm",
       onClick: () => {
@@ -8466,6 +8492,7 @@ function NetworkToggle({}) {
     children: currentNetwork && /* @__PURE__ */ jsx(dl, {
       label: "",
       className: "w-[120px] mt-0 mr-3 bg-slate-900",
+      inputClass: "rounded-full border-2 border-slate-700 py-2 h-[40px]",
       value: currentNetwork,
       onChange: onNetworkChange,
       options: networkOptions
@@ -8757,7 +8784,7 @@ function useTradeHistoryTable() {
 }
 function TradeTable({}) {
   const [tradeTableProps, tradeTableRef] = useTradeHistoryTable();
-  return /* @__PURE__ */ jsx(bl, {
+  return /* @__PURE__ */ jsx(pl, {
     loading: tradeTableProps.loading,
     error: tradeTableProps.error,
     noData: tradeTableProps.noData,
@@ -8787,16 +8814,11 @@ function usePoolPositionsTable() {
         accessorKey: "name",
         header: "Pool",
         cell: (cell) => {
-          const value = cell.getValue();
+          cell.getValue();
           const rowValues = cell.row.original;
-          const poolUrl = `/pool?coinx=${rowValues.coinInfoX}?coiny=${rowValues.coinInfoY}`;
-          return /* @__PURE__ */ jsxs(Link, {
-            to: poolUrl,
-            className: "flex items-center gap-3 py-2",
-            children: [/* @__PURE__ */ jsx(sl, {
-              size: 32,
-              coins: rowValues.coinList
-            }), value]
+          `/pool?coinx=${rowValues.coinInfoX}?coiny=${rowValues.coinInfoY}`;
+          console.log({
+            rowValues
           });
         }
       }, {
@@ -8830,7 +8852,7 @@ function usePoolPositionsTable() {
 }
 function PoolPositionsTable({}) {
   const [poolPositionsTableProps] = usePoolPositionsTable();
-  return /* @__PURE__ */ jsx(bl, {
+  return /* @__PURE__ */ jsx(pl, {
     loading: poolPositionsTableProps.loading,
     error: poolPositionsTableProps.error,
     noData: poolPositionsTableProps.noData,
@@ -8896,7 +8918,7 @@ function useBalancesTable() {
 }
 function BalancesTable({}) {
   const [balanceTableProps, balanceTableRef] = useBalancesTable();
-  return /* @__PURE__ */ jsx(bl, {
+  return /* @__PURE__ */ jsx(pl, {
     loading: balanceTableProps.loading,
     error: balanceTableProps.error,
     noData: balanceTableProps.noData,
@@ -10710,7 +10732,7 @@ function OrdersTable({
   market
 }) {
   const [orderTableProps] = variant && variant === "open" ? useOpenOrdersTable() : useOrderHistoryTable();
-  return /* @__PURE__ */ jsx(bl, {
+  return /* @__PURE__ */ jsx(pl, {
     noData: orderTableProps.noData,
     loading: orderTableProps.loading,
     columns: orderTableProps.columns,
@@ -10801,7 +10823,7 @@ function WithdrawalView({
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
   const notifications = Pa();
-  return /* @__PURE__ */ jsx(pl, {
+  return /* @__PURE__ */ jsx(bl, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(or, {
       size: "sm",
@@ -11092,7 +11114,7 @@ function DepositView({
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
   const notifications = Pa();
-  return /* @__PURE__ */ jsx(pl, {
+  return /* @__PURE__ */ jsx(bl, {
     ref: modalRef,
     trigger: /* @__PURE__ */ jsx(or, {
       size: "sm",
@@ -11929,7 +11951,7 @@ function PoolsEventTableView({
             children: props.children
           }, props.children))
         })]
-      }), /* @__PURE__ */ jsx(bl, {
+      }), /* @__PURE__ */ jsx(pl, {
         ...tableProps
       })]
     })
@@ -12518,7 +12540,7 @@ function RemoveLiquidityView({
       children: "Back to pools"
     })]
   }) : /* @__PURE__ */ jsxs(ml, {
-    className: "flex flex-col w-[600px] gap-12 mx-auto self-center border border-slate-700 ",
+    className: "flex flex-col w-[600px] gap-8 mx-auto self-center border border-slate-700 ",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex justify-between items-center",
       children: [/* @__PURE__ */ jsx(il, {
@@ -12527,7 +12549,7 @@ function RemoveLiquidityView({
         className: "flex text-xs text-slate-300",
         children: [/* @__PURE__ */ jsx("div", {
           className: "flex gap-4",
-          children: firstCoinRelativePrice ? `1 ${firstCoin == null ? void 0 : firstCoin.symbol} = ${firstCoinRelativePrice.toFixed((_a2 = secondCoin == null ? void 0 : secondCoin.decimals) != null ? _a2 : 4)} ${secondCoin == null ? void 0 : secondCoin.symbol}` : `${firstCoin == null ? void 0 : firstCoin.symbol} Price Unavailable.`
+          children: firstCoinRelativePrice ? `1 ${firstCoin == null ? void 0 : firstCoin.symbol} = ${firstCoinRelativePrice.toFixed((_a2 = secondCoin == null ? void 0 : secondCoin.decimals) != null ? _a2 : 4)} ${secondCoin == null ? void 0 : secondCoin.symbol}` : `${firstCoin == null ? void 0 : firstCoin.symbol} Price Unavailable`
         }), /* @__PURE__ */ jsx("span", {
           className: "px-3",
           children: "/"
@@ -13742,7 +13764,7 @@ function MarketTradesView({}) {
     children: /* @__PURE__ */ jsx("div", {
       ref: tableRef,
       className: "overflow-auto h-full max-h-full",
-      children: /* @__PURE__ */ jsx(bl, {
+      children: /* @__PURE__ */ jsx(pl, {
         ...props
       })
     })
@@ -13930,13 +13952,13 @@ function OrderTable({
     children: [/* @__PURE__ */ jsx("div", {
       ref: askTableRef,
       className: "relative overflow-y-scroll max-h-full",
-      children: /* @__PURE__ */ jsx(bl, {
+      children: /* @__PURE__ */ jsx(pl, {
         ...askOrderTableProps
       })
     }), /* @__PURE__ */ jsx("div", {
       ref: bidTableRef,
       className: "relative overflow-y-scroll max-h-full",
-      children: /* @__PURE__ */ jsx(bl, {
+      children: /* @__PURE__ */ jsx(pl, {
         ...bidOrderTableProps
       })
     })]
@@ -15088,12 +15110,12 @@ function PoolsView({
   const [searchQuery, setSearchQuery] = react.exports.useState("");
   const onSearchChange = (c) => setSearchQuery(c.currentTarget.value);
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col items-center gap-4 w-full max-w-[95vw] pb-12",
+    className: "flex flex-col items-center gap-4 w-full max-w-[95vw] h-auto mb-12",
     children: [/* @__PURE__ */ jsxs("div", {
-      className: "flex w-full justify-between items-end max-w-[1280px] mt-8",
+      className: "flex w-full justify-between items-center max-w-[1280px] mt-8",
       children: [/* @__PURE__ */ jsx("div", {
         children: /* @__PURE__ */ jsx("h2", {
-          className: "text-4xl mb-2",
+          className: "text-4xl",
           children: "Pools"
         })
       }), /* @__PURE__ */ jsx(ul, {
@@ -15103,7 +15125,7 @@ function PoolsView({
         className: "ml-auto mr-3",
         label: "",
         autoFocus: true,
-        inputClass: "pl-12 rounded-full border border-primary-700 bg-primary-800",
+        inputClass: "pl-[36px] rounded-full border border-primary-700 bg-primary-800",
         prefix: /* @__PURE__ */ jsx(MagnifyingGlassIcon, {
           width: 20,
           height: 20
@@ -15115,8 +15137,9 @@ function PoolsView({
         className: "text-sm",
         children: "Create Pool"
       })]
-    }), /* @__PURE__ */ jsx("div", {
-      className: "flex flex-col gap-4 max-w-[1280px] w-full bg-primary-900",
+    }), /* @__PURE__ */ jsx(ml, {
+      className: "flex flex-col gap-4 max-w-[1280px] w-full rounded-xl border border-primary-700",
+      padding: 0,
       children: /* @__PURE__ */ jsx(PoolsTable, {
         globalFilter: searchQuery
       })
