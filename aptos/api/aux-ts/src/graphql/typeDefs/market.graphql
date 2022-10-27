@@ -135,13 +135,13 @@ type Ohlcv {
 type High24h {
   baseCoinType: String!
   quoteCoinType: String!
-  price: Float!
+  high: Float!
 }
 
 type Low24h {
   baseCoinType: String!
   quoteCoinType: String!
-  price: Float!
+  low: Float!
 }
 
 type Volume24h {

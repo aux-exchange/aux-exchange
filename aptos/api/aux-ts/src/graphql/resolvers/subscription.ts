@@ -8,8 +8,8 @@ import type {
   PoolInput,
   SubscriptionBarArgs,
   SubscriptionHigh24hArgs,
-  SubscriptionLow24HArgs,
-  SubscriptionVolume24HArgs,
+  SubscriptionLow24hArgs,
+  SubscriptionVolume24hArgs,
 } from "../generated/types";
 import { resolutionToString } from "./market";
 
@@ -73,19 +73,19 @@ export const subscription = {
         marketInputsFilterFn(payload, variables)
     ),
   },
-  low24H: {
+  low24h: {
     resolve: _.identity,
     subscribe: withFilter(
       () => redisPubSub.asyncIterator(["LOW_24H"]),
-      (payload: any, variables: SubscriptionLow24HArgs) =>
+      (payload: any, variables: SubscriptionLow24hArgs) =>
         marketInputsFilterFn(payload, variables)
     ),
   },
-  volume24H: {
+  volume24h: {
     resolve: _.identity,
     subscribe: withFilter(
       () => redisPubSub.asyncIterator(["VOLUME_24H"]),
-      (payload: any, variables: SubscriptionVolume24HArgs) =>
+      (payload: any, variables: SubscriptionVolume24hArgs) =>
         marketInputsFilterFn(payload, variables)
     ),
   },

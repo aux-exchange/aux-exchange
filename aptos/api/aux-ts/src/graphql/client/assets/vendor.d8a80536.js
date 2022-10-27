@@ -57478,8 +57478,8 @@ function ArrowDownIcon({
     })]
   });
 }
-const ForwardRef$b = react.exports.forwardRef(ArrowDownIcon);
-const ArrowDownIcon$1 = ForwardRef$b;
+const ForwardRef$c = react.exports.forwardRef(ArrowDownIcon);
+const ArrowDownIcon$1 = ForwardRef$c;
 function ArrowsUpDownIcon({
   title,
   titleId,
@@ -57504,8 +57504,8 @@ function ArrowsUpDownIcon({
     })]
   });
 }
-const ForwardRef$a = react.exports.forwardRef(ArrowsUpDownIcon);
-const ArrowsUpDownIcon$1 = ForwardRef$a;
+const ForwardRef$b = react.exports.forwardRef(ArrowsUpDownIcon);
+const ArrowsUpDownIcon$1 = ForwardRef$b;
 function ChevronDownIcon({
   title,
   titleId,
@@ -57530,8 +57530,8 @@ function ChevronDownIcon({
     })]
   });
 }
-const ForwardRef$9 = react.exports.forwardRef(ChevronDownIcon);
-const ChevronDownIcon$1 = ForwardRef$9;
+const ForwardRef$a = react.exports.forwardRef(ChevronDownIcon);
+const ChevronDownIcon$1 = ForwardRef$a;
 function ChevronUpIcon({
   title,
   titleId,
@@ -57556,8 +57556,8 @@ function ChevronUpIcon({
     })]
   });
 }
-const ForwardRef$8 = react.exports.forwardRef(ChevronUpIcon);
-const ChevronUpIcon$1 = ForwardRef$8;
+const ForwardRef$9 = react.exports.forwardRef(ChevronUpIcon);
+const ChevronUpIcon$1 = ForwardRef$9;
 function InformationCircleIcon$2({
   title,
   titleId,
@@ -57582,8 +57582,8 @@ function InformationCircleIcon$2({
     })]
   });
 }
-const ForwardRef$7 = react.exports.forwardRef(InformationCircleIcon$2);
-const InformationCircleIcon$3 = ForwardRef$7;
+const ForwardRef$8 = react.exports.forwardRef(InformationCircleIcon$2);
+const InformationCircleIcon$3 = ForwardRef$8;
 function MagnifyingGlassIcon({
   title,
   titleId,
@@ -57608,8 +57608,8 @@ function MagnifyingGlassIcon({
     })]
   });
 }
-const ForwardRef$6 = react.exports.forwardRef(MagnifyingGlassIcon);
-const MagnifyingGlassIcon$1 = ForwardRef$6;
+const ForwardRef$7 = react.exports.forwardRef(MagnifyingGlassIcon);
+const MagnifyingGlassIcon$1 = ForwardRef$7;
 var DefaultContext = {
   color: void 0,
   size: void 0,
@@ -61445,8 +61445,8 @@ function ArrowLongLeftIcon({
     })]
   });
 }
-const ForwardRef$5 = react.exports.forwardRef(ArrowLongLeftIcon);
-const ArrowLongLeftIcon$1 = ForwardRef$5;
+const ForwardRef$6 = react.exports.forwardRef(ArrowLongLeftIcon);
+const ArrowLongLeftIcon$1 = ForwardRef$6;
 function CheckCircleIcon({
   title,
   titleId,
@@ -61473,8 +61473,8 @@ function CheckCircleIcon({
     })]
   });
 }
-const ForwardRef$4 = react.exports.forwardRef(CheckCircleIcon);
-const CheckCircleIcon$1 = ForwardRef$4;
+const ForwardRef$5 = react.exports.forwardRef(CheckCircleIcon);
+const CheckCircleIcon$1 = ForwardRef$5;
 function CogIcon({
   title,
   titleId,
@@ -61501,8 +61501,36 @@ function CogIcon({
     })]
   });
 }
-const ForwardRef$3 = react.exports.forwardRef(CogIcon);
-const CogIcon$1 = ForwardRef$3;
+const ForwardRef$4 = react.exports.forwardRef(CogIcon);
+const CogIcon$1 = ForwardRef$4;
+function DocumentDuplicateIcon({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /* @__PURE__ */ jsxs("svg", {
+    ...Object.assign({
+      xmlns: "http://www.w3.org/2000/svg",
+      fill: "none",
+      viewBox: "0 0 24 24",
+      strokeWidth: 1.5,
+      stroke: "currentColor",
+      "aria-hidden": "true",
+      ref: svgRef,
+      "aria-labelledby": titleId
+    }, props),
+    children: [title ? /* @__PURE__ */ jsx("title", {
+      id: titleId,
+      children: title
+    }) : null, /* @__PURE__ */ jsx("path", {
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      d: "M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+    })]
+  });
+}
+const ForwardRef$3 = react.exports.forwardRef(DocumentDuplicateIcon);
+const DocumentDuplicateIcon$1 = ForwardRef$3;
 function LockClosedIcon({
   title,
   titleId,
@@ -67185,7 +67213,7 @@ function isWebSocket(val) {
   return typeof val === "function" && "constructor" in val && "CLOSED" in val && "CLOSING" in val && "CONNECTING" in val && "OPEN" in val;
 }
 export {
-  InMemoryCache as $,
+  ApolloClient as $,
   ArrowsUpDownIcon$1 as A,
   Link as B,
   ChevronDownIcon$1 as C,
@@ -67196,30 +67224,31 @@ export {
   ArrowDownIcon$1 as H,
   InformationCircleIcon$3 as I,
   ArrowLongLeftIcon$1 as J,
-  useLazyQuery as K,
+  DocumentDuplicateIcon$1 as K,
   LockClosedIcon$1 as L,
   MagnifyingGlassIcon$1 as M,
-  linear as N,
-  InformationCircleIcon$1 as O,
-  NavLink as P,
-  HttpLink as Q,
+  useLazyQuery as N,
+  linear as O,
+  InformationCircleIcon$1 as P,
+  NavLink as Q,
   React as R,
   Slider as S,
   Tooltip as T,
-  GraphQLWsLink as U,
-  createClient as V,
+  HttpLink as U,
+  GraphQLWsLink as V,
   We as W,
   XMarkIcon$1 as X,
-  split as Y,
-  getMainDefinition as Z,
-  ApolloClient as _,
+  createClient as Y,
+  split as Z,
+  getMainDefinition as _,
   React$1 as a,
-  useGeoLocation as a0,
-  ApolloProvider as a1,
-  BrowserRouter as a2,
-  Routes as a3,
-  Route as a4,
-  client as a5,
+  InMemoryCache as a0,
+  useGeoLocation as a1,
+  ApolloProvider as a2,
+  BrowserRouter as a3,
+  Routes as a4,
+  Route as a5,
+  client as a6,
   reactDom as b,
   create$1 as c,
   useNavigate as d,
