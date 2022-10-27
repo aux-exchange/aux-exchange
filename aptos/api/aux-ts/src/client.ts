@@ -1010,7 +1010,44 @@ export function subtractFee(value: number, feeBps: number): number {
 export function parseTypeArgs(
   typeName: Types.MoveStructTag
 ): Types.MoveStructTag[] {
-  return typeName
-    .substring(typeName.indexOf("<") + 1, typeName.lastIndexOf(">"))
-    .split(", ");
+  const types = [];
+  const inner = typeName.substring(
+    typeName.indexOf("<") + 1,
+    typeName.lastIndexOf(">")
+  );
+  let bracketCount = 0;
+  let currentType = "";
+  for (let i = 0; i < inner.length; i++) {
+    const char = inner.at(i);
+    switch (char) {
+      case "<":
+        bracketCount++;
+        currentType += char;
+        break;
+      case ">":
+        bracketCount--;
+        currentType += char;
+        break;
+      case ",":
+        if (bracketCount == 0) {
+          types.push(currentType);
+          currentType = "";
+        } else {
+          currentType += char;
+        }
+        break;
+      case " ":
+        if (bracketCount > 0) {
+          currentType += char;
+        }
+        break;
+      default:
+        currentType += char;
+    }
+  }
+  if (bracketCount != 0) {
+    throw new AuxClientError(`Invalid type ${typeName}`);
+  }
+  types.push(currentType);
+  return types;
 }
