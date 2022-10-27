@@ -209,7 +209,9 @@ export class AuxClient {
     let defaultConfig = networkConfigs[network];
     validatorAddress = validatorAddress ?? defaultConfig.fullnode;
     faucetAddress = faucetAddress ?? defaultConfig.faucet;
+    moduleAddress = moduleAddress ?? defaultConfig.moduleAddress!;
     simulatorAddress = simulatorAddress ?? defaultConfig.simulatorAddress;
+    console.log("moduleAddress:", moduleAddress);
     console.log("simulatorAddress:", simulatorAddress);
     console.log(`connecting to: ${validatorAddress}`);
     return new AuxClient({
@@ -218,7 +220,7 @@ export class AuxClient {
         faucetAddress !== undefined
           ? new FaucetClient(validatorAddress, faucetAddress)
           : undefined,
-      moduleAddress: moduleAddress ?? defaultConfig.moduleAddress!,
+      moduleAddress,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
       simulatorAddress,
       simulatorPublicKey:

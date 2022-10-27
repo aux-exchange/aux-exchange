@@ -12,7 +12,7 @@ export const auxClient = AuxClient.createFromEnv({});
 
 export const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));
-export const pubsub = new RedisPubSub();
+export const redisPubSub = new RedisPubSub();
 
 const connection = new Connection("https://solana-api.projectserum.com");
 const pythPublicKey = getPythProgramKeyForCluster("mainnet-beta");

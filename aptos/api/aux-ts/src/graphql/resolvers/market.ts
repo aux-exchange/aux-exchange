@@ -1,5 +1,3 @@
-import fs from "fs";
-import readline from "readline";
 import * as aux from "../../";
 import { FakeCoin } from "../../../src/client";
 import {
@@ -10,13 +8,12 @@ import {
   WBTC,
   WETH,
 } from "../../coins";
-import { auxClient, pythClient } from "../connection";
+import { auxClient, pythClient, redisClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
   Bar,
   Market,
   MarketBarsArgs,
-  MarketBarsTradingViewArgs,
   MarketIsRoundLotArgs,
   MarketIsRoundTickArgs,
   MarketOpenOrdersArgs,
@@ -27,22 +24,46 @@ import {
   Order,
   PythRating,
   PythRatingColor,
+  Resolution as GqlResolution,
   Side,
 } from "../generated/types";
 import { LATEST_PYTH_PRICE } from "../pyth";
 
-/**
- * Returns the symbol name in the data feed corresponding to the symbol name in
- * the UI.
- */
-function getDataSymbolFromUISymbol(uiSymbol: string): string {
-  return uiSymbol
-    .replace("WBTC", "BTC")
-    .replace("WETH", "ETH")
-    .replace("USDC", "USD")
-    .replace("(sol)", "")
-    .replace("(eth)", "")
-    .trim();
+type Resolution = "15s" | "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w";
+
+export const RESOLUTIONS = [
+  "15s",
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d",
+  "1w",
+] as const;
+
+export function resolutionToString(resolution: GqlResolution): Resolution {
+  switch (resolution) {
+    case GqlResolution.Seconds_15:
+      return "15s";
+    case GqlResolution.Minutes_1:
+      return "1m";
+    case GqlResolution.Minutes_5:
+      return "5m";
+    case GqlResolution.Minutes_15:
+      return "15m";
+    case GqlResolution.Hours_1:
+      return "1h";
+    case GqlResolution.Hours_4:
+      return "4h";
+    case GqlResolution.Days_1:
+      return "1d";
+    case GqlResolution.Weeks_1:
+      return "1w";
+    default:
+      const _exhaustive_check: never = resolution;
+      return _exhaustive_check;
+  }
 }
 
 export const market = {
@@ -85,35 +106,14 @@ export const market = {
       orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
     );
   },
-  async high24h(parent: Market): Promise<Maybe<number>> {
-    parent;
-    return null;
-    // const bar = await publishBarEvents({
-    //   baseCoinType: parent.baseCoinInfo.coinType,
-    //   quoteCoinType: parent.quoteCoinInfo.coinType,
-    //   resolution: "1d",
-    // });
-    // return bar.high;
+  high24h(parent: Market): Promise<Maybe<number>> {
+    return analytic24h("high", parent);
   },
   async low24h(parent: Market): Promise<Maybe<number>> {
-    parent;
-    return null;
-    // const bar = await publishBarEvents({
-    //   baseCoinType: parent.baseCoinInfo.coinType,
-    //   quoteCoinType: parent.quoteCoinInfo.coinType,
-    //   resolution: "1d",
-    // });
-    // return bar.low;
+    return analytic24h("low", parent);
   },
   async volume24h(parent: Market): Promise<Maybe<number>> {
-    parent;
-    return null;
-    // const bar = await publishBarEvents({
-    //   baseCoinType: parent.baseCoinInfo.coinType,
-    //   quoteCoinType: parent.quoteCoinInfo.coinType,
-    //   resolution: "1d",
-    // });
-    // return bar.volume;
+    return analytic24h("volume", parent);
   },
   isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
     return aux
@@ -132,93 +132,25 @@ export const market = {
       .eqn(0);
   },
   async bars(
-    parent: Market,
-    { resolution, first, offset }: MarketBarsArgs
-  ): Promise<Bar[]> {
-    first = first ?? 0;
-    offset = offset ?? 5;
-
-    const convert = {
-      SECONDS_15: "15s",
-      MINUTES_1: "1m",
-      MINUTES_5: "5m",
-      MINUTES_15: "15m",
-      HOURS_1: "1h",
-      HOURS_4: "4h",
-      DAYS_1: "1d",
-      WEEKS_1: "1w",
-    };
-
-    const base = getDataSymbolFromUISymbol(parent.baseCoinInfo.symbol);
-    const quote = getDataSymbolFromUISymbol(parent.quoteCoinInfo.symbol);
-    const filename = `${base}-${quote}_${convert[resolution]}.json`;
-    const path = `${process.cwd()}/src/indexer/data/${filename}`;
-    const rl = readline.createInterface({
-      input: fs.createReadStream(path),
-    });
-
-    const bars: Bar[] = [];
-    let i = 0;
-    for await (const line of rl) {
-      if (i === first + offset) {
-        break;
-      }
-      if (i >= first) {
-        const bar = JSON.parse(line);
-        bars.push({
-          ohlcv: bar,
-          time: bar.time,
-        });
-      }
-      i += 1;
-    }
-
-    return bars;
-  },
-  async barsTradingView(
-    parent: Market,
-    {
-      resolution,
-      from,
-      to,
-      countBack,
-      firstDataRequest,
-    }: MarketBarsTradingViewArgs
+    { baseCoinInfo, quoteCoinInfo }: Market,
+    { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
   ): Promise<Array<Bar>> {
-    const convert = {
-      SECONDS_15: "15s",
-      MINUTES_1: "1m",
-      MINUTES_5: "5m",
-      MINUTES_15: "15m",
-      HOURS_1: "1h",
-      HOURS_4: "4h",
-      DAYS_1: "1d",
-      WEEKS_1: "1w",
-    };
-
-    const base = getDataSymbolFromUISymbol(parent.baseCoinInfo.symbol);
-    const quote = getDataSymbolFromUISymbol(parent.quoteCoinInfo.symbol);
-    const filename = `${base}-${quote}_${convert[resolution]}.json`;
-    const path = `${process.cwd()}/src/indexer/data/${filename}`;
-    const rl = readline.createInterface({
-      input: fs.createReadStream(path),
-    });
-
-    // TODO: Perform actual indexing. For small numbers of bars this should be okay.
+    const key = `${baseCoinInfo.coinType}-${
+      quoteCoinInfo.coinType
+    }-bar-${resolutionToString(resolution)}`;
+    const rawBars = (await redisClient.lRange(key, 0, -1)) ?? [];
     const startTime = parseFloat(from);
     const endTime = parseFloat(to);
-    const bars: Bar[] = [];
-    for await (const line of rl) {
-      const bar = JSON.parse(line);
-      if (bar.time >= startTime && (firstDataRequest || bar.time < endTime)) {
-        bars.push({
-          ohlcv: bar,
-          time: bar.time,
-        });
-      }
-    }
-
-    const firstIndex = bars.length - parseInt(countBack);
+    // TODO: Perform actual indexing. For small numbers of bars this should be okay.
+    const bars = rawBars
+      .map((bar) => JSON.parse(bar))
+      .filter(
+        (bar) =>
+          parseFloat(bar.time) >= startTime &&
+          (firstDataRequest || parseFloat(bar.time) < endTime)
+      );
+    console.log(bars);
+    const firstIndex = bars.length - countBack;
     return bars.slice(firstIndex >= 0 ? firstIndex : 0);
   },
   async pythRating(
@@ -280,3 +212,13 @@ export const market = {
     }
   },
 };
+
+async function analytic24h(
+  name: "high" | "low" | "volume",
+  market: Market
+): Promise<Maybe<number>> {
+  const value = redisClient.get(
+    `${market.baseCoinInfo.coinType}-${market.quoteCoinInfo.coinType}-${name}-24h`
+  );
+  return value ? Number(value) : null;
+}
