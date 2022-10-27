@@ -51,7 +51,6 @@ async function printAccountBalance(
     ).toString()
   );
 }
-
 async function tradeAMM(): Promise<void> {
   const auxClient = AuxClient.create({
     network: Network.Mainnet,
@@ -61,7 +60,6 @@ async function tradeAMM(): Promise<void> {
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,
   });
-
   let maybePool = await Pool.read(auxClient, {
     coinTypeX: coins.WETH,
     coinTypeY: coins.USDC_eth,
