@@ -5,7 +5,7 @@ import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
 import * as coins from "../../coins";
-import { auxClient } from "../connection";
+import { auxClient, redisClient } from "../connection";
 import {
   Account,
   CoinInfo,
@@ -114,9 +114,18 @@ export const query = {
         ].flat()
       );
     }
-    const url =
-      "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
-    const coins = (await axios.get(url)).data;
+    let rawCoins = await redisClient.get("hippo-coin-list");
+    let coins;
+    if (_.isNull(rawCoins)) {
+      const url =
+        "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+      coins = (await axios.get(url)).data;
+      console.log(coins);
+      redisClient.set("hippo-coin-list", JSON.stringify(coins));
+      redisClient.expire("hippo-coin-list", 60);
+    } else {
+      coins = JSON.parse(rawCoins);
+    }
 
     // The "liquidity" of a coin is defined as the sum of the liquidity of the
     // pools that trade it.
