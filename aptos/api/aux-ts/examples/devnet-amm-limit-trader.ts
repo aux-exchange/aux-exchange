@@ -26,6 +26,9 @@ const AUX_TRADER_CONFIG = {
 const aptosNode =
   process.env["APTOS_NODE"] ?? "https://fullnode.devnet.aptoslabs.com/v1";
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 async function printAccountBalance(
   auxClient: AuxClient,
   trader: AptosAccount
@@ -72,21 +75,15 @@ async function tradeAMM(): Promise<void> {
   let prevPoolX = 0;
   let prevPoolY = 0;
 
-  try {
-    const ws = new WebSocket("wss://ftx.com/ws/");
-    ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          op: "subscribe",
-          market: "ETH/USD",
-          channel: "ticker",
-        })
-      );
-    };
+  let queue: any[] = [];
 
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data.toString()) as any;
-
+  let doWork = async function () {
+    for (;;) {
+      if (queue.length == 0) {
+        await sleep(500);
+        continue;
+      }
+      let data = queue.pop();
       if (data.type === "subscribed") {
         assert(data.type === "subscribed");
         assert(data.channel === "ticker");
@@ -129,7 +126,7 @@ async function tradeAMM(): Promise<void> {
                 exactAmountOut: AUX_TRADER_CONFIG.ethPerSwap,
                 maxInPerOut: DU(1 / bestBid),
               });
-              console.log(">>>> Swap event:", tx.payload);
+              console.log(">>>> Swap event:", tx);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from USDC to ETH failed with error: ", e);
@@ -158,10 +155,29 @@ async function tradeAMM(): Promise<void> {
           prevAsk = bestAsk;
         }
       }
+    }
+  };
+  try {
+    const ws = new WebSocket("wss://ftx.com/ws/");
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          op: "subscribe",
+          market: "ETH/USD",
+          channel: "ticker",
+        })
+      );
+    };
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data.toString()) as any;
+      queue.push(data);
     };
   } catch (e) {
     console.log("  FTX Websocket connection failed with error:", e);
   }
+
+  doWork();
 }
 
 async function main() {
