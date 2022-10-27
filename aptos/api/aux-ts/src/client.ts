@@ -477,7 +477,7 @@ export class AuxClient {
   }
 
   /**
-   * @returns balance of given coin type in atomic units
+   * @returns balance of given coin type in decimal units
    */
   async getCoinBalanceDecimals({
     account,
