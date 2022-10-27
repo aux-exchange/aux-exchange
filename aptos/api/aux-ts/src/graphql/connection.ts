@@ -4,10 +4,10 @@ import {
   PythHttpClient,
 } from "@pythnetwork/client";
 import { Connection } from "@solana/web3.js";
-import { AuxClient } from "../../src/client";
 import { RedisPubSub } from "graphql-redis-subscriptions";
+import { AuxClient } from "../../src/client";
 
-export const auxClient = AuxClient.createFromEnvForTesting({})[0];
+export const auxClient = AuxClient.createFromEnv({});
 
 export const pubsub = new RedisPubSub();
 
