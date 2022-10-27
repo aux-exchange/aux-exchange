@@ -12,20 +12,19 @@ type Market {
   openOrders(owner: Address): [Order!]!
   orderHistory(owner: Address): [Order!]!
   tradeHistory(owner: Address): [Trade!]!
-  high24h: Float
-  low24h: Float
-  volume24h: Float
   isRoundLot(quantity: String!): Boolean!
   isRoundTick(quantity: String!): Boolean!
-  bars(resolution: Resolution!, first: Int, offset: Int): [Bar!]!
-  barsTradingView(
+  pythRating(price: Float!, side: Side!): PythRating
+  bars(
     resolution: Resolution!
     from: Timestamp!
     to: Timestamp!
-    countBack: String!
+    countBack: Int!
     firstDataRequest: Boolean!
   ): [Bar!]!
-  pythRating(price: Float!, side: Side!): PythRating
+  high24h: Float
+  low24h: Float
+  volume24h: Float
 }
 
 type PythRating {
@@ -40,6 +39,8 @@ enum PythRatingColor {
 }
 
 type Orderbook {
+  baseCoinType: String!
+  quoteCoinType: String!
   bids: [Level!]!
   asks: [Level!]!
 }
@@ -110,7 +111,15 @@ type Trade {
   time: Timestamp!
 }
 
+type LastTradePrice {
+  baseCoinType: String!
+  quoteCoinType: String!
+  price: Float!
+}
+
 type Bar {
+  baseCoinType: String!
+  quoteCoinType: String!
   time: Timestamp!
   ohlcv: Ohlcv
 }
@@ -120,6 +129,24 @@ type Ohlcv {
   high: Float!
   low: Float!
   close: Float!
+  volume: Float!
+}
+
+type High24h {
+  baseCoinType: String!
+  quoteCoinType: String!
+  price: Float!
+}
+
+type Low24h {
+  baseCoinType: String!
+  quoteCoinType: String!
+  price: Float!
+}
+
+type Volume24h {
+  baseCoinType: String!
+  quoteCoinType: String!
   volume: Float!
 }
 
