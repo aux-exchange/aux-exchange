@@ -1,5 +1,5 @@
 import type { Types } from "aptos";
-import * as BN from "bn.js";
+import BN from "bn.js";
 import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
 import type {
@@ -146,30 +146,40 @@ export async function positions(
 
 export async function poolEvents(
   auxClient: AuxClient,
-  poolInput: PoolInput
+  poolInput: PoolInput,
+  query?: { start: BN } | { limit: BN }
 ): Promise<PoolEvent[]> {
   const [swaps, adds, removes] = await Promise.all([
-    swapEvents(auxClient, poolInput),
-    addLiquidityEvents(auxClient, poolInput),
-    removeLiquidityEvents(auxClient, poolInput),
+    swapEvents(auxClient, poolInput, query),
+    addLiquidityEvents(auxClient, poolInput, query),
+    removeLiquidityEvents(auxClient, poolInput, query),
   ]);
   return [swaps, adds, removes].flat();
 }
 
 export async function swapEvents(
   auxClient: AuxClient,
-  poolInput: PoolInput
+  poolInput: PoolInput,
+  query?: { start: BN } | { limit: BN }
 ): Promise<SwapEvent[]> {
+  query = query ?? { limit: new BN(100) };
+  const queryParameter = "limit" in query ? query.limit : query.start;
+  const queryFunction =
+    "limit" in query
+      ? auxClient.getEventsByEventHandleWithLookback.bind(auxClient)
+      : auxClient.getEventsByEventHandleSince.bind(auxClient);
+
   const poolStruct = await pool(auxClient, poolInput);
   if (!poolStruct) {
     throw new Error(
       `Error querying swapEvents: Pool pair ${poolInput} not found.`
     );
   }
-  const events = await auxClient.aptosClient.getEventsByEventHandle(
+  const events = await queryFunction(
     auxClient.moduleAddress,
     poolType(auxClient.moduleAddress, poolInput),
-    "swap_events"
+    "swap_events",
+    queryParameter
   );
   return Promise.all(
     events.map(async (event) => await parseRawSwapEvent(auxClient, event))
@@ -178,18 +188,26 @@ export async function swapEvents(
 
 export async function addLiquidityEvents(
   auxClient: AuxClient,
-  poolInput: PoolInput
+  poolInput: PoolInput,
+  query?: { start: BN } | { limit: BN }
 ): Promise<AddLiquidityEvent[]> {
+  query = query ?? { limit: new BN(100) };
+  const queryParameter = "limit" in query ? query.limit : query.start;
+  const queryFunction =
+    "limit" in query
+      ? auxClient.getEventsByEventHandleWithLookback.bind(auxClient)
+      : auxClient.getEventsByEventHandleSince.bind(auxClient);
   const poolStruct = await pool(auxClient, poolInput);
   if (!poolStruct) {
     throw new Error(
       `Error querying addLiquidityEvents: Pool pair ${poolInput} not found.`
     );
   }
-  const events = await auxClient.aptosClient.getEventsByEventHandle(
+  const events = await queryFunction(
     auxClient.moduleAddress,
     poolType(auxClient.moduleAddress, poolInput),
-    "add_liquidity_events"
+    "add_liquidity_events",
+    queryParameter
   );
   return Promise.all(
     events.map(
@@ -200,18 +218,26 @@ export async function addLiquidityEvents(
 
 export async function removeLiquidityEvents(
   auxClient: AuxClient,
-  poolInput: PoolInput
+  poolInput: PoolInput,
+  query?: { start: BN } | { limit: BN }
 ): Promise<RemoveLiquidityEvent[]> {
+  query = query ?? { limit: new BN(100) };
+  const queryParameter = "limit" in query ? query.limit : query.start;
+  const queryFunction =
+    "limit" in query
+      ? auxClient.getEventsByEventHandleWithLookback.bind(auxClient)
+      : auxClient.getEventsByEventHandleSince.bind(auxClient);
   const poolStruct = await pool(auxClient, poolInput);
   if (!poolStruct) {
     throw new Error(
       `Error querying removeLiquidityEvents: Pool pair ${poolInput} not found.`
     );
   }
-  const events = await auxClient.aptosClient.getEventsByEventHandle(
+  const events = await queryFunction(
     auxClient.moduleAddress,
     poolType(auxClient.moduleAddress, poolInput),
-    "remove_liquidity_events"
+    "remove_liquidity_events",
+    queryParameter
   );
   return Promise.all(
     events.map(async (event) => parseRawRemoveLiquidityEvent(auxClient, event))
