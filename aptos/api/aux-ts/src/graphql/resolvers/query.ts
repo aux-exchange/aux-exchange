@@ -1,6 +1,5 @@
 import type { Types } from "aptos";
 import axios from "axios";
-import { promises as fs } from "fs";
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
@@ -140,7 +139,7 @@ export const query = {
     // @ts-ignore
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
-  async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
+  async pools(parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
       ? args.poolInputs
       : await aux.Pool.index(auxClient);
@@ -149,15 +148,7 @@ export const query = {
         aux.Pool.read(auxClient, poolReadParam)
       )
     );
-    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const hippoCoins = JSON.parse(await fs.readFile(path, "utf-8")).map(
-      (coin: any) => ({
-        coinType: coin.token_type.type,
-        decimals: coin.decimals,
-        name: coin.name,
-        symbol: coin.symbol,
-      })
-    );
+    const hippoCoins = await this.coins(parent);
     const coinTypeToHippoNameSymbol = Object.fromEntries(
       hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
     );
