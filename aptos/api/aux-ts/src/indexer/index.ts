@@ -197,10 +197,21 @@ function publishTrades(
   { baseCoinType, quoteCoinType }: MarketInput
 ) {
   return Promise.all([
-    trades.forEach(async (trade) => await redisPubSub.publish("TRADE", trade)),
     trades.forEach(
       async (trade) =>
-        await redisPubSub.publish("LAST_TRADE_PRICE", trade.price)
+        await redisPubSub.publish("TRADE", {
+          baseCoinType,
+          quoteCoinType,
+          ...trade,
+        })
+    ),
+    trades.forEach(
+      async (trade) =>
+        await redisPubSub.publish("LAST_TRADE_PRICE", {
+          baseCoinType,
+          quoteCoinType,
+          price: trade.price,
+        })
     ),
     Promise.all(
       _.concat("24h", RESOLUTIONS).map((resolution) => {
@@ -306,7 +317,7 @@ async function publishAnalytics24h({
   const high = _.max(bbos.map((bbo) => bbo.ask));
   if (!_.isUndefined(high)) {
     await Promise.all([
-      redisPubSub.publish("HIGH_24H", { high, baseCoinType, quoteCoinType }),
+      redisPubSub.publish("HIGH_24H", { price: high, baseCoinType, quoteCoinType }),
       redisClient.set(key("high"), high),
     ]);
   }
@@ -314,7 +325,7 @@ async function publishAnalytics24h({
   const low = _.min(bbos.map((bbo) => bbo.bid));
   if (!_.isUndefined(low)) {
     await Promise.all([
-      redisPubSub.publish("LOW_24H", { low, baseCoinType, quoteCoinType }),
+      redisPubSub.publish("LOW_24H", { price: low, baseCoinType, quoteCoinType }),
       redisClient.set(key("low"), low),
     ]);
   }

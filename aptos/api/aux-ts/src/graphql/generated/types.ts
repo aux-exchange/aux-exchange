@@ -144,6 +144,7 @@ export type High24h = {
 export type LastTradePrice = {
   __typename?: 'LastTradePrice';
   baseCoinType: Scalars['String'];
+  price: Scalars['Float'];
   quoteCoinType: Scalars['String'];
 };
 
@@ -939,6 +940,7 @@ export type High24hResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type LastTradePriceResolvers<ContextType = any, ParentType extends ResolversParentTypes['LastTradePrice'] = ResolversParentTypes['LastTradePrice']> = {
   baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   quoteCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

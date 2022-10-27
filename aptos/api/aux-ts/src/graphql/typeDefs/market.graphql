@@ -114,6 +114,7 @@ type Trade {
 type LastTradePrice {
   baseCoinType: String!
   quoteCoinType: String!
+  price: Float!
 }
 
 type Bar {
@@ -134,13 +135,13 @@ type Ohlcv {
 type High24h {
   baseCoinType: String!
   quoteCoinType: String!
-  high: Float!
+  price: Float!
 }
 
 type Low24h {
   baseCoinType: String!
   quoteCoinType: String!
-  low: Float!
+  price: Float!
 }
 
 type Volume24h {
