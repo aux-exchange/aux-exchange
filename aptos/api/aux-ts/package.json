@@ -20,11 +20,12 @@
     "start:devnet-clob-trader": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-trader.ts",
     "start:devnet-clob-orders": "APTOS_PROFILE=devnet ts-node examples/devnet-clob-orders.ts",
     "start:graphql": "ts-node src/graphql/index.ts",
-    "restart:graphql": "nodemon --ignore src/indexer/data/analytics.json src/graphql/index.ts",
+    "restart:graphql": "nodemon src/graphql/index.ts",
     "pm2:graphql": "pm2 start src/graphql/index.ts",
     "codegen:graphql": "graphql-codegen --config codegen.ts",
     "start:indexer": "ts-node src/indexer/index.ts",
-    "restart:indexer": "nodemon --ignore src/indexer/data/analytics.json src/indexer/index.ts",
+    "restart:indexer": "nodemon src/indexer/index.ts",
+    "pm2:indexer": "pm2 start src/indexer/index.ts",
     "start:heartbeat": "ts-node scripts/sentry.ts"
   },
   "dependencies": {
@@ -70,7 +71,6 @@
     "mocha": "^10.0.0",
     "nodemon": "^2.0.20",
     "organize-imports-cli": "^0.10.0",
-    "pm2": "^5.2.2",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.3"

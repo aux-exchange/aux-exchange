@@ -1,9 +1,10 @@
-import { promises as fs } from "fs";
+import type { Types } from "aptos";
+import axios from "axios";
 import _ from "lodash";
-import * as coins from "../../coins";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
-import { auxClient } from "../connection";
+import * as coins from "../../coins";
+import { auxClient, redisClient } from "../connection";
 import {
   Account,
   CoinInfo,
@@ -17,88 +18,29 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
 } from "../generated/types";
-import type { Types } from "aptos";
 import { getRecognizedTVL } from "../pyth";
-
-function getFeaturedPriority(status: FeaturedStatus): number {
-  switch (status) {
-    case FeaturedStatus.None:
-      return 0;
-    case FeaturedStatus.Hot:
-      return 1;
-    case FeaturedStatus.Promoted:
-      return 2;
-  }
-}
-
-function formatPool(
-  pool: aux.Pool,
-  coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
-) {
-  let featuredStatus = FeaturedStatus.None;
-  for (const [x, y] of PROMOTED_POOLS) {
-    if (
-      (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
-      (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
-    ) {
-      featuredStatus = FeaturedStatus.Promoted;
-      break;
-    }
-  }
-  if (featuredStatus == FeaturedStatus.None) {
-    for (const [x, y] of HOT_POOLS) {
-      if (
-        (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
-        (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
-      ) {
-        featuredStatus = FeaturedStatus.Hot;
-        break;
-      }
-    }
-  }
-
-  const recognizedLiquidity = Math.max(
-    getRecognizedTVL(pool.coinInfoX.coinType, pool.amountX.toNumber()),
-    getRecognizedTVL(pool.coinInfoY.coinType, pool.amountY.toNumber())
-  );
-
-  const auLiquidity = Math.max(
-    pool.amountAuX.toNumber(),
-    pool.amountAuY.toNumber()
-  );
-
-  const coinXNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoX.coinType];
-  const coinInfoX = pool.coinInfoX;
-  if (!_.isUndefined(coinXNameSymbol)) {
-    const [name, symbol] = coinXNameSymbol;
-    coinInfoX.name = name;
-    coinInfoX.symbol = symbol;
-  }
-
-  const coinYNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoY.coinType];
-  const coinInfoY = pool.coinInfoY;
-  if (!_.isUndefined(coinYNameSymbol)) {
-    const [name, symbol] = coinYNameSymbol;
-    coinInfoY.name = name;
-    coinInfoY.symbol = symbol;
-  }
-
-  return {
-    coinInfoX,
-    coinInfoY,
-    coinInfoLP: pool.coinInfoLP,
-    amountX: pool.amountX.toNumber(),
-    amountY: pool.amountY.toNumber(),
-    amountLP: pool.amountLP.toNumber(),
-    feePercent: pool.feePct,
-    featuredStatus,
-    recognizedLiquidity,
-    auLiquidity,
-  };
-}
 
 const HOT_POOLS = [[coins.MOJO, coins.APT]];
 const PROMOTED_POOLS: Array<[string, string]> = [];
+export type Resolution =
+  | "15s"
+  | "1m"
+  | "5m"
+  | "15m"
+  | "1h"
+  | "4h"
+  | "1d"
+  | "1w";
+export const RESOLUTIONS = [
+  "15s",
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d",
+  "1w",
+] as const;
 
 export const query = {
   address() {
@@ -113,8 +55,19 @@ export const query = {
         ].flat()
       );
     }
-    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const coins = JSON.parse(await fs.readFile(path, "utf-8"));
+    let rawCoins = await redisClient.get("hippo-coin-list");
+    let coins;
+    if (_.isNull(rawCoins)) {
+      const url =
+        "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+      coins = (await axios.get(url)).data;
+      await Promise.all([
+        redisClient.set("hippo-coin-list", JSON.stringify(coins)),
+        redisClient.expire("hippo-coin-list", 60),
+      ]);
+    } else {
+      coins = JSON.parse(rawCoins);
+    }
 
     // The "liquidity" of a coin is defined as the sum of the liquidity of the
     // pools that trade it.
@@ -167,31 +120,26 @@ export const query = {
       if (lhs.recognizedLiquidity != rhs.recognizedLiquidity) {
         return rhs.recognizedLiquidity - lhs.recognizedLiquidity;
       }
-      return rhs.auLiquidity - lhs.auLiquidity;
+      if (lhs.auLiquidity != rhs.auLiquidity) {
+        return rhs.auLiquidity - lhs.auLiquidity;
+      }
+      return lhs.symbol.toLowerCase().localeCompare(rhs.symbol.toLowerCase());
     });
     return allCoins;
   },
-  async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
+  async pool(parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const pool = await aux.Pool.read(auxClient, poolInput);
     if (pool === undefined) {
       return null;
     }
-    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const hippoCoins = JSON.parse(await fs.readFile(path, "utf-8")).map(
-      (coin: any) => ({
-        coinType: coin.token_type.type,
-        decimals: coin.decimals,
-        name: coin.name,
-        symbol: coin.symbol,
-      })
-    );
+    const coins = await this.coins(parent);
     const coinTypeToHippoNameSymbol = Object.fromEntries(
-      hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
+      coins.map((coin) => [coin.coinType, [coin.name, coin.symbol]])
     );
     // @ts-ignore
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
-  async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
+  async pools(parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
       ? args.poolInputs
       : await aux.Pool.index(auxClient);
@@ -200,15 +148,7 @@ export const query = {
         aux.Pool.read(auxClient, poolReadParam)
       )
     );
-    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const hippoCoins = JSON.parse(await fs.readFile(path, "utf-8")).map(
-      (coin: any) => ({
-        coinType: coin.token_type.type,
-        decimals: coin.decimals,
-        name: coin.name,
-        symbol: coin.symbol,
-      })
-    );
+    const hippoCoins = await this.coins(parent);
     const coinTypeToHippoNameSymbol = Object.fromEntries(
       hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
     );
@@ -233,19 +173,17 @@ export const query = {
     // @ts-ignore
     return formattedPools;
   },
-  async poolCoins(parent: any) {
-    return this.coins(parent);
-    // const pools = await this.pools(parent, {});
-    // const coinInfos = pools.flatMap((pool) => [pool.coinInfoX, pool.coinInfoY]);
-    // return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
-  },
-  async market(_parent: any, args: QueryMarketArgs): Promise<Maybe<Market>> {
+  async market(
+    _parent: any,
+    { marketInput }: QueryMarketArgs
+  ): Promise<Maybe<Market>> {
     let market: aux.Market;
     try {
-      market = await aux.Market.read(auxClient, args.marketInput);
+      market = await aux.Market.read(auxClient, marketInput);
     } catch (err) {
       return null;
     }
+    const { baseCoinType, quoteCoinType } = marketInput;
     // @ts-ignore
     return {
       name: `${market.baseCoinInfo.name}-${market.quoteCoinInfo.name}`,
@@ -262,6 +200,8 @@ export const query = {
       lotSizeString: market.lotSize.toString(),
       tickSizeString: market.tickSize.toString(),
       orderbook: {
+        baseCoinType,
+        quoteCoinType,
         bids: market.l2.bids.map((l2Quote) => ({
           price: l2Quote.price.toNumber(),
           quantity: l2Quote.quantity.toNumber(),
@@ -344,15 +284,6 @@ export const query = {
         });
     }
   },
-  async marketCoins(parent: any) {
-    const markets = await this.markets(parent, {});
-    const coinInfos = markets.flatMap((market) => [
-      market.baseCoinInfo,
-      market.quoteCoinInfo,
-    ]);
-    return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
-  },
-
   async account(_parent: any, { owner }: QueryAccountArgs): Promise<Account> {
     const auxAccount = await auxClient.getAccountResourceOptional(
       owner,
@@ -366,3 +297,79 @@ export const query = {
     };
   },
 };
+function getFeaturedPriority(status: FeaturedStatus): number {
+  switch (status) {
+    case FeaturedStatus.None:
+      return 0;
+    case FeaturedStatus.Hot:
+      return 1;
+    case FeaturedStatus.Promoted:
+      return 2;
+  }
+}
+
+function formatPool(
+  pool: aux.Pool,
+  coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
+) {
+  let featuredStatus = FeaturedStatus.None;
+  for (const [x, y] of PROMOTED_POOLS) {
+    if (
+      (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
+      (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
+    ) {
+      featuredStatus = FeaturedStatus.Promoted;
+      break;
+    }
+  }
+  if (featuredStatus == FeaturedStatus.None) {
+    for (const [x, y] of HOT_POOLS) {
+      if (
+        (pool.coinInfoX.coinType == x && pool.coinInfoY.coinType == y) ||
+        (pool.coinInfoX.coinType == y && pool.coinInfoY.coinType == x)
+      ) {
+        featuredStatus = FeaturedStatus.Hot;
+        break;
+      }
+    }
+  }
+
+  const recognizedLiquidity = Math.max(
+    getRecognizedTVL(pool.coinInfoX.coinType, pool.amountX.toNumber()),
+    getRecognizedTVL(pool.coinInfoY.coinType, pool.amountY.toNumber())
+  );
+
+  const auLiquidity = Math.max(
+    pool.amountAuX.toNumber(),
+    pool.amountAuY.toNumber()
+  );
+
+  const coinXNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoX.coinType];
+  const coinInfoX = pool.coinInfoX;
+  if (!_.isUndefined(coinXNameSymbol)) {
+    const [name, symbol] = coinXNameSymbol;
+    coinInfoX.name = name;
+    coinInfoX.symbol = symbol;
+  }
+
+  const coinYNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoY.coinType];
+  const coinInfoY = pool.coinInfoY;
+  if (!_.isUndefined(coinYNameSymbol)) {
+    const [name, symbol] = coinYNameSymbol;
+    coinInfoY.name = name;
+    coinInfoY.symbol = symbol;
+  }
+
+  return {
+    coinInfoX,
+    coinInfoY,
+    coinInfoLP: pool.coinInfoLP,
+    amountX: pool.amountX.toNumber(),
+    amountY: pool.amountY.toNumber(),
+    amountLP: pool.amountLP.toNumber(),
+    feePercent: pool.feePct,
+    featuredStatus,
+    recognizedLiquidity,
+    auLiquidity,
+  };
+}

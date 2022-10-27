@@ -8,7 +8,7 @@ import {
   WaitForTransactionError,
   TxnBuilderTypes,
 } from "aptos";
-import type BN from "bn.js";
+import BN from "bn.js";
 import * as fs from "fs";
 import * as SHA3 from "js-sha3";
 import { TextEncoder } from "util";
@@ -209,7 +209,9 @@ export class AuxClient {
     let defaultConfig = networkConfigs[network];
     validatorAddress = validatorAddress ?? defaultConfig.fullnode;
     faucetAddress = faucetAddress ?? defaultConfig.faucet;
+    moduleAddress = moduleAddress ?? defaultConfig.moduleAddress!;
     simulatorAddress = simulatorAddress ?? defaultConfig.simulatorAddress;
+    console.log("moduleAddress:", moduleAddress);
     console.log("simulatorAddress:", simulatorAddress);
     console.log(`connecting to: ${validatorAddress}`);
     return new AuxClient({
@@ -218,7 +220,7 @@ export class AuxClient {
         faucetAddress !== undefined
           ? new FaucetClient(validatorAddress, faucetAddress)
           : undefined,
-      moduleAddress: moduleAddress ?? defaultConfig.moduleAddress!,
+      moduleAddress,
       forceSimulate: forceSimulate === undefined ? false : forceSimulate,
       simulatorAddress,
       simulatorPublicKey:
@@ -430,6 +432,130 @@ export class AuxClient {
       );
     }
     return userTxn as Types.UserTransaction;
+  }
+
+  /**
+   * Returns all events since a given sequence range. The arguments are
+   * otherwise the same as aptosClient.getEventsByEventHandle.
+   */
+  async getEventsByEventHandleRange(
+    address: MaybeHexString,
+    eventHandleStruct: Types.MoveStructTag,
+    fieldName: string,
+    firstSequenceNumber: BN,
+    lastSequenceNumber: BN
+  ): Promise<Types.Event[]> {
+    const allEvents = [];
+    for (
+      let s = firstSequenceNumber;
+      s.lt(lastSequenceNumber);
+      s = s.addn(100)
+    ) {
+      const distance = lastSequenceNumber.sub(s);
+      const limit = distance.ltn(100) ? distance.toNumber() : 100;
+      const events = await this.aptosClient.getEventsByEventHandle(
+        address,
+        eventHandleStruct,
+        fieldName,
+        {
+          start: BigInt(s.toString()),
+          limit,
+        }
+      );
+      allEvents.push(...events);
+    }
+    return allEvents;
+  }
+
+  /**
+   * Returns all events since a given sequence number. Defaults to returning all
+   * events since the beginning of time, which may be expensive. The arguments
+   * are otherwise the same as aptosClient.getEventsByEventHandle.
+   */
+  async getEventsByEventHandleSince(
+    address: MaybeHexString,
+    eventHandleStruct: Types.MoveStructTag,
+    fieldName: string,
+    firstSequenceNumber?: BN
+  ): Promise<Types.Event[]> {
+    firstSequenceNumber = firstSequenceNumber ?? new BN(0);
+    const allEvents = [];
+
+    const tailEvents = (
+      await this.aptosClient.getEventsByEventHandle(
+        address,
+        eventHandleStruct,
+        fieldName,
+        {
+          limit: 100,
+        }
+      )
+    ).filter((ev) => new BN(ev.sequence_number).gte(firstSequenceNumber!));
+
+    if (tailEvents.length > 0) {
+      const firstEventSequenceNumber = new BN(tailEvents[0]!.sequence_number);
+
+      allEvents.push(
+        ...(await this.getEventsByEventHandleRange(
+          address,
+          eventHandleStruct,
+          fieldName,
+          firstSequenceNumber,
+          firstEventSequenceNumber
+        ))
+      );
+    }
+
+    allEvents.push(...tailEvents);
+    return allEvents;
+  }
+
+  /**
+   * Returns all recent events with a lookback defaulting to one RPC call.
+   */
+  async getEventsByEventHandleWithLookback(
+    address: MaybeHexString,
+    eventHandleStruct: Types.MoveStructTag,
+    fieldName: string,
+    maxLookback?: BN
+  ): Promise<Types.Event[]> {
+    maxLookback = maxLookback ?? new BN(100);
+    const allEvents = [];
+
+    const tailEvents = await this.aptosClient.getEventsByEventHandle(
+      address,
+      eventHandleStruct,
+      fieldName,
+      {
+        limit: maxLookback.gtn(100) ? 100 : maxLookback.toNumber(),
+      }
+    );
+
+    if (tailEvents.length > 0) {
+      const firstEventSequenceNumber = new BN(tailEvents[0]!.sequence_number);
+      let remainderToQuery = maxLookback.subn(tailEvents.length);
+
+      // If we got 2 and have 1 more to go, query starting at 1.
+      // If we got 2 and have 2 more to go, query starting at 0.
+      // If we got 2 and have 3 more to go, query starting at 0.
+      const firstSequenceNumberToQuery = firstEventSequenceNumber.gt(
+        remainderToQuery
+      )
+        ? firstEventSequenceNumber.sub(remainderToQuery)
+        : new BN(0);
+
+      allEvents.push(
+        ...(await this.getEventsByEventHandleRange(
+          address,
+          eventHandleStruct,
+          fieldName,
+          firstSequenceNumberToQuery,
+          firstEventSequenceNumber
+        ))
+      );
+    }
+    allEvents.push(...tailEvents);
+    return allEvents;
   }
 
   /**
@@ -1008,7 +1134,44 @@ export function subtractFee(value: number, feeBps: number): number {
 export function parseTypeArgs(
   typeName: Types.MoveStructTag
 ): Types.MoveStructTag[] {
-  return typeName
-    .substring(typeName.indexOf("<") + 1, typeName.lastIndexOf(">"))
-    .split(", ");
+  const types = [];
+  const inner = typeName.substring(
+    typeName.indexOf("<") + 1,
+    typeName.lastIndexOf(">")
+  );
+  let bracketCount = 0;
+  let currentType = "";
+  for (let i = 0; i < inner.length; i++) {
+    const char = inner.at(i);
+    switch (char) {
+      case "<":
+        bracketCount++;
+        currentType += char;
+        break;
+      case ">":
+        bracketCount--;
+        currentType += char;
+        break;
+      case ",":
+        if (bracketCount == 0) {
+          types.push(currentType);
+          currentType = "";
+        } else {
+          currentType += char;
+        }
+        break;
+      case " ":
+        if (bracketCount > 0) {
+          currentType += char;
+        }
+        break;
+      default:
+        currentType += char;
+    }
+  }
+  if (bracketCount != 0) {
+    throw new AuxClientError(`Invalid type ${typeName}`);
+  }
+  types.push(currentType);
+  return types;
 }

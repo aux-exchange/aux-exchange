@@ -1,64 +1,92 @@
 import type { Types } from "aptos";
 import { withFilter } from "graphql-subscriptions";
 import _ from "lodash";
-import { pubsub } from "../connection";
+import { redisPubSub } from "../connection";
 import type {
   InputMaybe,
   MarketInput,
   PoolInput,
   SubscriptionBarArgs,
+  SubscriptionHigh24hArgs,
+  SubscriptionLow24HArgs,
+  SubscriptionVolume24HArgs,
 } from "../generated/types";
+import { resolutionToString } from "./market";
 
 export const subscription = {
   swap: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["SWAP"]),
+      () => redisPubSub.asyncIterator(["SWAP"]),
       poolInputsFilterFn
     ),
   },
   addLiquidity: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["ADD_LIQUIDITY"]),
+      () => redisPubSub.asyncIterator(["ADD_LIQUIDITY"]),
       poolInputsFilterFn
     ),
   },
   removeLiquidity: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["REMOVE_LIQUIDITY"]),
+      () => redisPubSub.asyncIterator(["REMOVE_LIQUIDITY"]),
       poolInputsFilterFn
     ),
   },
   orderbook: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["ORDERBOOK"]),
+      () => redisPubSub.asyncIterator(["ORDERBOOK"]),
       marketInputsFilterFn
     ),
   },
   trade: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["TRADE"]),
+      () => redisPubSub.asyncIterator(["TRADE"]),
       marketInputsFilterFn
     ),
   },
   lastTradePrice: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["LAST_TRADE_PRICE"]),
+      () => redisPubSub.asyncIterator(["LAST_TRADE_PRICE"]),
       marketInputsFilterFn
     ),
   },
   bar: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => pubsub.asyncIterator(["BAR"]),
+      () => redisPubSub.asyncIterator(["BAR"]),
       (payload: any, variables: SubscriptionBarArgs) =>
         marketInputsFilterFn(payload, variables) &&
-        payload.resolution === variables.resolution
+        payload.resolution === resolutionToString(variables.resolution)
+    ),
+  },
+  high24h: {
+    resolve: _.identity,
+    subscribe: withFilter(
+      () => redisPubSub.asyncIterator(["HIGH_24H"]),
+      (payload: any, variables: SubscriptionHigh24hArgs) =>
+        marketInputsFilterFn(payload, variables)
+    ),
+  },
+  low24H: {
+    resolve: _.identity,
+    subscribe: withFilter(
+      () => redisPubSub.asyncIterator(["LOW_24H"]),
+      (payload: any, variables: SubscriptionLow24HArgs) =>
+        marketInputsFilterFn(payload, variables)
+    ),
+  },
+  volume24H: {
+    resolve: _.identity,
+    subscribe: withFilter(
+      () => redisPubSub.asyncIterator(["VOLUME_24H"]),
+      (payload: any, variables: SubscriptionVolume24HArgs) =>
+        marketInputsFilterFn(payload, variables)
     ),
   },
 };
@@ -74,10 +102,11 @@ function poolInputsFilterFn(
   return (
     _.isNull(poolInputs) ||
     _.isUndefined(poolInputs) ||
-    poolInputs.find(
-      (k) =>
-        k.coinTypeX === payload.coinTypeX && k.coinTypeY === payload.coinTypeY
-    ) !== undefined
+    _.some(
+      poolInputs,
+      ({ coinTypeX, coinTypeY }) =>
+        coinTypeX === payload.coinTypeX && coinTypeY === payload.coinTypeY
+    )
   );
 }
 
@@ -95,10 +124,11 @@ function marketInputsFilterFn(
   return (
     _.isNull(marketInputs) ||
     _.isUndefined(marketInputs) ||
-    marketInputs.find(
-      (k: any) =>
-        k.baseCoinType === payload.baseCoinType &&
-        k.quoteCoinType === payload.quoteCoinType
-    ) !== undefined
+    _.some(
+      marketInputs,
+      ({ baseCoinType, quoteCoinType }) =>
+        baseCoinType === payload.baseCoinType &&
+        quoteCoinType === payload.quoteCoinType
+    )
   );
 }

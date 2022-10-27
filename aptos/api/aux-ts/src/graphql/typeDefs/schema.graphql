@@ -3,10 +3,8 @@ type Query {
   coins: [CoinInfo!]!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
-  poolCoins: [CoinInfo!]!
   market(marketInput: MarketInput!): Market
   markets(marketInputs: [MarketInput!]): [Market!]!
-  marketCoins: [CoinInfo!]!
   account(owner: Address!): Account
 }
 
@@ -46,8 +44,11 @@ type Subscription {
   removeLiquidity(poolInputs: [PoolInput!]): RemoveLiquidity!
   orderbook(marketInputs: [MarketInput!]): Orderbook!
   trade(marketInputs: [MarketInput!]): Order!
-  lastTradePrice(marketInputs: [MarketInput!]): Float!
-  bar(marketInputs: [MarketInput!], resolution: String!): Bar!
+  lastTradePrice(marketInputs: [MarketInput!]): LastTradePrice!
+  bar(marketInputs: [MarketInput!], resolution: Resolution!): Bar!
+  high24h(marketInputs: [MarketInput!]): High24h!
+  low24H(marketInputs: [MarketInput!]): Low24h!
+  volume24H(marketInputs: [MarketInput!]): Volume24h!
 }
 
 type CoinInfo {

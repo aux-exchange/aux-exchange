@@ -16,9 +16,16 @@ import (
 
 func downloadFile(url string) []byte {
 	resp := getOrPanic(http.Get(url))
+
 	defer resp.Body.Close()
 
-	return getOrPanic(io.ReadAll(resp.Body))
+	msg := getOrPanic(io.ReadAll(resp.Body))
+
+	if resp.StatusCode >= 400 {
+		orPanic(fmt.Errorf("failed to download the file: %d: %s", resp.StatusCode, string(msg)))
+	}
+
+	return msg
 }
 
 func GetLaunchAptosNodeCmd() *cobra.Command {
@@ -55,13 +62,8 @@ func GetLaunchAptosNodeCmd() *cobra.Command {
 		dataDir := path.Join(realDir, "data")
 		os.MkdirAll(dataDir, 0o777)
 
-		genesisBlob := downloadFile(fmt.Sprintf("https://github.com/aptos-labs/aptos-genesis-waypoint/blob/main/%s/genesis.blob?raw=true", networkName))
-		waypointTxt := downloadFile(fmt.Sprintf("https://raw.githubusercontent.com/aptos-labs/aptos-genesis-waypoint/main/%s/waypoint.txt", networkName))
-
-		if networkName == "devnet" {
-			genesisBlob = downloadFile("https://devnet.aptoslabs.com/genesis.blob")
-			waypointTxt = downloadFile("https://devnet.aptoslabs.com/waypoint.txt")
-		}
+		genesisBlob := downloadFile(fmt.Sprintf("https://github.com/aptos-labs/aptos-networks/blob/main/%s/genesis.blob?raw=true", networkName))
+		waypointTxt := downloadFile(fmt.Sprintf("https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/%s/waypoint.txt", networkName))
 
 		genesisBlobFile := path.Join(realDir, "genesis.blob")
 		waypointFile := path.Join(realDir, "waypoint.txt")
