@@ -550,12 +550,12 @@ export type Subscription = {
   bar: Bar;
   high24h: High24h;
   lastTradePrice: LastTradePrice;
-  low24H: Low24h;
+  low24h: Low24h;
   orderbook: Orderbook;
   removeLiquidity: RemoveLiquidity;
   swap: Swap;
   trade: Order;
-  volume24H: Volume24h;
+  volume24h: Volume24h;
 };
 
 
@@ -580,7 +580,7 @@ export type SubscriptionLastTradePriceArgs = {
 };
 
 
-export type SubscriptionLow24HArgs = {
+export type SubscriptionLow24hArgs = {
   marketInputs?: InputMaybe<Array<MarketInput>>;
 };
 
@@ -605,7 +605,7 @@ export type SubscriptionTradeArgs = {
 };
 
 
-export type SubscriptionVolume24HArgs = {
+export type SubscriptionVolume24hArgs = {
   marketInputs?: InputMaybe<Array<MarketInput>>;
 };
 
@@ -1099,12 +1099,12 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   bar?: SubscriptionResolver<ResolversTypes['Bar'], "bar", ParentType, ContextType, RequireFields<SubscriptionBarArgs, 'resolution'>>;
   high24h?: SubscriptionResolver<ResolversTypes['High24h'], "high24h", ParentType, ContextType, Partial<SubscriptionHigh24hArgs>>;
   lastTradePrice?: SubscriptionResolver<ResolversTypes['LastTradePrice'], "lastTradePrice", ParentType, ContextType, Partial<SubscriptionLastTradePriceArgs>>;
-  low24H?: SubscriptionResolver<ResolversTypes['Low24h'], "low24H", ParentType, ContextType, Partial<SubscriptionLow24HArgs>>;
+  low24h?: SubscriptionResolver<ResolversTypes['Low24h'], "low24h", ParentType, ContextType, Partial<SubscriptionLow24hArgs>>;
   orderbook?: SubscriptionResolver<ResolversTypes['Orderbook'], "orderbook", ParentType, ContextType, Partial<SubscriptionOrderbookArgs>>;
   removeLiquidity?: SubscriptionResolver<ResolversTypes['RemoveLiquidity'], "removeLiquidity", ParentType, ContextType, Partial<SubscriptionRemoveLiquidityArgs>>;
   swap?: SubscriptionResolver<ResolversTypes['Swap'], "swap", ParentType, ContextType, Partial<SubscriptionSwapArgs>>;
   trade?: SubscriptionResolver<ResolversTypes['Order'], "trade", ParentType, ContextType, Partial<SubscriptionTradeArgs>>;
-  volume24H?: SubscriptionResolver<ResolversTypes['Volume24h'], "volume24H", ParentType, ContextType, Partial<SubscriptionVolume24HArgs>>;
+  volume24h?: SubscriptionResolver<ResolversTypes['Volume24h'], "volume24h", ParentType, ContextType, Partial<SubscriptionVolume24hArgs>>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {

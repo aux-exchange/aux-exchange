@@ -47,8 +47,8 @@ type Subscription {
   lastTradePrice(marketInputs: [MarketInput!]): LastTradePrice!
   bar(marketInputs: [MarketInput!], resolution: Resolution!): Bar!
   high24h(marketInputs: [MarketInput!]): High24h!
-  low24H(marketInputs: [MarketInput!]): Low24h!
-  volume24H(marketInputs: [MarketInput!]): Volume24h!
+  low24h(marketInputs: [MarketInput!]): Low24h!
+  volume24h(marketInputs: [MarketInput!]): Volume24h!
 }
 
 type CoinInfo {

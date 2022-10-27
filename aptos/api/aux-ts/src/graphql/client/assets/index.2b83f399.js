@@ -1,4 +1,4 @@
-import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, T as Tooltip, I as InformationCircleIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, J as ArrowLongLeftIcon, K as useLazyQuery, N as linear, O as InformationCircleIcon$1, P as NavLink, Q as HttpLink, U as GraphQLWsLink, V as createClient, Y as split, Z as getMainDefinition, _ as ApolloClient, $ as InMemoryCache, a0 as useGeoLocation, a1 as ApolloProvider, a2 as BrowserRouter, a3 as Routes, a4 as Route, a5 as client$1 } from "./vendor.11f9db3c.js";
+import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, T as Tooltip, I as InformationCircleIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, J as ArrowLongLeftIcon, K as DocumentDuplicateIcon, N as useLazyQuery, O as linear, P as InformationCircleIcon$1, Q as NavLink, U as HttpLink, V as GraphQLWsLink, Y as createClient, Z as split, _ as getMainDefinition, $ as ApolloClient, a0 as InMemoryCache, a1 as useGeoLocation, a2 as ApolloProvider, a3 as BrowserRouter, a4 as Routes, a5 as Route, a6 as client$1 } from "./vendor.d8a80536.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -1116,7 +1116,7 @@ const Da = ({
   fill: "none",
   xmlns: "http://www.w3.org/2000/svg",
   children: [/* @__PURE__ */ y("g", {
-    "clip-path": "url(#clip0_3135_111)",
+    clipPath: "url(#clip0_3135_111)",
     children: [/* @__PURE__ */ a("path", {
       d: "M470 240C470 367.025 367.025 470 240 470C112.975 470 10 367.025 10 240C10 112.975 112.975 10 240 10C367.025 10 470 112.975 470 240Z",
       fill: "url(#paint0_linear_3135_111)"
@@ -1203,10 +1203,10 @@ const Da = ({
       y2: "48.6705",
       gradientUnits: "userSpaceOnUse",
       children: [/* @__PURE__ */ a("stop", {
-        "stop-color": "#296D38"
+        stopColor: "#296D38"
       }), /* @__PURE__ */ a("stop", {
         offset: "1",
-        "stop-color": "#3FA78E"
+        stopColor: "#3FA78E"
       })]
     })
   })]
@@ -5252,10 +5252,10 @@ function pl({
           const w = m[S == null ? void 0 : S.index];
           return w ? (_ = n2 == null ? void 0 : n2(w)) != null ? _ : /* @__PURE__ */ a("tr", {
             children: w ? w.getVisibleCells().map((F) => /* @__PURE__ */ a("td", {
-              className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
+              className: "border-b border-primary-100 dark:border-primary-700 p-3 pl-4 text-primary-500 dark:text-primary-200 text-left",
               children: flexRender(F.column.columnDef.cell, F.getContext())
             }, F.id)) : /* @__PURE__ */ a("td", {
-              className: "border-b border-primary-100 dark:border-primary-700 p-2 pl-4 text-primary-500 dark:text-primary-200 text-left",
+              className: "border-b border-primary-100 dark:border-primary-700 p-3 pl-4 text-primary-500 dark:text-primary-200 text-left",
               children: " "
             }, S.index)
           }, w == null ? void 0 : w.id) : null;
@@ -5390,12 +5390,6 @@ const CoinXYParamCtxProvider = ({
   children
 }) => {
   var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2;
-  const location = useLocation();
-  react.exports.useEffect(() => {
-    console.log({
-      location
-    });
-  }, [location]);
   const {
     params,
     setParams
@@ -6333,7 +6327,7 @@ function DepositInput({
   const balances = useBalances();
   const findBalance = (coin2) => {
     var _a3, _b2;
-    return (_b2 = (_a3 = balances.data) == null ? void 0 : _a3.account) == null ? void 0 : _b2.balances.find((b) => b.coinInfo.symbol === coin2);
+    return (_b2 = (_a3 = balances.data) == null ? void 0 : _a3.account) == null ? void 0 : _b2.walletBalances.find((b) => b.coinInfo.symbol === coin2);
   };
   return /* @__PURE__ */ jsxs("div", {
     className: "relative w-full",
@@ -7354,7 +7348,6 @@ function RegisterCoinList({
       });
       setCoins(newCoinList);
       const allCoins = newCoinList.every((i2) => i2.registered === true);
-      console.log(allCoins);
       if (allCoins)
         setAllCoinsRegistered(allCoins);
     }
@@ -7713,7 +7706,7 @@ function usePoolsTable() {
         variant: "basic"
       }),
       data: pools != null ? pools : [],
-      className: "border border-primary-700 rounded-lg overflow-hidden",
+      className: "border border-primary-700 rounded-lg overflow-auto w-full max-w-full",
       columns: [columnHelper$1.accessor("name", {
         header: "Pool",
         cell: (cell) => {
@@ -7737,7 +7730,7 @@ function usePoolsTable() {
                   size: 32
                 })
               }), /* @__PURE__ */ jsx("div", {
-                className: "self-center ml-4 mr-2 text-lg",
+                className: "self-center ml-4 mr-2 md:text-lg sm:text-sm",
                 children: `${(_e2 = rowValues.coinInfoX) == null ? void 0 : _e2.name} / ${(_f = rowValues.coinInfoY) == null ? void 0 : _f.name}`
               }), rowValues.featuredStatus !== "NONE" ? /* @__PURE__ */ jsx(ll, {
                 variant: "success",
@@ -7755,7 +7748,7 @@ function usePoolsTable() {
           const value = cell.getValue();
           const rowValues = cell.row.original;
           return /* @__PURE__ */ jsxs("div", {
-            className: "inline-flex gap-1 text-base font-medium",
+            className: "inline-flex gap-1 sm:text-sm md:text-base font-medium",
             children: [/* @__PURE__ */ jsx("div", {
               children: parseFloat(value).toLocaleString()
             }), /* @__PURE__ */ jsx("div", {
@@ -7770,7 +7763,7 @@ function usePoolsTable() {
           const value = cell.getValue();
           const rowValues = cell.row.original;
           return /* @__PURE__ */ jsxs("div", {
-            className: "inline-flex gap-1 text-base font-medium",
+            className: "inline-flex gap-1 sm:text-sm md:text-base font-medium",
             children: [/* @__PURE__ */ jsx("div", {
               children: parseFloat(value).toLocaleString()
             }), /* @__PURE__ */ jsx("div", {
@@ -7785,7 +7778,7 @@ function usePoolsTable() {
           const value = cell.getValue();
           cell.row.original;
           return /* @__PURE__ */ jsxs("div", {
-            className: "text-base font-medium",
+            className: "sm:text-sm md:text-base font-medium",
             children: [parseFloat(value).toFixed(2), "%"]
           });
         }
@@ -8677,18 +8670,6 @@ const TradeHistoryDocument = {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
                   "value": "side"
                 }
               }, {
@@ -8708,12 +8689,6 @@ const TradeHistoryDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "value"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
                 }
               }, {
                 "kind": "Field",
@@ -8861,11 +8836,16 @@ function usePoolPositionsTable() {
         accessorKey: "name",
         header: "Pool",
         cell: (cell) => {
-          cell.getValue();
+          const value = cell.getValue();
           const rowValues = cell.row.original;
-          `/pool?coinx=${rowValues.coinInfoX}?coiny=${rowValues.coinInfoY}`;
-          console.log({
-            rowValues
+          const poolUrl = `/pool?coinx=${rowValues.coinInfoX}?coiny=${rowValues.coinInfoY}`;
+          return /* @__PURE__ */ jsxs(Link, {
+            to: poolUrl,
+            className: "flex items-center gap-3 py-2",
+            children: [/* @__PURE__ */ jsx(sl, {
+              size: 32,
+              coins: rowValues.coinList
+            }), value]
           });
         }
       }, {
@@ -9678,18 +9658,6 @@ const MarketDocument = {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
                   "value": "side"
                 }
               }, {
@@ -9709,12 +9677,6 @@ const MarketDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "value"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
                 }
               }, {
                 "kind": "Field",
@@ -11269,9 +11231,15 @@ function MarketListItem({
         size: 32
       }), /* @__PURE__ */ jsxs("div", {
         className: "ml-3",
-        children: [/* @__PURE__ */ jsx("div", {
+        children: [/* @__PURE__ */ jsxs("div", {
           className: "text-xl font-medium text-white mb-1",
-          children: market.name
+          children: [/* @__PURE__ */ jsxs("div", {
+            className: "",
+            children: [market == null ? void 0 : market.baseCoinInfo.symbol, "/", market == null ? void 0 : market.quoteCoinInfo.symbol]
+          }), /* @__PURE__ */ jsx("div", {
+            className: "text-sm text-primary-400",
+            children: market == null ? void 0 : market.name
+          })]
         }), /* @__PURE__ */ jsx("div", {
           className: "text-xs font-bold text-primary-400 uppercase"
         })]
@@ -11536,7 +11504,7 @@ function useMarkets() {
 function MarketSelector({
   onSelectMarket
 }) {
-  var _a2;
+  var _a2, _b, _c;
   const {
     onFirstCoinSelect,
     onSecondCoinSelect,
@@ -11556,11 +11524,13 @@ function MarketSelector({
   const [searchQuery, setSearchQuery] = react.exports.useState("");
   const [selectedMarket, setSelectedMarket] = react.exports.useState(null);
   react.exports.useEffect(() => {
-    var _a3;
-    if (!selectedMarket && marketQueryName.data) {
-      setSelectedMarket((_a3 = marketQueryName.data.market) != null ? _a3 : null);
+    var _a3, _b2, _c2;
+    if (!selectedMarket && ((_a3 = marketQueryName.data) == null ? void 0 : _a3.market)) {
+      setSelectedMarket((_b2 = marketQueryName.data.market) != null ? _b2 : null);
+    } else if (!selectedMarket && ((_c2 = marketsQuery.data) == null ? void 0 : _c2.markets)) {
+      setSelectedMarket(marketsQuery.data.markets[0]);
     }
-  }, [selectedMarket, marketQueryName.data]);
+  }, [selectedMarket, marketQueryName.data, marketsQuery.data]);
   react.exports.useEffect(() => {
     if (selectedMarket && onSelectMarket)
       onSelectMarket(selectedMarket);
@@ -11575,6 +11545,7 @@ function MarketSelector({
   };
   const onSearchChange = (c) => setSearchQuery(c.currentTarget.value);
   const baseButtonClasses = "flex items-center w-full p-3 bg-primary-800 rounded-md outline-none drop-shadow-lg hover:bg-primary-700 hover:cursor-pointer hover:drop-shadow-xl";
+  const selectedItemContent = (selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) && (selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) ? `${(_b = selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) == null ? void 0 : _b.symbol}/${(_c = selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) == null ? void 0 : _c.symbol}` : null;
   return /* @__PURE__ */ jsx("div", {
     className: "w-full",
     children: /* @__PURE__ */ jsx(mt$1, {
@@ -11584,16 +11555,16 @@ function MarketSelector({
         open,
         close
       }) => {
-        var _a3, _b, _c, _d, _e2;
+        var _a3, _b2;
         return /* @__PURE__ */ jsxs(Fragment, {
           children: [/* @__PURE__ */ jsxs(mt$1.Button, {
             className: `${open ? "" : "hover:bg-primary-700"} ${baseButtonClasses}`,
-            children: [/* @__PURE__ */ jsx(sl, {
-              coins: [firstCoin == null ? void 0 : firstCoin.symbol, secondCoin == null ? void 0 : secondCoin.symbol],
+            children: [selectedMarket ? /* @__PURE__ */ jsx(sl, {
+              coins: [(_a3 = selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) == null ? void 0 : _a3.symbol, (_b2 = selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) == null ? void 0 : _b2.symbol],
               size: 32
-            }), /* @__PURE__ */ jsx("div", {
+            }) : null, /* @__PURE__ */ jsx("div", {
               className: "text-xl ml-3 mr-3 text-left",
-              children: (_e2 = `${(_b = (_a3 = selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) == null ? void 0 : _a3.symbol) != null ? _b : "..."}/${(_d = (_c = selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) == null ? void 0 : _c.symbol) != null ? _d : "..."}`) != null ? _e2 : null
+              children: selectedItemContent
             }), open ? /* @__PURE__ */ jsx(ChevronUpIcon, {
               className: "h-5 w-5 text-primary-400 ml-auto",
               "aria-hidden": "true"
@@ -11913,6 +11884,12 @@ const PoolDocument = {
                   "kind": "Name",
                   "value": "amountOut"
                 }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "time"
+                }
               }]
             }
           }, {
@@ -11940,6 +11917,12 @@ const PoolDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "amountMintedLP"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "time"
                 }
               }]
             }
@@ -11969,6 +11952,12 @@ const PoolDocument = {
                   "kind": "Name",
                   "value": "amountBurnedLP"
                 }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "time"
+                }
               }]
             }
           }]
@@ -11984,7 +11973,7 @@ function PoolsEventTableView({
   return /* @__PURE__ */ jsx("div", {
     className: "flex flex-col gap-4 items-center w-full mt-10",
     children: /* @__PURE__ */ jsxs(ml, {
-      className: "max-w-[960px] w-full max-h-full overflow-auto px-0",
+      className: "max-w-[1200px] w-full max-h-full overflow-auto px-0",
       children: [/* @__PURE__ */ jsxs("div", {
         className: "flex justify-between mb-4 px-6",
         children: [/* @__PURE__ */ jsx(il, {
@@ -11992,6 +11981,7 @@ function PoolsEventTableView({
         }), /* @__PURE__ */ jsx("div", {
           className: "flex gap-2 mb-4",
           children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(or, {
+            className: props.className,
             onClick: props.onClick,
             size: "sm",
             variant: "basic",
@@ -12025,7 +12015,8 @@ function PoolsEventTableContainer({}) {
     amountIn,
     amountOut,
     coinInfoIn,
-    coinInfoOut
+    coinInfoOut,
+    time
   }) => {
     var _a3, _b2;
     return {
@@ -12035,13 +12026,15 @@ function PoolsEventTableContainer({}) {
       totalValue: (_b2 = pool == null ? void 0 : pool.amountLP) != null ? _b2 : 0,
       symbolIn: coinInfoIn.symbol,
       symbolOut: coinInfoOut.symbol,
-      type: `Swap ${coinInfoIn.symbol} for ${coinInfoOut.symbol}`
+      type: `Swap ${coinInfoIn.symbol} / ${coinInfoOut.symbol}`,
+      time: DateTime.fromJSDate(new Date(Number(time))).toRelative()
     };
   });
   const addLiquidityTableData = ((_e2 = pool == null ? void 0 : pool.adds) != null ? _e2 : []).map(({
     amountAddedX,
     amountAddedY,
-    amountMintedLP
+    amountMintedLP,
+    time
   }) => {
     var _a3, _b2, _c2, _d2, _e3;
     return {
@@ -12051,13 +12044,15 @@ function PoolsEventTableContainer({}) {
       totalValue: amountMintedLP != null ? amountMintedLP : "-",
       symbolIn: (_b2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _b2 : "-",
       symbolOut: (_c2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _c2 : "-",
-      type: `Add ${(_d2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _d2 : ""} and ${(_e3 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _e3 : ""}`
+      type: `Add ${(_d2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _d2 : ""} / ${(_e3 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _e3 : ""}`,
+      time: DateTime.fromJSDate(new Date(Number(time))).toRelative()
     };
   });
   const removeLiquidityTableData = ((_f = pool == null ? void 0 : pool.removes) != null ? _f : []).map(({
     amountBurnedLP,
     amountRemovedX,
-    amountRemovedY
+    amountRemovedY,
+    time
   }) => {
     var _a3, _b2, _c2, _d2, _e3;
     return {
@@ -12067,7 +12062,8 @@ function PoolsEventTableContainer({}) {
       totalValue: amountBurnedLP != null ? amountBurnedLP : "-",
       symbolIn: (_b2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _b2 : "-",
       symbolOut: (_c2 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _c2 : "-",
-      type: `Remove ${(_d2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _d2 : ""} and ${(_e3 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _e3 : ""}`
+      type: `Remove ${(_d2 = pool == null ? void 0 : pool.coinInfoX.symbol) != null ? _d2 : ""} / ${(_e3 = pool == null ? void 0 : pool.coinInfoY.symbol) != null ? _e3 : ""}`,
+      time: DateTime.fromJSDate(new Date(Number(time))).toRelative()
     };
   });
   const tableData = react.exports.useMemo(() => {
@@ -12081,53 +12077,138 @@ function PoolsEventTableContainer({}) {
   }, [swapTableData, addLiquidityTableData, removeLiquidityTableData, filterBy]);
   const actionButtonProps = [{
     children: "All",
+    className: filterBy === 3 ? "!border-accent-400" : "",
     onClick() {
       setFilterBy(3);
     }
   }, {
     children: "Swaps",
+    className: filterBy === 0 ? "!border-accent-400" : "",
     onClick() {
       setFilterBy(0);
     }
   }, {
     children: "Adds",
+    className: filterBy === 1 ? "!border-accent-400" : "",
     onClick() {
       setFilterBy(1);
     }
   }, {
     children: "Removes",
+    className: filterBy === 2 ? "!border-accent-400" : "",
     onClick() {
       setFilterBy(2);
     }
   }];
+  const totalValueColumn = react.exports.useMemo(() => {
+    switch (filterBy) {
+      case 1: {
+        return {
+          accessorKey: "totalValue",
+          header: "LP Minted",
+          cell(cell) {
+            return `${cell.getValue()}`;
+          }
+        };
+      }
+      case 3: {
+        return {
+          accessorKey: "totalValue",
+          header: "Liquidity Outcome",
+          cell(cell) {
+            const rowValues = cell.row.original;
+            const rowType = rowValues.type;
+            const isSwap = rowType.match("Swap");
+            const isAdd = rowType.match("Add");
+            const isRemove = rowType.match("Remove");
+            const action = isSwap ? /* @__PURE__ */ jsxs(ll, {
+              className: "text-center bg-transparent  !text-accent-400",
+              size: "xs",
+              children: [cell.getValue(), " Total LP Unchanged"]
+            }) : isAdd ? /* @__PURE__ */ jsxs(ll, {
+              className: "text-center bg-transparent !text-green-400",
+              size: "xs",
+              children: [cell.getValue(), " LP Minted"]
+            }) : isRemove ? /* @__PURE__ */ jsxs(ll, {
+              className: "text-center bg-transparent  !text-red-400",
+              size: "xs",
+              children: [cell.getValue(), " LP Burned"]
+            }) : void 0;
+            return action;
+          }
+        };
+      }
+      case 0: {
+        return {
+          accessorKey: "totalValue",
+          header: "Total LP",
+          cell(cell) {
+            return `${cell.getValue()}`;
+          }
+        };
+      }
+      case 2: {
+        return {
+          accessorKey: "totalValue",
+          header: "LP Burned",
+          cell(cell) {
+            return `${cell.getValue()}`;
+          }
+        };
+      }
+      default: {
+        return {
+          accessorKey: "totalValue",
+          header: "Total Value"
+        };
+      }
+    }
+  }, [filterBy]);
   const poolTableProps = {
     data: tableData,
-    columns: [
-      {
-        accessorKey: "type",
-        header: "Event Type"
-      },
-      {
-        accessorKey: "totalValue",
-        header: "Total Value"
-      },
-      {
-        accessorKey: "amountIn",
-        header: `Base Coin`,
-        cell(c) {
-          const value = c.getValue();
-          return `${value} ${pool == null ? void 0 : pool.coinInfoX.symbol}`;
-        }
-      },
-      {
-        accessorKey: "amountOut",
-        header: "Quote Coin",
-        cell(c) {
-          const value = c.getValue();
-          return `${value} ${pool == null ? void 0 : pool.coinInfoY.symbol}`;
-        }
+    columns: [{
+      accessorKey: "type",
+      header: "Event Type",
+      cell(cell) {
+        const rowType = cell.getValue();
+        const isSwap = rowType.match("Swap");
+        const isAdd = rowType.match("Add");
+        const isRemove = rowType.match("Remove");
+        const action = isSwap ? /* @__PURE__ */ jsxs(ll, {
+          className: "whitespace-nowrap text-center bg-transparent border border-accent-200  !text-accent-200",
+          size: "xs",
+          children: ["Swap ", pool == null ? void 0 : pool.coinInfoX.symbol, " for ", pool == null ? void 0 : pool.coinInfoY.symbol]
+        }) : isAdd ? /* @__PURE__ */ jsxs(ll, {
+          className: "whitespace-nowrap text-center bg-transparent  border border-green-200 !text-green-200",
+          size: "xs",
+          children: ["Add ", pool == null ? void 0 : pool.coinInfoX.symbol, " and ", pool == null ? void 0 : pool.coinInfoY.symbol]
+        }) : isRemove ? /* @__PURE__ */ jsxs(ll, {
+          className: "whitespace-nowrap text-center bg-transparent border border-red-200  !text-red-200",
+          size: "xs",
+          children: ["Remove ", pool == null ? void 0 : pool.coinInfoX.symbol, " and ", pool == null ? void 0 : pool.coinInfoY.symbol]
+        }) : void 0;
+        return /* @__PURE__ */ jsx("div", {
+          children: action
+        });
       }
-    ]
+    }, {
+      accessorKey: "amountIn",
+      header: `Coin X`,
+      cell(c) {
+        const value = c.getValue();
+        return `${parseFloat(`${value}`).toLocaleString()} ${pool == null ? void 0 : pool.coinInfoX.symbol}`;
+      }
+    }, {
+      accessorKey: "amountOut",
+      header: "Coin Y",
+      cell(c) {
+        const value = c.getValue();
+        return `${parseFloat(`${value}`).toLocaleString()} ${pool == null ? void 0 : pool.coinInfoY.symbol}`;
+      }
+    }, {
+      accessorKey: "time",
+      header: "Time"
+    }, totalValueColumn]
   };
   return /* @__PURE__ */ jsx(PoolsEventTableView, {
     tableProps: poolTableProps,
@@ -12732,6 +12813,7 @@ function RemoveLiquidityContainer({}) {
     secondCoin
   } = useCoinXYParamState();
   const notFoundMsg = `Cannot find coins for types ${firstCoin == null ? void 0 : firstCoin.symbol} and ${secondCoin == null ? void 0 : secondCoin.symbol}`;
+  const notifications = Ma();
   const poolQuery = useQuery(RlPoolPositionDocument, {
     variables: {
       poolInput: {
@@ -12773,7 +12855,7 @@ function RemoveLiquidityContainer({}) {
       }
     });
     const tx = (_e3 = res.data) == null ? void 0 : _e3.removeLiquidity;
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx));
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then(() => notifications.addSuccessNotification("Successfully removed liquidity.")).catch((e2) => notifications.addErrorNotification("Failed to remove liquidity.")));
     navigate("/pools");
   }, [firstCoin, secondCoin, pctVal, navigate, removeLiquidityMutation, wallet]);
   const firstCoinAmount = (_y = (_x = (_w = (_v = poolQuery.data) == null ? void 0 : _v.pool) == null ? void 0 : _w.position) == null ? void 0 : _x.amountX) != null ? _y : 0;
@@ -12792,41 +12874,100 @@ function RemoveLiquidityContainer({}) {
     notFoundMsg
   });
 }
+function trimStr(s2) {
+  if (!s2)
+    return;
+  if (s2.length <= 10)
+    return s2;
+  let result = ``;
+  result += s2.slice(0, 8);
+  result += "...";
+  return result;
+}
 function PoolView({
   pool
 }) {
   var _a2, _b;
   const [isAddOpen, setAddOpen] = react.exports.useState(false);
   const [isRemoveOpen, setRemoveOpen] = react.exports.useState(false);
+  const notifications = Ma();
+  const copyX = () => {
+    (pool == null ? void 0 : pool.coinInfoX.coinType) && navigator.clipboard.writeText(pool == null ? void 0 : pool.coinInfoX.coinType);
+    notifications.addSuccessNotification(`Coin Address copied to clipboard: 
+    ${trimStr(pool == null ? void 0 : pool.coinInfoX.coinType)}`);
+  };
+  const copyY = () => {
+    (pool == null ? void 0 : pool.coinInfoY.coinType) && navigator.clipboard.writeText(pool == null ? void 0 : pool.coinInfoY.coinType);
+    notifications.addSuccessNotification(`Coin Address copied to clipboard: 
+    ${trimStr(pool == null ? void 0 : pool.coinInfoY.coinType)}`);
+  };
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col items-center w-[960px] mx-auto",
+    className: "flex flex-col items-center w-[1200px] max-w-full mx-auto",
     children: [/* @__PURE__ */ jsxs(Link, {
       to: "/pools",
       className: "self-start inline-flex items-center my-4",
       children: [/* @__PURE__ */ jsx(ArrowLongLeftIcon, {
         className: "w-8 h-8 mr-3"
       }), " All Pools"]
-    }), /* @__PURE__ */ jsxs("div", {
+    }), /* @__PURE__ */ jsx("div", {
       className: "flex my-6",
-      children: [/* @__PURE__ */ jsx("div", {
-        className: "flex",
-        children: pool && /* @__PURE__ */ jsx(sl, {
-          coins: [pool == null ? void 0 : pool.coinInfoX.symbol, pool == null ? void 0 : pool.coinInfoY.symbol],
-          size: 48
-        })
-      }), /* @__PURE__ */ jsx("div", {
-        className: "self-center ml-4 text-4xl",
-        children: `${pool == null ? void 0 : pool.coinInfoX.name} / ${pool == null ? void 0 : pool.coinInfoY.name}`
-      })]
+      children: /* @__PURE__ */ jsx("div", {
+        className: "self-center ml-4 text-5xl",
+        children: (pool == null ? void 0 : pool.coinInfoX) && (pool == null ? void 0 : pool.coinInfoY) ? /* @__PURE__ */ jsxs("div", {
+          className: "flex items-center",
+          children: [/* @__PURE__ */ jsxs("div", {
+            className: "flex gap-2 items-center",
+            children: [/* @__PURE__ */ jsx(DocumentDuplicateIcon, {
+              className: "opacity-30 hover:opacity-80 hover:cursor-pointer",
+              width: 24,
+              height: 24,
+              onClick: copyX
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "flex flex-col text-center",
+              children: [/* @__PURE__ */ jsx("div", {
+                children: pool == null ? void 0 : pool.coinInfoX.symbol
+              }), /* @__PURE__ */ jsx("div", {
+                className: "text-sm pl-1 text-primary-500",
+                children: pool == null ? void 0 : pool.coinInfoX.name
+              })]
+            })]
+          }), /* @__PURE__ */ jsx("div", {
+            className: "mx-12 translate-y-[-10px]",
+            children: /* @__PURE__ */ jsx(sl, {
+              coins: [pool == null ? void 0 : pool.coinInfoX.symbol, pool == null ? void 0 : pool.coinInfoY.symbol],
+              size: 48
+            })
+          }), /* @__PURE__ */ jsxs("div", {
+            className: "flex gap-2 items-center",
+            children: [/* @__PURE__ */ jsxs("div", {
+              className: "flex flex-col text-center",
+              children: [/* @__PURE__ */ jsx("div", {
+                children: pool == null ? void 0 : pool.coinInfoY.symbol
+              }), /* @__PURE__ */ jsx("div", {
+                className: "text-sm pl-1 text-primary-500",
+                children: pool == null ? void 0 : pool.coinInfoY.name
+              })]
+            }), /* @__PURE__ */ jsx(DocumentDuplicateIcon, {
+              className: "opacity-30 hover:opacity-80 hover:cursor-pointer",
+              width: 24,
+              height: 24,
+              onClick: copyY
+            })]
+          }), " "]
+        }) : "Loading..."
+      })
     }), /* @__PURE__ */ jsxs("div", {
-      className: "flex",
+      className: "flex ",
       children: [/* @__PURE__ */ jsx(cl, {
+        className: "text-center",
         title: `${pool == null ? void 0 : pool.coinInfoX.name} Locked`,
         value: (_a2 = pool == null ? void 0 : pool.amountX.toLocaleString()) != null ? _a2 : "-"
       }), /* @__PURE__ */ jsx(cl, {
+        className: "text-center",
         title: `${pool == null ? void 0 : pool.coinInfoY.name} Locked`,
         value: (_b = pool == null ? void 0 : pool.amountY.toLocaleString()) != null ? _b : "-"
       }), /* @__PURE__ */ jsx(cl, {
+        className: "text-center",
         title: "Fee Percent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
       })]
@@ -12926,7 +13067,6 @@ function PoolView({
 }
 function PoolContainer({}) {
   var _a2, _b;
-  useNavigate();
   const {
     firstCoin,
     secondCoin
@@ -13673,18 +13813,6 @@ const SimpleMarketQueryDocument = {
                 "kind": "Field",
                 "name": {
                   "kind": "Name",
-                  "value": "orderId"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "owner"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
                   "value": "side"
                 }
               }, {
@@ -13704,12 +13832,6 @@ const SimpleMarketQueryDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "value"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "auxBurned"
                 }
               }, {
                 "kind": "Field",
@@ -15158,9 +15280,9 @@ function PoolsView({
   const [searchQuery, setSearchQuery] = react.exports.useState("");
   const onSearchChange = (c) => setSearchQuery(c.currentTarget.value);
   return /* @__PURE__ */ jsxs("div", {
-    className: "flex flex-col items-center gap-4 w-full max-w-[95vw] h-auto mb-12",
+    className: "flex flex-col items-center gap-4 w-full max-w-[1280px] h-auto",
     children: [/* @__PURE__ */ jsxs("div", {
-      className: "flex w-full justify-between items-center max-w-[1280px] mt-8",
+      className: "flex w-full justify-between items-center  mt-8",
       children: [/* @__PURE__ */ jsx("div", {
         children: /* @__PURE__ */ jsx("h2", {
           className: "text-4xl",
@@ -15186,7 +15308,7 @@ function PoolsView({
         children: "Create Pool"
       })]
     }), /* @__PURE__ */ jsx(ml, {
-      className: "flex flex-col gap-4 max-w-[1280px] w-full rounded-xl border border-primary-700",
+      className: "max-w-full w-full rounded-xl border border-primary-700 overflow-auto",
       padding: 0,
       children: /* @__PURE__ */ jsx(PoolsTable, {
         globalFilter: searchQuery
@@ -15302,7 +15424,7 @@ function App() {
   const location = useGeoLocation();
   const country = location.country;
   return /* @__PURE__ */ jsx("div", {
-    className: "dark w-full h-full",
+    className: "dark w-full h-full max-h-screen max-w-screen",
     children: /* @__PURE__ */ jsx(ApolloProvider, {
       client,
       children: /* @__PURE__ */ jsx(dist.WalletProvider, {
