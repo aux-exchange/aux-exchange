@@ -3,10 +3,8 @@ type Query {
   coins: [CoinInfo!]!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
-  poolCoins: [CoinInfo!]!
   market(marketInput: MarketInput!): Market
   markets(marketInputs: [MarketInput!]): [Market!]!
-  marketCoins: [CoinInfo!]!
   account(owner: Address!): Account
 }
 

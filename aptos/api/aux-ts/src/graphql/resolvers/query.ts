@@ -1,9 +1,11 @@
+import type { Types } from "aptos";
+import axios from "axios";
 import { promises as fs } from "fs";
 import _ from "lodash";
-import * as coins from "../../coins";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
-import { auxClient } from "../connection";
+import * as coins from "../../coins";
+import { auxClient, redisClient } from "../connection";
 import {
   Account,
   CoinInfo,
@@ -17,7 +19,6 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
 } from "../generated/types";
-import type { Types } from "aptos";
 import { getRecognizedTVL } from "../pyth";
 
 function getFeaturedPriority(status: FeaturedStatus): number {
@@ -113,8 +114,18 @@ export const query = {
         ].flat()
       );
     }
-    const path = `${process.cwd()}/src/indexer/data/mainnet-coin-list.json`;
-    const coins = JSON.parse(await fs.readFile(path, "utf-8"));
+    let rawCoins = await redisClient.get("hippo-coin-list");
+    let coins;
+    if (_.isNull(rawCoins)) {
+      const url =
+        "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+      coins = (await axios.get(url)).data;
+      console.log(coins);
+      redisClient.set("hippo-coin-list", JSON.stringify(coins));
+      redisClient.expire("hippo-coin-list", 60);
+    } else {
+      coins = JSON.parse(rawCoins);
+    }
 
     // The "liquidity" of a coin is defined as the sum of the liquidity of the
     // pools that trade it.
@@ -167,7 +178,10 @@ export const query = {
       if (lhs.recognizedLiquidity != rhs.recognizedLiquidity) {
         return rhs.recognizedLiquidity - lhs.recognizedLiquidity;
       }
-      return rhs.auLiquidity - lhs.auLiquidity;
+      if (lhs.auLiquidity != rhs.auLiquidity) {
+        return rhs.auLiquidity - lhs.auLiquidity;
+      }
+      return lhs.symbol.toLowerCase().localeCompare(rhs.symbol.toLowerCase());
     });
     return allCoins;
   },
@@ -232,12 +246,6 @@ export const query = {
     });
     // @ts-ignore
     return formattedPools;
-  },
-  async poolCoins(parent: any) {
-    return this.coins(parent);
-    // const pools = await this.pools(parent, {});
-    // const coinInfos = pools.flatMap((pool) => [pool.coinInfoX, pool.coinInfoY]);
-    // return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
   },
   async market(_parent: any, args: QueryMarketArgs): Promise<Maybe<Market>> {
     let market: aux.Market;
@@ -344,15 +352,6 @@ export const query = {
         });
     }
   },
-  async marketCoins(parent: any) {
-    const markets = await this.markets(parent, {});
-    const coinInfos = markets.flatMap((market) => [
-      market.baseCoinInfo,
-      market.quoteCoinInfo,
-    ]);
-    return _.uniqBy(coinInfos, (coinInfo) => coinInfo.coinType);
-  },
-
   async account(_parent: any, { owner }: QueryAccountArgs): Promise<Account> {
     const auxAccount = await auxClient.getAccountResourceOptional(
       owner,
