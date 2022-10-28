@@ -6,62 +6,98 @@
  */
 import { AptosAccount } from "aptos";
 import { assert } from "console";
-import * as coins from "../src/coins";
-import { DU, Pool } from "../src";
+import { AU, DU, Pool } from "../src";
 import { AuxClient, Network, FakeCoin } from "../src/client";
 import { WebSocket } from "ws";
 
 const AUX_TRADER_CONFIG = {
   // If the deviation ratio between AMM and oracle reaches this threshold, send
   // a swap.
-  deviationThreshold: 0.0003,
+  deviationThreshold: 0.0001,
   // The size of each order, denoted in decimal units. "DU" or "DecimalUnits"
   // represents a quantity with decimals. DU(0.07) means 0.07 ETH and DU(100)
   // means $100. The on chain representation is in "AU" or "AtomicUnits".
-  ethPerSwap: DU(0.0007),
-  usdcPerSwap: DU(1),
+  ethPerSwap: DU(0.07),
+  usdcPerSwap: DU(100),
   market: "ETH/USD",
 };
 
-const aptosNode =
-  process.env["APTOS_NODE"] ?? "https://fullnode.devnet.aptoslabs.com/v1";
+// While you can technically connect directly to Devnet, we strongly recommend
+// running a full validator for RPCs.
+// const auxClient = AuxClient.create(Network.Devnet);
+const auxClient = AuxClient.create({
+  network: Network.Devnet,
+  // validatorAddress: "http://localhost:8080",
+});
+
+// We create a new Aptos account for the trader
+const trader: AptosAccount = new AptosAccount();
+
+// We fund trader and module authority with Aptos, BTC, and USDC coins
+async function setupTrader(): Promise<void> {
+  await auxClient.airdropNativeCoin({
+    account: trader.address(),
+    quantity: AU(500_000_000),
+  });
+
+  // We're rich! Use canonical fake types for trading. Fake coins can be freely
+  // minted by anybody. All AUX test markets use these canonical fake coins.
+  await auxClient.registerAndMintFakeCoin({
+    sender: trader,
+    coin: FakeCoin.ETH,
+    amount: DU(5000),
+  });
+
+  await auxClient.registerAndMintFakeCoin({
+    sender: trader,
+    coin: FakeCoin.USDC,
+    amount: DU(5_000_000),
+  });
+}
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
 async function printAccountBalance(
   auxClient: AuxClient,
   trader: AptosAccount
 ): Promise<void> {
+  const traderBtcBalance =
+    await auxClient.ensureMinimumFakeCoinBalance({
+      sender: trader,
+      coin: FakeCoin.ETH,
+      minQuantity: DU(100),
+      replenishQuantity: DU(1000),
+    });
+
+  const traderUsdcBalance =
+    await auxClient.ensureMinimumFakeCoinBalance({
+      sender: trader,
+      coin: FakeCoin.USDC,
+      minQuantity: DU(100_000),
+      replenishQuantity: DU(1_000_000),
+    });
+
   console.log(
     "  Trader ETH=",
     (
-      await auxClient.getCoinBalanceDecimals({
-        account: trader.address(),
-        coinType: coins.WETH,
-      })
+      await auxClient.toDecimalUnits(
+            auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
+            traderBtcBalance
+      )
     ).toString(),
     ", USDC=",
     (
-      await auxClient.getCoinBalanceDecimals({
-        account: trader.address(),
-        coinType: coins.USDC_eth,
-      })
+      await auxClient.toDecimalUnits(
+        auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
+        traderUsdcBalance
+      )
     ).toString()
   );
 }
 
 async function tradeAMM(): Promise<void> {
-  const auxClient = AuxClient.create({
-    network: Network.Devnet,
-    validatorAddress: aptosNode,
-  });
-  const privateKeyHex =
-    "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49";
-  const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
-    privateKeyHex,
-  });
-
   let maybePool = await Pool.read(auxClient, {
     coinTypeX: auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
     coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
@@ -97,8 +133,17 @@ async function tradeAMM(): Promise<void> {
           try {
             await pool.update();
             if (poolX.toNumber() === 0 || poolY.toNumber() === 0) {
-              throw new Error("Empty pool");
+              const amountXToAdd = DU(100);
+              const amountYToAdd = DU(150000);
+              const tx = await pool.addExactLiquidity({
+                sender: trader,
+                amountX: amountXToAdd,
+                amountY: amountYToAdd,
+              });
+              console.log(">>>> Add Liquidity event:", tx.payload);
+              await pool.update();
             }
+            
           } catch (e) {
             console.log("  Pool update failed with error: ", e);
           }
@@ -120,13 +165,12 @@ async function tradeAMM(): Promise<void> {
           if (bestBid / poolPrice - 1 > AUX_TRADER_CONFIG.deviationThreshold) {
             console.log(">>>> Swapping for ETH");
             try {
-              tx = await pool.swapYForXExactLimit({
+              tx = await pool.swapYForXLimit({
                 sender: trader,
-                maxAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
-                exactAmountOut: AUX_TRADER_CONFIG.ethPerSwap,
-                maxInPerOut: DU(1 / bestBid),
+                exactAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
+                minOutPerIn: DU(1 / bestBid),
               });
-              console.log(">>>> Swap event:", tx);
+              console.log(">>>> Swap event:", tx.payload);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from USDC to ETH failed with error: ", e);
@@ -139,11 +183,10 @@ async function tradeAMM(): Promise<void> {
           ) {
             console.log(">>>> Swapping for USDC");
             try {
-              tx = await pool.swapXForYExactLimit({
+              tx = await pool.swapXForYLimit({
                 sender: trader,
-                maxAmountIn: AUX_TRADER_CONFIG.ethPerSwap,
-                exactAmountOut: AUX_TRADER_CONFIG.usdcPerSwap,
-                maxInPerOut: DU(bestAsk),
+                exactAmountIn: AUX_TRADER_CONFIG.ethPerSwap,
+                minOutPerIn: DU(bestAsk),
               });
               console.log(">>>> Swap event:", tx.payload);
               await printAccountBalance(auxClient, trader);
@@ -181,6 +224,7 @@ async function tradeAMM(): Promise<void> {
 }
 
 async function main() {
+  await setupTrader();
   await tradeAMM();
 }
 

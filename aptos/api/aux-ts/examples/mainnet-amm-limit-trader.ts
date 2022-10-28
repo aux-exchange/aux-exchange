@@ -23,8 +23,9 @@ const AUX_TRADER_CONFIG = {
   market: "ETH/USD",
 };
 
+const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const aptosNode =
-  process.env["APTOS_NODE"] ?? "https://fullnode.mainnet.aptoslabs.com/v1";
+  process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -154,6 +155,10 @@ async function tradeAMM(): Promise<void> {
           }
           prevBid = bestBid;
           prevAsk = bestAsk;
+          if (aptosNode === DEFAULT_MAINNET) {
+            // Avoid rate limiting
+            await sleep(1000);
+          }
         }
       }
     }
