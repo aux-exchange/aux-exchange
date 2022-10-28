@@ -1411,13 +1411,15 @@ module aux::clob_market {
 
         // round quantity down (router may submit un-quantized quantities)
         let lot_size = market.lot_size;
+        let tick_size = market.lot_size;
         let rounded_quantity = quantity / lot_size * lot_size;
+        let rounded_price = limit_price / tick_size * tick_size;
 
         let (base_au, quote_au) = new_order<B, Q>(
             market,
             sender_addr,
             is_bid,
-            limit_price,
+            rounded_price,
             rounded_quantity,
             0,
             order_type,
@@ -1435,12 +1437,18 @@ module aux::clob_market {
             if (is_bid) {
                 // taker pays quote, receives base
                 let quote = coin::extract<Q>(quote_coin, (quote_au as u64));
+                if (!coin::is_account_registered<Q>(@aux)) {
+                    coin::register<Q>(module_signer);
+                };
                 coin::deposit<Q>(vault_addr, quote);
                 let base = coin::withdraw<B>(module_signer, (base_au as u64));
                 coin::merge<B>(base_coin, base);
             } else {
                 // taker receives quote, pays base
                 let base = coin::extract<B>(base_coin, (base_au as u64));
+                if (!coin::is_account_registered<B>(@aux)) {
+                    coin::register<B>(module_signer);
+                };
                 coin::deposit<B>(vault_addr, base);
                 let quote = coin::withdraw<Q>(module_signer, (quote_au as u64));
                 coin::merge<Q>(quote_coin, quote);

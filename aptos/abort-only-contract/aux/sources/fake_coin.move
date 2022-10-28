@@ -8,6 +8,8 @@ module aux::fake_coin {
     use std::signer;
     use aptos_framework::coin;
     use aptos_framework::managed_coin;
+    use aptos_framework::chain_id;
+
     use aux::authority;
 
     // Wrapper for fake coins. All coin types are wrapped by FakeCoin so that the
@@ -26,12 +28,15 @@ module aux::fake_coin {
         if (1 == 1) {
             return
         };
-        initialize<USDC>(source, 6, b"Fake Coin USDC", b"USDC");
-        initialize<USDT>(source, 6, b"Fake Coin USDT", b"USDT");
-        initialize<BTC>(source, 8, b"Fake Coin BTC", b"BTC");
-        initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
-        initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
-        initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
+        let chain = chain_id::get();
+        if (chain != 1 && chain != 5) {
+            initialize<USDC>(source, 6, b"Fake Coin USDC", b"USDC");
+            initialize<USDT>(source, 6, b"Fake Coin USDT", b"USDT");
+            initialize<BTC>(source, 8, b"Fake Coin BTC", b"BTC");
+            initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
+            initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
+            initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
+        }
     }
 
     #[test_only]
@@ -39,7 +44,7 @@ module aux::fake_coin {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         deployer::deployer::create_resource_account(sender, b"amm");
         authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
-        init_module(&authority::get_signer(sender));
+        initialize_for_test(&authority::get_signer(sender));
     }
 
     // Initializes a new fake coin. Should only be called by this module.
