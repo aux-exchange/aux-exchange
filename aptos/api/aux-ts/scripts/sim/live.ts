@@ -306,10 +306,10 @@ async function main() {
   console.log(output);
 
   const convert = {
-    "BTC-USD": FakeCoin.BTC,
+    // "BTC-USD": FakeCoin.BTC,
     "ETH-USD": FakeCoin.ETH,
-    "SOL-USD": FakeCoin.SOL,
-    "APT-USD": FakeCoin.AUX,
+    // "SOL-USD": FakeCoin.SOL,
+    // "APT-USD": FakeCoin.AUX,
   };
 
   const pools: Record<string, Pool> = Object.fromEntries(
@@ -317,7 +317,7 @@ async function main() {
       Object.entries(convert).map(([productId, fakeCoin]) =>
         Pool.read(auxClient, {
           coinTypeX: auxClient.getWrappedFakeCoinType(fakeCoin),
-          coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
+          coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDT),
         }).then((pool) => [productId, pool])
       )
     )
@@ -327,7 +327,7 @@ async function main() {
       Object.entries(convert).map(([productId, fakeCoin]) =>
         Market.read(auxClient, {
           baseCoinType: auxClient.getWrappedFakeCoinType(fakeCoin),
-          quoteCoinType: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
+          quoteCoinType: auxClient.getWrappedFakeCoinType(FakeCoin.USDT),
         }).then((market) => [productId, market])
       )
     )

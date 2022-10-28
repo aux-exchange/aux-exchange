@@ -67,6 +67,30 @@ export function resolutionToString(resolution: GqlResolution): Resolution {
   }
 }
 
+export function resolutionToSeconds(resolution: Resolution): number {
+  switch (resolution) {
+    case "15s":
+      return 15;
+    case "1m":
+      return 60;
+    case "5m":
+      return 5 * 60;
+    case "15m":
+      return 15 * 60;
+    case "1h":
+      return 60 * 60;
+    case "4h":
+      return 4 * 60 * 60;
+    case "1d":
+      return 24 * 60 * 60;
+    case "1w":
+      return 7 * 24 * 60 * 60;
+    default:
+      const _exhaustiveCheck: never = resolution;
+      return _exhaustiveCheck;
+  }
+}
+
 export const market = {
   async openOrders(
     parent: Market,
@@ -137,7 +161,10 @@ export const market = {
   async bars(
     { baseCoinInfo, quoteCoinInfo }: Market,
     { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
-  ): Promise<Array<Bar>> {
+  ): Promise<Bar[]> {
+    if (firstDataRequest === false) {
+      return [];
+    }
     const key = `${baseCoinInfo.coinType}-${
       quoteCoinInfo.coinType
     }-bar-${resolutionToString(resolution)}`;
@@ -145,12 +172,12 @@ export const market = {
     let bars = rawBars.map((bar) => JSON.parse(bar));
 
     // if firstDataRequest override to now, otherwise filter for to
-    if (_.isNull(firstDataRequest) && !_.isNull(to)) {
-      bars = bars.filter((bar) => bar.time < Number(to) * 1000);
+    if (_.isNull(firstDataRequest) && !_.isNull(to) && !_.isUndefined(to)) {
+      bars = bars.filter((bar) => bar.time < to * 1000);
     }
-    if (!_.isNull(countBack)) {
-      return _.take(bars, countBack);
-    } else if (!_.isNull(from)) {
+    if (!_.isNull(countBack) && !_.isUndefined(countBack)) {
+      bars = _.take(bars, countBack);
+    } else if (!_.isNull(from) && !_.isUndefined(from)) {
       bars = bars.filter((bar) => bar.time >= Number(from) * 1000);
     }
 
@@ -159,6 +186,14 @@ export const market = {
       .sortedUniqBy((bar) => bar.time)
       .reverse()
       .value();
+    // if (bars.length === countBack) {
+    //   return { bars, noData: false };
+    // } else {
+    //   // const nextTime =
+    //   //   Math.floor(bars[bars.length - 1]!.time / 1000) +
+    //   //   resolutionToSeconds(resolutionToString(resolution));
+    //   return { bars, noData: true };
+    // }
   },
   async pythRating(
     parent: Market,
