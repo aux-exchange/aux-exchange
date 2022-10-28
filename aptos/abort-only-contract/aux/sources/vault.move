@@ -35,8 +35,7 @@ module aux::vault {
     const EBALANCE_INVARIANT_VIOLATION: u64 = 7;
     const ECANNOT_DOUBLE_REGISTER_SAME_COIN: u64 = 9;
     const EINSUFFICIENT_FUNDS: u64 = 10;
-    const EUSER_UNREGISTERED: u64 = 11;
-    const ETRADER_NOT_AUTHORIZED: u64 = 12;
+    const ETRADER_NOT_AUTHORIZED: u64 = 11;
 
     // CoinInfo provides information about a coin that can be borrowed.
     struct CoinInfo has store {
@@ -168,7 +167,7 @@ module aux::vault {
         let from_addr = signer::address_of(from);
         assert!(
             exists<AuxUserAccount>(to),
-            EUSER_UNREGISTERED
+            EACCOUNT_NOT_FOUND
         );
         decrease_user_balance<CoinType>(from_addr, (amount_au as u128));
         increase_user_balance<CoinType>(to, (amount_au as u128));
@@ -221,8 +220,8 @@ module aux::vault {
         amount_au: u64
     ) acquires CoinBalance, Vault {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
-        // TODO: Account health check must be done before users can withdraw funds
         let owner_addr = signer::address_of(sender);
+        assert!(exists<AuxUserAccount>(owner_addr), error::not_found(EACCOUNT_NOT_FOUND));
         decrease_user_balance<CoinType>(owner_addr, (amount_au as u128));
         let vault_signer = authority::get_signer_self();
         coin::transfer<CoinType>(&vault_signer, owner_addr, amount_au);
@@ -321,6 +320,55 @@ module aux::vault {
             0
         }
     }
+
+    public fun withdraw_coin<CoinType>(
+        sender: &signer,
+        amount_au: u64
+    ): coin::Coin<CoinType> acquires CoinBalance, Vault {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        let owner_addr = signer::address_of(sender);
+        assert!(exists<AuxUserAccount>(owner_addr), error::not_found(EACCOUNT_NOT_FOUND));
+        decrease_user_balance<CoinType>(owner_addr, (amount_au as u128));
+        let vault_signer = authority::get_signer_self();
+        let coin = coin::withdraw<CoinType>(&vault_signer, amount_au);
+
+        let vault_events = borrow_global_mut<Vault>(@aux);
+        event::emit_event<WithdrawEvent>(
+            &mut vault_events.withdraw_events,
+            WithdrawEvent {
+                coinType: type_info::type_name<CoinType>(),
+                owner: signer::address_of(sender),
+                amount_au,
+            }
+        );
+        coin
+    }
+
+    public fun deposit_coin<CoinType>(
+        to: address,
+        coin: coin::Coin<CoinType>,
+    ) acquires CoinBalance, Vault {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        assert!(exists<AuxUserAccount>(to), error::not_found(EACCOUNT_NOT_FOUND));
+        if (!coin::is_account_registered<CoinType>(@aux)) {
+            coin::register<CoinType>(&authority::get_signer_self());
+        };
+        let amount = coin::value<CoinType>(&coin);
+        coin::deposit<CoinType>(@aux, coin);
+        increase_user_balance<CoinType>(to, (amount as u128));
+
+        let vault_events = borrow_global_mut<Vault>(@aux);
+        event::emit_event<DepositEvent>(
+            &mut vault_events.deposit_events,
+            DepositEvent {
+                coinType: type_info::type_name<CoinType>(),
+                depositor: to,
+                to: to,
+                amount_au: amount,
+            }
+        );
+    }
+
 
     /********************/
     /* FRIEND FUNCTIONS */

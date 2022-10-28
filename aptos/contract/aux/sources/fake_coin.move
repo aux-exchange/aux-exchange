@@ -36,7 +36,7 @@ module aux::fake_coin {
     public fun init_module_for_testing(sender: &signer) {
         deployer::deployer::create_resource_account(sender, b"amm");
         authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
-        init_module(&authority::get_signer(sender));
+        initialize_for_test(&authority::get_signer(sender));
     }
 
     // Initializes a new fake coin. Should only be called by this module.
