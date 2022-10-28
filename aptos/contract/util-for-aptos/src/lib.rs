@@ -1,6 +1,6 @@
 use aptos_sdk::{
     crypto::{ed25519::Ed25519PrivateKey, hash::HashValue},
-    rest_client::{Client, Transaction},
+    rest_client::{Account, Client, Transaction},
     transaction_builder::TransactionFactory,
     types::{
         account_address::AccountAddress, chain_id::ChainId, transaction::TransactionPayload,
@@ -58,6 +58,23 @@ pub async fn get_local_account_from_private_key_str(
     let private_key = get_private_key_from_str(pk_str);
     let key = AccountKey::from_private_key(private_key);
     let addr = key.authentication_key().derived_address();
+
+    let seqnum = if let Ok(res) = rest_client.get_account(addr).await {
+        res.inner().sequence_number
+    } else {
+        0
+    };
+
+    LocalAccount::new(addr, key, seqnum)
+}
+
+pub async fn get_local_account_from_private_key_str_and_addr(
+    pk_str: &str,
+    addr: AccountAddress,
+    rest_client: &Client,
+) -> LocalAccount {
+    let private_key = get_private_key_from_str(pk_str);
+    let key = AccountKey::from_private_key(private_key);
 
     let seqnum = if let Ok(res) = rest_client.get_account(addr).await {
         res.inner().sequence_number

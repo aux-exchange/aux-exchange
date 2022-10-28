@@ -57,9 +57,12 @@ async fn main() {
     let metadata = bcs::to_bytes(&built_package.extract_metadata().unwrap()).unwrap();
     let code = built_package.extract_code();
 
-    let mut human_account =
-        util_for_aptos::get_local_account_from_private_key_str(human_private_key, &rest_client)
-            .await;
+    let mut human_account = util_for_aptos::get_local_account_from_private_key_str_and_addr(
+        human_private_key,
+        deployer_address,
+        &rest_client,
+    )
+    .await;
 
     deployer::delete_code(&rest_client, &mut human_account, "abc").await;
 
