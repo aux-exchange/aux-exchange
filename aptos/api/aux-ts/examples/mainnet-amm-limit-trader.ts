@@ -14,18 +14,19 @@ import { WebSocket } from "ws";
 const AUX_TRADER_CONFIG = {
   // If the deviation ratio between AMM and oracle reaches this threshold, send
   // a swap.
-  deviationThreshold: 0.0003,
+  deviationThreshold: 0.0015,
   // The size of each order, denoted in decimal units. "DU" or "DecimalUnits"
-  // represents a quantity with decimals. DU(0.005) for ethPerSwap means 0.005 ETH and DU(10)
-  // for usdcPerSwap means 10 USDC. The on chain representation is in "AU" or "AtomicUnits".
-  ethPerSwap: DU(0.005),
-  usdcPerSwap: DU(10),
-  market: "ETH/USD",
+  // represents a quantity with decimals. DU(0.005) for basePerSwap means 0.005 ETH and DU(10)
+  // for quotePerSwap means 10 USDC. The on chain representation is in "AU" or "AtomicUnits".
+  basePerSwap: DU(0.005),
+  quotePerSwap: DU(10),
+  market: "ETH/USD", // FTX price feed to subscribe from
+  base: "ETH",
+  quote: "USDC",
 };
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
-const aptosNode =
-  process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,22 +37,23 @@ async function printAccountBalance(
   trader: AptosAccount
 ): Promise<void> {
   console.log(
-    "  Trader ETH=",
+    `  Trader ${AUX_TRADER_CONFIG.base}=`,
     (
       await auxClient.getCoinBalanceDecimals({
         account: trader.address(),
-        coinType: coins.WETH,
+        coinType: coins.WETH, // other examples are APT, SOL, WBTC 
       })
     ).toString(),
-    ", USDC=",
+    `, ${AUX_TRADER_CONFIG.quote}=`,
     (
       await auxClient.getCoinBalanceDecimals({
         account: trader.address(),
-        coinType: coins.USDC_eth,
+        coinType: coins.USDC_eth, // other examples are USDC_sol, USDT, USDC_layerzero, USDT_layerzero, USDA
       })
     ).toString()
   );
 }
+
 async function tradeAMM(): Promise<void> {
   const auxClient = AuxClient.create({
     network: Network.Mainnet,
@@ -112,7 +114,9 @@ async function tradeAMM(): Promise<void> {
             prevPoolY !== poolY.toNumber()
           ) {
             console.log(
-              `Pool ETH=${poolX.toString()}, USDC=${poolY.toString()}`
+              `Pool ${AUX_TRADER_CONFIG.base}=${poolX.toString()}, ${
+                AUX_TRADER_CONFIG.quote
+              }=${poolY.toString()}`
             );
             prevPoolX = poolX.toNumber();
             prevPoolY = poolY.toNumber();
@@ -122,17 +126,20 @@ async function tradeAMM(): Promise<void> {
           const poolPrice = poolY.toNumber() / poolX.toNumber();
           // If FTX prices are relatively higher than a given threshold, swap in for ETH from AUX
           if (bestBid / poolPrice - 1 > AUX_TRADER_CONFIG.deviationThreshold) {
-            console.log(">>>> Swapping for ETH");
+            console.log(`>>>> Swapping for ${AUX_TRADER_CONFIG.base}`);
             try {
               tx = await pool.swapYForXLimit({
                 sender: trader,
-                exactAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
+                exactAmountIn: AUX_TRADER_CONFIG.quotePerSwap,
                 minOutPerIn: DU(1 / bestBid),
               });
               console.log(">>>> Swap event:", tx);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
-              console.log("  Swap from USDC to ETH failed with error: ", e);
+              console.log(
+                `  Swap from ${AUX_TRADER_CONFIG.quote} to ${AUX_TRADER_CONFIG.base} failed with error: `,
+                e
+              );
             }
           }
           // If FTX prices are relatively lower than a given threshold, swap out of ETH from AUX
@@ -140,17 +147,20 @@ async function tradeAMM(): Promise<void> {
             poolPrice / bestAsk - 1 >
             AUX_TRADER_CONFIG.deviationThreshold
           ) {
-            console.log(">>>> Swapping for USDC");
+            console.log(`>>>> Swapping for ${AUX_TRADER_CONFIG.quote}`);
             try {
               tx = await pool.swapXForYLimit({
                 sender: trader,
-                exactAmountIn: AUX_TRADER_CONFIG.ethPerSwap,
+                exactAmountIn: AUX_TRADER_CONFIG.basePerSwap,
                 minOutPerIn: DU(bestAsk),
               });
               console.log(">>>> Swap event:", tx.payload);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
-              console.log("  Swap from ETH to USDC failed with error: ", e);
+              console.log(
+                `  Swap from ${AUX_TRADER_CONFIG.base} to ${AUX_TRADER_CONFIG.quote} failed with error: `,
+                e
+              );
             }
           }
           prevBid = bestBid;
