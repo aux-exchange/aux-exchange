@@ -317,7 +317,7 @@ async function main() {
       Object.entries(convert).map(([productId, fakeCoin]) =>
         Pool.read(auxClient, {
           coinTypeX: auxClient.getWrappedFakeCoinType(fakeCoin),
-          coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDT),
+          coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
         }).then((pool) => [productId, pool])
       )
     )
@@ -327,7 +327,7 @@ async function main() {
       Object.entries(convert).map(([productId, fakeCoin]) =>
         Market.read(auxClient, {
           baseCoinType: auxClient.getWrappedFakeCoinType(fakeCoin),
-          quoteCoinType: auxClient.getWrappedFakeCoinType(FakeCoin.USDT),
+          quoteCoinType: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
         }).then((market) => [productId, market])
       )
     )
