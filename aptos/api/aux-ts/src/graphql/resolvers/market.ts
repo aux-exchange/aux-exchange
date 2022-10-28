@@ -1,3 +1,4 @@
+import _ from "lodash";
 import * as aux from "../../";
 import { FakeCoin } from "../../../src/client";
 import {
@@ -142,16 +143,20 @@ export const market = {
     const startTime = parseFloat(from);
     const endTime = parseFloat(to);
     // TODO: Perform actual indexing. For small numbers of bars this should be okay.
-    const bars = rawBars
+    let bars = rawBars
       .map((bar) => JSON.parse(bar))
       .filter(
         (bar) =>
           parseFloat(bar.time) >= startTime &&
           (firstDataRequest || parseFloat(bar.time) < endTime)
       );
-    console.log(bars);
     const firstIndex = bars.length - countBack;
-    return bars.slice(firstIndex >= 0 ? firstIndex : 0);
+    bars = bars.slice(firstIndex >= 0 ? firstIndex : 0);
+    return _(bars)
+      .reverse()
+      .sortedUniqBy((bar) => bar.time)
+      .reverse()
+      .value();
   },
   async pythRating(
     parent: Market,

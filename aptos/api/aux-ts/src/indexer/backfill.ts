@@ -21,7 +21,6 @@ async function main() {
   const now = Date.now();
   const n = 100;
   const start = now - (now % 60_000) - n * 60_000;
-  console.log(now);
   const bars = (
     await axios.get(`https://ftx.com/api/markets/APT/USD/candles`, {
       params: {

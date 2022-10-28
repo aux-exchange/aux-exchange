@@ -61,7 +61,6 @@ export const account = {
     return Promise.all(
       coinStores.map(async (coinStore) => {
         const coinType = parseTypeArgs(coinStore.type)[0]!;
-        console.log(coinType);
         const coinInfo = await auxClient.getCoinInfo(coinType);
         // @ts-ignore
         const balance = AU(coinStore.data.coin.value)
