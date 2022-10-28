@@ -17,10 +17,10 @@ type Market {
   pythRating(price: Float!, side: Side!): PythRating
   bars(
     resolution: Resolution!
-    from: Timestamp!
-    to: Timestamp!
-    countBack: Int!
-    firstDataRequest: Boolean!
+    from: Int
+    to: Int
+    countBack: Int
+    firstDataRequest: Boolean
   ): [Bar!]!
   high24h: Float
   low24h: Float

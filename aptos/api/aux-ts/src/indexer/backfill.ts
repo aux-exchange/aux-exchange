@@ -1,22 +1,21 @@
 import * as redis from "redis";
 import { FakeCoin } from "../client";
 
+import axios from "axios";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import _ from "lodash";
 import { auxClient } from "../graphql/connection";
 import { Resolution } from "../graphql/generated/types";
-import axios from "axios";
 
 const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));
 const redisPubSub = new RedisPubSub();
+redisPubSub;
 
 async function main() {
   await redisClient.connect();
-  const baseCoinType = "0x1::aptos_coin::AptosCoin";
-  //   const baseCoinType = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
+  // const baseCoinType = "0x1::aptos_coin::AptosCoin";
+  const baseCoinType = auxClient.getWrappedFakeCoinType(FakeCoin.ETH);
   const quoteCoinType = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
-
   await redisClient.flushAll();
   const now = Date.now();
   const n = 100;

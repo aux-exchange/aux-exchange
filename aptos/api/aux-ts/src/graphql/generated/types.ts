@@ -187,11 +187,11 @@ export type Market = {
 
 
 export type MarketBarsArgs = {
-  countBack: Scalars['Int'];
-  firstDataRequest: Scalars['Boolean'];
-  from: Scalars['Timestamp'];
+  countBack?: InputMaybe<Scalars['Int']>;
+  firstDataRequest?: InputMaybe<Scalars['Boolean']>;
+  from?: InputMaybe<Scalars['Int']>;
   resolution: Resolution;
-  to: Scalars['Timestamp'];
+  to?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -959,7 +959,7 @@ export type Low24hResolvers<ContextType = any, ParentType extends ResolversParen
 };
 
 export type MarketResolvers<ContextType = any, ParentType extends ResolversParentTypes['Market'] = ResolversParentTypes['Market']> = {
-  bars?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsArgs, 'countBack' | 'firstDataRequest' | 'from' | 'resolution' | 'to'>>;
+  bars?: Resolver<Array<ResolversTypes['Bar']>, ParentType, ContextType, RequireFields<MarketBarsArgs, 'resolution'>>;
   baseCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   high24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   isRoundLot?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MarketIsRoundLotArgs, 'quantity'>>;
