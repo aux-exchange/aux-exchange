@@ -103,9 +103,11 @@ export const market = {
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
     const fills = await market.tradeHistory(owner);
-    return fills.map((fill) =>
-      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
-    );
+    return fills
+      .filter((fill) => fill.sequenceNumber.toNumber() % 2 === 0)
+      .map((fill) =>
+        orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+      );
   },
   high24h(parent: Market): Promise<Maybe<number>> {
     return analytic24h("high", parent);
@@ -140,18 +142,18 @@ export const market = {
       quoteCoinInfo.coinType
     }-bar-${resolutionToString(resolution)}`;
     const rawBars = (await redisClient.lRange(key, 0, -1)) ?? [];
-    const startTime = parseFloat(from);
-    const endTime = parseFloat(to);
-    // TODO: Perform actual indexing. For small numbers of bars this should be okay.
-    let bars = rawBars
-      .map((bar) => JSON.parse(bar))
-      .filter(
-        (bar) =>
-          parseFloat(bar.time) >= startTime &&
-          (firstDataRequest || parseFloat(bar.time) < endTime)
-      );
-    const firstIndex = bars.length - countBack;
-    bars = bars.slice(firstIndex >= 0 ? firstIndex : 0);
+    let bars = rawBars.map((bar) => JSON.parse(bar));
+
+    // if firstDataRequest override to now, otherwise filter for to
+    if (_.isNull(firstDataRequest) && !_.isNull(to)) {
+      bars = bars.filter((bar) => bar.time < Number(to) * 1000);
+    }
+    if (!_.isNull(countBack)) {
+      return _.take(bars, countBack);
+    } else if (!_.isNull(from)) {
+      bars = bars.filter((bar) => bar.time >= Number(from) * 1000);
+    }
+
     return _(bars)
       .reverse()
       .sortedUniqBy((bar) => bar.time)

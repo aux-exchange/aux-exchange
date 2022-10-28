@@ -305,12 +305,19 @@ async function publishAnalytics(
               .map((trade) => trade.price * trade.quantity)
               .sum(),
           },
-
           baseCoinType,
           quoteCoinType,
           resolution,
           time,
         };
+    const lastBarRaw = await redisClient.rPop(key("bar"));
+    if (!_.isNull(lastBarRaw)) {
+      const lastBar: Bar = JSON.parse(lastBarRaw);
+      if (lastBar.time !== bar.time) {
+        await redisClient.rPush(key("bar"), JSON.stringify(lastBar));
+      }
+    }
+
     await Promise.all([
       redisPubSub.publish("BAR", bar),
       redisClient.rPush(key("bar"), JSON.stringify(bar)),

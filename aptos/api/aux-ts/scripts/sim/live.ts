@@ -104,7 +104,7 @@ async function mirrorCoinbase(
           orderType: OrderType.LIMIT_ORDER,
         };
         markets[data.product_id]!.placeOrder(order, {
-          maxGasAmount: AU(100_000),
+          maxGasAmount: AU(1_000_000),
         }).then(
           (txResult) => {
             trader.ready = true;
@@ -306,9 +306,10 @@ async function main() {
   console.log(output);
 
   const convert = {
-    // "BTC-USD": FakeCoin.BTC,
+    "BTC-USD": FakeCoin.BTC,
     "ETH-USD": FakeCoin.ETH,
-    // "SOL-USD": FakeCoin.SOL,
+    "SOL-USD": FakeCoin.SOL,
+    "APT-USD": FakeCoin.AUX,
   };
 
   const pools: Record<string, Pool> = Object.fromEntries(
