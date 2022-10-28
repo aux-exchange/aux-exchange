@@ -42,9 +42,12 @@ async fn main() {
     );
 
     let payload = TransactionPayload::EntryFunction(entry_function_call);
-    let mut human_account =
-        util_for_aptos::get_local_account_from_private_key_str(human_private_key, &rest_client)
-            .await;
+    let mut human_account = util_for_aptos::get_local_account_from_private_key_str_and_addr(
+        human_private_key,
+        deployer_address,
+        &rest_client,
+    )
+    .await;
 
     let res =
         util_for_aptos::submit_transaction_with_much_gas(&rest_client, &mut human_account, payload)
