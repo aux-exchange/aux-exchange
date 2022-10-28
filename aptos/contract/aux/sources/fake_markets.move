@@ -1,5 +1,6 @@
 module aux::fake_markets {
     use aptos_framework::chain_id;
+    use aptos_framework::aptos_coin::AptosCoin;
     use aux::clob_market;
     use aux::amm;
     use aux::fake_coin::{FakeCoin, BTC, ETH, SOL, AUX, USDC, USDT};
@@ -59,6 +60,32 @@ module aux::fake_markets {
 
             // 0.1 AUX, 0.01 USDT
             create_fake_market<AUX, USDT>(source, 100000, 10000);
+
+            if (!clob_market::market_exists<AptosCoin, FakeCoin<USDC>>()) {
+                clob_market::create_market<AptosCoin, FakeCoin<USDC>>(
+                    source,
+                    100000,
+                    10000,
+                );
+            };
+
+            if (!clob_market::market_exists<AptosCoin, FakeCoin<USDT>>()) {
+                clob_market::create_market<AptosCoin, FakeCoin<USDT>>(
+                    source,
+                    100000,
+                    10000,
+                );
+            };
+
+            if (!amm::pool_exists<AptosCoin, FakeCoin<USDC>>() && 
+                !amm::pool_exists<FakeCoin<USDC>, AptosCoin>()) {
+                amm::create_pool<AptosCoin, FakeCoin<USDC>>(source, 30);
+            };
+
+            if (!amm::pool_exists<AptosCoin, FakeCoin<USDT>>() && 
+                !amm::pool_exists<FakeCoin<USDT>, AptosCoin>()) {
+                amm::create_pool<AptosCoin, FakeCoin<USDT>>(source, 30);
+            };
 
             create_fake_pool<BTC, ETH>(source);
             create_fake_pool<BTC, USDC>(source);
