@@ -186,7 +186,7 @@ export const query = {
     const { baseCoinType, quoteCoinType } = marketInput;
     // @ts-ignore
     return {
-      name: `${market.baseCoinInfo.name}-${market.quoteCoinInfo.name}`,
+      name: `${market.baseCoinInfo.symbol}-${market.quoteCoinInfo.symbol}`,
       baseCoinInfo: market.baseCoinInfo,
       quoteCoinInfo: market.quoteCoinInfo,
       lotSize: market.lotSize.toNumber(),

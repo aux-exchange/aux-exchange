@@ -9,6 +9,7 @@ import _ from "lodash";
 import { orderEventToOrder } from "../graphql/conversion";
 import type { MarketInput, Maybe, Side } from "../graphql/generated/types";
 import { Resolution, RESOLUTIONS } from "../graphql/resolvers/query";
+import { resolutionToSeconds } from "../graphql/resolvers/market";
 
 const [auxClient, _moduleAuthority] = AuxClient.createFromEnvForTesting({});
 const redisClient = redis.createClient();
@@ -331,30 +332,6 @@ async function publishAnalytics(
   }
   if (trades_i > 0) {
     await redisClient.lPopCount(key("bbo"), bbos_i);
-  }
-}
-
-function resolutionToSeconds(resolution: Resolution): number {
-  switch (resolution) {
-    case "15s":
-      return 15;
-    case "1m":
-      return 60;
-    case "5m":
-      return 5 * 60;
-    case "15m":
-      return 15 * 60;
-    case "1h":
-      return 60 * 60;
-    case "4h":
-      return 4 * 60 * 60;
-    case "1d":
-      return 24 * 60 * 60;
-    case "1w":
-      return 7 * 24 * 60 * 60;
-    default:
-      const _exhaustiveCheck: never = resolution;
-      return _exhaustiveCheck;
   }
 }
 
