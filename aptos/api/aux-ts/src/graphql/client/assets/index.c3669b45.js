@@ -9530,6 +9530,12 @@ const TradingViewMarketsDocument = {
                   "kind": "Name",
                   "value": "coinType"
                 }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
+                }
               }]
             }
           }, {
@@ -9545,6 +9551,12 @@ const TradingViewMarketsDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "coinType"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "symbol"
                 }
               }]
             }
@@ -9619,7 +9631,7 @@ const TradingViewQueryDocument = {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "Timestamp"
+            "value": "Int"
           }
         }
       }
@@ -9638,7 +9650,7 @@ const TradingViewQueryDocument = {
           "kind": "NamedType",
           "name": {
             "kind": "Name",
-            "value": "Timestamp"
+            "value": "Int"
           }
         }
       }
@@ -10691,6 +10703,7 @@ function DepositView({
   const {
     account
   } = dist.useWallet();
+  const coinsQuery = useCoins();
   const balances = useQuery(WalletBalancesDocument, {
     variables: {
       owner: account == null ? void 0 : account.address
@@ -10701,6 +10714,13 @@ function DepositView({
   const [coin, selectCoin] = react.exports.useState();
   const [balance, setBalance] = react.exports.useState("-");
   const modalRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    if (!coin && coinsQuery.data) {
+      const found = coinsQuery.data.coins.find((c) => c.symbol === "USDC");
+      if (found)
+        selectCoin(found);
+    }
+  }, [coins, coinsQuery.data]);
   react.exports.useEffect(() => {
     const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
     if (currentCoin)
@@ -11112,7 +11132,11 @@ function MarketSelector({
     if (!selectedMarket && ((_a3 = marketQueryName.data) == null ? void 0 : _a3.market)) {
       setSelectedMarket((_b2 = marketQueryName.data.market) != null ? _b2 : null);
     } else if (!selectedMarket && ((_c2 = marketsQuery.data) == null ? void 0 : _c2.markets)) {
-      setSelectedMarket(marketsQuery.data.markets[0]);
+      const found = marketsQuery.data.markets.find((m) => {
+        var _a4, _b3;
+        return ((_a4 = m == null ? void 0 : m.baseCoinInfo) == null ? void 0 : _a4.coinType) === (firstCoin == null ? void 0 : firstCoin.coinType) && ((_b3 = m == null ? void 0 : m.quoteCoinInfo) == null ? void 0 : _b3.coinType) === (secondCoin == null ? void 0 : secondCoin.coinType);
+      });
+      setSelectedMarket(found != null ? found : marketsQuery.data.markets[0]);
     }
   }, [selectedMarket, marketQueryName.data, marketsQuery.data]);
   react.exports.useEffect(() => {
@@ -11122,8 +11146,6 @@ function MarketSelector({
   const filteredMarkets = markets == null ? void 0 : markets.filter((m) => searchQuery.length > 1 ? m.name.toLowerCase().match(searchQuery.toLowerCase()) : true);
   const popoverRef = react.exports.useRef(null);
   const onMarketClick = (m, close) => {
-    onFirstCoinSelect(m.baseCoinInfo);
-    onSecondCoinSelect(m.quoteCoinInfo);
     setSelectedMarket(m);
     close();
   };
@@ -12962,7 +12984,7 @@ const TradeControlsProvider = function TradeControlProvider({
       price,
       side: !activeTab ? Side.Buy : Side.Sell
     },
-    skip: !firstCoin || !secondCoin
+    skip: !firstCoin || !secondCoin || !price
   });
   const pythRating = (_f = (_e2 = pythRatingQuery.data) == null ? void 0 : _e2.market) == null ? void 0 : _f.pythRating;
   const step = react.exports.useMemo(() => {
@@ -13051,10 +13073,10 @@ const TradeControlsProvider = function TradeControlProvider({
     checkSetLimit([post, ioc, fok, val]);
   };
   const onChangePrice = react.exports.useCallback((e2) => {
-    setPrice(Number(e2.currentTarget.value));
+    setPrice(e2.currentTarget.value ? Number(e2.currentTarget.value) : void 0);
   }, []);
-  const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(Number(e2.currentTarget.value)), []);
-  const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(Number(e2.currentTarget.value)), []);
+  const onChangeCxAmount = react.exports.useCallback((e2) => setCxAmount(e2.currentTarget.value ? Number(e2.currentTarget.value) : void 0), []);
+  const onChangeCyAmount = react.exports.useCallback((e2) => setCyAmount(e2.currentTarget.value ? Number(e2.currentTarget.value) : void 0), []);
   const [placeOrderMutation] = useMutation(PlaceOrderDocument);
   const wallet = dist.useWallet();
   const placeOrder = async (placeOrderInput) => {
@@ -13072,7 +13094,7 @@ const TradeControlsProvider = function TradeControlProvider({
   } = Ma();
   const submitTrade = async () => {
     var _a3;
-    if (firstCoin && secondCoin && wallet.account) {
+    if (firstCoin && secondCoin && wallet.account && cxAmount) {
       await placeOrder({
         auxToBurn: 0,
         clientOrderId: 0,
@@ -13143,6 +13165,23 @@ const ResolutionFormats = {
   [Resolution.Minutes_5]: "5",
   [Resolution.Weeks_1]: "1W"
 };
+[
+  {
+    text: "1 Minute",
+    resolution: ResolutionFormats.MINUTES_1,
+    description: "1 Minute"
+  },
+  {
+    text: "5 Minutes",
+    resolution: ResolutionFormats.MINUTES_5,
+    description: "5 Minutes"
+  },
+  {
+    text: "15 Seconds",
+    resolution: "15S",
+    description: "15 Seconds"
+  }
+];
 const RevResolutionFormats = Object.entries(ResolutionFormats).reduce((acc, [k, v]) => ({
   ...acc,
   [v]: k
@@ -13184,14 +13223,18 @@ const DataFeedProvider = ({
   const [markets, setMarkets] = react.exports.useState([]);
   const getAllSymbols = (mkts) => {
     var _a2;
-    return (_a2 = mkts == null ? void 0 : mkts.map((c) => ({
-      symbol: `${c.name}`,
-      full_name: `${c.name}`,
-      exchange: "AUX",
-      type: "crypto",
-      has_intraday: true
-    }))) != null ? _a2 : [];
+    return (_a2 = mkts == null ? void 0 : mkts.map((c) => {
+      var _a3, _b;
+      return {
+        symbol: `${(_a3 = c.baseCoinInfo) == null ? void 0 : _a3.symbol}/${(_b = c.quoteCoinInfo) == null ? void 0 : _b.symbol}`,
+        full_name: `${c.name}`,
+        exchange: "AUX",
+        type: "crypto",
+        has_intraday: true
+      };
+    })) != null ? _a2 : [];
   };
+  react.exports.useRef(null);
   function onReady(callback) {
     setTimeout(() => callback(configurationData));
   }
@@ -13239,7 +13282,7 @@ const DataFeedProvider = ({
     }
     const symbolInfo = {
       ticker: symbolItem.full_name,
-      name: symbolItem.symbol,
+      name: symbolItem.full_name,
       full_name: symbolItem.full_name,
       listed_exchange: "AUX",
       description: symbolItem.symbol,
@@ -13264,69 +13307,68 @@ const DataFeedProvider = ({
     onSymbolResolvedCallback(symbolInfo);
   };
   const getBars = async function getBars2(symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) {
-    var _a2, _b, _c, _d, _e2, _f;
+    var _a2, _b, _c, _d, _e2;
     const {
       from,
       to: to2,
       firstDataRequest,
       countBack
     } = periodParams;
-    try {
-      let _markets = markets;
-      if (!markets.length) {
-        _markets = await ((_a2 = (await getMarkets()).data) == null ? void 0 : _a2.markets);
-        setMarkets(_markets);
-      }
-      const market = _markets == null ? void 0 : _markets.find((m) => m.name === symbolInfo.ticker);
-      const data = market && await client.query({
-        query: TradingViewQueryDocument,
-        variables: {
-          resolution: (_b = formatResolution(resolution)) != null ? _b : Resolution.Minutes_1,
-          marketInputs: [{
-            baseCoinType: (_c = market == null ? void 0 : market.baseCoinInfo.coinType) != null ? _c : "",
-            quoteCoinType: (_d = market == null ? void 0 : market.quoteCoinInfo.coinType) != null ? _d : ""
-          }],
-          from: from * 1e3,
-          to: to2 * 1e3,
-          firstDataRequest,
-          countBack
-        }
-      });
-      if (!data || data.errors || !data.loading && !((_e2 = data.data.markets[0]) == null ? void 0 : _e2.bars.length)) {
-        onHistoryCallback([], {
-          noData: true
-        });
-        return;
-      }
-      const bars = [];
-      (_f = data.data.markets[0]) == null ? void 0 : _f.bars.forEach(({
-        time,
-        ohlcv
-      }) => {
-        if (ohlcv) {
-          const {
-            open,
-            high,
-            low,
-            close,
-            volume
-          } = ohlcv;
-          bars.push({
-            open,
-            high,
-            low,
-            close,
-            volume,
-            time: Number(time)
-          });
-        }
-      });
-      onHistoryCallback(bars, {
-        noData: false
-      });
-    } catch (error) {
-      onErrorCallback(error);
+    let _markets = markets;
+    if (!markets.length) {
+      _markets = await ((_a2 = (await getMarkets()).data) == null ? void 0 : _a2.markets);
+      setMarkets(_markets);
     }
+    const market = _markets == null ? void 0 : _markets.find((m) => m.name === symbolInfo.ticker);
+    const data = market && await client.query({
+      query: TradingViewQueryDocument,
+      variables: {
+        resolution: (_b = formatResolution(resolution)) != null ? _b : Resolution.Minutes_1,
+        marketInputs: [{
+          baseCoinType: (_c = market == null ? void 0 : market.baseCoinInfo.coinType) != null ? _c : "",
+          quoteCoinType: (_d = market == null ? void 0 : market.quoteCoinInfo.coinType) != null ? _d : ""
+        }],
+        from,
+        to: to2,
+        firstDataRequest,
+        countBack
+      }
+    });
+    const noData = !(data == null ? void 0 : data.data.markets[0].bars.length);
+    const queryBars = (_e2 = data == null ? void 0 : data.data.markets[0]) == null ? void 0 : _e2.bars;
+    const bars = [];
+    queryBars == null ? void 0 : queryBars.forEach(({
+      time,
+      ohlcv
+    }) => {
+      if (ohlcv) {
+        const {
+          open,
+          high,
+          low,
+          close,
+          volume
+        } = ohlcv;
+        bars.push({
+          open,
+          high,
+          low,
+          close,
+          volume,
+          time: Number(time)
+        });
+      }
+    });
+    if (noData || !data || data.errors || !data.loading && !(queryBars == null ? void 0 : queryBars.length) || data.loading) {
+      onHistoryCallback(bars, {
+        noData: true
+      });
+      return;
+    }
+    onHistoryCallback(bars, {
+      noData: false
+    });
+    return;
   };
   const dataSubRef = react.exports.useRef(null);
   const dataFeed = {
@@ -14407,7 +14449,8 @@ function useCreateTradingView() {
         datafeed,
         theme: "Dark",
         library_path: "/charting_library/",
-        disabled_features: ["left_toolbar"],
+        disabled_features: ["left_toolbar", "time_frames"],
+        timeframe: "1D",
         loading_screen: {
           backgroundColor: colorPalette.primary[900],
           foregroundColor: colorPalette.primary[900]
@@ -14509,7 +14552,7 @@ function TradingForm() {
       children: [/* @__PURE__ */ jsxs("div", {
         children: [/* @__PURE__ */ jsx(dl, {
           className: "w-full",
-          value: priceInput,
+          value: priceInput ? priceInput.toString() : "",
           onChange: onChangePrice,
           name: "price",
           label: "Price",
@@ -14522,7 +14565,7 @@ function TradingForm() {
         })]
       }), /* @__PURE__ */ jsxs("div", {
         children: [/* @__PURE__ */ jsx(dl, {
-          value: cxAmount,
+          value: cxAmount ? cxAmount.toString() : "",
           onChange: onChangeCxAmount,
           name: "coinx",
           label: "Amount",
@@ -14623,7 +14666,7 @@ function TradingForm() {
             children: "Subtotal"
           }), /* @__PURE__ */ jsx("div", {
             className: "font-semibold",
-            children: (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString()
+            children: (priceInput && cxAmount ? Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount : 0).toLocaleString()
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-between text-primary-400 text-sm",
@@ -14641,7 +14684,7 @@ function TradingForm() {
             children: "Total"
           }), /* @__PURE__ */ jsx("div", {
             className: "font-bold",
-            children: (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString()
+            children: priceInput && cxAmount ? (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString() : 0
           })]
         })]
       }), /* @__PURE__ */ jsx(or, {
