@@ -4,6 +4,8 @@ module aux::fake_coin {
     use std::signer;
     use aptos_framework::coin;
     use aptos_framework::managed_coin;
+    use aptos_framework::chain_id;
+
     use aux::authority;
 
     // Wrapper for fake coins. All coin types are wrapped by FakeCoin so that the
@@ -19,12 +21,15 @@ module aux::fake_coin {
     struct AUX {}
 
     fun init_module(source: &signer) {
-        initialize<USDC>(source, 6, b"Fake Coin USDC", b"USDC");
-        initialize<USDT>(source, 6, b"Fake Coin USDT", b"USDT");
-        initialize<BTC>(source, 8, b"Fake Coin BTC", b"BTC");
-        initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
-        initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
-        initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
+        let chain = chain_id::get();
+        if (chain != 1 && chain != 5) {
+            initialize<USDC>(source, 6, b"Fake Coin USDC", b"USDC");
+            initialize<USDT>(source, 6, b"Fake Coin USDT", b"USDT");
+            initialize<BTC>(source, 8, b"Fake Coin BTC", b"BTC");
+            initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
+            initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
+            initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
+        }
     }
 
     #[test_only]
