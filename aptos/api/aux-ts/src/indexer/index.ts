@@ -331,7 +331,7 @@ async function publishAnalytics(
     await redisClient.lPopCount(key("bbo"), bbos_i);
   }
   if (trades_i > 0) {
-    await redisClient.lPopCount(key("bbo"), bbos_i);
+    await redisClient.lPopCount(key("trade"), trades_i);
   }
 }
 
