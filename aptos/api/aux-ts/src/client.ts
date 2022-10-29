@@ -594,10 +594,13 @@ export class AuxClient {
     account: HexString;
     coinType: Types.MoveStructTag;
   }): Promise<AtomicUnits> {
-    const coinResource = await this.aptosClient.getAccountResource(
+    const coinResource = await this.getAccountResourceOptional(
       account,
       `0x1::coin::CoinStore<${coinType}>`
     );
+    if (coinResource === undefined) {
+      return AU(0);
+    }
     const coinBalance = (coinResource.data as any).coin.value;
     return AU(coinBalance);
   }
@@ -612,12 +615,8 @@ export class AuxClient {
     account: HexString;
     coinType: Types.MoveStructTag;
   }): Promise<DecimalUnits> {
-    const coinResource = await this.aptosClient.getAccountResource(
-      account,
-      `0x1::coin::CoinStore<${coinType}>`
-    );
-    const coinBalance = (coinResource.data as any).coin.value;
-    return AU(coinBalance).toDecimalUnits(
+    const auBalance = await this.getCoinBalance({ account, coinType });
+    return auBalance.toDecimalUnits(
       (await this.getCoinInfo(coinType)).decimals
     );
   }

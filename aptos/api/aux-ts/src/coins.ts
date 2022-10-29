@@ -31,10 +31,23 @@ export const ALL_USD_STABLES = [
 
 export interface CoinMapping {
   pythSymbol?: string;
+  ftxInternationalMarket?: string;
 }
 
 export const COIN_MAPPING: Map<string, CoinMapping> = new Map();
-COIN_MAPPING.set(APT, { pythSymbol: "Crypto.APT/USD" });
-COIN_MAPPING.set(SOL, { pythSymbol: "Crypto.SOL/USD" });
-COIN_MAPPING.set(WETH, { pythSymbol: "Crypto.ETH/USD" });
-COIN_MAPPING.set(WBTC, { pythSymbol: "Crypto.BTC/USD" });
+COIN_MAPPING.set(APT, {
+  pythSymbol: "Crypto.APT/USD",
+  ftxInternationalMarket: "APT/USD",
+});
+COIN_MAPPING.set(SOL, {
+  pythSymbol: "Crypto.SOL/USD",
+  ftxInternationalMarket: "SOL/USD",
+});
+COIN_MAPPING.set(WETH, {
+  pythSymbol: "Crypto.ETH/USD",
+  ftxInternationalMarket: "ETH/USD",
+});
+COIN_MAPPING.set(WBTC, {
+  pythSymbol: "Crypto.BTC/USD",
+  ftxInternationalMarket: "BTC/USD",
+});
