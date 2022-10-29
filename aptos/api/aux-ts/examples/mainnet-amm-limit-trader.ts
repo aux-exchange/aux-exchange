@@ -1,60 +1,28 @@
 /**
- * If the price deviates from the AMM price, swap in the
- * AMM assuming that FTX price leads AMM price.
+ * If the price deviates from the AMM price, swap in the AMM assuming that FTX
+ * price leads AMM price. It is possible to run this script without any wallet
+ * balances. In this case, you will see log messages printing out what action
+ * would have been taken if there were sufficient wallet balances to make a trade.
  *
- * Run APTOS_NODE=https://your/validator/address yarn ts-node mainnet-amm-limit-trader.ts to trade on mainnet.
+ * To trade on mainnet, run:
+ *
+ *  yarn ts-node mainnet-amm-limit-trader.ts
+ *
+ * We HIGHLY recommend using your own full node to avoid rate limits:
+ *
+ *  APTOS_NODE=https://your/node/address \
+ *  yarn ts-node mainnet-amm-limit-trader.ts
  */
 import { AptosAccount } from "aptos";
-import { assert } from "console";
 import * as coins from "../src/coins";
-import { DU, Pool } from "../src";
+import { DU } from "../src";
 import { AuxClient, getAptosProfile, Network } from "../src/client";
-import { WebSocket } from "ws";
-
-const AUX_TRADER_CONFIG = {
-  // If the deviation ratio between AMM and oracle reaches this threshold, send
-  // a swap.
-  deviationThreshold: 0.0015,
-  // The size of each order, denoted in decimal units. "DU" or "DecimalUnits"
-  // represents a quantity with decimals. DU(0.005) for basePerSwap means 0.005 ETH and DU(10)
-  // for quotePerSwap means 10 USDC. The on chain representation is in "AU" or "AtomicUnits".
-  basePerSwap: DU(0.005),
-  quotePerSwap: DU(10),
-  market: "ETH/USD", // FTX price feed to subscribe from
-  base: "ETH",
-  quote: "USDC",
-};
+import { FTXArbitrageStrategy } from "../bots/amm";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function printAccountBalance(
-  auxClient: AuxClient,
-  trader: AptosAccount
-): Promise<void> {
-  console.log(
-    `  Trader ${AUX_TRADER_CONFIG.base}=`,
-    (
-      await auxClient.getCoinBalanceDecimals({
-        account: trader.address(),
-        coinType: coins.WETH, // other examples are APT, SOL, WBTC 
-      })
-    ).toString(),
-    `, ${AUX_TRADER_CONFIG.quote}=`,
-    (
-      await auxClient.getCoinBalanceDecimals({
-        account: trader.address(),
-        coinType: coins.USDC_eth, // other examples are USDC_sol, USDT, USDC_layerzero, USDT_layerzero, USDA
-      })
-    ).toString()
-  );
-}
-
-async function tradeAMM(): Promise<void> {
+async function main(): Promise<void> {
   const auxClient = AuxClient.create({
     network: Network.Mainnet,
     validatorAddress: aptosNode,
@@ -63,141 +31,30 @@ async function tradeAMM(): Promise<void> {
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,
   });
-  let maybePool = await Pool.read(auxClient, {
-    coinTypeX: coins.WETH,
-    coinTypeY: coins.USDC_eth,
+  const strategy = new FTXArbitrageStrategy({
+    client: auxClient,
+    trader,
+    baseCoin: coins.APT,
+
+    // If you are doing a funds transfer with FTX and expecting to make
+    // arbitrage profit, make sure this is at least one plus the pool fee plus
+    // FTX trading fees plus spread.
+    //
+    // You should calibrate this parameter based on your own research. For
+    // example, the 5 bps below would not be sufficient to make an arb profit,
+    // but a 5 bps deviation may be enough to expect a profit when the price
+    // eventually flips.
+    deviationThreshold: 1.0005,
+
+    // Don't do any safety threshold on top of the FTX prices.
+    limitThreshold: 1,
+    dollarsPerSwap: DU(100),
+
+    // Allow a single buy or sell before the position must move the opposite
+    // direction.
+    maxPositionNumTrades: 1,
   });
-
-  assert(maybePool !== undefined);
-  const pool = maybePool as Pool;
-
-  let prevBid = 0;
-  let prevAsk = 0;
-  let prevPoolX = 0;
-  let prevPoolY = 0;
-
-  let queue: any[] = [];
-
-  let swap = async function () {
-    while (true) {
-      if (queue.length == 0) {
-        await sleep(500);
-        continue;
-      }
-      if (queue.length > 100) {
-        // Clear queue if it becomes too clogged, as we don't want to use outdated prices from FTX
-        queue = [];
-        continue;
-      }
-      let data = queue.pop();
-      if (data.type === "subscribed") {
-        assert(data.type === "subscribed");
-        assert(data.channel === "ticker");
-        assert(data.market === AUX_TRADER_CONFIG.market);
-      } else if (data.type === "update") {
-        let bestBid = data.data.bid;
-        let bestAsk = data.data.ask;
-        let poolX = pool.amountX;
-        let poolY = pool.amountY;
-        if (prevBid !== bestBid || prevAsk !== bestAsk) {
-          try {
-            await pool.update();
-            if (poolX.toNumber() === 0 || poolY.toNumber() === 0) {
-              throw new Error("Empty pool");
-            }
-          } catch (e) {
-            console.log("  Pool update failed with error: ", e);
-          }
-
-          if (
-            prevPoolX !== poolX.toNumber() ||
-            prevPoolY !== poolY.toNumber()
-          ) {
-            console.log(
-              `Pool ${AUX_TRADER_CONFIG.base}=${poolX.toString()}, ${
-                AUX_TRADER_CONFIG.quote
-              }=${poolY.toString()}`
-            );
-            prevPoolX = poolX.toNumber();
-            prevPoolY = poolY.toNumber();
-          }
-
-          let tx;
-          const poolPrice = poolY.toNumber() / poolX.toNumber();
-          // If FTX prices are relatively higher than a given threshold, swap in for ETH from AUX
-          if (bestBid / poolPrice - 1 > AUX_TRADER_CONFIG.deviationThreshold) {
-            console.log(`>>>> Swapping for ${AUX_TRADER_CONFIG.base}`);
-            try {
-              tx = await pool.swapYForXLimit({
-                sender: trader,
-                exactAmountIn: AUX_TRADER_CONFIG.quotePerSwap,
-                minOutPerIn: DU(1 / bestBid),
-              });
-              console.log(">>>> Swap event:", tx);
-              await printAccountBalance(auxClient, trader);
-            } catch (e) {
-              console.log(
-                `  Swap from ${AUX_TRADER_CONFIG.quote} to ${AUX_TRADER_CONFIG.base} failed with error: `,
-                e
-              );
-            }
-          }
-          // If FTX prices are relatively lower than a given threshold, swap out of ETH from AUX
-          else if (
-            poolPrice / bestAsk - 1 >
-            AUX_TRADER_CONFIG.deviationThreshold
-          ) {
-            console.log(`>>>> Swapping for ${AUX_TRADER_CONFIG.quote}`);
-            try {
-              tx = await pool.swapXForYLimit({
-                sender: trader,
-                exactAmountIn: AUX_TRADER_CONFIG.basePerSwap,
-                minOutPerIn: DU(bestAsk),
-              });
-              console.log(">>>> Swap event:", tx.payload);
-              await printAccountBalance(auxClient, trader);
-            } catch (e) {
-              console.log(
-                `  Swap from ${AUX_TRADER_CONFIG.base} to ${AUX_TRADER_CONFIG.quote} failed with error: `,
-                e
-              );
-            }
-          }
-          prevBid = bestBid;
-          prevAsk = bestAsk;
-          if (aptosNode === DEFAULT_MAINNET) {
-            // Avoid rate limiting
-            await sleep(1000);
-          }
-        }
-      }
-    }
-  };
-  try {
-    const ws = new WebSocket("wss://ftx.com/ws/");
-    ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          op: "subscribe",
-          market: AUX_TRADER_CONFIG.market,
-          channel: "ticker",
-        })
-      );
-    };
-
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data.toString()) as any;
-      queue.push(data);
-    };
-  } catch (e) {
-    console.log("  FTX Websocket connection failed with error:", e);
-  }
-
-  swap();
+  await strategy.run();
 }
 
-async function main() {
-  await tradeAMM();
-}
-
-main().then(() => {});
+main();
