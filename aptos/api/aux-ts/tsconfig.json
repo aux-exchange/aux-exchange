@@ -1,6 +1,9 @@
 {
   "extends": "@tsconfig/node18-strictest/tsconfig.json",
   "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "importsNotUsedAsValues": "remove",
     // modules
     "resolveJsonModule": true,
 
