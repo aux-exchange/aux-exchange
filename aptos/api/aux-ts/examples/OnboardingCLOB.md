@@ -53,7 +53,7 @@ following parameters:
 
 - The requirements for CLOB trading are generally higher than for AMM. We
   highly, highly recommend using your own dedicated full node. But if you really
-  insist on using the public node, you can try `yarn ts-node mainnet-amm-limit-trader.ts`
+  insist on using the public node, you can try `yarn ts-node mainnet-clob-maker.ts`
 
 - Note that CLOB market making can be more gas intensive than AMM trading for
   certain parameter combinations. Proceed with caution, and if ever in doubt, add
