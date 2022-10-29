@@ -1,4 +1,4 @@
-import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, T as Tooltip, I as InformationCircleIcon, v as useMutation, w as CogIcon, F as Fragment, L as LockClosedIcon, x as CheckCircleIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, J as ArrowLongLeftIcon, K as DocumentDuplicateIcon, N as useLazyQuery, O as linear, P as InformationCircleIcon$1, Q as NavLink, U as HttpLink, V as GraphQLWsLink, Y as createClient, Z as split, _ as getMainDefinition, $ as ApolloClient, a0 as InMemoryCache, a1 as useGeoLocation, a2 as ApolloProvider, a3 as BrowserRouter, a4 as Routes, a5 as Route, a6 as client$1 } from "./vendor.d8a80536.js";
+import { r as react, c as create$1, R as React, a as React$1, W as We, g as gt, b as reactDom, u as useAnimationControls, m as motion, d as useNavigate, e as useLocation, p as pt$1, f as be$1, G as Ge, S as Slider, h as useReactTable, i as flexRender, j as mt$1, k as getCoreRowModel, l as getSortedRowModel, n as useSubscription, o as useQuery, q as jsx, s as dist, D as Do, t as jsxs, C as ChevronDownIcon, T as Tooltip, I as InformationCircleIcon, v as useMutation, w as CogIcon, F as Fragment, x as CheckCircleIcon, L as LockClosedIcon, y as createColumnHelper, A as ArrowsUpDownIcon, z as DateTime, B as Link, X as XMarkIcon, E as ChevronUpIcon, M as MagnifyingGlassIcon, H as ArrowDownIcon, J as ArrowLongLeftIcon, K as DocumentDuplicateIcon, N as ArrowLongRightIcon, O as InformationCircleIcon$1, P as useLazyQuery, Q as linear, U as ArrowLongRightIcon$1, V as NavLink, Y as HttpLink, Z as GraphQLWsLink, _ as createClient, $ as split, a0 as getMainDefinition, a1 as ApolloClient, a2 as InMemoryCache, a3 as useGeoLocation, a4 as ApolloProvider, a5 as BrowserRouter, a6 as Routes, a7 as Route, a8 as client$1 } from "./vendor.14542c24.js";
 import "./__commonjsHelpers__.4516dc8a.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -60,15 +60,15 @@ function Qo() {
     return Le;
   er = 1;
   var e2 = React, t2 = Symbol.for("react.element"), n2 = Symbol.for("react.fragment"), r = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, i2 = { key: true, ref: true, __self: true, __source: true };
-  function s2(l, c, u) {
+  function s2(c, l, u) {
     var g, f = {}, h = null, m = null;
-    u !== void 0 && (h = "" + u), c.key !== void 0 && (h = "" + c.key), c.ref !== void 0 && (m = c.ref);
-    for (g in c)
-      r.call(c, g) && !i2.hasOwnProperty(g) && (f[g] = c[g]);
-    if (l && l.defaultProps)
-      for (g in c = l.defaultProps, c)
-        f[g] === void 0 && (f[g] = c[g]);
-    return { $$typeof: t2, type: l, key: h, ref: m, props: f, _owner: o2.current };
+    u !== void 0 && (h = "" + u), l.key !== void 0 && (h = "" + l.key), l.ref !== void 0 && (m = l.ref);
+    for (g in l)
+      r.call(l, g) && !i2.hasOwnProperty(g) && (f[g] = l[g]);
+    if (c && c.defaultProps)
+      for (g in l = c.defaultProps, l)
+        f[g] === void 0 && (f[g] = l[g]);
+    return { $$typeof: t2, type: c, key: h, ref: m, props: f, _owner: o2.current };
   }
   return Le.Fragment = n2, Le.jsx = s2, Le.jsxs = s2, Le;
 }
@@ -86,6 +86,7 @@ function rl({
       open: n2
     }) => /* @__PURE__ */ y(Q, {
       children: [/* @__PURE__ */ a(mt$1.Button, {
+        className: "outline-none",
         children: t2
       }), /* @__PURE__ */ a(We, {
         as: react.exports.Fragment,
@@ -96,7 +97,7 @@ function rl({
         leaveFrom: "opacity-100 translate-y-0",
         leaveTo: "opacity-0 translate-y-1",
         children: /* @__PURE__ */ a(mt$1.Panel, {
-          className: "absolute left-1/2 z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl",
+          className: "absolute z-10 mt-1 right-0 w-screen max-w-sm drop-shadow-xl",
           children: e2
         })
       })]
@@ -578,21 +579,36 @@ const mt = create$1((e2) => ({
   }
 }));
 function Ma() {
-  const e2 = mt((i2) => i2.notifications, we), t2 = mt((i2) => i2.addNotification, we), n2 = (i2) => t2({
-    title: "Success",
+  const e2 = mt((l) => l.notifications, we), t2 = mt((l) => l.addNotification, we), n2 = (l, u) => t2({
+    title: u != null ? u : "Success",
     type: "success",
-    message: i2
-  }), r = (i2) => t2({
-    title: "Error",
+    message: l
+  }), r = (l, u) => t2({
+    title: u != null ? u : "Error",
     type: "error",
-    message: i2
+    message: l
+  }), o2 = (l, u) => t2({
+    title: u != null ? u : "Info",
+    type: "info",
+    message: l
+  }), i2 = (l, u) => t2({
+    title: u != null ? u : "Warning",
+    type: "warning",
+    message: l
+  }), s2 = (l, u) => t2({
+    title: u != null ? u : "",
+    type: "basic",
+    message: l
   });
   return {
-    removeNotification: mt((i2) => i2.removeNotification, we),
+    removeNotification: mt((l) => l.removeNotification, we),
     addNotification: t2,
     notifications: e2,
     addErrorNotification: r,
-    addSuccessNotification: n2
+    addSuccessNotification: n2,
+    addInfoNotification: o2,
+    addWarningNotification: i2,
+    addBasicNotification: s2
   };
 }
 const ze = create$1((e2) => ({
@@ -609,8 +625,8 @@ const ze = create$1((e2) => ({
       if (!r.has(o2))
         r.append(o2, i2);
       else {
-        const s2 = r.get(o2), l = encodeURIComponent(`${s2},${i2}`);
-        r.set(o2, l);
+        const s2 = r.get(o2), c = encodeURIComponent(`${s2},${i2}`);
+        r.set(o2, c);
       }
     }), {
       params: new URLSearchParams(r)
@@ -625,8 +641,8 @@ const ze = create$1((e2) => ({
       if (r.has(o2)) {
         const s2 = r.get(o2);
         if (s2) {
-          const l = encodeURIComponent(s2.split(",").filter((c) => c !== i2).join(","));
-          l.length ? r.set(o2, l) : r.delete(o2);
+          const c = encodeURIComponent(s2.split(",").filter((l) => l !== i2).join(","));
+          c.length ? r.set(o2, c) : r.delete(o2);
         }
       }
     }), {
@@ -669,19 +685,19 @@ function _a() {
 const Ia = (e2) => typeof e2 == "boolean", Aa = (e2) => Ia(e2) ? String(e2) : e2, ja = (e2, t2) => Object.entries(e2).every(([n2, r]) => t2[n2] === r);
 function Fa(e2) {
   return (t2, n2) => {
-    const r = Object.entries(t2).reduce((l, [c, u]) => u === void 0 ? l : {
-      ...l,
-      [c]: u
+    const r = Object.entries(t2).reduce((c, [l, u]) => u === void 0 ? c : {
+      ...c,
+      [l]: u
     }, {}), o2 = {
       ...e2.defaultVariants,
       ...r
-    }, i2 = Object.keys(e2.variants).map((l) => {
-      var c;
-      return (c = e2.variants[l]) == null ? void 0 : c[Aa(t2[l]) || e2.defaultVariants[l]];
-    }), s2 = e2.compoundVariants.reduce((l, {
-      classes: c,
+    }, i2 = Object.keys(e2.variants).map((c) => {
+      var l;
+      return (l = e2.variants[c]) == null ? void 0 : l[Aa(t2[c]) || e2.defaultVariants[c]];
+    }), s2 = e2.compoundVariants.reduce((c, {
+      classes: l,
       ...u
-    }) => (ja(u, o2) && c && l.push(c), l), []);
+    }) => (ja(u, o2) && l && c.push(l), c), []);
     return _a([e2.base, i2, s2, n2]);
   };
 }
@@ -732,13 +748,13 @@ function al() {
   const {
     removeNotification: e2,
     notifications: t2
-  } = Ma(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", l = {
+  } = Ma(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", c = {
     [oe.basic]: " border-l-secondary-400",
     [oe.error]: " border-l-red-400",
     [oe.success]: " border-l-green-400",
     [oe.info]: " border-l-secondary-400",
     [oe.warning]: " border-l-orange-400"
-  }, c = {
+  }, l = {
     duration: 0.3,
     ease: "easeInOut"
   }, u = react.exports.useRef(false);
@@ -748,7 +764,7 @@ function al() {
     o2 && r.start({
       opacity: 1,
       x: [200, 0],
-      transition: c
+      transition: l
     });
   }, [o2]), react.exports.useEffect(() => {
     var h;
@@ -759,7 +775,7 @@ function al() {
         await r.start({
           opacity: [1, 0],
           x: [0, 200],
-          transition: c
+          transition: l
         }), e2(m), i2(void 0);
       }, (h = m.dismissAfter) != null ? h : 3e3);
       return () => {
@@ -778,7 +794,7 @@ function al() {
     }), i2(void 0));
   }, [r, e2, o2]);
   return /* @__PURE__ */ y(motion.div, {
-    className: s2 + ((o2 == null ? void 0 : o2.type) != null ? l[o2 == null ? void 0 : o2.type] : l.info),
+    className: s2 + ((o2 == null ? void 0 : o2.type) != null ? c[o2 == null ? void 0 : o2.type] : c.info),
     animate: r,
     children: [(o2 == null ? void 0 : o2.type) === oe.error ? /* @__PURE__ */ a(Sr, {
       className: "w-10 h-10 text-red-400"
@@ -1347,13 +1363,13 @@ function ll({
       default:
         return "py-1 px-2 text-md";
     }
-  }, c = (() => {
+  }, l = (() => {
     const u = "font-semibold rounded shadow-sm", g = s2(), f = i2();
     return `${u} ${g} ${f} ${t2 != null ? t2 : ""}`;
   })();
   return /* @__PURE__ */ a("span", {
     onClick: o2,
-    className: c,
+    className: l,
     children: e2
   });
 }
@@ -1372,10 +1388,10 @@ function Ka({
       className: "w-[14px] h-[14px] mr-1"
     }) : n2 && n2 === "down" ? /* @__PURE__ */ a(na, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : null, t2 && /* @__PURE__ */ y("div", {
+    }) : null, t2 !== void 0 && /* @__PURE__ */ y("div", {
       className: "mr-2",
       children: [t2, "%"]
-    }), e2 && /* @__PURE__ */ a("div", {
+    }), e2 !== void 0 && /* @__PURE__ */ a("div", {
       children: e2
     })]
   });
@@ -1388,9 +1404,9 @@ function cl({
   priceDirection: o2,
   variant: i2,
   className: s2,
-  onClick: l
+  onClick: c
 }) {
-  const c = () => {
+  const l = () => {
     switch (i2) {
       case "card":
         return "bg-gray-800 shadow-md";
@@ -1400,12 +1416,12 @@ function cl({
         return "";
     }
   }, g = (() => {
-    const f = "p-3 rounded-lg", h = c();
+    const f = "p-3 rounded-lg", h = l();
     return `${f} ${h} ${s2 != null ? s2 : ""}`;
   })();
   return /* @__PURE__ */ y("div", {
     className: g,
-    onClick: l,
+    onClick: c,
     children: [/* @__PURE__ */ a(tt, {
       children: e2
     }), /* @__PURE__ */ a("div", {
@@ -1461,16 +1477,16 @@ var Mr = { exports: {} };
             r.push(i2);
           else if (Array.isArray(i2)) {
             if (i2.length) {
-              var l = n2.apply(null, i2);
-              l && r.push(l);
+              var c = n2.apply(null, i2);
+              c && r.push(c);
             }
           } else if (s2 === "object") {
             if (i2.toString !== Object.prototype.toString && !i2.toString.toString().includes("[native code]")) {
               r.push(i2.toString());
               continue;
             }
-            for (var c in i2)
-              t2.call(i2, c) && i2[c] && r.push(c);
+            for (var l in i2)
+              t2.call(i2, l) && i2[l] && r.push(l);
           }
         }
       }
@@ -1523,19 +1539,19 @@ function fe(e2) {
 }
 function ti(e2) {
   var t2 = function(n2) {
-    var r = e2.attr, o2 = e2.size, i2 = e2.title, s2 = ei(e2, ["attr", "size", "title"]), l = o2 || n2.size || "1em", c;
-    return n2.className && (c = n2.className), e2.className && (c = (c ? c + " " : "") + e2.className), /* @__PURE__ */ y("svg", {
+    var r = e2.attr, o2 = e2.size, i2 = e2.title, s2 = ei(e2, ["attr", "size", "title"]), c = o2 || n2.size || "1em", l;
+    return n2.className && (l = n2.className), e2.className && (l = (l ? l + " " : "") + e2.className), /* @__PURE__ */ y("svg", {
       ...me({
         stroke: "currentColor",
         fill: "currentColor",
         strokeWidth: "0"
       }, n2.attr, r, s2, {
-        className: c,
+        className: l,
         style: me(me({
           color: e2.color || n2.color
         }, n2.style), e2.style),
-        height: l,
-        width: l,
+        height: c,
+        width: c,
         xmlns: "http://www.w3.org/2000/svg"
       }),
       children: [i2 && /* @__PURE__ */ a("title", {
@@ -2428,11 +2444,11 @@ const Br = ({ children: e2, ...t2 }) => {
   } : t2;
   return a($r.Provider, { value: i2, children: e2 });
 }, Hr = ({ as: e2 = "h2", children: t2, ...n2 }) => {
-  const r = L(n2), { arrowIcon: o2, flush: i2, isOpen: s2, setOpen: l } = Dr(), c = E().theme.accordion.title, u = () => typeof l < "u" && l();
-  return y("button", { className: T(c.base, c.flush[i2 ? "on" : "off"], c.open[s2 ? "on" : "off"]), onClick: u, type: "button", ...r, children: [a(e2, { className: c.heading, "data-testid": "flowbite-accordion-heading", children: t2 }), o2 && a(o2, { "aria-hidden": true, className: T(c.arrow.base, c.arrow.open[s2 ? "on" : "off"]), "data-testid": "flowbite-accordion-arrow" })] });
+  const r = L(n2), { arrowIcon: o2, flush: i2, isOpen: s2, setOpen: c } = Dr(), l = E().theme.accordion.title, u = () => typeof c < "u" && c();
+  return y("button", { className: T(l.base, l.flush[i2 ? "on" : "off"], l.open[s2 ? "on" : "off"]), onClick: u, type: "button", ...r, children: [a(e2, { className: l.heading, "data-testid": "flowbite-accordion-heading", children: t2 }), o2 && a(o2, { "aria-hidden": true, className: T(l.arrow.base, l.arrow.open[s2 ? "on" : "off"]), "data-testid": "flowbite-accordion-arrow" })] });
 }, Vr = ({ alwaysOpen: e2 = false, arrowIcon: t2 = Ar, children: n2, flush: r = false, ...o2 }) => {
-  const i2 = L(o2), [s2, l] = react.exports.useState(0), c = react.exports.useMemo(() => react.exports.Children.map(n2, (g, f) => react.exports.cloneElement(g, { alwaysOpen: e2, arrowIcon: t2, flush: r, isOpen: s2 === f, setOpen: () => l(f) })), [e2, t2, n2, r, s2]), u = E().theme.accordion;
-  return a("div", { className: T(u.base, u.flush[r ? "on" : "off"]), "data-testid": "flowbite-accordion", ...i2, children: c });
+  const i2 = L(o2), [s2, c] = react.exports.useState(0), l = react.exports.useMemo(() => react.exports.Children.map(n2, (g, f) => react.exports.cloneElement(g, { alwaysOpen: e2, arrowIcon: t2, flush: r, isOpen: s2 === f, setOpen: () => c(f) })), [e2, t2, n2, r, s2]), u = E().theme.accordion;
+  return a("div", { className: T(u.base, u.flush[r ? "on" : "off"]), "data-testid": "flowbite-accordion", ...i2, children: l });
 };
 Vr.displayName = "Accordion";
 zr.displayName = "Accordion.Panel";
@@ -2447,9 +2463,9 @@ const Ur = ({ children: e2 }) => a("div", { "data-testid": "avatar-group-element
 Ur.displayName = "Avatar.Group";
 const Wr = ({ total: e2, href: t2 }) => y("a", { className: "relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white ring-2 ring-gray-300 hover:bg-gray-600  dark:ring-gray-500 ", href: t2, children: ["+", e2] });
 Wr.displayName = "Avatar.GroupCounter";
-const Yr = ({ alt: e2 = "", bordered: t2 = false, children: n2, img: r, rounded: o2 = false, size: i2 = "md", stacked: s2 = false, status: l, statusPosition: c = "top-left", ...u }) => {
+const Yr = ({ alt: e2 = "", bordered: t2 = false, children: n2, img: r, rounded: o2 = false, size: i2 = "md", stacked: s2 = false, status: c, statusPosition: l = "top-left", ...u }) => {
   const g = L(u), f = E().theme.avatar;
-  return y("div", { className: f.base, "data-testid": "flowbite-avatar", ...g, children: [y("div", { className: "relative", children: [r ? a("img", { alt: e2, className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.on, f.size[i2]), "data-testid": "flowbite-avatar-img", src: r }) : a("div", { className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.off, f.size[i2]), "data-testid": "flowbite-avatar-img", children: a("svg", { className: "absolute -bottom-1 h-auto w-auto text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", children: a("path", { fillRule: "evenodd", d: "M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z", clipRule: "evenodd" }) }) }), l && a("span", { className: T(f.status.base, f.status[l], f.statusPosition[c]) })] }), n2 && a("div", { children: n2 })] });
+  return y("div", { className: f.base, "data-testid": "flowbite-avatar", ...g, children: [y("div", { className: "relative", children: [r ? a("img", { alt: e2, className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.on, f.size[i2]), "data-testid": "flowbite-avatar-img", src: r }) : a("div", { className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.off, f.size[i2]), "data-testid": "flowbite-avatar-img", children: a("svg", { className: "absolute -bottom-1 h-auto w-auto text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", children: a("path", { fillRule: "evenodd", d: "M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z", clipRule: "evenodd" }) }) }), c && a("span", { className: T(f.status.base, f.status[c], f.statusPosition[l]) })] }), n2 && a("div", { children: n2 })] });
 };
 Yr.displayName = "Avatar";
 Object.assign(Yr, {
@@ -2457,11 +2473,11 @@ Object.assign(Yr, {
   Counter: Wr
 });
 const di = ({ children: e2, color: t2 = "info", href: n2, icon: r, size: o2 = "xs", ...i2 }) => {
-  const s2 = L(i2), l = E().theme.badge, c = () => y("span", { className: T(l.base, l.color[t2], l.icon[r ? "on" : "off"], l.size[o2]), "data-testid": "flowbite-badge", ...s2, children: [r && a(r, { "aria-hidden": true, className: l.icon.size[o2], "data-testid": "flowbite-badge-icon" }), e2 && a("span", { children: e2 })] });
-  return n2 ? a("a", { className: l.href, href: n2, children: a(c, {}) }) : a(c, {});
+  const s2 = L(i2), c = E().theme.badge, l = () => y("span", { className: T(c.base, c.color[t2], c.icon[r ? "on" : "off"], c.size[o2]), "data-testid": "flowbite-badge", ...s2, children: [r && a(r, { "aria-hidden": true, className: c.icon.size[o2], "data-testid": "flowbite-badge-icon" }), e2 && a("span", { children: e2 })] });
+  return n2 ? a("a", { className: c.href, href: n2, children: a(l, {}) }) : a(l, {});
 }, Gr = ({ children: e2, href: t2, icon: n2, ...r }) => {
-  const o2 = typeof t2 < "u", i2 = L(r), s2 = E().theme.breadcrumb.item, l = o2 ? "a" : "span";
-  return y("li", { className: s2.base, ...i2, children: [a(Fr, { "aria-hidden": true, className: s2.chevron, "data-testid": "flowbite-breadcrumb-separator" }), y(l, { className: s2.href[o2 ? "on" : "off"], "data-testid": "flowbite-breadcrumb-item", href: t2, children: [n2 && a(n2, { "aria-hidden": true, className: s2.icon }), e2] })] });
+  const o2 = typeof t2 < "u", i2 = L(r), s2 = E().theme.breadcrumb.item, c = o2 ? "a" : "span";
+  return y("li", { className: s2.base, ...i2, children: [a(Fr, { "aria-hidden": true, className: s2.chevron, "data-testid": "flowbite-breadcrumb-separator" }), y(c, { className: s2.href[o2 ? "on" : "off"], "data-testid": "flowbite-breadcrumb-item", href: t2, children: [n2 && a(n2, { "aria-hidden": true, className: s2.icon }), e2] })] });
 };
 Gr.displayName = "Breadcrumb.Item";
 const Zr = ({ children: e2, ...t2 }) => {
@@ -2471,18 +2487,18 @@ const Zr = ({ children: e2, ...t2 }) => {
 Zr.displayName = "Breadcrumb";
 Object.assign(Zr, { Item: Gr });
 const Xr = ({ children: e2, outline: t2, pill: n2, ...r }) => {
-  const o2 = L(r), i2 = react.exports.useMemo(() => react.exports.Children.map(e2, (l, c) => react.exports.cloneElement(l, {
+  const o2 = L(r), i2 = react.exports.useMemo(() => react.exports.Children.map(e2, (c, l) => react.exports.cloneElement(c, {
     outline: t2,
     pill: n2,
-    positionInGroup: c === 0 ? "start" : c === e2.length - 1 ? "end" : "middle"
+    positionInGroup: l === 0 ? "start" : l === e2.length - 1 ? "end" : "middle"
   })), [e2, t2, n2]), s2 = E().theme.buttonGroup;
   return a("div", { className: s2.base, role: "group", ...o2, children: i2 });
 };
 Xr.displayName = "Button.Group";
-const Kr = ({ children: e2, color: t2 = "info", disabled: n2 = false, gradientDuoTone: r, gradientMonochrome: o2, href: i2, label: s2, outline: l = false, pill: c = false, positionInGroup: u = "none", size: g = "md", ...f }) => {
+const Kr = ({ children: e2, color: t2 = "info", disabled: n2 = false, gradientDuoTone: r, gradientMonochrome: o2, href: i2, label: s2, outline: c = false, pill: l = false, positionInGroup: u = "none", size: g = "md", ...f }) => {
   var N;
   const h = typeof i2 < "u", m = L(f), { buttonGroup: b, button: v } = E().theme;
-  return a(h ? "a" : "button", { className: T(n2 && v.disabled, !r && !o2 && v.color[t2], r && !o2 && v.gradientDuoTone[r], !r && o2 && v.gradient[o2], b.position[u], l && ((N = v.outline.color[t2]) != null ? N : v.outline.color.default), v.base, v.pill[c ? "on" : "off"]), disabled: n2, href: i2, type: h ? void 0 : "button", ...m, children: a("span", { className: T(v.inner.base, v.inner.position[u], v.outline[l ? "on" : "off"], v.outline.pill[l && c ? "on" : "off"], v.size[g], l && !v.outline.color[t2] && v.inner.outline), children: y(Q, { children: [typeof e2 < "u" && e2, typeof s2 < "u" && a("span", { className: v.label, "data-testid": "flowbite-button-label", children: s2 })] }) }) });
+  return a(h ? "a" : "button", { className: T(n2 && v.disabled, !r && !o2 && v.color[t2], r && !o2 && v.gradientDuoTone[r], !r && o2 && v.gradient[o2], b.position[u], c && ((N = v.outline.color[t2]) != null ? N : v.outline.color.default), v.base, v.pill[l ? "on" : "off"]), disabled: n2, href: i2, type: h ? void 0 : "button", ...m, children: a("span", { className: T(v.inner.base, v.inner.position[u], v.outline[c ? "on" : "off"], v.outline.pill[c && l ? "on" : "off"], v.size[g], c && !v.outline.color[t2] && v.inner.outline), children: y(Q, { children: [typeof e2 < "u" && e2, typeof s2 < "u" && a("span", { className: v.label, "data-testid": "flowbite-button-label", children: s2 })] }) }) });
 };
 Kr.displayName = "Button";
 const ui = Object.assign(Kr, {
@@ -2527,11 +2543,11 @@ var qr = function(e2, t2) {
           if (s2 === "string" || s2 === "number")
             r.push(i2);
           else if (Array.isArray(i2) && i2.length) {
-            var l = n2.apply(null, i2);
-            l && r.push(l);
+            var c = n2.apply(null, i2);
+            c && r.push(c);
           } else if (s2 === "object")
-            for (var c in i2)
-              t2.call(i2, c) && i2[c] && r.push(c);
+            for (var l in i2)
+              t2.call(i2, l) && i2[l] && r.push(l);
         }
       }
       return r.join(" ");
@@ -2548,21 +2564,21 @@ var qr = function(e2, t2) {
   }
 }, Ve.exports), Ve.exports);
 function wt(e2, t2, n2) {
-  var r, o2, i2, s2, l;
-  function c() {
+  var r, o2, i2, s2, c;
+  function l() {
     var g = Date.now() - s2;
-    g < t2 && g >= 0 ? r = setTimeout(c, t2 - g) : (r = null, n2 || (l = e2.apply(i2, o2), i2 = o2 = null));
+    g < t2 && g >= 0 ? r = setTimeout(l, t2 - g) : (r = null, n2 || (c = e2.apply(i2, o2), i2 = o2 = null));
   }
   t2 == null && (t2 = 100);
   var u = function() {
     i2 = this, o2 = arguments, s2 = Date.now();
     var g = n2 && !r;
-    return r || (r = setTimeout(c, t2)), g && (l = e2.apply(i2, o2), i2 = o2 = null), l;
+    return r || (r = setTimeout(l, t2)), g && (c = e2.apply(i2, o2), i2 = o2 = null), c;
   };
   return u.clear = function() {
     r && (clearTimeout(r), r = null);
   }, u.flush = function() {
-    r && (l = e2.apply(i2, o2), i2 = o2 = null, clearTimeout(r), r = null);
+    r && (c = e2.apply(i2, o2), i2 = o2 = null, clearTimeout(r), r = null);
   }, u;
 }
 wt.debounce = wt;
@@ -2693,10 +2709,10 @@ var bt, mi = (bt = "indiana-scroll-container", function(e2, t2) {
     } else
       this.processStart(false);
   }, t2.prototype.processMove = function(n2, r, o2) {
-    var i2 = this.props, s2 = i2.horizontal, l = i2.vertical, c = i2.activationDistance, u = i2.onScroll, g = this.container.current;
-    this.started ? (s2 && (g.scrollLeft -= r - this.clientX), l && (g.scrollTop -= o2 - this.clientY), u && u({
+    var i2 = this.props, s2 = i2.horizontal, c = i2.vertical, l = i2.activationDistance, u = i2.onScroll, g = this.container.current;
+    this.started ? (s2 && (g.scrollLeft -= r - this.clientX), c && (g.scrollTop -= o2 - this.clientY), u && u({
       external: !this.internal
-    }), this.clientX = r, this.clientY = o2, this.scrollLeft = g.scrollLeft, this.scrollTop = g.scrollTop) : (s2 && Math.abs(r - this.clientX) > c || l && Math.abs(o2 - this.clientY) > c) && (this.clientX = r, this.clientY = o2, this.processStart());
+    }), this.clientX = r, this.clientY = o2, this.scrollLeft = g.scrollLeft, this.scrollTop = g.scrollTop) : (s2 && Math.abs(r - this.clientX) > l || c && Math.abs(o2 - this.clientY) > l) && (this.clientX = r, this.clientY = o2, this.processStart());
   }, t2.prototype.processEnd = function() {
     var n2 = this.props.onEndScroll;
     this.container.current && n2 && n2({
@@ -2707,11 +2723,11 @@ var bt, mi = (bt = "indiana-scroll-container", function(e2, t2) {
       r && (typeof r == "function" ? r(n2) : r.current = n2);
     });
   }, t2.prototype.render = function() {
-    var n2 = this.props, r = n2.children, o2 = n2.draggingClassName, i2 = n2.className, s2 = n2.style, l = n2.hideScrollbars, c = n2.component;
-    return React.createElement(c, {
+    var n2 = this.props, r = n2.children, o2 = n2.draggingClassName, i2 = n2.className, s2 = n2.style, c = n2.hideScrollbars, l = n2.component;
+    return React.createElement(l, {
       className: gi(i2, this.pressed && o2, mi({
         dragging: this.pressed,
-        "hide-scrollbars": l,
+        "hide-scrollbars": c,
         "native-scroll": this.isMobile
       })),
       style: s2,
@@ -2747,7 +2763,7 @@ function lr(e2, t2, n2) {
     reference: r,
     floating: o2
   } = e2;
-  const i2 = r.x + r.width / 2 - o2.width / 2, s2 = r.y + r.height / 2 - o2.height / 2, l = _e(t2), c = Tt(l), u = r[c] / 2 - o2[c] / 2, g = Ee(t2), f = l === "x";
+  const i2 = r.x + r.width / 2 - o2.width / 2, s2 = r.y + r.height / 2 - o2.height / 2, c = _e(t2), l = Tt(c), u = r[l] / 2 - o2[l] / 2, g = Ee(t2), f = c === "x";
   let h;
   switch (g) {
     case "top":
@@ -2782,10 +2798,10 @@ function lr(e2, t2, n2) {
   }
   switch (xe(t2)) {
     case "start":
-      h[l] -= u * (n2 && f ? -1 : 1);
+      h[c] -= u * (n2 && f ? -1 : 1);
       break;
     case "end":
-      h[l] += u * (n2 && f ? -1 : 1);
+      h[c] += u * (n2 && f ? -1 : 1);
       break;
   }
   return h;
@@ -2796,15 +2812,15 @@ const bi = async (e2, t2, n2) => {
     strategy: o2 = "absolute",
     middleware: i2 = [],
     platform: s2
-  } = n2, l = await (s2.isRTL == null ? void 0 : s2.isRTL(t2));
-  let c = await s2.getElementRects({
+  } = n2, c = await (s2.isRTL == null ? void 0 : s2.isRTL(t2));
+  let l = await s2.getElementRects({
     reference: e2,
     floating: t2,
     strategy: o2
   }), {
     x: u,
     y: g
-  } = lr(c, r, l), f = r, h = {}, m = 0;
+  } = lr(l, r, c), f = r, h = {}, m = 0;
   for (let b = 0; b < i2.length; b++) {
     const {
       name: v,
@@ -2821,7 +2837,7 @@ const bi = async (e2, t2, n2) => {
       placement: f,
       strategy: o2,
       middlewareData: h,
-      rects: c,
+      rects: l,
       platform: s2,
       elements: {
         reference: e2,
@@ -2835,14 +2851,14 @@ const bi = async (e2, t2, n2) => {
         ...S
       }
     }, w && m <= 50) {
-      m++, typeof w == "object" && (w.placement && (f = w.placement), w.rects && (c = w.rects === true ? await s2.getElementRects({
+      m++, typeof w == "object" && (w.placement && (f = w.placement), w.rects && (l = w.rects === true ? await s2.getElementRects({
         reference: e2,
         floating: t2,
         strategy: o2
       }) : w.rects), {
         x: u,
         y: g
-      } = lr(c, f, l)), b = -1;
+      } = lr(l, f, c)), b = -1;
       continue;
     }
   }
@@ -2888,27 +2904,27 @@ async function St(e2, t2) {
     y: o2,
     platform: i2,
     rects: s2,
-    elements: l,
-    strategy: c
+    elements: c,
+    strategy: l
   } = e2, {
     boundary: u = "clippingAncestors",
     rootBoundary: g = "viewport",
     elementContext: f = "floating",
     altBoundary: h = false,
     padding: m = 0
-  } = t2, b = Jr(m), C = l[h ? f === "floating" ? "reference" : "floating" : f], N = Ze(await i2.getClippingRect({
-    element: (n2 = await (i2.isElement == null ? void 0 : i2.isElement(C))) == null || n2 ? C : C.contextElement || await (i2.getDocumentElement == null ? void 0 : i2.getDocumentElement(l.floating)),
+  } = t2, b = Jr(m), C = c[h ? f === "floating" ? "reference" : "floating" : f], N = Ze(await i2.getClippingRect({
+    element: (n2 = await (i2.isElement == null ? void 0 : i2.isElement(C))) == null || n2 ? C : C.contextElement || await (i2.getDocumentElement == null ? void 0 : i2.getDocumentElement(c.floating)),
     boundary: u,
     rootBoundary: g,
-    strategy: c
+    strategy: l
   })), R = Ze(i2.convertOffsetParentRelativeRectToViewportRelativeRect ? await i2.convertOffsetParentRelativeRectToViewportRelativeRect({
     rect: f === "floating" ? {
       ...s2.floating,
       x: r,
       y: o2
     } : s2.reference,
-    offsetParent: await (i2.getOffsetParent == null ? void 0 : i2.getOffsetParent(l.floating)),
-    strategy: c
+    offsetParent: await (i2.getOffsetParent == null ? void 0 : i2.getOffsetParent(c.floating)),
+    strategy: l
   }) : s2[f]);
   return {
     top: N.top - R.top + b.top,
@@ -2932,18 +2948,18 @@ const wi = (e2) => ({
       x: o2,
       y: i2,
       placement: s2,
-      rects: l,
-      platform: c
+      rects: c,
+      platform: l
     } = t2;
     if (n2 == null)
       return {};
     const u = Jr(r), g = {
       x: o2,
       y: i2
-    }, f = _e(s2), h = xe(s2), m = Tt(f), b = await c.getDimensions(n2), v = f === "y" ? "top" : "left", C = f === "y" ? "bottom" : "right", N = l.reference[m] + l.reference[f] - g[f] - l.floating[m], R = g[f] - l.reference[f], S = await (c.getOffsetParent == null ? void 0 : c.getOffsetParent(n2));
+    }, f = _e(s2), h = xe(s2), m = Tt(f), b = await l.getDimensions(n2), v = f === "y" ? "top" : "left", C = f === "y" ? "bottom" : "right", N = c.reference[m] + c.reference[f] - g[f] - c.floating[m], R = g[f] - c.reference[f], S = await (l.getOffsetParent == null ? void 0 : l.getOffsetParent(n2));
     let w = S ? f === "y" ? S.clientHeight || 0 : S.clientWidth || 0 : 0;
-    w === 0 && (w = l.floating[m]);
-    const _ = N / 2 - R / 2, F = u[v], U = w - b[m] - u[C], V = w / 2 - b[m] / 2 + _, D = xt(F, V, U), Y = (h === "start" ? u[v] : u[C]) > 0 && V !== D && l.reference[m] <= l.floating[m] ? V < F ? F - V : U - V : 0;
+    w === 0 && (w = c.floating[m]);
+    const _ = N / 2 - R / 2, F = u[v], U = w - b[m] - u[C], V = w / 2 - b[m] / 2 + _, D = xt(F, V, U), Y = (h === "start" ? u[v] : u[C]) > 0 && V !== D && c.reference[m] <= c.floating[m] ? V < F ? F - V : U - V : 0;
     return {
       [f]: g[f] - Y,
       data: {
@@ -2988,8 +3004,8 @@ const Ri = function(e2) {
     async fn(t2) {
       var n2, r, o2, i2, s2;
       const {
-        x: l,
-        y: c,
+        x: c,
+        y: l,
         rects: u,
         middlewareData: g,
         placement: f,
@@ -3009,8 +3025,8 @@ const Ri = function(e2) {
       } = Qr(_, u, await (h.isRTL == null ? void 0 : h.isRTL(m.floating)));
       if (f !== _)
         return {
-          x: l,
-          y: c,
+          x: c,
+          y: l,
           reset: {
             placement: R[0]
           }
@@ -3062,8 +3078,8 @@ const Si = function(e2) {
         middlewareData: o2,
         rects: i2,
         initialPlacement: s2,
-        platform: l,
-        elements: c
+        platform: c,
+        elements: l
       } = t2, {
         mainAxis: u = true,
         crossAxis: g = true,
@@ -3077,7 +3093,7 @@ const Si = function(e2) {
         const {
           main: D,
           cross: Z
-        } = Qr(r, i2, await (l.isRTL == null ? void 0 : l.isRTL(c.floating)));
+        } = Qr(r, i2, await (c.isRTL == null ? void 0 : c.isRTL(l.floating)));
         w.push(S[D], S[Z]);
       }
       if (_ = [..._, {
@@ -3124,7 +3140,7 @@ async function Oi(e2, t2) {
     placement: n2,
     platform: r,
     elements: o2
-  } = e2, i2 = await (r.isRTL == null ? void 0 : r.isRTL(o2.floating)), s2 = Ee(n2), l = xe(n2), c = _e(n2) === "x", u = ["left", "top"].includes(s2) ? -1 : 1, g = i2 && c ? -1 : 1, f = typeof t2 == "function" ? t2(e2) : t2;
+  } = e2, i2 = await (r.isRTL == null ? void 0 : r.isRTL(o2.floating)), s2 = Ee(n2), c = xe(n2), l = _e(n2) === "x", u = ["left", "top"].includes(s2) ? -1 : 1, g = i2 && l ? -1 : 1, f = typeof t2 == "function" ? t2(e2) : t2;
   let {
     mainAxis: h,
     crossAxis: m,
@@ -3139,7 +3155,7 @@ async function Oi(e2, t2) {
     alignmentAxis: null,
     ...f
   };
-  return l && typeof b == "number" && (m = l === "end" ? b * -1 : b), c ? {
+  return c && typeof b == "number" && (m = c === "end" ? b * -1 : b), l ? {
     x: m * g,
     y: h * u
   } : {
@@ -3179,7 +3195,7 @@ const Mi = function(e2) {
       } = t2, {
         mainAxis: i2 = true,
         crossAxis: s2 = false,
-        limiter: l = {
+        limiter: c = {
           fn: (C) => {
             let {
               x: N,
@@ -3191,11 +3207,11 @@ const Mi = function(e2) {
             };
           }
         },
-        ...c
+        ...l
       } = e2, u = {
         x: n2,
         y: r
-      }, g = await St(t2, c), f = _e(Ee(o2)), h = Pi(f);
+      }, g = await St(t2, l), f = _e(Ee(o2)), h = Pi(f);
       let m = u[f], b = u[h];
       if (i2) {
         const C = f === "y" ? "top" : "left", N = f === "y" ? "bottom" : "right", R = m + g[C], S = m - g[N];
@@ -3205,7 +3221,7 @@ const Mi = function(e2) {
         const C = h === "y" ? "top" : "left", N = h === "y" ? "bottom" : "right", R = b + g[C], S = b - g[N];
         b = xt(R, b, S);
       }
-      const v = l.fn({
+      const v = c.fn({
         ...t2,
         [f]: m,
         [h]: b
@@ -3279,10 +3295,10 @@ const cr = Math.min, Me = Math.max, qe = Math.round;
 function ue(e2, t2, n2) {
   var r, o2, i2, s2;
   t2 === void 0 && (t2 = false), n2 === void 0 && (n2 = false);
-  const l = e2.getBoundingClientRect();
-  let c = 1, u = 1;
-  t2 && ie(e2) && (c = e2.offsetWidth > 0 && qe(l.width) / e2.offsetWidth || 1, u = e2.offsetHeight > 0 && qe(l.height) / e2.offsetHeight || 1);
-  const g = pe(e2) ? ge(e2) : window, f = !nn() && n2, h = (l.left + (f && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / c, m = (l.top + (f && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, b = l.width / c, v = l.height / u;
+  const c = e2.getBoundingClientRect();
+  let l = 1, u = 1;
+  t2 && ie(e2) && (l = e2.offsetWidth > 0 && qe(c.width) / e2.offsetWidth || 1, u = e2.offsetHeight > 0 && qe(c.height) / e2.offsetHeight || 1);
+  const g = pe(e2) ? ge(e2) : window, f = !nn() && n2, h = (c.left + (f && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / l, m = (c.top + (f && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, b = c.width / l, v = c.height / u;
   return {
     width: b,
     height: v,
@@ -3323,19 +3339,19 @@ function ji(e2, t2, n2) {
     scrollLeft: 0,
     scrollTop: 0
   };
-  const l = {
+  const c = {
     x: 0,
     y: 0
   };
   if (r || !r && n2 !== "fixed")
     if ((de(t2) !== "body" || rt(o2)) && (s2 = nt(t2)), ie(t2)) {
-      const c = ue(t2, true);
-      l.x = c.x + t2.clientLeft, l.y = c.y + t2.clientTop;
+      const l = ue(t2, true);
+      c.x = l.x + t2.clientLeft, c.y = l.y + t2.clientTop;
     } else
-      o2 && (l.x = on(o2));
+      o2 && (c.x = on(o2));
   return {
-    x: i2.left + s2.scrollLeft - l.x,
-    y: i2.top + s2.scrollTop - l.y,
+    x: i2.left + s2.scrollLeft - c.x,
+    y: i2.top + s2.scrollTop - c.y,
     width: i2.width,
     height: i2.height
   };
@@ -3390,45 +3406,45 @@ function $i(e2) {
     scrollLeft: 0,
     scrollTop: 0
   };
-  const l = {
+  const c = {
     x: 0,
     y: 0
   };
   if ((o2 || !o2 && r !== "fixed") && ((de(n2) !== "body" || rt(i2)) && (s2 = nt(n2)), ie(n2))) {
-    const c = ue(n2, true);
-    l.x = c.x + n2.clientLeft, l.y = c.y + n2.clientTop;
+    const l = ue(n2, true);
+    c.x = l.x + n2.clientLeft, c.y = l.y + n2.clientTop;
   }
   return {
     ...t2,
-    x: t2.x - s2.scrollLeft + l.x,
-    y: t2.y - s2.scrollTop + l.y
+    x: t2.x - s2.scrollLeft + c.x,
+    y: t2.y - s2.scrollTop + c.y
   };
 }
 function Di(e2, t2) {
   const n2 = ge(e2), r = ye(e2), o2 = n2.visualViewport;
-  let i2 = r.clientWidth, s2 = r.clientHeight, l = 0, c = 0;
+  let i2 = r.clientWidth, s2 = r.clientHeight, c = 0, l = 0;
   if (o2) {
     i2 = o2.width, s2 = o2.height;
     const u = nn();
-    (u || !u && t2 === "fixed") && (l = o2.offsetLeft, c = o2.offsetTop);
+    (u || !u && t2 === "fixed") && (c = o2.offsetLeft, l = o2.offsetTop);
   }
   return {
     width: i2,
     height: s2,
-    x: l,
-    y: c
+    x: c,
+    y: l
   };
 }
 function Bi(e2) {
   var t2;
   const n2 = ye(e2), r = nt(e2), o2 = (t2 = e2.ownerDocument) == null ? void 0 : t2.body, i2 = Me(n2.scrollWidth, n2.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), s2 = Me(n2.scrollHeight, n2.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0);
-  let l = -r.scrollLeft + on(e2);
-  const c = -r.scrollTop;
-  return be(o2 || n2).direction === "rtl" && (l += Me(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
+  let c = -r.scrollLeft + on(e2);
+  const l = -r.scrollTop;
+  return be(o2 || n2).direction === "rtl" && (c += Me(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
     width: i2,
     height: s2,
-    x: l,
-    y: c
+    x: c,
+    y: l
   };
 }
 function sn(e2) {
@@ -3438,8 +3454,8 @@ function sn(e2) {
 function Je(e2, t2) {
   var n2;
   t2 === void 0 && (t2 = []);
-  const r = sn(e2), o2 = r === ((n2 = e2.ownerDocument) == null ? void 0 : n2.body), i2 = ge(r), s2 = o2 ? [i2].concat(i2.visualViewport || [], rt(r) ? r : []) : r, l = t2.concat(s2);
-  return o2 ? l : l.concat(Je(s2));
+  const r = sn(e2), o2 = r === ((n2 = e2.ownerDocument) == null ? void 0 : n2.body), i2 = ge(r), s2 = o2 ? [i2].concat(i2.visualViewport || [], rt(r) ? r : []) : r, c = t2.concat(s2);
+  return o2 ? c : c.concat(Je(s2));
 }
 function zi(e2, t2) {
   const n2 = t2.getRootNode == null ? void 0 : t2.getRootNode();
@@ -3482,15 +3498,15 @@ function Ui(e2) {
     rootBoundary: r,
     strategy: o2
   } = e2;
-  const s2 = [...n2 === "clippingAncestors" ? Vi(t2) : [].concat(n2), r], l = s2[0], c = s2.reduce((u, g) => {
+  const s2 = [...n2 === "clippingAncestors" ? Vi(t2) : [].concat(n2), r], c = s2[0], l = s2.reduce((u, g) => {
     const f = fr(t2, g, o2);
     return u.top = Me(f.top, u.top), u.right = cr(f.right, u.right), u.bottom = cr(f.bottom, u.bottom), u.left = Me(f.left, u.left), u;
-  }, fr(t2, l, o2));
+  }, fr(t2, c, o2));
   return {
-    width: c.right - c.left,
-    height: c.bottom - c.top,
-    x: c.left,
-    y: c.top
+    width: l.right - l.left,
+    height: l.bottom - l.top,
+    x: l.left,
+    y: l.top
   };
 }
 const Wi = {
@@ -3524,10 +3540,10 @@ function Yi(e2, t2, n2, r) {
     ancestorScroll: o2 = true,
     ancestorResize: i2 = true,
     elementResize: s2 = true,
-    animationFrame: l = false
-  } = r, c = o2 && !l, u = i2 && !l, g = c || u ? [...pe(e2) ? Je(e2) : [], ...Je(t2)] : [];
+    animationFrame: c = false
+  } = r, l = o2 && !c, u = i2 && !c, g = l || u ? [...pe(e2) ? Je(e2) : [], ...Je(t2)] : [];
   g.forEach((v) => {
-    c && v.addEventListener("scroll", n2, {
+    l && v.addEventListener("scroll", n2, {
       passive: true
     }), u && v.addEventListener("resize", n2);
   });
@@ -3536,10 +3552,10 @@ function Yi(e2, t2, n2, r) {
     let v = true;
     f = new ResizeObserver(() => {
       v || n2(), v = false;
-    }), pe(e2) && !l && f.observe(e2), f.observe(t2);
+    }), pe(e2) && !c && f.observe(e2), f.observe(t2);
   }
-  let h, m = l ? ue(e2) : null;
-  l && b();
+  let h, m = c ? ue(e2) : null;
+  c && b();
   function b() {
     const v = ue(e2);
     m && (v.x !== m.x || v.y !== m.y || v.width !== m.width || v.height !== m.height) && n2(), m = v, h = requestAnimationFrame(b);
@@ -3547,8 +3563,8 @@ function Yi(e2, t2, n2, r) {
   return n2(), () => {
     var v;
     g.forEach((C) => {
-      c && C.removeEventListener("scroll", n2), u && C.removeEventListener("resize", n2);
-    }), (v = f) == null || v.disconnect(), f = null, l && cancelAnimationFrame(h);
+      l && C.removeEventListener("scroll", n2), u && C.removeEventListener("resize", n2);
+    }), (v = f) == null || v.disconnect(), f = null, c && cancelAnimationFrame(h);
   };
 }
 const Gi = (e2, t2, n2) => bi(e2, t2, {
@@ -3606,8 +3622,8 @@ function Xi(e2) {
     strategy: r,
     placement: n2,
     middlewareData: {}
-  }), [l, c] = react.exports.useState(t2);
-  Qe(l == null ? void 0 : l.map((w) => {
+  }), [c, l] = react.exports.useState(t2);
+  Qe(c == null ? void 0 : c.map((w) => {
     let {
       name: _,
       options: F
@@ -3625,10 +3641,10 @@ function Xi(e2) {
       name: _,
       options: F
     };
-  })) || c(t2);
+  })) || l(t2);
   const u = react.exports.useRef(null), g = react.exports.useRef(null), f = react.exports.useRef(null), h = react.exports.useRef(i2), m = Zi(o2), b = react.exports.useCallback(() => {
     !u.current || !g.current || Gi(u.current, g.current, {
-      middleware: l,
+      middleware: c,
       placement: n2,
       strategy: r
     }).then((w) => {
@@ -3636,7 +3652,7 @@ function Xi(e2) {
         s2(w);
       }));
     });
-  }, [l, n2, r]);
+  }, [c, n2, r]);
   Nt(() => {
     v.current && b();
   }, [b]);
@@ -3731,9 +3747,9 @@ function ns(e2) {
     placement: o2,
     middleware: i2,
     strategy: s2,
-    nodeId: l
+    nodeId: c
   } = e2 === void 0 ? {} : e2;
-  const [c, u] = react.exports.useState(null), g = ln(), f = react.exports.useRef(null), h = react.exports.useRef({}), m = react.exports.useState(() => Ki())[0], b = Xi({
+  const [l, u] = react.exports.useState(null), g = ln(), f = react.exports.useRef(null), h = react.exports.useRef({}), m = react.exports.useState(() => Ki())[0], b = Xi({
     placement: o2,
     middleware: i2,
     strategy: s2,
@@ -3745,16 +3761,16 @@ function ns(e2) {
     ...b,
     refs: C,
     dataRef: h,
-    nodeId: l,
+    nodeId: c,
     events: m,
     open: t2,
     onOpenChange: v,
     _: {
-      domReference: c
+      domReference: l
     }
-  }), [b, l, m, t2, v, C, c]);
+  }), [b, c, m, t2, v, C, l]);
   Se(() => {
-    const w = g == null ? void 0 : g.nodesRef.current.find((_) => _.id === l);
+    const w = g == null ? void 0 : g.nodesRef.current.find((_) => _.id === c);
     w && (w.context = N);
   });
   const {
@@ -3777,18 +3793,18 @@ function yt(e2, t2, n2) {
     },
     ...e2,
     ...t2.map((o2) => o2 ? o2[n2] : null).concat(e2).reduce((o2, i2) => (i2 && Object.entries(i2).forEach((s2) => {
-      let [l, c] = s2;
-      if (l.indexOf("on") === 0) {
-        if (r.has(l) || r.set(l, []), typeof c == "function") {
+      let [c, l] = s2;
+      if (c.indexOf("on") === 0) {
+        if (r.has(c) || r.set(c, []), typeof l == "function") {
           var u;
-          (u = r.get(l)) == null || u.push(c), o2[l] = function() {
+          (u = r.get(c)) == null || u.push(l), o2[c] = function() {
             for (var g, f = arguments.length, h = new Array(f), m = 0; m < f; m++)
               h[m] = arguments[m];
-            (g = r.get(l)) == null || g.forEach((b) => b(...h));
+            (g = r.get(c)) == null || g.forEach((b) => b(...h));
           };
         }
       } else
-        o2[l] = c;
+        o2[c] = l;
     }), o2), {})
   };
 }
@@ -3824,16 +3840,16 @@ const ls = function(e2, t2) {
     handleClose: o2 = null,
     mouseOnly: i2 = false,
     restMs: s2 = 0,
-    move: l = true
+    move: c = true
   } = t2 === void 0 ? {} : t2;
   const {
-    open: c,
+    open: l,
     onOpenChange: u,
     dataRef: g,
     events: f,
     refs: h,
     _: m
-  } = e2, b = ln(), v = ts(), C = pr(o2), N = pr(r), R = ss(c), S = react.exports.useRef(), w = react.exports.useRef(), _ = react.exports.useRef(), F = react.exports.useRef(), U = react.exports.useRef(true), V = react.exports.useRef(false), D = react.exports.useCallback(() => {
+  } = e2, b = ln(), v = ts(), C = pr(o2), N = pr(r), R = ss(l), S = react.exports.useRef(), w = react.exports.useRef(), _ = react.exports.useRef(), F = react.exports.useRef(), U = react.exports.useRef(true), V = react.exports.useRef(false), D = react.exports.useCallback(() => {
     var P;
     const j = (P = g.current.openEvent) == null ? void 0 : P.type;
     return (j == null ? void 0 : j.includes("mouse")) && j !== "mousedown";
@@ -3914,10 +3930,10 @@ const ls = function(e2, t2) {
     }
     const ne = h.floating.current, K = h.domReference.current;
     if (Et(K))
-      return c && K.addEventListener("mouseleave", te), ne == null || ne.addEventListener("mouseleave", te), l && K.addEventListener("mousemove", j, {
+      return l && K.addEventListener("mouseleave", te), ne == null || ne.addEventListener("mouseleave", te), c && K.addEventListener("mousemove", j, {
         once: true
       }), K.addEventListener("mouseenter", j), K.addEventListener("mouseleave", ee), () => {
-        c && K.removeEventListener("mouseleave", te), ne == null || ne.removeEventListener("mouseleave", te), l && K.removeEventListener("mousemove", j), K.removeEventListener("mouseenter", j), K.removeEventListener("mouseleave", ee);
+        l && K.removeEventListener("mouseleave", te), ne == null || ne.removeEventListener("mouseleave", te), c && K.removeEventListener("mousemove", j), K.removeEventListener("mouseenter", j), K.removeEventListener("mouseleave", ee);
       };
   }, [
     m.domReference,
@@ -3925,19 +3941,19 @@ const ls = function(e2, t2) {
     e2,
     i2,
     s2,
-    l,
+    c,
     Z,
     W,
     Y,
     u,
-    c,
+    l,
     b,
     h,
     N,
     C,
     g
   ]), Se(() => {
-    if (!!n2 && c && C.current && C.current.__options.blockPointerEvents && D()) {
+    if (!!n2 && l && C.current && C.current.__options.blockPointerEvents && D()) {
       ve(h.floating.current).body.style.pointerEvents = "none", V.current = true;
       const ee = h.domReference.current, te = h.floating.current;
       if (Et(ee) && te) {
@@ -3948,8 +3964,8 @@ const ls = function(e2, t2) {
         };
       }
     }
-  }, [n2, c, v, h, b, C, g, D]), Se(() => {
-    R && !c && (S.current = void 0, W(), Y());
+  }, [n2, l, v, h, b, C, g, D]), Se(() => {
+    R && !l && (S.current = void 0, W(), Y());
   }), react.exports.useEffect(() => () => {
     W(), clearTimeout(w.current), clearTimeout(F.current), V.current && Y();
   }, [n2, W, Y]), !n2)
@@ -3962,7 +3978,7 @@ const ls = function(e2, t2) {
       onPointerDown: z,
       onPointerEnter: z,
       onMouseMove() {
-        c || s2 === 0 || (clearTimeout(F.current), F.current = setTimeout(() => {
+        l || s2 === 0 || (clearTimeout(F.current), F.current = setTimeout(() => {
           U.current || u(true);
         }, s2));
       }
@@ -3983,7 +3999,7 @@ const ls = function(e2, t2) {
     enabled: r = true,
     role: o2 = "dialog"
   } = t2 === void 0 ? {} : t2;
-  const i2 = mr(), s2 = mr(), l = {
+  const i2 = mr(), s2 = mr(), c = {
     id: i2,
     role: o2
   };
@@ -3991,7 +4007,7 @@ const ls = function(e2, t2) {
     reference: {
       "aria-describedby": n2 ? i2 : void 0
     },
-    floating: l
+    floating: c
   } : {
     reference: {
       "aria-expanded": n2 ? "true" : "false",
@@ -4005,7 +4021,7 @@ const ls = function(e2, t2) {
       }
     },
     floating: {
-      ...l,
+      ...c,
       ...o2 === "menu" && {
         "aria-labelledby": s2
       }
@@ -4023,8 +4039,8 @@ const ds = function(e2, t2) {
     refs: i2
   } = e2, {
     enabled: s2 = true,
-    pointerDown: l = false,
-    toggle: c = true,
+    pointerDown: c = false,
+    toggle: l = true,
     ignoreMouse: u = false,
     keyboardHandlers: g = true
   } = t2 === void 0 ? {} : t2;
@@ -4038,20 +4054,20 @@ const ds = function(e2, t2) {
         f.current = m.pointerType;
       },
       onMouseDown(m) {
-        m.button === 0 && (f.current === "mouse" && u || !l || (n2 ? c && (o2.current.openEvent ? o2.current.openEvent.type === "mousedown" : true) && r(false) : r(true), o2.current.openEvent = m.nativeEvent));
+        m.button === 0 && (f.current === "mouse" && u || !c || (n2 ? l && (o2.current.openEvent ? o2.current.openEvent.type === "mousedown" : true) && r(false) : r(true), o2.current.openEvent = m.nativeEvent));
       },
       onClick(m) {
-        if (l && f.current) {
+        if (c && f.current) {
           f.current = void 0;
           return;
         }
-        f.current === "mouse" && u || (n2 ? c && (o2.current.openEvent ? o2.current.openEvent.type === "click" : true) && r(false) : r(true), o2.current.openEvent = m.nativeEvent);
+        f.current === "mouse" && u || (n2 ? l && (o2.current.openEvent ? o2.current.openEvent.type === "click" : true) && r(false) : r(true), o2.current.openEvent = m.nativeEvent);
       },
       onKeyDown(m) {
-        f.current = void 0, g && (yr(m) || (m.key === " " && !h() && m.preventDefault(), m.key === "Enter" && (n2 ? c && r(false) : r(true))));
+        f.current = void 0, g && (yr(m) || (m.key === " " && !h() && m.preventDefault(), m.key === "Enter" && (n2 ? l && r(false) : r(true))));
       },
       onKeyUp(m) {
-        !g || yr(m) || h() || m.key === " " && (n2 ? c && r(false) : r(true));
+        !g || yr(m) || h() || m.key === " " && (n2 ? l && r(false) : r(true));
       }
     }
   } : {};
@@ -4063,13 +4079,13 @@ const ds = function(e2, t2) {
     refs: i2,
     events: s2
   } = e2, {
-    enabled: l = true,
-    keyboardOnly: c = true
+    enabled: c = true,
+    keyboardOnly: l = true
   } = t2 === void 0 ? {} : t2;
   const u = react.exports.useRef(""), g = react.exports.useRef(false), f = react.exports.useRef();
   return react.exports.useEffect(() => {
     var h;
-    if (!l)
+    if (!c)
       return;
     const b = (h = ve(i2.floating.current).defaultView) != null ? h : window;
     function v() {
@@ -4078,8 +4094,8 @@ const ds = function(e2, t2) {
     return b.addEventListener("blur", v), () => {
       b.removeEventListener("blur", v);
     };
-  }, [i2, n2, l]), react.exports.useEffect(() => {
-    if (!l)
+  }, [i2, n2, c]), react.exports.useEffect(() => {
+    if (!c)
       return;
     function h() {
       g.current = true;
@@ -4087,15 +4103,15 @@ const ds = function(e2, t2) {
     return s2.on("dismiss", h), () => {
       s2.off("dismiss", h);
     };
-  }, [s2, l]), react.exports.useEffect(() => () => {
+  }, [s2, c]), react.exports.useEffect(() => () => {
     clearTimeout(f.current);
-  }, []), l ? {
+  }, []), c ? {
     reference: {
       onPointerDown(h) {
         let {
           pointerType: m
         } = h;
-        u.current = m, g.current = !!(m && c);
+        u.current = m, g.current = !!(m && l);
       },
       onPointerLeave() {
         g.current = false;
@@ -4121,16 +4137,16 @@ const ds = function(e2, t2) {
   right: "left",
   bottom: "top",
   left: "right"
-})[e2.split("-")[0]], dn = ({ children: e2, content: t2, theme: n2, animation: r = "duration-300", arrow: o2 = true, placement: i2 = "top", style: s2 = "dark", trigger: l = "hover", ...c }) => {
-  const u = L(c), g = react.exports.useRef(null), [f, h] = react.exports.useState(false), m = ns({
+})[e2.split("-")[0]], dn = ({ children: e2, content: t2, theme: n2, animation: r = "duration-300", arrow: o2 = true, placement: i2 = "top", style: s2 = "dark", trigger: c = "hover", ...l }) => {
+  const u = L(l), g = react.exports.useRef(null), [f, h] = react.exports.useState(false), m = ns({
     middleware: fs({ arrowRef: g, placement: i2 }),
     onOpenChange: h,
     open: f,
     placement: gs({ placement: i2 })
   }), { context: b, floating: v, middlewareData: { arrow: { x: C, y: N } = {} }, reference: R, refs: S, strategy: w, update: _, x: F, y: U } = m, { getFloatingProps: V, getReferenceProps: D } = os([
-    ds(b, { enabled: l === "click" }),
+    ds(b, { enabled: c === "click" }),
     us(b),
-    ls(b, { enabled: l === "hover" }),
+    ls(b, { enabled: c === "hover" }),
     cs(b, { role: "tooltip" })
   ]);
   return react.exports.useEffect(() => {
@@ -4171,12 +4187,12 @@ const ds = function(e2, t2) {
   bottom: jr,
   left: oi
 }, gn = ({ children: e2, ...t2 }) => {
-  const n2 = E().theme.dropdown, r = L(t2), { placement: o2 = t2.inline ? "bottom-start" : "bottom", trigger: i2 = "click", label: s2, inline: l, floatingArrow: c = false, arrowIcon: u = true, ...g } = r, f = react.exports.useMemo(() => {
+  const n2 = E().theme.dropdown, r = L(t2), { placement: o2 = t2.inline ? "bottom-start" : "bottom", trigger: i2 = "click", label: s2, inline: c, floatingArrow: l = false, arrowIcon: u = true, ...g } = r, f = react.exports.useMemo(() => {
     var v;
     const [b] = o2.split("-");
     return (v = ms[b]) != null ? v : jr;
-  }, [o2]), h = react.exports.useMemo(() => a("ul", { className: n2.content, children: e2 }), [e2, n2]), m = ({ children: b }) => l ? a("button", { className: n2.inlineWrapper, children: b }) : a(ui, { ...g, children: b });
-  return a(dn, { content: h, style: "auto", animation: "duration-100", placement: o2, arrow: c, trigger: i2, theme: n2.floating, children: y(m, { children: [s2, u && a(f, { className: n2.arrowIcon })] }) });
+  }, [o2]), h = react.exports.useMemo(() => a("ul", { className: n2.content, children: e2 }), [e2, n2]), m = ({ children: b }) => c ? a("button", { className: n2.inlineWrapper, children: b }) : a(ui, { ...g, children: b });
+  return a(dn, { content: h, style: "auto", animation: "duration-100", placement: o2, arrow: l, trigger: i2, theme: n2.floating, children: y(m, { children: [s2, u && a(f, { className: n2.arrowIcon })] }) });
 };
 gn.displayName = "Dropdown";
 fn.displayName = "Dropdown.Item";
@@ -4248,9 +4264,9 @@ const ys = react.exports.forwardRef((e2, t2) => {
   return a("input", { ref: t2, className: n2.base, type: "radio", ...r });
 });
 ys.displayName = "Radio";
-const vs = react.exports.forwardRef(({ children: e2, sizing: t2 = "md", shadow: n2, helperText: r, addon: o2, icon: i2, color: s2 = "gray", ...l }, c) => {
-  const u = E().theme.formControls.select, g = L(l);
-  return y("div", { className: u.base, children: [o2 && a("span", { className: u.addon, children: o2 }), y("div", { className: u.field.base, children: [i2 && a("div", { className: u.field.icon.base, children: a(i2, { className: u.field.icon.svg }) }), a("select", { className: T(u.field.select.base, u.field.select.colors[s2], u.field.select.withIcon[i2 ? "on" : "off"], u.field.select.withAddon[o2 ? "on" : "off"], u.field.select.withShadow[n2 ? "on" : "off"], u.field.select.sizes[t2]), ...g, ref: c, children: e2 }), r && a(ot, { color: s2, children: r })] })] });
+const vs = react.exports.forwardRef(({ children: e2, sizing: t2 = "md", shadow: n2, helperText: r, addon: o2, icon: i2, color: s2 = "gray", ...c }, l) => {
+  const u = E().theme.formControls.select, g = L(c);
+  return y("div", { className: u.base, children: [o2 && a("span", { className: u.addon, children: o2 }), y("div", { className: u.field.base, children: [i2 && a("div", { className: u.field.icon.base, children: a(i2, { className: u.field.icon.svg }) }), a("select", { className: T(u.field.select.base, u.field.select.colors[s2], u.field.select.withIcon[i2 ? "on" : "off"], u.field.select.withAddon[o2 ? "on" : "off"], u.field.select.withShadow[n2 ? "on" : "off"], u.field.select.sizes[t2]), ...g, ref: l, children: e2 }), r && a(ot, { color: s2, children: r })] })] });
 });
 vs.displayName = "Select";
 const ws = react.exports.forwardRef(({ shadow: e2, helperText: t2, color: n2 = "gray", ...r }, o2) => {
@@ -4258,14 +4274,14 @@ const ws = react.exports.forwardRef(({ shadow: e2, helperText: t2, color: n2 = "
   return y(Q, { children: [a("textarea", { ref: o2, className: T(i2.base, i2.colors[n2], i2.withShadow[e2 ? "on" : "off"]), ...s2 }), t2 && a(ot, { color: n2, children: t2 })] });
 });
 ws.displayName = "Textarea";
-const xs = react.exports.forwardRef(({ sizing: e2 = "md", shadow: t2, helperText: n2, addon: r, icon: o2, color: i2 = "gray", ...s2 }, l) => {
-  const c = E().theme.formControls.textInput, u = L(s2);
-  return y(Q, { children: [y("div", { className: c.base, children: [r && a("span", { className: c.addon, children: r }), y("div", { className: c.field.base, children: [o2 && a("div", { className: c.field.icon.base, children: a(o2, { className: c.field.icon.svg }) }), a("input", { className: T(c.field.input.base, c.field.input.colors[i2], c.field.input.withIcon[o2 ? "on" : "off"], c.field.input.withAddon[r ? "on" : "off"], c.field.input.withShadow[t2 ? "on" : "off"], c.field.input.sizes[e2]), ...u, ref: l })] })] }), n2 && a(ot, { color: i2, children: n2 })] });
+const xs = react.exports.forwardRef(({ sizing: e2 = "md", shadow: t2, helperText: n2, addon: r, icon: o2, color: i2 = "gray", ...s2 }, c) => {
+  const l = E().theme.formControls.textInput, u = L(s2);
+  return y(Q, { children: [y("div", { className: l.base, children: [r && a("span", { className: l.addon, children: r }), y("div", { className: l.field.base, children: [o2 && a("div", { className: l.field.icon.base, children: a(o2, { className: l.field.icon.svg }) }), a("input", { className: T(l.field.input.base, l.field.input.colors[i2], l.field.input.withIcon[o2 ? "on" : "off"], l.field.input.withAddon[r ? "on" : "off"], l.field.input.withShadow[t2 ? "on" : "off"], l.field.input.sizes[e2]), ...u, ref: c })] })] }), n2 && a(ot, { color: i2, children: n2 })] });
 });
 xs.displayName = "TextInput";
 const kn = ({ active: e2, children: t2, href: n2, icon: r, onClick: o2, ...i2 }) => {
-  const s2 = typeof n2 < "u", l = s2 ? "a" : "button", c = L(i2), u = E().theme.listGroup.item;
-  return a("li", { children: y(l, { className: T(u.active[e2 ? "on" : "off"], u.base, u.href[s2 ? "on" : "off"]), href: n2, onClick: o2, type: s2 ? void 0 : "button", ...c, children: [r && a(r, { "aria-hidden": true, className: u.icon, "data-testid": "flowbite-list-group-item-icon" }), t2] }) });
+  const s2 = typeof n2 < "u", c = s2 ? "a" : "button", l = L(i2), u = E().theme.listGroup.item;
+  return a("li", { children: y(c, { className: T(u.active[e2 ? "on" : "off"], u.base, u.href[s2 ? "on" : "off"]), href: n2, onClick: o2, type: s2 ? void 0 : "button", ...l, children: [r && a(r, { "aria-hidden": true, className: u.icon, "data-testid": "flowbite-list-group-item-icon" }), t2] }) });
 }, Cn = ({ children: e2, ...t2 }) => {
   const n2 = L(t2), r = E().theme.listGroup.base;
   return a("ul", { className: r, ...n2, children: e2 });
@@ -4295,16 +4311,16 @@ const En = ({ children: e2, ...t2 }) => {
   return y("div", { className: T(o2.base, {
     [o2.popup]: n2
   }), ...i2, children: [a("h3", { className: o2.title, children: e2 }), a("button", { "aria-label": "Close", className: o2.close.base, type: "button", onClick: r, children: a(ii, { "aria-hidden": true, className: o2.close.icon }) })] });
-}, Sn = ({ children: e2, show: t2, root: n2, popup: r, size: o2 = "2xl", position: i2 = "center", onClose: s2, ...l }) => {
-  const [c, u] = react.exports.useState(n2), [g, f] = react.exports.useState(), h = E().theme.modal, m = L(l);
+}, Sn = ({ children: e2, show: t2, root: n2, popup: r, size: o2 = "2xl", position: i2 = "center", onClose: s2, ...c }) => {
+  const [l, u] = react.exports.useState(n2), [g, f] = react.exports.useState(), h = E().theme.modal, m = L(c);
   return react.exports.useEffect(() => {
-    c || u(document.body), g || f(document.createElement("div"));
+    l || u(document.body), g || f(document.createElement("div"));
   }, []), react.exports.useEffect(() => {
-    if (!(!g || !c || !t2))
-      return c.appendChild(g), () => {
-        g && c.removeChild(g);
+    if (!(!g || !l || !t2))
+      return l.appendChild(g), () => {
+        g && l.removeChild(g);
       };
-  }, [g, c, t2]), g ? reactDom.exports.createPortal(a(Nn.Provider, { value: { popup: r, onClose: s2 }, children: a("div", { "aria-hidden": !t2, className: T(h.base, h.positions[i2], t2 ? h.show.on : h.show.off), "data-testid": "modal", role: "dialog", ...m, children: a("div", { className: T(h.content.base, h.sizes[o2]), children: a("div", { className: h.content.inner, children: e2 }) }) }) }), g) : null;
+  }, [g, l, t2]), g ? reactDom.exports.createPortal(a(Nn.Provider, { value: { popup: r, onClose: s2 }, children: a("div", { "aria-hidden": !t2, className: T(h.base, h.positions[i2], t2 ? h.show.on : h.show.off), "data-testid": "modal", role: "dialog", ...m, children: a("div", { className: T(h.content.base, h.sizes[o2]), children: a("div", { className: h.content.inner, children: e2 }) }) }) }), g) : null;
 };
 Sn.displayName = "Modal";
 Tn.displayName = "Modal.Header";
@@ -4340,8 +4356,8 @@ const In = ({ barIcon: e2 = ks, ...t2 }) => {
   }, i2 = E().theme.navbar.toggle, s2 = L(t2);
   return y("button", { className: i2.base, "data-testid": "flowbite-navbar-toggle", onClick: o2, ...s2, children: [a("span", { className: "sr-only", children: "Open main menu" }), a(e2, { className: i2.icon })] });
 }, An = ({ children: e2, menuOpen: t2, fluid: n2 = false, rounded: r, border: o2, ...i2 }) => {
-  const [s2, l] = react.exports.useState(t2), c = E().theme.navbar, u = L(i2);
-  return a(Ln.Provider, { value: { isOpen: s2, setIsOpen: l }, children: a("nav", { className: T(c.base, c.bordered[o2 ? "on" : "off"], c.rounded[r ? "on" : "off"]), ...u, children: a("div", { className: T(c.inner.base, c.inner.fluid[n2 ? "on" : "off"]), children: e2 }) }) });
+  const [s2, c] = react.exports.useState(t2), l = E().theme.navbar, u = L(i2);
+  return a(Ln.Provider, { value: { isOpen: s2, setIsOpen: c }, children: a("nav", { className: T(l.base, l.bordered[o2 ? "on" : "off"], l.rounded[r ? "on" : "off"]), ...u, children: a("div", { className: T(l.inner.base, l.inner.fluid[n2 ? "on" : "off"]), children: e2 }) }) });
 };
 An.displayName = "Navbar";
 On.displayName = "Navbar.Brand";
@@ -4378,9 +4394,9 @@ Object.assign(Dn, {
   Star: $n,
   Advanced: jn
 });
-const Mt = ({ animation: e2 = "duration-300", arrow: t2 = true, children: n2, content: r, placement: o2 = "top", style: i2 = "dark", trigger: s2 = "hover", ...l }) => {
-  const c = E().theme.tooltip, u = L(l);
-  return a(dn, { content: r, style: i2, animation: e2, placement: o2, arrow: t2, trigger: s2, theme: c, ...u, children: n2 });
+const Mt = ({ animation: e2 = "duration-300", arrow: t2 = true, children: n2, content: r, placement: o2 = "top", style: i2 = "dark", trigger: s2 = "hover", ...c }) => {
+  const l = E().theme.tooltip, u = L(c);
+  return a(dn, { content: r, style: i2, animation: e2, placement: o2, arrow: t2, trigger: s2, theme: l, ...u, children: n2 });
 }, Bn = react.exports.createContext(void 0);
 function at() {
   const e2 = react.exports.useContext(Bn);
@@ -4396,8 +4412,8 @@ function Ns() {
   return e2;
 }
 const zn = ({ children: e2, icon: t2, label: n2, ...r }) => {
-  const o2 = L(r), i2 = react.exports.useId(), { isCollapsed: s2 } = at(), [l, c] = react.exports.useState(false), u = E().theme.sidebar.collapse;
-  return y(({ children: f }) => a("li", { children: s2 ? a(Mt, { content: n2, placement: "right", children: f }) : f }), { children: [y("button", { className: u.button, id: `flowbite-sidebar-collapse-${i2}`, onClick: () => c(!l), type: "button", ...o2, children: [t2 && a(t2, { "aria-hidden": true, className: T(u.icon.base, u.icon.open[l ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), s2 ? a("span", { className: "sr-only", children: n2 }) : y(Q, { children: [a("span", { className: u.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: n2 }), a(Ar, { "aria-hidden": true, className: u.label.icon })] })] }), a("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${i2}`, className: u.list, hidden: !l, children: a(_t.Provider, { value: { isInsideCollapse: true }, children: e2 }) })] });
+  const o2 = L(r), i2 = react.exports.useId(), { isCollapsed: s2 } = at(), [c, l] = react.exports.useState(false), u = E().theme.sidebar.collapse;
+  return y(({ children: f }) => a("li", { children: s2 ? a(Mt, { content: n2, placement: "right", children: f }) : f }), { children: [y("button", { className: u.button, id: `flowbite-sidebar-collapse-${i2}`, onClick: () => l(!c), type: "button", ...o2, children: [t2 && a(t2, { "aria-hidden": true, className: T(u.icon.base, u.icon.open[c ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), s2 ? a("span", { className: "sr-only", children: n2 }) : y(Q, { children: [a("span", { className: u.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: n2 }), a(Ar, { "aria-hidden": true, className: u.label.icon })] })] }), a("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${i2}`, className: u.list, hidden: !c, children: a(_t.Provider, { value: { isInsideCollapse: true }, children: e2 }) })] });
 };
 zn.displayName = "Sidebar.Collapse";
 const Hn = ({ children: e2, color: t2 = "info", ...n2 }) => {
@@ -4407,8 +4423,8 @@ const Hn = ({ children: e2, color: t2 = "info", ...n2 }) => {
 Hn.displayName = "Sidebar.CTA";
 const Vn = ({ as: e2 = "a", children: t2, icon: n2, active: r, label: o2, labelColor: i2 = "info", ...s2 }) => {
   var v;
-  const l = L(s2), c = react.exports.useId(), { isCollapsed: u } = at(), { isInsideCollapse: g } = Ns(), f = E().theme.sidebar.item, h = ({ children: C }) => a("li", { children: u ? a(Mt, { content: a(m, { children: t2 }), placement: "right", children: C }) : C }), m = ({ children: C }) => a(b, { children: C }), b = ({ children: C }) => a("span", { className: T(f.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${c}`, children: C });
-  return a(h, { children: y(e2, { "aria-labelledby": `flowbite-sidebar-item-${c}`, className: T(f.base, r && f.active, !u && g && f.collapsed.insideCollapse), ...l, children: [n2 && a(n2, { "aria-hidden": true, className: T(f.icon.base, r && f.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: f.collapsed.noIcon, children: (v = t2.charAt(0).toLocaleUpperCase()) != null ? v : "?" }), !u && a(b, { children: t2 }), !u && o2 && a(di, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
+  const c = L(s2), l = react.exports.useId(), { isCollapsed: u } = at(), { isInsideCollapse: g } = Ns(), f = E().theme.sidebar.item, h = ({ children: C }) => a("li", { children: u ? a(Mt, { content: a(m, { children: t2 }), placement: "right", children: C }) : C }), m = ({ children: C }) => a(b, { children: C }), b = ({ children: C }) => a("span", { className: T(f.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${l}`, children: C });
+  return a(h, { children: y(e2, { "aria-labelledby": `flowbite-sidebar-item-${l}`, className: T(f.base, r && f.active, !u && g && f.collapsed.insideCollapse), ...c, children: [n2 && a(n2, { "aria-hidden": true, className: T(f.icon.base, r && f.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: f.collapsed.noIcon, children: (v = t2.charAt(0).toLocaleUpperCase()) != null ? v : "?" }), !u && a(b, { children: t2 }), !u && o2 && a(di, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
 };
 Vn.displayName = "Sidebar.Item";
 const Un = ({ children: e2, ...t2 }) => {
@@ -4422,8 +4438,8 @@ const Wn = ({ children: e2, ...t2 }) => {
 };
 Wn.displayName = "Sidebar.Items";
 const Yn = ({ children: e2, href: t2, img: n2, imgAlt: r = "", ...o2 }) => {
-  const i2 = L(o2), s2 = react.exports.useId(), { isCollapsed: l } = at(), c = E().theme.sidebar.logo;
-  return y("a", { "aria-labelledby": `flowbite-sidebar-logo-${s2}`, className: c.base, href: t2, ...i2, children: [a("img", { alt: r, className: c.img, src: n2 }), a("span", { className: c.collapsed[l ? "on" : "off"], id: `flowbite-sidebar-logo-${s2}`, children: e2 })] });
+  const i2 = L(o2), s2 = react.exports.useId(), { isCollapsed: c } = at(), l = E().theme.sidebar.logo;
+  return y("a", { "aria-labelledby": `flowbite-sidebar-logo-${s2}`, className: l.base, href: t2, ...i2, children: [a("img", { alt: r, className: l.img, src: n2 }), a("span", { className: l.collapsed[c ? "on" : "off"], id: `flowbite-sidebar-logo-${s2}`, children: e2 })] });
 };
 Yn.displayName = "Sidebar.Logo";
 const Gn = ({ children: e2, collapseBehavior: t2 = "collapse", collapsed: n2 = false, ...r }) => {
@@ -4523,8 +4539,8 @@ const uo = ({ xIcon: e2 = ni }) => {
   700: "duration-700",
   1e3: "duration-1000"
 }, fo = ({ children: e2, duration: t2 = 300, ...n2 }) => {
-  const [r, o2] = react.exports.useState(false), [i2, s2] = react.exports.useState(false), l = E().theme.toast, c = L(n2);
-  return a(co.Provider, { value: { duration: t2, isClosed: r, isRemoved: i2, setIsClosed: o2, setIsRemoved: s2 }, children: a("div", { "data-testid": "flowbite-toast", className: T(l.base, Ts[t2], { [l.closed]: r }, { [l.removed]: i2 }), ...c, children: e2 }) });
+  const [r, o2] = react.exports.useState(false), [i2, s2] = react.exports.useState(false), c = E().theme.toast, l = L(n2);
+  return a(co.Provider, { value: { duration: t2, isClosed: r, isRemoved: i2, setIsClosed: o2, setIsRemoved: s2 }, children: a("div", { "data-testid": "flowbite-toast", className: T(c.base, Ts[t2], { [c.closed]: r }, { [c.removed]: i2 }), ...l, children: e2 }) });
 };
 fo.displayName = "Toast";
 uo.displayName = "Toast.Toggle";
@@ -4572,15 +4588,15 @@ function dl({
   label: o2,
   prefix: i2,
   suffix: s2,
-  className: l,
-  inputClass: c,
+  className: c,
+  inputClass: l,
   autoFocus: u = false,
   toolTip: g,
   ...f
 }) {
-  const m = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${i2 ? "pl-7" : ""} ${s2 ? "pr-12" : ""} ${c}`)();
+  const m = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${i2 ? "pl-7" : ""} ${s2 ? "pr-12" : ""} ${l}`)();
   return /* @__PURE__ */ y("div", {
-    className: l,
+    className: c,
     children: [o2 ? /* @__PURE__ */ y(tt, {
       htmlFor: n2,
       children: [o2, g ? /* @__PURE__ */ a(go, {
@@ -4619,11 +4635,11 @@ function ul({
   inputClass: i2,
   toolTip: s2
 }) {
-  const [l, c] = react.exports.useState(r), u = react.exports.useCallback((h) => {
-    t2 == null || t2(h.value), c(h);
-  }, [t2]), f = (() => `text-white relative w-full h-[46px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm ${i2}`)();
+  const [c, l] = react.exports.useState(r), u = react.exports.useCallback((h) => {
+    t2 == null || t2(h.value), l(h);
+  }, [t2]), f = (() => `text-white relative w-full h-[44px] cursor-default rounded-md bg-primary-800 py-2 pl-3 pr-10 text-left truncate outline-none border border-transparent focus:border-brand focus-visible:border-brand hover:cursor-pointer sm:text-sm ${i2}`)();
   return /* @__PURE__ */ a(pt$1, {
-    value: l,
+    value: c,
     onChange: u,
     children: ({
       open: h
@@ -4640,7 +4656,7 @@ function ul({
           }) : null]
         }), /* @__PURE__ */ y(pt$1.Button, {
           className: f,
-          children: [l.label, /* @__PURE__ */ a("span", {
+          children: [c.label, /* @__PURE__ */ a("span", {
             className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
             children: h ? /* @__PURE__ */ a(ha, {
               className: "h-4 w-4 text-primary-400",
@@ -4869,9 +4885,9 @@ function Ue(e2, t2, n2) {
     if (!(s2.length !== r.length || s2.some((u, g) => r[g] !== u)))
       return o2;
     r = s2;
-    let c;
-    if (n2.key && n2.debug != null && n2.debug() && (c = Date.now()), o2 = t2(...s2), n2 == null || n2.onChange == null || n2.onChange(o2), n2.key && n2.debug != null && n2.debug()) {
-      const u = Math.round((Date.now() - i2) * 100) / 100, g = Math.round((Date.now() - c) * 100) / 100, f = g / 16, h = (m, b) => {
+    let l;
+    if (n2.key && n2.debug != null && n2.debug() && (l = Date.now()), o2 = t2(...s2), n2 == null || n2.onChange == null || n2.onChange(o2), n2.key && n2.debug != null && n2.debug()) {
+      const u = Math.round((Date.now() - i2) * 100) / 100, g = Math.round((Date.now() - l) * 100) / 100, f = g / 16, h = (m, b) => {
         for (m = String(m); m.length < b; )
           m = " " + m;
         return m;
@@ -4909,19 +4925,19 @@ const Os = (e2) => e2, Ls = (e2) => {
     return;
   const r = vr[e2][0], o2 = vr[e2][1];
   let i2 = t2.scrollElement[r], s2 = t2.scrollElement[o2];
-  const l = () => {
+  const c = () => {
     n2(t2.scrollElement[t2.options.horizontal ? r : o2]);
   };
-  l();
-  const c = (u) => {
+  c();
+  const l = (u) => {
     const g = u.currentTarget, f = g[r], h = g[o2];
-    (t2.options.horizontal ? i2 - f : s2 - h) && l(), i2 = f, s2 = h;
+    (t2.options.horizontal ? i2 - f : s2 - h) && c(), i2 = f, s2 = h;
   };
-  return t2.scrollElement.addEventListener("scroll", c, {
+  return t2.scrollElement.addEventListener("scroll", l, {
     capture: false,
     passive: true
   }), () => {
-    t2.scrollElement.removeEventListener("scroll", c);
+    t2.scrollElement.removeEventListener("scroll", l);
   };
 }, _s = Ms("element"), Is = (e2, t2) => e2.getBoundingClientRect()[t2.options.horizontal ? "width" : "height"], As = (e2, t2, n2) => {
   var r;
@@ -4976,12 +4992,12 @@ class js {
         this.scrollOffset = o2, this.calculateRange();
       })));
     }, this.getSize = () => this.scrollRect[this.options.horizontal ? "width" : "height"], this.getMeasurements = Ue(() => [this.options.count, this.options.paddingStart, this.options.getItemKey, this.itemMeasurementsCache], (r, o2, i2, s2) => {
-      const l = this.pendingMeasuredCacheIndexes.length > 0 ? Math.min(...this.pendingMeasuredCacheIndexes) : 0;
+      const c = this.pendingMeasuredCacheIndexes.length > 0 ? Math.min(...this.pendingMeasuredCacheIndexes) : 0;
       this.pendingMeasuredCacheIndexes = [];
-      const c = this.measurementsCache.slice(0, l);
-      for (let u = l; u < r; u++) {
-        const g = i2(u), f = s2[g], h = c[u - 1] ? c[u - 1].end : o2, m = typeof f == "number" ? f : this.options.estimateSize(u), b = h + m;
-        c[u] = {
+      const l = this.measurementsCache.slice(0, c);
+      for (let u = c; u < r; u++) {
+        const g = i2(u), f = s2[g], h = l[u - 1] ? l[u - 1].end : o2, m = typeof f == "number" ? f : this.options.estimateSize(u), b = h + m;
+        l[u] = {
           index: u,
           start: h,
           size: m,
@@ -4989,7 +5005,7 @@ class js {
           key: g
         };
       }
-      return this.measurementsCache = c, c;
+      return this.measurementsCache = l, l;
     }, {
       key: false,
       debug: () => this.options.debug
@@ -5021,16 +5037,16 @@ class js {
           ...this.itemMeasurementsCache,
           [m.key]: b
         }, this.notify());
-      }, l = [], c = {};
+      }, c = [], l = {};
       for (let g = 0, f = r.length; g < f; g++) {
         var u;
         const h = r[g], b = {
           ...o2[h],
-          measureElement: c[h] = (u = this.measureElementCache[h]) != null ? u : s2(h)
+          measureElement: l[h] = (u = this.measureElementCache[h]) != null ? u : s2(h)
         };
-        l.push(b);
+        c.push(b);
       }
-      return this.measureElementCache = c, l;
+      return this.measureElementCache = l, c;
     }, {
       key: false,
       debug: () => this.options.debug
@@ -5039,17 +5055,17 @@ class js {
         align: i2 = "start",
         smoothScroll: s2 = n2.options.enableSmoothScroll
       } = o2 === void 0 ? {} : o2;
-      const l = n2.scrollOffset, c = n2.getSize();
-      i2 === "auto" && (r <= l ? i2 = "start" : r >= l + c ? i2 = "end" : i2 = "start"), i2 === "start" ? n2._scrollToOffset(r, s2) : i2 === "end" ? n2._scrollToOffset(r - c, s2) : i2 === "center" && n2._scrollToOffset(r - c / 2, s2);
+      const c = n2.scrollOffset, l = n2.getSize();
+      i2 === "auto" && (r <= c ? i2 = "start" : r >= c + l ? i2 = "end" : i2 = "start"), i2 === "start" ? n2._scrollToOffset(r, s2) : i2 === "end" ? n2._scrollToOffset(r - l, s2) : i2 === "center" && n2._scrollToOffset(r - l / 2, s2);
     }, this.scrollToIndex = function(r, o2) {
       let {
         align: i2 = "auto",
         smoothScroll: s2 = n2.options.enableSmoothScroll,
-        ...l
+        ...c
       } = o2 === void 0 ? {} : o2;
-      const c = n2.getMeasurements(), u = n2.scrollOffset, g = n2.getSize(), {
+      const l = n2.getMeasurements(), u = n2.scrollOffset, g = n2.getSize(), {
         count: f
-      } = n2.options, h = c[Math.max(0, Math.min(r, f - 1))];
+      } = n2.options, h = l[Math.max(0, Math.min(r, f - 1))];
       if (!h)
         return;
       if (i2 === "auto")
@@ -5063,7 +5079,7 @@ class js {
       n2.scrollToOffset(m, {
         align: i2,
         smoothScroll: s2,
-        ...l
+        ...c
       });
     }, this.getTotalSize = () => {
       var r;
@@ -5072,14 +5088,14 @@ class js {
       clearTimeout(this.scrollCheckFrame), this.destinationOffset = r, this.options.scrollToFn(r, o2, this);
       let i2;
       const s2 = () => {
-        let l = this.scrollOffset;
+        let c = this.scrollOffset;
         this.scrollCheckFrame = i2 = setTimeout(() => {
           if (this.scrollCheckFrame === i2) {
-            if (this.scrollOffset === l) {
+            if (this.scrollOffset === c) {
               this.destinationOffset = void 0;
               return;
             }
-            l = this.scrollOffset, s2();
+            c = this.scrollOffset, s2();
           }
         }, 100);
       };
@@ -5107,13 +5123,13 @@ function $s(e2) {
     outerSize: n2,
     scrollOffset: r
   } = e2;
-  const o2 = t2.length - 1, s2 = Fs(0, o2, (c) => t2[c].start, r);
-  let l = s2;
-  for (; l < o2 && t2[l].end < r + n2; )
-    l++;
+  const o2 = t2.length - 1, s2 = Fs(0, o2, (l) => t2[l].start, r);
+  let c = s2;
+  for (; c < o2 && t2[c].end < r + n2; )
+    c++;
   return {
     startIndex: s2,
-    endIndex: l
+    endIndex: c
   };
 }
 const Ds = typeof window < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
@@ -5192,8 +5208,8 @@ function pl({
   className: o2,
   loading: i2,
   error: s2,
-  noData: l,
-  initialScrollIdx: c
+  noData: c,
+  initialScrollIdx: l
 }) {
   const [u, g] = react.exports.useState([]), f = useReactTable({
     columns: t2,
@@ -5217,8 +5233,8 @@ function pl({
     scrollToIndex: N
   } = b, R = v();
   return react.exports.useEffect(() => {
-    c && N(c);
-  }, [c, N]), C(), /* @__PURE__ */ a(Q, {
+    l && N(l);
+  }, [l, N]), C(), /* @__PURE__ */ a(Q, {
     children: i2 ? /* @__PURE__ */ a(Lr, {
       variant: "table"
     }) : s2 ? /* @__PURE__ */ a(Or, {
@@ -5226,7 +5242,7 @@ function pl({
       message: "Uh Oh. Please try again.",
       variant: "error",
       details: s2
-    }) : e2.length === 0 && l ? l : e2.length === 0 ? null : /* @__PURE__ */ y("table", {
+    }) : e2.length === 0 && c ? c : e2.length === 0 ? null : /* @__PURE__ */ y("table", {
       className: `border-collapse table-auto max-w-full w-full text-sm capitalize relative ${o2}`,
       ref: h,
       children: [/* @__PURE__ */ a("thead", {
@@ -6366,7 +6382,7 @@ function DepositInput({
       onCoinSelect
     }), /* @__PURE__ */ jsxs("span", {
       className: "absolute right-2 mt-1 font-semibold text-primary-400",
-      children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.symbol)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
+      children: ["Wallet Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.symbol)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
     })]
   });
 }
@@ -6558,10 +6574,10 @@ function SlippagePopoverView({
       triggerNode: /* @__PURE__ */ jsx(CogIcon, {
         width: 24,
         height: 24,
-        color: "white"
+        className: "text-accent-400 outline-none hover:text-accent-400"
       }),
       children: /* @__PURE__ */ jsx("div", {
-        className: "bg-slate-700 p-6 text-white max-w-sm rounded-xl",
+        className: "bg-slate-700 p-6 text-white max-w-sm rounded-xl drop-shadow-xl",
         children: /* @__PURE__ */ jsx(dl, {
           placeholder: "0.00",
           type: "number",
@@ -6586,6 +6602,110 @@ function SlippagePopoverContainer({}) {
     slippage,
     onChangeSlippage: (e2) => setSlippage(parseFloat(e2.currentTarget.value))
   });
+}
+const HasAuxAccountDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "HasAuxAccount"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "hasAuxAccount"
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function useHasAccount() {
+  var _a2, _b;
+  const wallet = dist.useWallet();
+  const hasAccountQuery = useQuery(HasAuxAccountDocument, {
+    variables: {
+      owner: (_a2 = wallet.account) == null ? void 0 : _a2.address
+    },
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
+  });
+  return hasAccountQuery;
+}
+const CreateAuxAccountDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "CreateAuxAccount"
+    },
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "createAuxAccount"
+        }
+      }]
+    }
+  }]
+};
+async function delayRefetchQuery(delay, queries) {
+  return await new Promise((res) => setTimeout(async () => await client.refetchQueries({
+    include: queries
+  }).then((x) => {
+    res(x);
+  }), delay));
 }
 const ConnectWalletView = function ConnectWalletView2({
   trigger
@@ -6685,7 +6805,8 @@ const ConnectWalletView = function ConnectWalletView2({
             children: [/* @__PURE__ */ jsx("img", {
               src: icon,
               height: 24,
-              width: 24
+              width: 24,
+              className: "rounded-full"
             }), /* @__PURE__ */ jsxs("div", {
               className: "ml-2",
               children: [walletType, ": ", addressResult]
@@ -6767,192 +6888,6 @@ function ConnectWalletContainer({
 }) {
   return /* @__PURE__ */ jsx(ConnectWalletView, {
     trigger
-  });
-}
-const CreateAuxAccountDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "CreateAuxAccount"
-    },
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "createAuxAccount"
-        }
-      }]
-    }
-  }]
-};
-const HasAuxAccountDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "HasAuxAccount"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "hasAuxAccount"
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function useHasAccount() {
-  var _a2, _b;
-  const wallet = dist.useWallet();
-  const hasAccountQuery = useQuery(HasAuxAccountDocument, {
-    variables: {
-      owner: (_a2 = wallet.account) == null ? void 0 : _a2.address
-    },
-    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
-  });
-  return hasAccountQuery;
-}
-function CreateAccountStep({
-  activeAccount,
-  setActiveAccount
-}) {
-  var _a2, _b;
-  const wallet = dist.useWallet();
-  const account = useHasAccount();
-  const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
-  const notifications = Ma();
-  react.exports.useEffect(() => {
-    var _a3, _b2, _c, _d;
-    ((_b2 = (_a3 = account == null ? void 0 : account.data) == null ? void 0 : _a3.account) == null ? void 0 : _b2.hasAuxAccount) ? setActiveAccount((_d = (_c = account == null ? void 0 : account.data) == null ? void 0 : _c.account) == null ? void 0 : _d.hasAuxAccount) : null;
-  }, [account]);
-  const createAccount = async () => {
-    const tx = await createAuxAccount().then((x) => {
-      var _a3;
-      return (_a3 = x.data) == null ? void 0 : _a3.createAuxAccount;
-    }).catch((err) => {
-      notifications.addNotification({
-        title: "Error",
-        message: "Failed to create AUX account!",
-        type: "error"
-      });
-    });
-    await wallet.signAndSubmitTransaction(tx).then((res) => {
-      setActiveAccount(true);
-      notifications.addNotification({
-        title: "Success",
-        message: "AUX account created!",
-        type: "success"
-      });
-    }).catch((err) => {
-      notifications.addNotification({
-        title: "Error",
-        message: "Failed to create AUX account!",
-        type: "error"
-      });
-    });
-  };
-  return /* @__PURE__ */ jsx(Fragment, {
-    children: !((_a2 = wallet.account) == null ? void 0 : _a2.address) ? /* @__PURE__ */ jsx("div", {
-      className: "border border-primary-600 rounded-2xl",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: "2."
-        }), /* @__PURE__ */ jsx("div", {
-          children: "Create Your Account"
-        }), /* @__PURE__ */ jsx(LockClosedIcon, {
-          className: "w-4 h-4 ml-auto mr-2"
-        })]
-      })
-    }) : ((_b = wallet.account) == null ? void 0 : _b.address) && !activeAccount ? /* @__PURE__ */ jsxs("div", {
-      className: "border border-brand rounded-2xl",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: "2."
-        }), /* @__PURE__ */ jsx("div", {
-          children: "Create Your Account"
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "text-slate-400 px-4 pb-4 flex flex-col gap-3",
-        children: ["This on-chain account enables trading without approval dialogs.", /* @__PURE__ */ jsx(or, {
-          onClick: createAccount,
-          size: "sm",
-          className: "self-start",
-          children: "Create AUX Account"
-        })]
-      })]
-    }) : /* @__PURE__ */ jsx("div", {
-      className: "border border-green-600 rounded-2xl",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: /* @__PURE__ */ jsx(CheckCircleIcon, {
-            className: "w-8 h-8 ml-auto text-green-400"
-          })
-        }), /* @__PURE__ */ jsx("div", {
-          className: "mr-4",
-          children: "Account Created"
-        })]
-      })
-    })
   });
 }
 const RegisteredCoinsDocument = {
@@ -7065,12 +7000,14 @@ const RegisteredCoinsDocument = {
   }]
 };
 function useRegisteredCoins() {
-  var _a2;
+  var _a2, _b, _c;
   const wallet = dist.useWallet();
+  const hasAccount = useHasAccount();
   const registeredCoinsQuery = useQuery(RegisteredCoinsDocument, {
     variables: {
       owner: (_a2 = wallet.account) == null ? void 0 : _a2.address
-    }
+    },
+    skip: !((_c = (_b = hasAccount.data) == null ? void 0 : _b.account) == null ? void 0 : _c.hasAuxAccount)
   });
   return registeredCoinsQuery;
 }
@@ -7337,41 +7274,313 @@ const RegisterCoinDocument = {
     }
   }]
 };
-function RegisterCoinList({
-  activeAccount,
-  coins,
-  setCoins,
-  allCoinsRegistered,
-  setAllCoinsRegistered
+const DepositDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "mutation",
+    "name": {
+      "kind": "Name",
+      "value": "Deposit"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "depositInput"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "DepositInput"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "deposit"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "depositInput"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "depositInput"
+            }
+          }
+        }]
+      }]
+    }
+  }]
+};
+const WalletBalancesDocument$1 = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "WalletBalances"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "walletBalances"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "balance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "availableBalance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfo"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function DepositView({
+  trigger,
+  deposit,
+  coin: _coin
+}) {
+  var _a2, _b, _c;
+  const [amount, setAmount] = react.exports.useState(0);
+  const {
+    account
+  } = dist.useWallet();
+  const coinsQuery = useCoins();
+  const balances = useQuery(WalletBalancesDocument$1, {
+    variables: {
+      owner: account == null ? void 0 : account.address
+    }
+  });
+  const fullBalances = (_b = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.walletBalances;
+  const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
+  const [coin, selectCoin] = react.exports.useState(_coin);
+  const [balance, setBalance] = react.exports.useState("-");
+  const modalRef = react.exports.useRef(null);
+  react.exports.useEffect(() => {
+    if (!coin && coinsQuery.data) {
+      const found = coinsQuery.data.coins.find((c) => c.symbol === "USDC");
+      if (found)
+        selectCoin(found);
+    }
+  }, [coins, coinsQuery.data]);
+  react.exports.useEffect(() => {
+    const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
+    if (currentCoin)
+      setBalance(currentCoin.availableBalance.toString());
+  }, [coin, fullBalances]);
+  const notifications = Ma();
+  return /* @__PURE__ */ jsx(bl, {
+    ref: modalRef,
+    trigger,
+    children: /* @__PURE__ */ jsxs(ml, {
+      className: "w-[700px] mx-auto gap-4 flex flex-col",
+      padding: 6,
+      children: [/* @__PURE__ */ jsx(il, {
+        className: "mb-4",
+        children: "Deposit"
+      }), !coins.length && /* @__PURE__ */ jsx(Or, {
+        title: "Nothing to deposit.",
+        message: "Cannot find existing balances in your wallet. Please add some money."
+      }), /* @__PURE__ */ jsxs("div", {
+        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
+        children: [/* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-2",
+          children: [/* @__PURE__ */ jsx(tt, {
+            className: "text-primary-300",
+            children: "Enter Deposit Amount"
+          }), /* @__PURE__ */ jsx("div", {
+            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
+              coins,
+              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
+                coin
+              }),
+              onCoinSelect: (c) => selectCoin(c)
+            })
+          })]
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex justify-between flex-auto flex-col gap-4",
+          children: [/* @__PURE__ */ jsxs("div", {
+            className: "text-sm text-right",
+            children: ["Available Wallet Balance: ", balance]
+          }), /* @__PURE__ */ jsx("input", {
+            disabled: false,
+            inputMode: "decimal",
+            min: "0",
+            type: "number",
+            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
+            value: amount,
+            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
+            placeholder: "0.00"
+          })]
+        })]
+      }), /* @__PURE__ */ jsx(or, {
+        disabled: !coin || Number(balance) < amount,
+        onClick: () => {
+          if (coin)
+            deposit({
+              amount,
+              coinType: coin.coinType,
+              from: account == null ? void 0 : account.address,
+              to: account == null ? void 0 : account.address
+            }).then(() => {
+              var _a3;
+              (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
+              notifications.addSuccessNotification("Successfully added balance!");
+            }).catch((err) => notifications.addErrorNotification("Failed to add balance!"));
+        },
+        children: "Submit Deposit"
+      })]
+    })
+  });
+}
+function DepositContainer({
+  trigger,
+  coin
 }) {
   const wallet = dist.useWallet();
-  const registeredCoins = useRegisteredCoins();
+  const [depositMutation] = useMutation(DepositDocument);
+  const deposit = async (depositInput) => {
+    var _a2;
+    const tx = await depositMutation({
+      variables: {
+        depositInput
+      }
+    });
+    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = tx.data) == null ? void 0 : _a2.deposit));
+    await delayRefetchQuery(1e3, ["Balances"]);
+  };
+  return /* @__PURE__ */ jsx(DepositView, {
+    coin,
+    deposit,
+    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(or, {
+      size: "sm",
+      onClick: () => {
+      },
+      children: "Deposit"
+    })
+  });
+}
+function RegisterCoinList({
+  coins
+}) {
+  const wallet = dist.useWallet();
   const [registerCoin] = useMutation(RegisterCoinDocument);
-  const [updatedCoins, setUpdatedCoins] = react.exports.useState();
   const notifications = Ma();
-  react.exports.useEffect(() => {
-    var _a2, _b, _c, _d, _e2, _f;
-    if ((_b = (_a2 = registeredCoins == null ? void 0 : registeredCoins.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.registeredCoins) {
-      setCoins((_d = (_c = registeredCoins == null ? void 0 : registeredCoins.data) == null ? void 0 : _c.account) == null ? void 0 : _d.registeredCoins);
-      const allCoins = (_f = (_e2 = registeredCoins == null ? void 0 : registeredCoins.data) == null ? void 0 : _e2.account) == null ? void 0 : _f.registeredCoins.every((i2) => i2.registered === true);
-      setAllCoinsRegistered(allCoins);
-    }
-  }, [registeredCoins]);
-  react.exports.useEffect(() => {
-    if (coins !== void 0 && coins.length > 1) {
-      const newCoinList = coins.map((u) => {
-        const hasBeenUpdated = updatedCoins == null ? void 0 : updatedCoins.find((i2) => i2 === u.coinInfo.symbol);
-        return hasBeenUpdated ? {
-          ...u,
-          registered: true
-        } : u;
-      });
-      setCoins(newCoinList);
-      const allCoins = newCoinList.every((i2) => i2.registered === true);
-      if (allCoins)
-        setAllCoinsRegistered(allCoins);
-    }
-  }, [updatedCoins]);
+  const depositTrigger = /* @__PURE__ */ jsx(or, {
+    size: "xs",
+    onClick: () => {
+    },
+    children: "Deposit"
+  });
   const handleRegister = async (c) => {
     var _a2;
     const tx = (_a2 = (await registerCoin({
@@ -7382,18 +7591,10 @@ function RegisterCoinList({
       }
     })).data) == null ? void 0 : _a2.registerCoin;
     await wallet.signAndSubmitTransaction(tx).then((x) => {
-      setUpdatedCoins((prev) => prev ? [...prev, c.coinInfo.symbol] : [c.coinInfo.symbol]);
-      notifications.addNotification({
-        title: "Success",
-        type: "success",
-        message: `${c.coinInfo.symbol} successfully registered.`
-      });
+      delayRefetchQuery(1500, ["RegisteredCoins"]);
+      notifications.addSuccessNotification(`${c.coinInfo.symbol} successfully registered.`);
     }).catch((e2) => {
-      notifications.addNotification({
-        title: "Error",
-        type: "error",
-        message: `Failed to register ${c.coinInfo.symbol}.`
-      });
+      notifications.addErrorNotification(`Failed To Register ${c.coinInfo.symbol}.`);
     });
   };
   return /* @__PURE__ */ jsx("div", {
@@ -7405,11 +7606,17 @@ function RegisterCoinList({
       }), /* @__PURE__ */ jsx("div", {
         className: "ml-2",
         children: c.coinInfo.name
-      }), c.registered ? /* @__PURE__ */ jsx(ll, {
-        size: "xs",
-        variant: "success",
-        className: "ml-auto",
-        children: "Registered"
+      }), c.registered ? /* @__PURE__ */ jsxs("div", {
+        className: "inline-flex items-center gap-3 ml-auto",
+        children: [/* @__PURE__ */ jsx(DepositContainer, {
+          coin: c.coinInfo,
+          trigger: depositTrigger
+        }), /* @__PURE__ */ jsx(ll, {
+          size: "xs",
+          variant: "success",
+          className: "ml-auto",
+          children: "Registered"
+        })]
       }) : /* @__PURE__ */ jsx(or, {
         size: "xs",
         onClick: () => handleRegister(c),
@@ -7419,74 +7626,13 @@ function RegisterCoinList({
     }, idx))
   });
 }
-function RegisterCoinsStep({
-  activeAccount
+function CreateAccountWizard({
+  title,
+  subTitle
 }) {
-  var _a2;
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2;
   const wallet = dist.useWallet();
-  const [coins, setCoins] = react.exports.useState();
-  const [allCoinsRegistered, setAllCoinsRegistered] = react.exports.useState(false);
-  return /* @__PURE__ */ jsx(Fragment, {
-    children: !((_a2 = wallet.account) == null ? void 0 : _a2.address) || !activeAccount && activeAccount === false ? /* @__PURE__ */ jsx("div", {
-      className: "border border-primary-600 rounded-2xl",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: "3."
-        }), /* @__PURE__ */ jsx("div", {
-          children: "Register Your Coins"
-        }), /* @__PURE__ */ jsx(LockClosedIcon, {
-          className: "w-4 h-4 ml-auto mr-2"
-        })]
-      })
-    }) : !allCoinsRegistered ? /* @__PURE__ */ jsxs("div", {
-      className: "border border-brand rounded-2xl",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 gap-2 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          children: "3."
-        }), /* @__PURE__ */ jsx("div", {
-          children: "Register Your Coins To Streamline Trading"
-        }), /* @__PURE__ */ jsx(ll, {
-          size: "sm",
-          variant: "basic",
-          children: "Optional"
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "px-4 pb-4",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "text-primary-400",
-          children: "Save time when submitting trades by preregistering coins with your wallet."
-        }), activeAccount && activeAccount === true && /* @__PURE__ */ jsx(RegisterCoinList, {
-          activeAccount: activeAccount ? activeAccount : void 0,
-          coins,
-          setCoins,
-          allCoinsRegistered: false,
-          setAllCoinsRegistered
-        })]
-      })]
-    }) : /* @__PURE__ */ jsx("div", {
-      className: "border border-green-600 rounded-2xl",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: /* @__PURE__ */ jsx(CheckCircleIcon, {
-            className: "w-8 h-8 ml-auto text-green-400"
-          })
-        }), /* @__PURE__ */ jsx("div", {
-          className: "mr-4",
-          children: "All Coins Registered"
-        })]
-      })
-    })
-  });
-}
-function CreateAccountWizard({}) {
-  var _a2;
-  const wallet = dist.useWallet();
-  const [activeAccount, setActiveAccount] = react.exports.useState(false);
+  const navigate = useNavigate();
   const connectWallet = () => {
   };
   const walletTrigger = /* @__PURE__ */ jsx(or, {
@@ -7494,54 +7640,164 @@ function CreateAccountWizard({}) {
     size: "sm",
     children: "Connect Your Wallet"
   });
-  return /* @__PURE__ */ jsxs(ml, {
-    className: "flex flex-col gap-6 self-center w-[700px] border border-primary-700",
-    children: [/* @__PURE__ */ jsxs("div", {
-      children: [/* @__PURE__ */ jsx("div", {
-        className: "text-3xl mb-2",
-        children: "Create Your AUX Account"
-      }), /* @__PURE__ */ jsx("div", {
-        className: "text-lg text-slate-400",
-        children: "Register for an account in three easy steps to unlock the power to trade on the AUX central limit order book."
-      })]
-    }), !((_a2 = wallet.account) == null ? void 0 : _a2.address) ? /* @__PURE__ */ jsxs("div", {
-      className: "border border-brand rounded-2xl",
-      children: [/* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: "1."
-        }), /* @__PURE__ */ jsx("div", {
-          children: "Connect your wallet"
-        })]
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "text-slate-400 px-4 pb-4 flex flex-col gap-3",
-        children: ["Click the button below to select your wallet.", /* @__PURE__ */ jsx(ConnectWalletContainer, {
-          trigger: walletTrigger
-        })]
-      })]
-    }) : /* @__PURE__ */ jsx("div", {
-      className: "border border-green-600 rounded-2xl",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center w-full p-4 font-bold text-xl",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "font-bold rounded-full pr-3",
-          children: /* @__PURE__ */ jsx(CheckCircleIcon, {
-            className: "w-8 h-8 ml-auto text-green-400"
+  const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
+  const hasAuxAccount = useHasAccount();
+  const hasAccount = (_b = (_a2 = hasAuxAccount.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.hasAuxAccount;
+  const notifications = Ma();
+  const registeredCoins = useRegisteredCoins();
+  const coins = (_d = (_c = registeredCoins.data) == null ? void 0 : _c.account) == null ? void 0 : _d.registeredCoins;
+  const [allCoinsRegistered, setAllCoinsRegistered] = react.exports.useState(false);
+  const appTitle = window.appTitle;
+  react.exports.useEffect(() => {
+    if (coins && coins.length) {
+      const allCoins = coins.every((i2) => i2.registered === true);
+      setAllCoinsRegistered(allCoins);
+    }
+  }, [coins]);
+  const createAccount = async () => {
+    const tx = await createAuxAccount().then((x) => {
+      var _a3;
+      return (_a3 = x.data) == null ? void 0 : _a3.createAuxAccount;
+    }).catch((err) => {
+      notifications.addErrorNotification(`Failed to create ${appTitle} account!`);
+    });
+    await wallet.signAndSubmitTransaction(tx).then((res) => {
+      delayRefetchQuery(1500, ["HasAuxAccount"]);
+      notifications.addSuccessNotification(`${appTitle} account created!`);
+    }).catch((err) => {
+      notifications.addErrorNotification(`Failed to create ${appTitle} account!`);
+    });
+  };
+  return /* @__PURE__ */ jsx("div", {
+    className: "w-full min-h-full h-full my-12",
+    children: /* @__PURE__ */ jsxs(ml, {
+      className: "flex flex-col items-stretch mx-auto gap-6 w-[800px] border border-primary-700",
+      children: [
+        /* @__PURE__ */ jsxs("div", {
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "text-3xl mb-2",
+            children: title != null ? title : `Create Your ${appTitle} Account`
+          }), /* @__PURE__ */ jsx("div", {
+            className: "text-base text-slate-400",
+            children: subTitle != null ? subTitle : `Register for an ${appTitle} account to unlock the power to trade on the central limit order book.`
+          })]
+        }),
+        !((_e2 = wallet.account) == null ? void 0 : _e2.address) ? /* @__PURE__ */ jsxs("div", {
+          className: "border border-brand rounded-2xl",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: /* @__PURE__ */ jsx("div", {
+              children: "Connect your wallet"
+            })
+          }), /* @__PURE__ */ jsxs("div", {
+            className: "text-slate-400 px-4 pb-4 flex flex-col gap-3",
+            children: ["Click the button below to select your wallet.", /* @__PURE__ */ jsx(ConnectWalletContainer, {
+              trigger: walletTrigger
+            })]
+          })]
+        }) : /* @__PURE__ */ jsx("div", {
+          className: "border border-green-600 rounded-2xl",
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: [/* @__PURE__ */ jsx("div", {
+              className: "font-bold rounded-full pr-3",
+              children: /* @__PURE__ */ jsx(CheckCircleIcon, {
+                className: "w-8 h-8 ml-auto text-green-400"
+              })
+            }), /* @__PURE__ */ jsx("div", {
+              className: "mr-auto",
+              children: "Wallet Connected"
+            }), /* @__PURE__ */ jsx(ConnectWalletContainer, {
+              trigger: walletTrigger
+            })]
           })
-        }), /* @__PURE__ */ jsx("div", {
-          className: "mr-auto",
-          children: "Wallet Connected"
-        }), /* @__PURE__ */ jsx(ConnectWalletContainer, {
-          trigger: walletTrigger
-        })]
-      })
-    }), /* @__PURE__ */ jsx(CreateAccountStep, {
-      activeAccount: activeAccount ? activeAccount : void 0,
-      setActiveAccount
-    }), /* @__PURE__ */ jsx(RegisterCoinsStep, {
-      activeAccount: activeAccount ? activeAccount : void 0
-    })]
+        }),
+        !((_f = wallet.account) == null ? void 0 : _f.address) ? /* @__PURE__ */ jsx("div", {
+          className: "border border-primary-600 rounded-2xl",
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: [/* @__PURE__ */ jsxs("div", {
+              children: ["Create Your ", appTitle, " Account"]
+            }), /* @__PURE__ */ jsx(LockClosedIcon, {
+              className: "w-4 h-4 ml-auto mr-2"
+            })]
+          })
+        }) : ((_g = wallet.account) == null ? void 0 : _g.address) && !hasAccount ? /* @__PURE__ */ jsxs("div", {
+          className: "border border-brand rounded-2xl",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: /* @__PURE__ */ jsxs("div", {
+              children: ["Create Your ", appTitle, " Account"]
+            })
+          }), /* @__PURE__ */ jsxs("div", {
+            className: "text-slate-400 px-4 pb-4 flex flex-col gap-3",
+            children: ["Registering this on-chain account enables trading without approval dialogs.", /* @__PURE__ */ jsxs(or, {
+              onClick: createAccount,
+              size: "sm",
+              className: "self-start",
+              children: ["Create ", appTitle, " Account"]
+            })]
+          })]
+        }) : /* @__PURE__ */ jsx("div", {
+          className: "border border-green-600 rounded-2xl",
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: [/* @__PURE__ */ jsx("div", {
+              className: "font-bold rounded-full pr-3",
+              children: /* @__PURE__ */ jsx(CheckCircleIcon, {
+                className: "w-8 h-8 ml-auto text-green-400"
+              })
+            }), /* @__PURE__ */ jsxs("div", {
+              className: "mr-4",
+              children: [appTitle, " Account Created"]
+            })]
+          })
+        }),
+        !((_h = wallet.account) == null ? void 0 : _h.address) || !hasAccount ? /* @__PURE__ */ jsx("div", {
+          className: "border border-primary-600 rounded-2xl",
+          children: /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center w-full p-4 font-bold text-xl",
+            children: [/* @__PURE__ */ jsxs("div", {
+              children: ["Register And Deposit Coins Into Your ", appTitle, " Account"]
+            }), /* @__PURE__ */ jsx(LockClosedIcon, {
+              className: "w-4 h-4 ml-auto mr-2"
+            })]
+          })
+        }) : /* @__PURE__ */ jsxs("div", {
+          className: "border border-brand rounded-2xl",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "flex items-center w-full p-4 gap-2 font-bold text-xl",
+            children: /* @__PURE__ */ jsxs("div", {
+              children: ["Register And Deposit Coins Into Your ", appTitle, " Account"]
+            })
+          }), /* @__PURE__ */ jsxs("div", {
+            className: "px-4 pb-4",
+            children: [/* @__PURE__ */ jsxs("div", {
+              className: "text-primary-400",
+              children: ["Coins into your ", appTitle, " Account are used for trading on the Trade page."]
+            }), hasAccount && /* @__PURE__ */ jsx(RegisterCoinList, {
+              activeAccount: hasAccount,
+              coins,
+              allCoinsRegistered,
+              setAllCoinsRegistered
+            })]
+          })]
+        }),
+        ((_i2 = wallet.account) == null ? void 0 : _i2.address) && hasAccount && /* @__PURE__ */ jsxs("div", {
+          className: "flex flex-row gap-4",
+          children: [/* @__PURE__ */ jsx(or, {
+            size: "sm",
+            onClick: () => navigate("/trade"),
+            children: "Start Trading"
+          }), /* @__PURE__ */ jsx(or, {
+            size: "sm",
+            variant: "basic",
+            onClick: () => navigate("/portfolio"),
+            children: "View Portfolio"
+          })]
+        })
+      ]
+    })
   });
 }
 const PoolsDocument = {
@@ -7873,7 +8129,7 @@ function SwapPanel({
       className: "flex justify-between flex-auto flex-col gap-4",
       children: [/* @__PURE__ */ jsxs("div", {
         className: "text-sm text-right",
-        children: ["Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
+        children: ["Wallet Balance: ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
       }), /* @__PURE__ */ jsx("input", {
         disabled: !!disabled,
         inputMode: "decimal",
@@ -8344,13 +8600,6 @@ function usePoolPriceOut(input, skip) {
   });
   return poolPrice;
 }
-async function delayRefetchQuery(delay, queries) {
-  return await new Promise((res) => setTimeout(async () => await client.refetchQueries({
-    include: queries
-  }).then((x) => {
-    res(x);
-  }), delay));
-}
 function SwapFormContainer({}) {
   var _a2, _b, _c, _d;
   const [lastTouchedInput, setLastTouched] = react.exports.useState("in");
@@ -8512,27 +8761,6 @@ function SwapModalView({}) {
 function SwapModalContainer({}) {
   return /* @__PURE__ */ jsx(SwapModalView, {});
 }
-function CreateAuxAccountContainer({}) {
-  const wallet = dist.useWallet();
-  const notifications = Ma();
-  const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
-  const createAccount = async () => {
-    const tx = await createAuxAccount().then((x) => {
-      var _a2;
-      return (_a2 = x.data) == null ? void 0 : _a2.createAuxAccount;
-    }).catch((err) => {
-      notifications.addErrorNotification("Failed to create AUX account!");
-    });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction(tx).then(() => {
-      notifications.addSuccessNotification("AUX account created!");
-    }).catch((err) => notifications.addErrorNotification("Failed to create AUX account!")));
-  };
-  return /* @__PURE__ */ jsx(or, {
-    size: "sm",
-    onClick: createAccount,
-    children: "Create AUX Account"
-  });
-}
 function NetworkToggle({}) {
   const location = window.location;
   const networkOptions = [{
@@ -8554,7 +8782,7 @@ function NetworkToggle({}) {
     children: currentNetwork && /* @__PURE__ */ jsx(ul, {
       label: "",
       className: "w-[120px] mt-0 mr-3 bg-slate-900",
-      inputClass: "rounded-full border-2 border-slate-700 py-2 h-[40px]",
+      inputClass: "rounded-full border-2 border-slate-600 py-2",
       value: currentNetwork,
       onChange: onNetworkChange,
       options: networkOptions
@@ -8699,10 +8927,7 @@ function useTradeHistoryTable() {
     return {
       loading: tradeHistoryQuery.loading,
       error: (_a3 = tradeHistoryQuery.error) == null ? void 0 : _a3.message,
-      noData: /* @__PURE__ */ jsx(Or, {
-        message: "No trades found for this market.",
-        variant: "basic"
-      }),
+      noData: /* @__PURE__ */ jsx(NoTradeHistory, {}),
       data: tradeHistory != null ? tradeHistory : [],
       columns: [{
         accessorKey: "side",
@@ -8769,6 +8994,18 @@ function useTradeHistoryTable() {
   }, [tradeHistory, getMarketCoinByType, tradeHistoryQuery.loading, tradeHistoryQuery.error]);
   return [tableProps, tableRef];
 }
+function NoTradeHistory() {
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsx("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: /* @__PURE__ */ jsx("div", {
+        className: "text-lg",
+        children: "No recent trades for this market."
+      })
+    })
+  });
+}
 function TradeTable({}) {
   const [tradeTableProps, tradeTableRef] = useTradeHistoryTable();
   return /* @__PURE__ */ jsx(pl, {
@@ -8792,10 +9029,7 @@ function usePoolPositionsTable() {
     return {
       loading: poolsQuery.loading,
       error: (_a3 = poolsQuery.error) == null ? void 0 : _a3.message,
-      noData: /* @__PURE__ */ jsx(Or, {
-        message: "You have not added liquidity to any pools.",
-        variant: "basic"
-      }),
+      noData: /* @__PURE__ */ jsx(NoPositions, {}),
       data: pools != null ? pools : [],
       columns: [{
         accessorKey: "name",
@@ -8843,6 +9077,23 @@ function usePoolPositionsTable() {
   }, [pools, poolsQuery.error, poolsQuery.loading]);
   return [tableProps, tableRef];
 }
+function NoPositions() {
+  const navigate = useNavigate();
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-lg",
+        children: "You have not added liquidity to any pools."
+      }), /* @__PURE__ */ jsx(or, {
+        size: "sm",
+        onClick: () => navigate("/pools"),
+        children: "Browse Pools"
+      })]
+    })
+  });
+}
 function PoolPositionsTable({}) {
   const [poolPositionsTableProps] = usePoolPositionsTable();
   return /* @__PURE__ */ jsx(pl, {
@@ -8861,41 +9112,76 @@ function useBalancesTable() {
   const balancesQuery = useBalances();
   const tableRef = react.exports.useRef(null);
   const balances = (_b = (_a2 = balancesQuery.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.balances;
+  const depositTrigger = /* @__PURE__ */ jsx(or, {
+    size: "xs",
+    variant: "buy",
+    onClick: () => {
+    },
+    children: "Deposit"
+  });
+  const withdrawTrigger = /* @__PURE__ */ jsx(or, {
+    size: "xs",
+    variant: "sell",
+    onClick: () => {
+    },
+    children: "Withdraw"
+  });
   const tableProps = react.exports.useMemo(() => {
     var _a3, _b2;
     return {
       loading: balancesQuery.loading,
       error: (_a3 = balancesQuery.error) == null ? void 0 : _a3.message,
-      noData: /* @__PURE__ */ jsx(Or, {
-        message: "You have no balances in your wallet. Add some to start trading.",
-        variant: "basic"
-      }),
+      noData: /* @__PURE__ */ jsx(NoBalances$1, {}),
       data: balances != null ? balances : [],
-      columns: [
-        {
-          accessorKey: "coinInfo",
-          header: "Coin",
-          cell(cell) {
-            const coinInfo = cell.getValue();
-            return /* @__PURE__ */ jsxs("div", {
-              className: "flex items-center gap-3",
-              children: [/* @__PURE__ */ jsx(Xa, {
-                coin: coinInfo == null ? void 0 : coinInfo.symbol,
-                size: 32
-              }), coinInfo == null ? void 0 : coinInfo.symbol]
-            });
-          }
-        },
-        {
-          accessorKey: "availableBalance",
-          header: "Available Balance",
-          headerClassName: "text-right"
-        },
-        {
-          accessorKey: "balance",
-          header: "Total Balance"
+      columns: [{
+        accessorKey: "coinInfo",
+        header: "Coin",
+        cell(cell) {
+          const coinInfo = cell.getValue();
+          return /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center gap-3 w-[280px]",
+            children: [/* @__PURE__ */ jsx(Xa, {
+              coin: coinInfo == null ? void 0 : coinInfo.symbol,
+              size: 32
+            }), coinInfo == null ? void 0 : coinInfo.symbol]
+          });
         }
-      ],
+      }, {
+        accessorKey: "availableBalance",
+        header: "Available Balance",
+        cell(cell) {
+          const value = cell.getValue();
+          return /* @__PURE__ */ jsx("div", {
+            className: "w-44",
+            children: value
+          });
+        }
+      }, {
+        accessorKey: "balance",
+        header: "Total Balance",
+        cell(cell) {
+          const value = cell.getValue();
+          return /* @__PURE__ */ jsx("div", {
+            className: "w-44",
+            children: value
+          });
+        }
+      }, {
+        accessorKey: "coinInfo.symbol",
+        header: "",
+        cell(cell) {
+          const rowValues = cell.row.original;
+          return /* @__PURE__ */ jsxs("div", {
+            className: "flex items-end w-full gap-2 ml-auto",
+            children: [/* @__PURE__ */ jsx(DepositContainer, {
+              trigger: depositTrigger
+            }), rowValues.availableBalance ? /* @__PURE__ */ jsx(WithdrawalContainer, {
+              coin: rowValues.coinInfo,
+              trigger: withdrawTrigger
+            }) : null]
+          });
+        }
+      }],
       virtualizeOptions: {
         count: (_b2 = balances == null ? void 0 : balances.length) != null ? _b2 : 0,
         estimateSize: () => {
@@ -8909,8 +9195,228 @@ function useBalancesTable() {
   }, [balances, balancesQuery.loading, balancesQuery.error]);
   return [tableProps, tableRef];
 }
-function BalancesTable({}) {
-  const [balanceTableProps, balanceTableRef] = useBalancesTable();
+function NoBalances$1() {
+  const depositTrigger = /* @__PURE__ */ jsx(or, {
+    size: "xs",
+    onClick: () => {
+    },
+    children: "Deposit From Wallet"
+  });
+  const appTitle = window.appTitle;
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full border-b border-b-primary-700",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsxs("div", {
+        className: "text-lg",
+        children: ["No balances in your ", appTitle, " Account. Deposit some coins to start trading."]
+      }), /* @__PURE__ */ jsx(DepositContainer, {
+        trigger: depositTrigger
+      })]
+    })
+  });
+}
+const WalletBalancesDocument = {
+  "kind": "Document",
+  "definitions": [{
+    "kind": "OperationDefinition",
+    "operation": "query",
+    "name": {
+      "kind": "Name",
+      "value": "WalletBalances"
+    },
+    "variableDefinitions": [{
+      "kind": "VariableDefinition",
+      "variable": {
+        "kind": "Variable",
+        "name": {
+          "kind": "Name",
+          "value": "owner"
+        }
+      },
+      "type": {
+        "kind": "NonNullType",
+        "type": {
+          "kind": "NamedType",
+          "name": {
+            "kind": "Name",
+            "value": "Address"
+          }
+        }
+      }
+    }],
+    "selectionSet": {
+      "kind": "SelectionSet",
+      "selections": [{
+        "kind": "Field",
+        "name": {
+          "kind": "Name",
+          "value": "account"
+        },
+        "arguments": [{
+          "kind": "Argument",
+          "name": {
+            "kind": "Name",
+            "value": "owner"
+          },
+          "value": {
+            "kind": "Variable",
+            "name": {
+              "kind": "Name",
+              "value": "owner"
+            }
+          }
+        }],
+        "selectionSet": {
+          "kind": "SelectionSet",
+          "selections": [{
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "walletBalances"
+            },
+            "selectionSet": {
+              "kind": "SelectionSet",
+              "selections": [{
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinInfo"
+                },
+                "selectionSet": {
+                  "kind": "SelectionSet",
+                  "selections": [{
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "coinType"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "decimals"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "name"
+                    }
+                  }, {
+                    "kind": "Field",
+                    "name": {
+                      "kind": "Name",
+                      "value": "symbol"
+                    }
+                  }]
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "balance"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "availableBalance"
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    }
+  }]
+};
+function useWalletBalances() {
+  var _a2, _b;
+  const wallet = dist.useWallet();
+  const walletBalancesQuery = useQuery(WalletBalancesDocument, {
+    variables: {
+      owner: (_a2 = wallet.account) == null ? void 0 : _a2.address
+    },
+    skip: !((_b = wallet.account) == null ? void 0 : _b.address)
+  });
+  return walletBalancesQuery;
+}
+function useWalletBalancesTable() {
+  var _a2, _b;
+  const walletBalancesQuery = useWalletBalances();
+  const walletBalances = (_b = (_a2 = walletBalancesQuery.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.walletBalances;
+  const tableRef = react.exports.useRef(null);
+  const tableProps = react.exports.useMemo(() => {
+    var _a3, _b2;
+    return {
+      loading: walletBalancesQuery.loading,
+      error: (_a3 = walletBalancesQuery.error) == null ? void 0 : _a3.message,
+      noData: /* @__PURE__ */ jsx(NoBalances, {}),
+      data: walletBalances != null ? walletBalances : [],
+      columns: [{
+        accessorKey: "coinInfo",
+        header: "Coin",
+        cell(cell) {
+          const coinInfo = cell.getValue();
+          return /* @__PURE__ */ jsxs("div", {
+            className: "flex items-center gap-3 w-[280px] max-w-[280px]",
+            children: [/* @__PURE__ */ jsx(Xa, {
+              coin: coinInfo == null ? void 0 : coinInfo.symbol,
+              size: 32
+            }), coinInfo == null ? void 0 : coinInfo.symbol]
+          });
+        }
+      }, {
+        accessorKey: "availableBalance",
+        header: "Available Balance",
+        cell(cell) {
+          const value = cell.getValue();
+          return /* @__PURE__ */ jsx("div", {
+            className: "w-44 max-w-[176px]",
+            children: value
+          });
+        }
+      }, {
+        accessorKey: "balance",
+        header: "Total Balance",
+        cell(cell) {
+          const value = cell.getValue();
+          return /* @__PURE__ */ jsx("div", {
+            className: "w-[360px]",
+            children: value
+          });
+        }
+      }],
+      virtualizeOptions: {
+        count: (_b2 = walletBalances == null ? void 0 : walletBalances.length) != null ? _b2 : 0,
+        estimateSize: () => {
+          var _a4;
+          return (_a4 = walletBalances == null ? void 0 : walletBalances.length) != null ? _a4 : 0;
+        },
+        getScrollElement: () => tableRef.current,
+        overscan: 20
+      }
+    };
+  }, [walletBalances, walletBalancesQuery.loading, walletBalancesQuery.error]);
+  return [tableProps, tableRef];
+}
+function NoBalances() {
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-lg",
+        children: "No balances in your wallet."
+      }), /* @__PURE__ */ jsx(DepositContainer, {})]
+    })
+  });
+}
+function BalancesTable({
+  variant
+}) {
+  const [balanceTableProps] = variant && variant === "wallet" ? useWalletBalancesTable() : useBalancesTable();
   return /* @__PURE__ */ jsx(pl, {
     loading: balanceTableProps.loading,
     error: balanceTableProps.error,
@@ -10259,10 +10765,7 @@ function useOpenOrdersTable() {
     return {
       loading: orders.loading,
       error: (_a3 = orders.error) == null ? void 0 : _a3.message,
-      noData: /* @__PURE__ */ jsx(Or, {
-        message: "You have no open orders for this market. Submit one and it will show up here.",
-        variant: "basic"
-      }),
+      noData: /* @__PURE__ */ jsx(NoOpenOrders, {}),
       data: (_b2 = openOrders == null ? void 0 : openOrders.map((order) => {
         const baseCoinInfo = getCoin(order.baseCoinType);
         const quoteCoinInfo = getCoin(order.quoteCoinType);
@@ -10303,10 +10806,7 @@ function useOrderHistoryTable(displayMarket) {
     return {
       loading: orders.loading,
       error: (_a3 = orders.error) == null ? void 0 : _a3.message,
-      noData: /* @__PURE__ */ jsx(Or, {
-        message: "No past orders. Complete one and check back here.",
-        variant: "basic"
-      }),
+      noData: /* @__PURE__ */ jsx(NoOrderHistory, {}),
       data: (_b2 = orderHistory == null ? void 0 : orderHistory.map((order) => {
         const baseCoinInfo = getCoin(order.baseCoinType);
         const quoteCoinInfo = getCoin(order.quoteCoinType);
@@ -10331,6 +10831,42 @@ function useOrderHistoryTable(displayMarket) {
     };
   }, [orders.data, orders.loading, orders.error]);
   return [tableProps, tableRef];
+}
+function NoOpenOrders() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-lg",
+        children: "You have no open orders. Submit one and it will show up here."
+      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(or, {
+        size: "sm",
+        onClick: () => navigate("/trade"),
+        children: "Start Trading"
+      })]
+    })
+  });
+}
+function NoOrderHistory() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-lg",
+        children: "No past orders. Once an order completes it will show up here."
+      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(or, {
+        size: "sm",
+        onClick: () => navigate("/trade"),
+        children: "Start Trading"
+      })]
+    })
+  });
 }
 function OrdersTable({
   variant,
@@ -10403,15 +10939,18 @@ const WithdrawDocument = {
   }]
 };
 function WithdrawalView({
-  withdraw
+  withdraw,
+  trigger,
+  coin: _coin
 }) {
   var _a2, _b, _c, _d;
   const [amount, setAmount] = react.exports.useState(0);
   const wallet = dist.useWallet();
   const balances = useBalances();
+  const coinsQuery = useCoins();
   const fullBalances = (_b = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.balances;
   const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
-  const [coin, selectCoin] = react.exports.useState();
+  const [coin, selectCoin] = react.exports.useState(_coin);
   const [balance, setBalance] = react.exports.useState("-");
   const isCoinRegistered = useQuery(IsCoinRegisteredDocument, {
     variables: {
@@ -10420,6 +10959,13 @@ function WithdrawalView({
     },
     skip: !(coin == null ? void 0 : coin.coinType)
   });
+  react.exports.useEffect(() => {
+    if (!coin && coinsQuery.data) {
+      const found = coinsQuery.data.coins.find((c) => c.symbol === "USDC");
+      if (found)
+        selectCoin(found);
+    }
+  }, [coins, coinsQuery.data]);
   const [registerCoin] = useMutation(RegisterCoinDocument);
   const modalRef = react.exports.useRef(null);
   react.exports.useEffect(() => {
@@ -10430,7 +10976,7 @@ function WithdrawalView({
   const notifications = Ma();
   return /* @__PURE__ */ jsx(bl, {
     ref: modalRef,
-    trigger: /* @__PURE__ */ jsx(or, {
+    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(or, {
       size: "sm",
       onClick: () => {
       },
@@ -10508,7 +11054,10 @@ function WithdrawalView({
     })
   });
 }
-function WithdrawalContainer({}) {
+function WithdrawalContainer({
+  trigger,
+  coin
+}) {
   const wallet = dist.useWallet();
   const [withdrawMutation] = useMutation(WithdrawDocument);
   const withdraw = async (withdrawInput) => {
@@ -10522,295 +11071,16 @@ function WithdrawalContainer({}) {
     await delayRefetchQuery(1e3, ["Balances"]);
   };
   return /* @__PURE__ */ jsx(WithdrawalView, {
-    withdraw
-  });
-}
-const DepositDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "mutation",
-    "name": {
-      "kind": "Name",
-      "value": "Deposit"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "depositInput"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "DepositInput"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "deposit"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "depositInput"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "depositInput"
-            }
-          }
-        }]
-      }]
-    }
-  }]
-};
-const WalletBalancesDocument = {
-  "kind": "Document",
-  "definitions": [{
-    "kind": "OperationDefinition",
-    "operation": "query",
-    "name": {
-      "kind": "Name",
-      "value": "WalletBalances"
-    },
-    "variableDefinitions": [{
-      "kind": "VariableDefinition",
-      "variable": {
-        "kind": "Variable",
-        "name": {
-          "kind": "Name",
-          "value": "owner"
-        }
-      },
-      "type": {
-        "kind": "NonNullType",
-        "type": {
-          "kind": "NamedType",
-          "name": {
-            "kind": "Name",
-            "value": "Address"
-          }
-        }
-      }
-    }],
-    "selectionSet": {
-      "kind": "SelectionSet",
-      "selections": [{
-        "kind": "Field",
-        "name": {
-          "kind": "Name",
-          "value": "account"
-        },
-        "arguments": [{
-          "kind": "Argument",
-          "name": {
-            "kind": "Name",
-            "value": "owner"
-          },
-          "value": {
-            "kind": "Variable",
-            "name": {
-              "kind": "Name",
-              "value": "owner"
-            }
-          }
-        }],
-        "selectionSet": {
-          "kind": "SelectionSet",
-          "selections": [{
-            "kind": "Field",
-            "name": {
-              "kind": "Name",
-              "value": "walletBalances"
-            },
-            "selectionSet": {
-              "kind": "SelectionSet",
-              "selections": [{
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "balance"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "availableBalance"
-                }
-              }, {
-                "kind": "Field",
-                "name": {
-                  "kind": "Name",
-                  "value": "coinInfo"
-                },
-                "selectionSet": {
-                  "kind": "SelectionSet",
-                  "selections": [{
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "coinType"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "decimals"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "name"
-                    }
-                  }, {
-                    "kind": "Field",
-                    "name": {
-                      "kind": "Name",
-                      "value": "symbol"
-                    }
-                  }]
-                }
-              }]
-            }
-          }]
-        }
-      }]
-    }
-  }]
-};
-function DepositView({
-  deposit
-}) {
-  var _a2, _b, _c;
-  const [amount, setAmount] = react.exports.useState(0);
-  const {
-    account
-  } = dist.useWallet();
-  const coinsQuery = useCoins();
-  const balances = useQuery(WalletBalancesDocument, {
-    variables: {
-      owner: account == null ? void 0 : account.address
-    }
-  });
-  const fullBalances = (_b = (_a2 = balances.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.walletBalances;
-  const coins = (_c = fullBalances == null ? void 0 : fullBalances.map((b) => b.coinInfo)) != null ? _c : [];
-  const [coin, selectCoin] = react.exports.useState();
-  const [balance, setBalance] = react.exports.useState("-");
-  const modalRef = react.exports.useRef(null);
-  react.exports.useEffect(() => {
-    if (!coin && coinsQuery.data) {
-      const found = coinsQuery.data.coins.find((c) => c.symbol === "USDC");
-      if (found)
-        selectCoin(found);
-    }
-  }, [coins, coinsQuery.data]);
-  react.exports.useEffect(() => {
-    const currentCoin = fullBalances == null ? void 0 : fullBalances.find((b) => b.coinInfo.symbol === (coin == null ? void 0 : coin.symbol));
-    if (currentCoin)
-      setBalance(currentCoin.availableBalance.toString());
-  }, [coin, fullBalances]);
-  const notifications = Ma();
-  return /* @__PURE__ */ jsx(bl, {
-    ref: modalRef,
-    trigger: /* @__PURE__ */ jsx(or, {
+    withdraw,
+    coin,
+    trigger: trigger ? /* @__PURE__ */ jsx(Fragment, {
+      children: trigger
+    }) : /* @__PURE__ */ jsx(or, {
       size: "sm",
       onClick: () => {
       },
       children: "Deposit"
-    }),
-    children: /* @__PURE__ */ jsxs(ml, {
-      className: "w-[700px] mx-auto gap-4 flex flex-col",
-      padding: 6,
-      children: [/* @__PURE__ */ jsx(il, {
-        className: "mb-4",
-        children: "Deposit"
-      }), !coins.length && /* @__PURE__ */ jsx(Or, {
-        title: "Nothing to deposit.",
-        message: "Cannot find existing balances in your wallet. Please add some money."
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
-        children: [/* @__PURE__ */ jsxs("div", {
-          className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(tt, {
-            className: "text-primary-300",
-            children: "Enter Deposit Amount"
-          }), /* @__PURE__ */ jsx("div", {
-            children: /* @__PURE__ */ jsx(CoinSearchModalContainer, {
-              coins,
-              trigger: /* @__PURE__ */ jsx(CoinSelectButton, {
-                coin
-              }),
-              onCoinSelect: (c) => selectCoin(c)
-            })
-          })]
-        }), /* @__PURE__ */ jsxs("div", {
-          className: "flex justify-between flex-auto flex-col gap-4",
-          children: [/* @__PURE__ */ jsxs("div", {
-            className: "text-sm text-right",
-            children: ["Available Balance: ", balance]
-          }), /* @__PURE__ */ jsx("input", {
-            disabled: false,
-            inputMode: "decimal",
-            min: "0",
-            type: "number",
-            onChange: (e2) => setAmount(Number(e2.currentTarget.value)),
-            value: amount,
-            className: "bg-transparent focus:outline-none h-[44px] text-2xl md:text-4xl placeholder:text-bds-dark-secondarys-DB500 text-white font-azeret w-full md:text-right",
-            placeholder: "0.00"
-          })]
-        })]
-      }), /* @__PURE__ */ jsx(or, {
-        disabled: !coin || Number(balance) < amount,
-        onClick: () => {
-          if (coin)
-            deposit({
-              amount,
-              coinType: coin.coinType,
-              from: account == null ? void 0 : account.address,
-              to: account == null ? void 0 : account.address
-            }).then(() => {
-              var _a3;
-              (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
-              notifications.addSuccessNotification("Successfully added balance!");
-            }).catch((err) => notifications.addErrorNotification("Failed to add balance!"));
-        },
-        children: "Submit Deposit"
-      })]
     })
-  });
-}
-function DepositContainer({}) {
-  const wallet = dist.useWallet();
-  const [depositMutation] = useMutation(DepositDocument);
-  const deposit = async (depositInput) => {
-    var _a2;
-    const tx = await depositMutation({
-      variables: {
-        depositInput
-      }
-    });
-    await (wallet == null ? void 0 : wallet.signAndSubmitTransaction((_a2 = tx.data) == null ? void 0 : _a2.deposit));
-    await delayRefetchQuery(1e3, ["Balances"]);
-  };
-  return /* @__PURE__ */ jsx(DepositView, {
-    deposit
   });
 }
 function MarketListItem({
@@ -11141,7 +11411,7 @@ function MarketSelector({
   }, [selectedMarket, marketQueryName.data, marketsQuery.data]);
   react.exports.useEffect(() => {
     if (selectedMarket && onSelectMarket)
-      onSelectMarket(selectedMarket);
+      setTimeout(() => onSelectMarket(selectedMarket), 100);
   }, [selectedMarket, onSelectMarket]);
   const filteredMarkets = markets == null ? void 0 : markets.filter((m) => searchQuery.length > 1 ? m.name.toLowerCase().match(searchQuery.toLowerCase()) : true);
   const popoverRef = react.exports.useRef(null);
@@ -12697,171 +12967,264 @@ function PoolContainer({}) {
     pool
   });
 }
-const connectWalletTrigger = /* @__PURE__ */ jsx(or, {
-  onClick: () => {
-  },
-  size: "sm",
-  children: "Connect Wallet"
-});
-const noWalletUI = /* @__PURE__ */ jsxs(ml, {
-  className: "flex flex-col max-w-[600px] mx-auto self-center opacity-90",
-  children: [/* @__PURE__ */ jsx("div", {
-    className: "text-3xl mb-2",
-    children: "Portfolio"
-  }), /* @__PURE__ */ jsx("div", {
-    className: "text-lg mb-8 text-slate-300",
-    children: "Connect your Aptos Wallet to view your portfolio and start trading."
-  }), /* @__PURE__ */ jsx(ConnectWalletContainer, {
-    trigger: connectWalletTrigger
-  })]
-});
 function PortfolioView({
   positions
 }) {
+  var _a2, _b, _c, _d;
   const {
     account
   } = dist.useWallet();
+  const hasAccount = useHasAccount();
+  const navigate = useNavigate();
+  const appTitle = window.appTitle;
   (account == null ? void 0 : account.address) ? `${account.address.toString().slice(0, 6)}...${account.address.toString().slice(account.address.toString().length - 6, account.address.toString().length)}` : "-";
-  return !account || account.address === null ? noWalletUI : /* @__PURE__ */ jsxs("div", {
-    className: " w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[48px_260px_1fr] md:grid-cols-6 gap-2 p-4 mx-auto md:max-w-[1140px]",
-    children: [/* @__PURE__ */ jsx("div", {
-      className: " sm:col-span-1 md:col-span-6 h-full",
-      children: /* @__PURE__ */ jsxs("div", {
-        className: "flex items-center justify-between",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "text-3xl",
-          children: "My Portfolio"
-        }), /* @__PURE__ */ jsxs("div", {
-          className: "items-end flex gap-4",
-          children: [/* @__PURE__ */ jsx(CreateAuxAccountContainer, {}), /* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {})]
-        })]
-      })
-    }), /* @__PURE__ */ jsxs(ml, {
-      className: "sm:col-span-6",
-      children: [/* @__PURE__ */ jsx(il, {
-        className: "inline-flex items-center gap-3",
-        children: /* @__PURE__ */ jsx(ll, {
-          variant: "dark",
-          size: "sm",
-          children: "Coming Soon"
-        })
-      }), /* @__PURE__ */ jsxs("div", {
-        className: "flex items-end justify-stretch py-6 shadow h-full space-x-4",
-        children: [/* @__PURE__ */ jsx("div", {
-          className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        }), /* @__PURE__ */ jsx("div", {
-          className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
-        })]
-      })]
-    }), /* @__PURE__ */ jsx(ml, {
-      className: "sm:col-span-6",
-      padding: 0,
-      children: /* @__PURE__ */ jsxs(Ge.Group, {
-        children: [/* @__PURE__ */ jsx(gl, {
-          tabs: [
-            {
-              label: "Balances"
-            },
-            {
-              label: "Pool Stakes"
-            },
-            {
-              label: "Open Orders"
-            },
-            {
-              label: "Order History"
-            }
-          ]
-        }), /* @__PURE__ */ jsxs(Ge.Panels, {
-          children: [/* @__PURE__ */ jsx(Ge.Panel, {
-            children: /* @__PURE__ */ jsx(BalancesTable, {})
-          }), /* @__PURE__ */ jsx(Ge.Panel, {
-            children: /* @__PURE__ */ jsx(PoolPositionsTable, {})
-          }), /* @__PURE__ */ jsx(Ge.Panel, {
-            children: /* @__PURE__ */ jsx(OrdersTable, {
-              variant: "open"
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: !(account == null ? void 0 : account.address) ? /* @__PURE__ */ jsx(NoWalletUI$1, {}) : /* @__PURE__ */ jsxs("div", {
+      className: " w-full grid sm:grid-cols-1 sm:grid-rows-5 md:grid-rows-[48px_260px_1fr] md:grid-cols-6 gap-2 p-4 mx-auto md:max-w-[1140px]",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: " sm:col-span-1 md:col-span-6 h-full",
+        children: /* @__PURE__ */ jsxs("div", {
+          className: "flex items-center justify-between",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "text-3xl",
+            children: "My Portfolio"
+          }), ((_b = (_a2 = hasAccount.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.hasAuxAccount) ? /* @__PURE__ */ jsxs("div", {
+            className: "items-end flex gap-3",
+            children: [/* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {}), /* @__PURE__ */ jsx(or, {
+              onClick: () => navigate("/account"),
+              size: "sm",
+              children: "Account Settings"
+            })]
+          }) : /* @__PURE__ */ jsx("div", {
+            className: "items-end flex gap-3",
+            children: /* @__PURE__ */ jsxs(or, {
+              onClick: () => navigate("/account"),
+              size: "sm",
+              className: "flex flex-row items-center",
+              children: ["Create ", appTitle, " Account", /* @__PURE__ */ jsx(ArrowLongRightIcon, {
+                className: "w-4 h-4 ml-2 group-hover:text-primary-900"
+              })]
             })
-          }), /* @__PURE__ */ jsx(Ge.Panel, {
-            children: /* @__PURE__ */ jsx(OrdersTable, {})
+          })]
+        })
+      }), /* @__PURE__ */ jsxs(ml, {
+        className: "sm:col-span-6",
+        children: [/* @__PURE__ */ jsx(il, {
+          className: "inline-flex items-center gap-3",
+          children: /* @__PURE__ */ jsx(ll, {
+            variant: "dark",
+            size: "sm",
+            children: "Coming Soon"
+          })
+        }), /* @__PURE__ */ jsxs("div", {
+          className: "flex items-end justify-stretch py-6 shadow h-full space-x-4",
+          children: [/* @__PURE__ */ jsx("div", {
+            className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-12 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-16 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-20 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-24 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-28 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-32 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-36 bg-gray-200 rounded-t-lg dark:bg-gray-700"
+          }), /* @__PURE__ */ jsx("div", {
+            className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
           })]
         })]
-      })
+      }), /* @__PURE__ */ jsx(ml, {
+        className: "sm:col-span-6",
+        padding: 0,
+        children: /* @__PURE__ */ jsxs(Ge.Group, {
+          children: [/* @__PURE__ */ jsx(gl, {
+            tabs: [
+              {
+                label: "Balances"
+              },
+              {
+                label: "Pool Stakes"
+              },
+              {
+                label: "Open Orders"
+              },
+              {
+                label: "Order History"
+              }
+            ]
+          }), /* @__PURE__ */ jsxs(Ge.Panels, {
+            children: [/* @__PURE__ */ jsxs(Ge.Panel, {
+              children: [!((_d = (_c = hasAccount.data) == null ? void 0 : _c.account) == null ? void 0 : _d.hasAuxAccount) ? /* @__PURE__ */ jsx(CreateAccountAd, {}) : /* @__PURE__ */ jsxs("div", {
+                className: "pt-4",
+                children: [/* @__PURE__ */ jsxs(il, {
+                  className: "flex items-center px-4",
+                  children: [appTitle, " Account Balances", /* @__PURE__ */ jsx(Tooltip, {
+                    content: /* @__PURE__ */ jsx("span", {
+                      className: "opacity-100 font-bold",
+                      children: "Coins deposited into this on-chain account can be used for trading on the Trade page."
+                    }),
+                    placement: "right",
+                    animation: false,
+                    children: /* @__PURE__ */ jsx("div", {
+                      style: {
+                        width: 24,
+                        height: 24,
+                        padding: 3,
+                        maxWidth: 24,
+                        pointerEvents: "none"
+                      },
+                      children: /* @__PURE__ */ jsx(InformationCircleIcon$1, {
+                        fontSize: 32,
+                        color: "white"
+                      })
+                    })
+                  })]
+                }), /* @__PURE__ */ jsx(BalancesTable, {})]
+              }), /* @__PURE__ */ jsxs("div", {
+                className: "pt-4",
+                children: [/* @__PURE__ */ jsxs(il, {
+                  className: "flex items-center px-4",
+                  children: ["Wallet Balances", /* @__PURE__ */ jsx(Tooltip, {
+                    content: /* @__PURE__ */ jsx("span", {
+                      className: "opacity-100 font-bold",
+                      children: "Coins in your wallet can be used for swapping and adding liquidity to pools."
+                    }),
+                    placement: "right",
+                    animation: false,
+                    children: /* @__PURE__ */ jsx("div", {
+                      style: {
+                        width: 24,
+                        height: 24,
+                        padding: 3,
+                        maxWidth: 24,
+                        pointerEvents: "none"
+                      },
+                      children: /* @__PURE__ */ jsx(InformationCircleIcon$1, {
+                        fontSize: 32,
+                        color: "white"
+                      })
+                    })
+                  })]
+                }), /* @__PURE__ */ jsx(BalancesTable, {
+                  variant: "wallet"
+                })]
+              })]
+            }), /* @__PURE__ */ jsx(Ge.Panel, {
+              children: /* @__PURE__ */ jsx(PoolPositionsTable, {})
+            }), /* @__PURE__ */ jsx(Ge.Panel, {
+              children: /* @__PURE__ */ jsx(OrdersTable, {
+                variant: "open"
+              })
+            }), /* @__PURE__ */ jsx(Ge.Panel, {
+              children: /* @__PURE__ */ jsx(OrdersTable, {})
+            })]
+          })]
+        })
+      })]
+    })
+  });
+}
+const connectWalletTrigger$1 = /* @__PURE__ */ jsx(or, {
+  size: "sm",
+  onClick: () => {
+  },
+  children: "Connect Wallet"
+});
+function NoWalletUI$1() {
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-xl",
+        children: "Connect a wallet to view your portfolio."
+      }), /* @__PURE__ */ jsx(ConnectWalletContainer, {
+        trigger: connectWalletTrigger$1
+      })]
+    })
+  });
+}
+function CreateAccountAd() {
+  const navigate = useNavigate();
+  const appTitle = window.appTitle;
+  return /* @__PURE__ */ jsxs(ml, {
+    padding: 4,
+    className: "flex items-center w-full font-medium justify-center mx-auto gap-3 border-b border-b-primary-700 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end text-sm text-center text-primary-100 rounded-none",
+    children: ["Unleash the power to trade on the ", appTitle, " central limit order book.", /* @__PURE__ */ jsxs(or, {
+      variant: "basic",
+      size: "xs",
+      onClick: () => navigate("/account"),
+      className: "flex flex-row items-center bg-none text-primary-100 border-blue-100 hover:bg-blue-100 hover:border-blue-100 hover:text-primary-900 group",
+      children: ["Create ", appTitle, " Account", /* @__PURE__ */ jsx(ArrowLongRightIcon, {
+        className: "w-4 h-4 ml-2 group-hover:text-primary-900"
+      })]
     })]
   });
 }
@@ -13254,7 +13617,7 @@ const DataFeedProvider = ({
     onResultReadyCallback(newSymbols);
   };
   const resolveSymbol = async function resolveSymbol2(symbolName, onSymbolResolvedCallback, onResolveErrorCallback) {
-    var _a2;
+    var _a2, _b;
     let _markets = markets;
     if (!markets.length) {
       _markets = await ((_a2 = (await getMarkets()).data) == null ? void 0 : _a2.markets);
@@ -13299,7 +13662,7 @@ const DataFeedProvider = ({
       has_no_volume: false,
       has_empty_bars: true,
       has_weekly_and_monthly: false,
-      supported_resolutions: configurationData.supported_resolutions,
+      supported_resolutions: (_b = configurationData.supported_resolutions) != null ? _b : [],
       volume_precision: 2,
       data_status: "streaming",
       format: "price"
@@ -13403,6 +13766,9 @@ const DataFeedProvider = ({
               ...ohlcv,
               time: Number((_b2 = (_a3 = x.data) == null ? void 0 : _a3.bar.time) != null ? _b2 : "")
             };
+            console.log(`[SUB:${symbolInfo.base_name}]`, {
+              res
+            });
             onTick(res);
           }
         }
@@ -13410,6 +13776,7 @@ const DataFeedProvider = ({
     },
     unsubscribeBars() {
       var _a2;
+      console.log("[UNSUB]");
       (_a2 = dataSubRef.current) == null ? void 0 : _a2.unsubscribe();
     }
   };
@@ -13700,9 +14067,7 @@ function MarketTradesView({}) {
   const props = {
     loading: marketTradesQuery.loading,
     error: (_a2 = marketTradesQuery.error) == null ? void 0 : _a2.message,
-    noData: /* @__PURE__ */ jsx(Or, {
-      message: "No recent trades."
-    }),
+    noData: /* @__PURE__ */ jsx(NoMarketTrades, {}),
     data: marketTrades,
     columns: [{
       accessorKey: "quantity",
@@ -13736,6 +14101,15 @@ function MarketTradesView({}) {
       children: /* @__PURE__ */ jsx(pl, {
         ...props
       })
+    })
+  });
+}
+function NoMarketTrades() {
+  return /* @__PURE__ */ jsx("div", {
+    className: "flex flex-col gap-6 items-center w-full h-full p-4",
+    children: /* @__PURE__ */ jsx("div", {
+      className: "text-sm text-center",
+      children: "No recent trades for this market."
     })
   });
 }
@@ -13855,9 +14229,7 @@ function OrderTable({
   }, [scaleAsk, asks]);
   const askOrderTableProps = {
     loading,
-    noData: /* @__PURE__ */ jsx(Or, {
-      message: "No open asks."
-    }),
+    noData: /* @__PURE__ */ jsx(NoAsks, {}),
     error,
     data: asks,
     customRowRender: renderAskRow,
@@ -13890,9 +14262,7 @@ function OrderTable({
   }, [scaleBid, bids]);
   const bidOrderTableProps = {
     loading,
-    noData: /* @__PURE__ */ jsx(Or, {
-      message: "No open bids."
-    }),
+    noData: /* @__PURE__ */ jsx(NoBids, {}),
     error,
     data: bids,
     customRowRender: renderBidRow,
@@ -13916,21 +14286,60 @@ function OrderTable({
       enableSmoothScroll: true
     }
   };
-  return /* @__PURE__ */ jsxs("div", {
+  return /* @__PURE__ */ jsx(Fragment, {
+    children: loading ? /* @__PURE__ */ jsx(Lr, {
+      variant: "table"
+    }) : error ? /* @__PURE__ */ jsx(Or, {
+      title: "Error",
+      message: "Uh Oh. Please try again.",
+      variant: "error",
+      details: error
+    }) : bids.length === 0 && asks.length === 0 ? /* @__PURE__ */ jsx(NoOrders, {}) : /* @__PURE__ */ jsxs("div", {
+      className: "h-full flex flex-col justify-start",
+      children: [/* @__PURE__ */ jsx("div", {
+        ref: askTableRef,
+        className: "relative overflow-y-auto max-h-full",
+        children: /* @__PURE__ */ jsx(pl, {
+          ...askOrderTableProps
+        })
+      }), /* @__PURE__ */ jsx("div", {
+        ref: bidTableRef,
+        className: "relative overflow-y-auto max-h-full",
+        children: /* @__PURE__ */ jsx(pl, {
+          ...bidOrderTableProps
+        })
+      })]
+    })
+  });
+}
+function NoOrders() {
+  return /* @__PURE__ */ jsx("div", {
     className: "h-full flex flex-col justify-start",
-    children: [/* @__PURE__ */ jsx("div", {
-      ref: askTableRef,
-      className: "relative overflow-y-scroll max-h-full",
-      children: /* @__PURE__ */ jsx(pl, {
-        ...askOrderTableProps
+    children: /* @__PURE__ */ jsx("div", {
+      className: "flex flex-col gap-6 items-center w-full h-full py-8 px-4",
+      children: /* @__PURE__ */ jsx("div", {
+        className: "text-base text-center",
+        children: "No open orders for this market."
       })
-    }), /* @__PURE__ */ jsx("div", {
-      ref: bidTableRef,
-      className: "relative overflow-y-scroll max-h-full",
-      children: /* @__PURE__ */ jsx(pl, {
-        ...bidOrderTableProps
-      })
-    })]
+    })
+  });
+}
+function NoBids() {
+  return /* @__PURE__ */ jsx("div", {
+    className: "flex flex-col gap-6 items-center w-full h-full p-4 border-t-2 border-t-primary-700",
+    children: /* @__PURE__ */ jsx("div", {
+      className: "text-sm text-center",
+      children: "No open bids for this market."
+    })
+  });
+}
+function NoAsks() {
+  return /* @__PURE__ */ jsx("div", {
+    className: "flex flex-col gap-6 items-center w-full h-full p-4 border-b-2 border-b-primary-700",
+    children: /* @__PURE__ */ jsx("div", {
+      className: "text-sm text-center",
+      children: "No open asks for this market."
+    })
   });
 }
 const OrderBook = "";
@@ -14392,7 +14801,7 @@ window.TradingView = window.TradingView || {}, window.TradingView.version = o;
 function useCreateTradingView() {
   const datafeed = useDataFeed();
   const [symbol, setSymbol] = react.exports.useState();
-  const [interval, setInterval2] = react.exports.useState(ResolutionFormats.MINUTES_1);
+  const [interval, setInterval2] = react.exports.useState("1");
   const colorPalette = window.tvColorPalette;
   const tv_overrides = {
     "paneProperties.backgroundType": "solid",
@@ -14440,7 +14849,7 @@ function useCreateTradingView() {
     if (symbol) {
       window.tvWidget = new s({
         symbol,
-        interval,
+        interval: "1",
         locale: "en",
         autosize: true,
         custom_css_url: "/charts.css",
@@ -14451,10 +14860,12 @@ function useCreateTradingView() {
         library_path: "/charting_library/",
         disabled_features: ["left_toolbar", "time_frames"],
         timeframe: "1D",
+        timezone: "America/New_York",
         loading_screen: {
           backgroundColor: colorPalette.primary[900],
           foregroundColor: colorPalette.primary[900]
         },
+        time_frames: [],
         overrides: tv_overrides
       });
       window.tvWidget.applyOverrides(tv_overrides);
@@ -14502,6 +14913,7 @@ const OrderTip2 = react.exports.memo(function OrderTip22({
   });
 });
 function TradingForm() {
+  var _a2, _b, _c;
   const {
     ioc,
     onChangeIOC,
@@ -14528,10 +14940,20 @@ function TradingForm() {
     tick,
     tickValid
   } = useTradeControls();
+  const wallet = dist.useWallet();
+  const hasAccount = useHasAccount();
+  const navigate = useNavigate();
   const {
     firstCoin,
     secondCoin
   } = useCoinXYParamState();
+  const appTitle = window.appTitle;
+  const connectWalletTrigger2 = /* @__PURE__ */ jsx(or, {
+    onClick: submitTrade,
+    size: "sm",
+    className: "self-stretch w-full",
+    children: "Connect Wallet"
+  });
   const tabs = [{
     label: "Buy",
     variant: "buy"
@@ -14675,7 +15097,7 @@ function TradingForm() {
             children: "Fee"
           }), /* @__PURE__ */ jsx("div", {
             className: "font-semibold",
-            children: "Zero! \u263A"
+            children: "Zero! \u{1F60D}"
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-between text-lg border-t border-t-primary-700 pt-3",
@@ -14687,7 +15109,17 @@ function TradingForm() {
             children: priceInput && cxAmount ? (Number.isNaN(priceInput * cxAmount) ? 0 : priceInput * cxAmount).toLocaleString() : 0
           })]
         })]
-      }), /* @__PURE__ */ jsx(or, {
+      }), !((_a2 = wallet == null ? void 0 : wallet.account) == null ? void 0 : _a2.address) ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
+        trigger: connectWalletTrigger2
+      }) : !((_c = (_b = hasAccount.data) == null ? void 0 : _b.account) == null ? void 0 : _c.hasAuxAccount) ? /* @__PURE__ */ jsxs(or, {
+        disabled: !stepValid,
+        onClick: () => navigate("/account"),
+        size: "sm",
+        className: "flex items-center justify-center",
+        children: ["Create ", appTitle, " Account ", /* @__PURE__ */ jsx(ArrowLongRightIcon, {
+          className: "w-4 h-4 ml-2 text-primary-300 group-hover:text-primary-900"
+        })]
+      }) : /* @__PURE__ */ jsx(or, {
         disabled: !stepValid,
         onClick: submitTrade,
         size: "sm",
@@ -14994,7 +15426,7 @@ function useVolume24(input) {
   return Volume25Sub;
 }
 function TradeView({}) {
-  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j, _k, _l, _m, _n2;
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j, _k, _l, _m, _n2, _o, _p, _q;
   const createTradingView = useCreateTradingView();
   const {
     firstCoin,
@@ -15003,6 +15435,8 @@ function TradeView({}) {
     onSecondCoinSelect,
     onFirstCoinSelect
   } = useCoinXYParamState();
+  const wallet = dist.useWallet();
+  const hasAccount = useHasAccount();
   const [priceDirection, setPriceDirection] = react.exports.useState("up");
   const lastPriceRef = react.exports.useRef(lastTradePrice);
   const [priceDiff, setPriceDiff] = react.exports.useState(0);
@@ -15013,8 +15447,12 @@ function TradeView({}) {
     const _priceDiff = Math.abs(lastTradePrice - lastPriceRef.current);
     if (_priceDiff && !Number.isNaN(_priceDiff))
       setPriceDiff(_priceDiff);
+    else
+      setPriceDiff(0);
     if (_priceDiffPct && _priceDiffPct !== Infinity && !Number.isNaN(_priceDiffPct))
       setPriceDiffPct(Number(_priceDiffPct));
+    else
+      setPriceDiffPct(0);
     if (s2 < 0)
       setPriceDirection("down");
     if (s2 > 0)
@@ -15042,7 +15480,7 @@ function TradeView({}) {
   const onSelectMarket = (m) => {
     createTradingView({
       symbol: m.name,
-      interval: "5"
+      interval: "1"
     });
     setPriceDiff(0);
     setPriceDiffPct(0);
@@ -15100,11 +15538,8 @@ function TradeView({}) {
           onSelectMarket
         })
       }), /* @__PURE__ */ jsx(cl, {
-        title: "",
-        value: lastTradePrice,
-        priceDirection,
-        valueChange: priceDiff,
-        percentChange: priceDiffPct,
+        title: "Last Trade Price",
+        value: lastTradePrice != null ? lastTradePrice : "-",
         className: "mx-1 ml-1"
       }), /* @__PURE__ */ jsx(cl, {
         title: "24hr High",
@@ -15151,7 +15586,7 @@ function TradeView({}) {
         minHeight: 300
       },
       className: "bg-primary-900 min-h-full sm:col-span-1 md:col-span-4 sm:row-span-1 md:row-span-2 h-full min-w-full overflow-hidden md:border-y md:border-y-primary-700"
-    }), /* @__PURE__ */ jsxs("div", {
+    }), !((_o = wallet.account) == null ? void 0 : _o.address) ? /* @__PURE__ */ jsx(NoWalletUI, {}) : !((_q = (_p = hasAccount.data) == null ? void 0 : _p.account) == null ? void 0 : _q.hasAuxAccount) ? /* @__PURE__ */ jsx(NoAccountUI, {}) : /* @__PURE__ */ jsxs("div", {
       className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
       children: [/* @__PURE__ */ jsx(Ge.Group, {
         selectedIndex: orderTableTab,
@@ -15167,6 +15602,48 @@ function TradeView({}) {
         }), orderTableTab === 1 && /* @__PURE__ */ jsx(OrdersTable, {}), orderTableTab === 2 && /* @__PURE__ */ jsx(TradeTable, {}), orderTableTab === 3 && /* @__PURE__ */ jsx(BalancesTable, {})]
       })]
     })]
+  });
+}
+const connectWalletTrigger = /* @__PURE__ */ jsx(or, {
+  size: "sm",
+  onClick: () => {
+  },
+  children: "Connect Wallet"
+});
+function NoWalletUI() {
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsx("div", {
+        className: "text-xl",
+        children: "Connect your wallet to start trading."
+      }), /* @__PURE__ */ jsx(ConnectWalletContainer, {
+        trigger: connectWalletTrigger
+      })]
+    })
+  });
+}
+function NoAccountUI() {
+  const navigate = useNavigate();
+  const appTitle = window.appTitle;
+  return /* @__PURE__ */ jsx("div", {
+    className: " sm:col-span-1 md:col-span-4 md:row-span-1 w-full max-h-full h-full bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end  text-sm text-center text-primary-100 ",
+    children: /* @__PURE__ */ jsxs("div", {
+      className: "flex flex-col gap-6 items-center justify-center w-full h-full p-8",
+      children: [/* @__PURE__ */ jsxs("div", {
+        className: "text-xl",
+        children: ["Create an ", appTitle, " Account to start trading."]
+      }), /* @__PURE__ */ jsxs(or, {
+        variant: "basic",
+        size: "sm",
+        onClick: () => navigate("/account"),
+        className: "flex items-center bg-none text-primary-100 border-blue-100 hover:bg-blue-100 hover:border-blue-100 hover:text-primary-900 group",
+        children: ["Create ", appTitle, " Account ", /* @__PURE__ */ jsx(ArrowLongRightIcon$1, {
+          className: "w-4 h-4 ml-2 text-primary-300 group-hover:text-primary-900"
+        })]
+      })]
+    })
   });
 }
 function TradeContainer({}) {
@@ -15435,6 +15912,7 @@ const Header$1 = "";
 function Header({}) {
   const connectWallet = () => {
   };
+  const appTitle = window.appTitle;
   const connectEl = /* @__PURE__ */ jsx(or, {
     className: "my-auto mx-3",
     size: "sm",
@@ -15450,12 +15928,12 @@ function Header({}) {
         className: "p-3",
         children: /* @__PURE__ */ jsx("img", {
           src: "./logo.svg",
-          alt: "AUX DEX Logo",
+          alt: `${appTitle} DEX Logo`,
           className: "h-[32px] w-auto"
         })
       }), /* @__PURE__ */ jsx(Nav, {})]
     }), /* @__PURE__ */ jsxs("div", {
-      className: "flex",
+      className: "flex items-center",
       children: [/* @__PURE__ */ jsx(ConnectWalletContainer, {
         trigger: connectEl
       }), /* @__PURE__ */ jsx(NetworkToggle, {})]
