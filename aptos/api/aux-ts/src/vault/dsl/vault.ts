@@ -1,4 +1,4 @@
-import type { AptosAccount, Types } from "aptos";
+import type { AptosAccount, HexString, Types } from "aptos";
 import type { AuxClient, FakeCoin } from "../../client";
 import {
   AnyUnits,
@@ -109,6 +109,15 @@ export default class Vault {
   /***********/
   /* QUERIES */
   /***********/
+
+  async accountExists(ownerAddress: HexString) {
+    const auxAccount = await this.auxClient.getAccountResourceOptional(
+      ownerAddress,
+      `${this.auxClient.moduleAddress}::vault::AuxUserAccount`
+    );
+
+    return auxAccount !== undefined;
+  }
 
   async balances(ownerAddress: Types.Address): Promise<query.Balances> {
     return await query.balances(this.auxClient, ownerAddress);
