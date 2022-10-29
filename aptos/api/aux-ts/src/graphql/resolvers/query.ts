@@ -42,32 +42,54 @@ export const RESOLUTIONS = [
   "1w",
 ] as const;
 
+async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
+  if (process.env["APTOS_PROFILE"] === "devnet") {
+    return Promise.all(
+      [
+        [auxClient.getCoinInfo("0x1::aptos_coin::AptosCoin")],
+        ALL_FAKE_COINS.map((fakeCoin) => auxClient.getFakeCoinInfo(fakeCoin)),
+      ].flat()
+    );
+  }
+  let rawCoins = await redisClient.get("hippo-coin-list");
+  let coins;
+  if (_.isNull(rawCoins)) {
+    const url =
+      "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+    coins = (await axios.get(url)).data;
+    await Promise.all([
+      redisClient.set("hippo-coin-list", JSON.stringify(coins)),
+      redisClient.expire("hippo-coin-list", 60),
+    ]);
+  } else {
+    coins = JSON.parse(rawCoins);
+  }
+
+  return coins.map((coin: any) => {
+    // The feature priority of a token is the max feature priority of the
+    // pools that include it.
+    const recognizedLiquidity = 0;
+    const auLiquidity = 0;
+    const priority = 0;
+    return {
+      coinType: coin.token_type.type,
+      decimals: coin.decimals,
+      name: coin.name,
+      symbol: coin.symbol,
+      priority,
+      recognizedLiquidity,
+      auLiquidity,
+    };
+  });
+}
+
 export const query = {
   address() {
     return auxClient.moduleAddress;
   },
+
   async coins(parent: any): Promise<CoinInfo[]> {
-    if (process.env["APTOS_PROFILE"] === "devnet") {
-      return Promise.all(
-        [
-          [auxClient.getCoinInfo("0x1::aptos_coin::AptosCoin")],
-          ALL_FAKE_COINS.map((fakeCoin) => auxClient.getFakeCoinInfo(fakeCoin)),
-        ].flat()
-      );
-    }
-    let rawCoins = await redisClient.get("hippo-coin-list");
-    let coins;
-    if (_.isNull(rawCoins)) {
-      const url =
-        "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
-      coins = (await axios.get(url)).data;
-      await Promise.all([
-        redisClient.set("hippo-coin-list", JSON.stringify(coins)),
-        redisClient.expire("hippo-coin-list", 60),
-      ]);
-    } else {
-      coins = JSON.parse(rawCoins);
-    }
+    const coins = await coinsWithoutLiquidity();
 
     // The "liquidity" of a coin is defined as the sum of the liquidity of the
     // pools that trade it.
@@ -93,8 +115,8 @@ export const query = {
       }
     }
 
-    const allCoins = coins.map((coin: any) => {
-      const coinType = coin.token_type.type;
+    const allCoins = coins.map((coin: CoinInfo) => {
+      const coinType = coin.coinType;
       // The feature priority of a token is the max feature priority of the
       // pools that include it.
       const thisCoinInfo = coinInfo.get(coinType);
@@ -104,7 +126,7 @@ export const query = {
         thisCoinInfo === undefined ? 0 : thisCoinInfo.auLiquidity;
       const priority = thisCoinInfo === undefined ? 0 : thisCoinInfo.priority;
       return {
-        coinType: coin.token_type.type,
+        coinType: coin.coinType,
         decimals: coin.decimals,
         name: coin.name,
         symbol: coin.symbol,
@@ -127,19 +149,19 @@ export const query = {
     });
     return allCoins;
   },
-  async pool(parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
+  async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const pool = await aux.Pool.read(auxClient, poolInput);
     if (pool === undefined) {
       return null;
     }
-    const coins = await this.coins(parent);
+    const coins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
       coins.map((coin) => [coin.coinType, [coin.name, coin.symbol]])
     );
     // @ts-ignore
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
-  async pools(parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
+  async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
       ? args.poolInputs
       : await aux.Pool.index(auxClient);
@@ -148,7 +170,7 @@ export const query = {
         aux.Pool.read(auxClient, poolReadParam)
       )
     );
-    const hippoCoins = await this.coins(parent);
+    const hippoCoins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
       hippoCoins.map((coin: any) => [coin.coinType, [coin.name, coin.symbol]])
     );
