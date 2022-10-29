@@ -261,8 +261,8 @@ async function publishAnalytics(
   const midpoints = bbos.map(({ bid, ask }) => midpoint(bid, ask));
 
   if (resolution === "24h") {
-    const high = _.max(bbos.map((bbo) => bbo.ask));
-    const low = _.min(bbos.map((bbo) => bbo.bid));
+    const high = _.max(midpoints);
+    const low = _.min(midpoints);
     const volume = _(trades)
       .map((trade) => trade.price * trade.quantity)
       .sum();
@@ -299,8 +299,8 @@ async function publishAnalytics(
       : {
           ohlcv: {
             open: _.first(midpoints)!,
-            high: _.max(bbos.map((bbo) => bbo.ask))!,
-            low: _.min(bbos.map((bbo) => bbo.bid))!,
+            high: _.max(midpoints)!,
+            low: _.min(midpoints)!,
             close: _.last(midpoints)!,
             volume: _(trades)
               .map((trade) => trade.price * trade.quantity)
