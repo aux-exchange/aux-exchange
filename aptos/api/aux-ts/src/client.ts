@@ -1088,7 +1088,7 @@ export function deriveResourceAccountAddress(
   mergedArray.set(addressBytes);
   mergedArray.set(seedBytes, addressBytes.length);
   mergedArray.set([255], addressBytes.length + seedBytes.length);
-  return "0x" + SHA3.sha3_256(mergedArray);
+  return "0x" + SHA3.sha3_256(mergedArray).replace(/^0+/, '');
 }
 
 /**
