@@ -7,7 +7,7 @@ import { FakeCoin } from "../coin";
 import { env } from "../env";
 
 async function main() {
-  const auxClient = new AuxClient(env().aptosNetwork);
+  const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
   let baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
   const quoteCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
   const market = await Market.read(auxClient, { baseCoinType, quoteCoinType });

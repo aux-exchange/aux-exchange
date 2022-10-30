@@ -4,11 +4,11 @@
  *
  * Run ts-node mainnet-amm-limit-trader.ts to trade on mainnet.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import { assert } from "console";
+import { WebSocket } from "ws";
 import { AU, DU, Pool } from "../src";
 import { AuxClient } from "../src/client";
-import { WebSocket } from "ws";
 import { FakeCoin } from "../src/coin";
 
 const AUX_TRADER_CONFIG = {
@@ -23,10 +23,13 @@ const AUX_TRADER_CONFIG = {
   market: "ETH/USD",
 };
 
-// While you can technically connect directly to Devnet, we strongly recommend
-// running a full validator for RPCs.
+const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
+const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+
+// While you can technically connect directly to the Aptos Full Node, we strongly recommend
+// running a Full Node for RPCs.
 // const auxClient = AuxClient.create(Network.Devnet);
-const auxClient = new AuxClient("devnet");
+const auxClient = new AuxClient("devnet", new AptosClient(nodeUrl));
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
@@ -61,28 +64,26 @@ async function printAccountBalance(
   auxClient: AuxClient,
   trader: AptosAccount
 ): Promise<void> {
-  const traderBtcBalance =
-    await auxClient.ensureMinimumFakeCoinBalance({
-      sender: trader,
-      coin: FakeCoin.ETH,
-      minQuantity: DU(100),
-      replenishQuantity: DU(1000),
-    });
+  const traderBtcBalance = await auxClient.ensureMinimumFakeCoinBalance({
+    sender: trader,
+    coin: FakeCoin.ETH,
+    minQuantity: DU(100),
+    replenishQuantity: DU(1000),
+  });
 
-  const traderUsdcBalance =
-    await auxClient.ensureMinimumFakeCoinBalance({
-      sender: trader,
-      coin: FakeCoin.USDC,
-      minQuantity: DU(100_000),
-      replenishQuantity: DU(1_000_000),
-    });
+  const traderUsdcBalance = await auxClient.ensureMinimumFakeCoinBalance({
+    sender: trader,
+    coin: FakeCoin.USDC,
+    minQuantity: DU(100_000),
+    replenishQuantity: DU(1_000_000),
+  });
 
   console.log(
     "  Trader ETH=",
     (
       await auxClient.toDecimalUnits(
-            auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
-            traderBtcBalance
+        auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
+        traderBtcBalance
       )
     ).toString(),
     ", USDC=",
@@ -141,7 +142,6 @@ async function tradeAMM(): Promise<void> {
               console.log(">>>> Add Liquidity event:", tx.payload);
               await pool.update();
             }
-            
           } catch (e) {
             console.log("  Pool update failed with error: ", e);
           }

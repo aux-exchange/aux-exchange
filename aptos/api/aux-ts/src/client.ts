@@ -6,7 +6,7 @@ import {
   MaybeHexString,
   TxnBuilderTypes,
   Types,
-  WaitForTransactionError,
+  WaitForTransactionError
 } from "aptos";
 import BN from "bn.js";
 import * as fs from "fs";
@@ -20,8 +20,8 @@ import { env } from "./env";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
-export type Network = "mainnet" | "testnet" | "localnet" | "devnet";
-export const NETWORKS = ["mainnet", "testnet", "localnet", "devnet"];
+export type AptosNetwork = "mainnet" | "testnet" | "devnet" | "localnet";
+export const APTOS_NETWORKS = ["mainnet", "testnet", "devnet", "localnet"];
 
 /**
  * AuxClient
@@ -29,19 +29,29 @@ export const NETWORKS = ["mainnet", "testnet", "localnet", "devnet"];
  * A fully-featured Typescript client for interacting with AUX exchange.
  *
  * const auxClient = new AuxClient("mainnet")  // uses "https://fullnode.mainnet.aptoslabs.com/v1"
- * const auxClient = new AuxClient("devnet")  // uses "https://fullnode.devnet.aptoslabs.com/v1"
+ * const auxClient = new AuxClient("devnet", new AptosClient("https://fullnode.devnet.aptoslabs.com/v1"))  // uses "https://fullnode.devnet.aptoslabs.com/v1"
  *
  * // use your own fullnode
  * const auxClient = new AuxClient("mainnet", { nodeUrl: "http://localhost:8080" })
+ *
+ * This will also look in your `~/.aptos/config.yaml` file for Full Node REST urls.
+ *
+ * For example:
+ *
+ * mainnet:
+ *     rest_url: http://localhost:8080
+ *
+ * `new AuxClient("mainnet")` will use "http://localhost:8080"
  */
 export class AuxClient {
-  network: Network;
+  aptosNetwork: AptosNetwork;
   aptosClient: AptosClient;
   faucetClient: FaucetClient | undefined;
-  moduleAddress: Types.Address;
-  moduleAuthority: AptosAccount | undefined;
-  options: TransactionOptions | undefined;
 
+  readonly moduleAddress: Types.Address;
+  readonly moduleAuthority: AptosAccount | undefined;
+
+  options: TransactionOptions | undefined;
   simulatorAddress: Types.Address | undefined;
   simulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey | undefined;
 
@@ -49,15 +59,17 @@ export class AuxClient {
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
   vaults: Map<Types.Address, HexString>;
 
-  constructor(network: Network, options?: TransactionOptions) {
-    this.network = network;
-    const profile = getAptosProfile(network);
-    const nodeUrl = options?.nodeUrl ?? profile?.rest_url;
-    switch (network) {
+  constructor(
+    aptosNetwork: AptosNetwork,
+    aptosClient: AptosClient,
+    faucetClient?: FaucetClient,
+    options?: TransactionOptions
+  ) {
+    this.aptosNetwork = aptosNetwork;
+    this.aptosClient = aptosClient;
+    this.faucetClient = faucetClient;
+    switch (aptosNetwork) {
       case "mainnet":
-        this.aptosClient = new AptosClient(
-          nodeUrl ?? "https://fullnode.mainnet.aptoslabs.com/v1"
-        );
         this.moduleAddress =
           "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541";
         this.simulatorPublicKey = mustEd25519PublicKey(
@@ -67,9 +79,6 @@ export class AuxClient {
           "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
         break;
       case "testnet":
-        this.aptosClient = new AptosClient(
-          nodeUrl ?? "https://fullnode.testnet.aptoslabs.com/v1"
-        );
         this.moduleAddress =
           "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53";
         this.simulatorPublicKey = mustEd25519PublicKey(
@@ -79,12 +88,6 @@ export class AuxClient {
           "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
         break;
       case "devnet":
-        const devnet = nodeUrl ?? "https://fullnode.devnet.aptoslabs.com/v1";
-        this.aptosClient = new AptosClient(devnet);
-        this.faucetClient = new FaucetClient(
-          devnet,
-          "https://faucet.devnet.aptoslabs.com"
-        );
         this.moduleAddress =
           "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a";
         this.simulatorPublicKey = mustEd25519PublicKey(
@@ -94,9 +97,6 @@ export class AuxClient {
           "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f";
         break;
       case "localnet":
-        const localnet = nodeUrl ?? "http://127.0.0.1:8080";
-        this.aptosClient = new AptosClient(localnet);
-        this.faucetClient = new FaucetClient(localnet, "http://127.0.0.1:8081");
         const profile = getAptosProfile("localnet");
         if (_.isUndefined(profile)) {
           throw new Error(
@@ -112,7 +112,7 @@ export class AuxClient {
         this.simulatorAddress = profile.account;
         break;
       default:
-        const exhaustiveCheck: never = network;
+        const exhaustiveCheck: never = aptosNetwork;
         throw new Error(exhaustiveCheck);
     }
     this.options = options;
@@ -744,7 +744,6 @@ export type TransactionOptions = Partial<{
   simulate: boolean;
   simulatorAddress?: Types.Address | undefined;
   simulatorPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
-  nodeUrl?: string;
 }>;
 
 /**
@@ -754,7 +753,7 @@ export type TransactionOptions = Partial<{
  * Lastly, use default.
  * @returns profile name
  */
-export function getAptosProfileNameFromEnvironment(): Network {
+export function getAptosProfileNameFromEnvironment(): AptosNetwork {
   return env().aptosNetwork;
 }
 
@@ -779,14 +778,20 @@ export interface AptosYamlProfiles {
  * @returns
  */
 export function getAptosProfile(
-  profileName: string,
+  network: string,
   configPath: string = `${os.homedir()}/.aptos/config.yaml`
-): AptosProfile | undefined {
-  let x: AptosYamlProfiles = YAML.parse(
+): AptosProfile {
+  let profiles: AptosYamlProfiles = YAML.parse(
     fs.readFileSync(configPath, { encoding: "utf-8" })
   );
 
-  return x.profiles[profileName];
+  const profile = profiles.profiles[network];
+  if (_.isUndefined(profile)) {
+    throw new Error(
+      `Could not find profile for ${network} in ~/.aptos/config.yaml`
+    );
+  }
+  return profile;
 }
 
 // TODO: parametrize on key type

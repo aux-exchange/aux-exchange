@@ -5,9 +5,10 @@ import { Vault } from "../src";
 import Pool from "../src/amm/dsl/pool";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
+import { env } from "../src/env";
 import { AU, DU } from "../src/units";
 
-const auxClient = new AuxClient("localnet");
+const auxClient = new AuxClient("localnet", env().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
@@ -428,7 +429,11 @@ describe("AMM DSL tests", function () {
       quantity: AU(500_000_000),
     });
     await auxClient.registerAuxCoin(auxAccountOwner);
-    let tx = await auxClient.mintAux(moduleAuthority, auxAccountOwnerAddr, DU(4));
+    let tx = await auxClient.mintAux(
+      moduleAuthority,
+      auxAccountOwnerAddr,
+      DU(4)
+    );
     assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
     tx = await auxClient.registerAndMintFakeCoin({
       sender: auxAccountOwner,

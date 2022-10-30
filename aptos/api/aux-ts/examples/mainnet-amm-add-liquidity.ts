@@ -2,13 +2,16 @@
  * Example of interacting with AMM on mainnet.
  * yarn ts-node mainnet-amm-add-liquidity.ts
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import { assert } from "console";
 import { DU, Pool } from "../src";
 import { AuxClient, getAptosProfile } from "../src/client";
 
+const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
+const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+
 async function main() {
-  const auxClient = new AuxClient("mainnet");
+  const auxClient = new AuxClient("mainnet", new AptosClient(nodeUrl));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

@@ -8,8 +8,9 @@ import MarketSubscriber from "../src/subscriber";
 import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice_and_bob";
+import { env } from "../src/env";
 
-const auxClient = new AuxClient("localnet");
+const auxClient = new AuxClient("localnet", env().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);

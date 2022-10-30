@@ -1,20 +1,21 @@
 import { AptosAccount, CoinClient } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
-import type Router from "../src/router/dsl/router";
-import type { RouterQuote } from "../src/router/dsl/router_quote";
 import Pool from "../src/amm/dsl/pool";
 import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
+import { FakeCoin } from "../src/coin";
+import { env } from "../src/env";
 import * as core from "../src/router/core";
+import type Router from "../src/router/dsl/router";
+import type { RouterQuote } from "../src/router/dsl/router_quote";
 import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice_and_bob";
-import { FakeCoin } from "../src/coin";
 
-const auxClient = new AuxClient("localnet");
+const auxClient = new AuxClient("localnet", env().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const coinClient = new CoinClient(auxClient.aptosClient);

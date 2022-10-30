@@ -1,7 +1,7 @@
 /**
  * Demo of the supported CLOB order types.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import { assert } from "console";
 import { AU, DU, Market, Vault } from "../src";
 import { AuxClient } from "../src/client";
@@ -9,7 +9,10 @@ import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { FakeCoin } from "../src/coin";
 
 async function main() {
-  const auxClient = new AuxClient("devnet");
+  const auxClient = new AuxClient(
+    "devnet",
+    new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+  );
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.

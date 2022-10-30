@@ -5,7 +5,7 @@
  *
  * See aux-exchange/README.md for details on how to run this example.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import type BN from "bn.js";
 import { assert } from "console";
@@ -26,7 +26,10 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-const auxClient = new AuxClient("localnet");
+const auxClient = new AuxClient(
+  "localnet",
+  new AptosClient("http://localhost:8081")
+);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;

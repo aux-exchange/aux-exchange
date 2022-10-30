@@ -1,22 +1,27 @@
-import { Network, NETWORKS } from "./client";
+import { getAptosProfile, AptosNetwork, APTOS_NETWORKS } from "./client";
 import * as dotenv from "dotenv";
+import { AptosClient } from "aptos";
 
-export function env(): { aptosNetwork: Network } {
-  const network = process.env["APTOS_NETWORK"];
+export function env(): { aptosNetwork: AptosNetwork; aptosClient: AptosClient } {
+  const aptosNetwork = process.env["APTOS_NETWORK"];
   if (
     !(
-      network === "mainnet" ||
-      network === "testnet" ||
-      network === "devnet" ||
-      network === "localnet"
+      aptosNetwork === "mainnet" ||
+      aptosNetwork === "testnet" ||
+      aptosNetwork === "devnet" ||
+      aptosNetwork === "localnet"
     )
   ) {
     throw new Error(
-      `Invalid \`network\` ${network}: must be one of ${NETWORKS}`
+      `Invalid \`network\` ${aptosNetwork}: must be one of ${APTOS_NETWORKS}`
     );
   }
+  const profile = getAptosProfile(aptosNetwork);
+  const aptosClient = new AptosClient(profile.rest_url);
+
   return {
-    aptosNetwork: network,
+    aptosNetwork,
+    aptosClient,
     ...dotenv.config(),
   };
 }

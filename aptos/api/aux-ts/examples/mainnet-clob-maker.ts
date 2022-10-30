@@ -10,7 +10,7 @@
  *  APTOS_NODE_URL=https://your/node/address \
  *  yarn ts-node mainnet-clob-maker.ts
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import * as coins from "../src/coin";
 import { DU } from "../src";
 import { AuxClient, getAptosProfile } from "../src/client";
@@ -21,7 +21,7 @@ const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const nodeUrl = process.env["APTOS_NODE_URL"] ?? DEFAULT_MAINNET;
 
 async function main(): Promise<void> {
-  const auxClient = new AuxClient("mainnet", { nodeUrl });
+  const auxClient = new AuxClient("mainnet", new AptosClient(nodeUrl));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

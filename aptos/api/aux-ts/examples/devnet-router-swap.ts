@@ -1,19 +1,22 @@
 /**
  * Demo of the supported Router swap functionality.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import { AU, DU } from "../src";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
 
 async function main() {
-  // While you can technically connect directly to Devnet, we strongly recommend
+  // While you can technically connect directly to the Aptos Full Node, we strongly recommend
   // running your own Full Node.
   //
   // e.g.
-  // const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
-  const auxClient = new AuxClient("devnet");
+  // const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
+  const auxClient = new AuxClient(
+    "devnet",
+    new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+  );
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.

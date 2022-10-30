@@ -4,7 +4,7 @@
  *
  * See aux-exchange/README.md for details on how to run this example.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import { assert } from "console";
 import { AU, DU, Pool } from "../src";
@@ -28,7 +28,10 @@ const AUX_TRADER_CONFIG = {
 };
 
 // Start an AUX client
-const auxClient = new AuxClient("localnet");
+const auxClient = new AuxClient(
+  "localnet",
+  new AptosClient("http://localhost:8081")
+);
 
 // This is the address where the AUX module is published to
 auxClient.moduleAddress;

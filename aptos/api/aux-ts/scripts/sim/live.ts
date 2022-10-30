@@ -12,7 +12,7 @@ import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
 import assert from "assert";
 import { env } from "../../src/env";
 
-const auxClient = new AuxClient(env().aptosNetwork);
+const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {

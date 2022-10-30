@@ -1,14 +1,17 @@
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import { AU, DU } from "../src";
 import { AuxClient, getAptosProfile } from "../src/client";
 import { FakeCoin } from "../src/coin";
 
-// While you can technically connect directly to Devnet, we strongly recommend
+// While you can technically connect directly to the Aptos Full Node, we strongly recommend
 // running your own Full Node.
 //
 // e.g.
-// const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
-const auxClient = new AuxClient("devnet");
+// const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
+const auxClient = new AuxClient(
+  "devnet",
+  new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+);
 
 // Get the account that has authority over the module from local profile
 // This is also the account that deployed the Aux program

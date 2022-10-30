@@ -287,7 +287,7 @@ export default class Market implements core.query.Market {
    *
    * If the order hasn't been added to the book yet, cancel will enqueue a
    * cancel for when the order is added. In other words, placeOrder and
-   * cancelOrder can be processed out of order from any given validator's
+   * cancelOrder can be processed out of order from any given Full Node's
    * perspective.
    * @param sender
    * @param orderId the global order id to cancel

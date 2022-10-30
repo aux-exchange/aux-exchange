@@ -8,7 +8,7 @@ import { APTOS_COIN_TYPE, FakeCoin } from "../../src/coin";
 import { env } from "../../src/env";
 import { AU, DU } from "../../src/units";
 
-const auxClient = new AuxClient(env().aptosNetwork);
+const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
 
 const privateKeyHexs: string[] = [
   "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49", // mnemoic: observe stairs visual bracket sick clog sport erode domain concert ecology strike, address: 0x767b7442b8547fa5cf50989b9b761760ca6687b83d1c23d3589a5ac8acb50639

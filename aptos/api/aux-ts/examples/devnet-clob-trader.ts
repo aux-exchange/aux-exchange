@@ -5,7 +5,7 @@
  *
  * Run ts-node devnet-clob-trader.ts to trade on devnet.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import type BN from "bn.js";
 import { assert } from "console";
@@ -26,12 +26,15 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-// While you can technically connect directly to Devnet, we strongly recommend
+// While you can technically connect directly to the Aptos Full Node, we strongly recommend
 // running your own Full Node.
 //
 // e.g.
-// const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
-const auxClient = new AuxClient("devnet");
+// const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
+const auxClient = new AuxClient(
+  "devnet",
+  new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+);
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
