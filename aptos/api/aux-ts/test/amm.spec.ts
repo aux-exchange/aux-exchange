@@ -5,10 +5,10 @@ import { Vault } from "../src";
 import Pool from "../src/amm/dsl/pool";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
-import { env } from "../src/env";
+import { AuxEnv } from "../src/env";
 import { AU, DU } from "../src/units";
 
-const auxClient = new AuxClient("localnet", env().aptosClient);
+const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;

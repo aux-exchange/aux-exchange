@@ -45,7 +45,7 @@ export const RESOLUTIONS = [
 ] as const;
 
 async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
-  if (process.env["APTOS_PROFILE"] === "devnet") {
+  if (process.env["APTOS_NETWORK"] === "devnet") {
     return Promise.all(
       [
         [auxClient.getCoinInfo("0x1::aptos_coin::AptosCoin")],

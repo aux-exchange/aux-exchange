@@ -4,10 +4,11 @@ import { Account } from "..";
 import { AuxClient } from "../client";
 import Market from "../clob/dsl/market";
 import { FakeCoin } from "../coin";
-import { env } from "../env";
+import { AuxEnv } from "../env";
 
 async function main() {
-  const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
+  const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   let baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
   const quoteCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
   const market = await Market.read(auxClient, { baseCoinType, quoteCoinType });

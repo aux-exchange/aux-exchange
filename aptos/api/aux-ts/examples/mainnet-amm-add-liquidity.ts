@@ -5,7 +5,8 @@
 import { AptosAccount, AptosClient } from "aptos";
 import { assert } from "console";
 import { DU, Pool } from "../src";
-import { AuxClient, getAptosProfile } from "../src/client";
+import { AuxClient } from "../src/client";
+import { getAptosProfile } from "../src/env";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;

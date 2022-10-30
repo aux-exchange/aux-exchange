@@ -16,8 +16,9 @@
 import { AptosAccount, AptosClient } from "aptos";
 import * as coins from "../src/coin";
 import { DU } from "../src";
-import { AuxClient, getAptosProfile } from "../src/client";
+import { AuxClient } from "../src/client";
 import { FTXArbitrageStrategy } from "../bots/amm";
+import { getAptosProfile } from "../src/env";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;

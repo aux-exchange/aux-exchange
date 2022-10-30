@@ -1,9 +1,9 @@
 import { AptosAccount, HexString } from "aptos";
 import * as assert from "assert";
 import { Vault } from "../src";
-import { AuxClient, getAptosProfile } from "../src/client";
+import type { AuxClient } from "../src/client";
 import { ALL_FAKE_COINS, FakeCoin } from "../src/coin";
-import { env } from "../src/env";
+import { AuxEnv, getAptosProfile } from "../src/env";
 import { AU } from "../src/units";
 
 function sleep(ms: number) {
@@ -69,12 +69,13 @@ let is_init = false;
 let alice: AptosAccount;
 let bob: AptosAccount;
 
+const auxEnv = new AuxEnv();
 export async function getAliceBob(
   auxClient: AuxClient
 ): Promise<[AptosAccount, AptosAccount]> {
   if (!is_init) {
-    alice = await getUser(`alice-${env().aptosNetwork}`, auxClient);
-    bob = await getUser(`bob-${env().aptosNetwork}`, auxClient);
+    alice = await getUser(`alice-${auxEnv.aptosNetwork}`, auxClient);
+    bob = await getUser(`bob-${auxEnv.aptosNetwork}`, auxClient);
     is_init = true;
   }
   await fundFakeCoin(auxClient, alice);

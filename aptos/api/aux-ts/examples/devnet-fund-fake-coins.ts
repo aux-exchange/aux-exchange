@@ -1,7 +1,8 @@
 import { AptosAccount, AptosClient } from "aptos";
 import { AU, DU } from "../src";
-import { AuxClient, getAptosProfile } from "../src/client";
+import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
+import { getAptosProfile } from "../src/env";
 
 // While you can technically connect directly to the Aptos Full Node, we strongly recommend
 // running your own Full Node.

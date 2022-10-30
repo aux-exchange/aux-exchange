@@ -10,9 +10,10 @@ import { orderEventToOrder } from "../graphql/conversion";
 import type { MarketInput, Maybe, Side } from "../graphql/generated/types";
 import { Resolution, RESOLUTIONS } from "../graphql/resolvers/query";
 import { resolutionToSeconds } from "../graphql/resolvers/market";
-import { env } from "../env";
+import { AuxEnv } from "../env";
 
-const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
 const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));
 const redisPubSub = new RedisPubSub();

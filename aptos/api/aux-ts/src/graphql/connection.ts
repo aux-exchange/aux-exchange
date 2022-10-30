@@ -7,9 +7,10 @@ import { Connection } from "@solana/web3.js";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import * as redis from "redis";
 import { AuxClient } from "../../src/client";
-import { env } from "../env";
+import { AuxEnv } from "../env";
 
-export const auxClient = new AuxClient(env().aptosNetwork, env().aptosClient);
+export const auxEnv = new AuxEnv();
+export const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
 
 export const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));

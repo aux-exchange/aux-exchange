@@ -2,11 +2,11 @@ import * as assert from "assert";
 import { describe, it } from "mocha";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
-import { env } from "../src/env";
+import { AuxEnv } from "../src/env";
 import { AU } from "../src/units";
-import { getAliceBob, withdrawAll } from "./alice_and_bob";
+import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("localnet", env().aptosClient);
+const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
 
 describe("Fake Coin tests", function () {
   this.timeout(30000);

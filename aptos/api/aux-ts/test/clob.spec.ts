@@ -9,13 +9,13 @@ import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
 import { FakeCoin } from "../src/coin";
-import { env } from "../src/env";
+import { AuxEnv } from "../src/env";
 import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import * as vault from "../src/vault/core";
 import Vault from "../src/vault/dsl/vault";
-import { getAliceBob, withdrawAll } from "./alice_and_bob";
+import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("localnet", env().aptosClient);
+const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);

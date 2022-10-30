@@ -9,14 +9,12 @@ import {
   WaitForTransactionError,
 } from "aptos";
 import BN from "bn.js";
-import * as fs from "fs";
 import * as SHA3 from "js-sha3";
+import "reflect-metadata";
 
 import _ from "lodash";
-import os from "os";
-import YAML from "yaml";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
-import { env } from "./env";
+import { getAptosProfile } from "./env";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
@@ -139,6 +137,10 @@ export class AuxClient {
 
   get moduleAuthority(): AptosAccount | undefined {
     return this.options.moduleAuthority;
+  }
+
+  get sender(): AptosAccount | undefined {
+    return this.options.sender;
   }
 
   /**
@@ -702,6 +704,31 @@ export class AuxClient {
       sender,
     });
   }
+
+  /**
+   * Prepares AuxClient to either send or simulate a tx.
+   *
+   * If sending, there must be a sender.
+   * If simulating, there must be a simulator.
+   */
+  prepareTx(options?: AuxClientOptions) {
+    const simulate = options?.simulate ?? this.options.simulate ?? false;
+    if (simulate) {
+      if (
+        _.isUndefined(this.options.simulatorAddress) ||
+        _.isUndefined(this.options.simulatorPublicKey)
+      ) {
+        throw new Error(
+          `Error simulating tx. Simulator is undefined but required.`
+        );
+      }
+    } else {
+      const sender = options?.sender ?? this.sender;
+      if (_.isUndefined(sender)) {
+        throw new Error(`Error sending tx. Sender is undefined but required.`);
+      }
+    }
+  }
 }
 
 export class AuxClientError extends Error {
@@ -758,57 +785,6 @@ function serialize(auxClientOptions?: Partial<AuxClientOptions>): Partial<
     },
     _.negate(_.isUndefined)
   );
-}
-
-/**
- * returns the desired profile name for aptos based on environment variables.
- * First, the environment variable APTOS_PROFILE is checked, and if it is set to non empty value, that profile will be read.
- * Then, if will check if APTOS_LOCAL is set, and if it is set, use localnet profile.
- * Lastly, use default.
- * @returns profile name
- */
-export function getAptosProfileNameFromEnvironment(): AptosNetwork {
-  return env().aptosNetwork;
-}
-
-export interface AptosProfile {
-  private_key: string;
-  public_key: string;
-  account: string;
-  rest_url: string;
-  faucet_url: string;
-}
-
-export interface AptosYamlProfiles {
-  profiles: {
-    [key: string]: AptosProfile;
-  };
-}
-
-/**
- * Returns a local Aptos profile by reading from `$HOME/.aptos/config.yaml`.
- *
- * Note this assumes you have ran `aptos set-global-config`.
- *
- * @param profileName
- * @param configPath
- * @returns
- */
-export function getAptosProfile(
-  network: string,
-  configPath: string = `${os.homedir()}/.aptos/config.yaml`
-): AptosProfile {
-  let profiles: AptosYamlProfiles = YAML.parse(
-    fs.readFileSync(configPath, { encoding: "utf-8" })
-  );
-
-  const profile = profiles.profiles[network];
-  if (_.isUndefined(profile)) {
-    throw new Error(
-      `Could not find profile for ${network} in ~/.aptos/config.yaml`
-    );
-  }
-  return profile;
 }
 
 // TODO: parametrize on key type
@@ -975,3 +951,36 @@ function mustEd25519PublicKey(
     new HexString(hexString).toUint8Array()
   );
 }
+
+// export function tx(
+//   target: any,
+//   propertyName: string,
+//   descriptor: TypedPropertyDescriptor<Function>
+// ) {
+//   let method = descriptor.value!;
+
+//   descriptor.value = function () {
+//     // @ts-ignore
+//     const requiredParameters = Reflect.getOwnMetadata(
+//       "required",
+//       target,
+//       propertyName
+//     );
+//     const options: AuxClientOptions =
+//       requiredParameters[requiredParameters.length - 1] ?? {};
+//     _.defaults(options, target.auxClient.options);
+//     if (options.simulate) {
+//       assert(
+//         !_.isUndefined(target.auxClient.simulatorAddress) ||
+//           !_.isUndefined(target.auxClient.simulatorPublicKey),
+//         `Error simulating tx: ${propertyName}. Simulator is undefined.`
+//       );
+//     } else {
+//       assert(
+//         !_.isUndefined(target.auxClient.sender),
+//         `Error sender tx: ${propertyName}. Sender is undefined.`
+//       );
+//     }
+//     return method.apply(this, requiredParameters);
+//   };
+// }

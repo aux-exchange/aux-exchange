@@ -1,11 +1,11 @@
 import { AptosAccount } from "aptos";
 import { describe, it } from "mocha";
 import { AuxClient } from "../src/client";
-import { env } from "../src/env";
+import { AuxEnv } from "../src/env";
 import { AU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 
-const auxClient = new AuxClient("localnet", env().aptosClient);
+const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
