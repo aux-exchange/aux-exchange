@@ -1,7 +1,7 @@
 import { AptosAccount, CoinClient, Types } from "aptos";
 import type { TransactionResult } from "../..//transaction";
 import { AnyUnits, AU } from "../..//units";
-import type { AuxClient, TransactionOptions } from "../../client";
+import type { AuxClient, AuxClientOptions } from "../../client";
 import {
   parseRouterEvents,
   RouterEvent,
@@ -40,7 +40,7 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RouterEvent[]>> {
     return swapExactCoinForCoin(
       this.client,
@@ -56,7 +56,7 @@ export default class Router {
           await this.client.toAtomicUnits(coinTypeOut, minAmountOut)
         ).toU64(),
       },
-      transactionOptions
+      options
     );
   }
 
@@ -72,7 +72,7 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RouterEvent[]>> {
     const sender = this.sender;
     if (sender === undefined) {
@@ -91,7 +91,7 @@ export default class Router {
           await this.client.toAtomicUnits(coinTypeOut, exactAmountOut)
         ).toU64(),
       },
-      transactionOptions
+      options
     );
   }
 

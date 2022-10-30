@@ -301,10 +301,8 @@ export async function orderbook(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
-  const txResult = await auxClient.dataSimulate({
-    payload,
-    simulatorAccount,
-  });
+  const args = simulatorAccount ? { payload, simulatorAccount } : { payload };
+  const txResult = await auxClient.dataSimulate(args);
   const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
   const bids: Level[] = event.data.bids.map((level) => {
     return {

@@ -1,6 +1,6 @@
 import type { AptosAccount, Types } from "aptos";
 import { MAX_U64 } from "../../units";
-import type { AuxClient, TransactionOptions } from "../../client";
+import type { AuxClient, AuxClientOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import { parseRawEventsFromTx, PlaceOrderEvent } from "./events";
 import type { Market } from "./query";
@@ -61,24 +61,24 @@ export interface CancelAllInput {
 export async function createMarket(
   auxClient: AuxClient,
   createMarketInput: CreateMarketInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
   return auxClient.generateSignSubmitWaitForTransaction({
     sender: createMarketInput.sender,
     payload: createMarketPayload(auxClient, createMarketInput),
-    transactionOptions,
+    options,
   });
 }
 
 export async function placeOrder(
   auxClient: AuxClient,
   placeOrderInput: PlaceOrderInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<PlaceOrderEvent[]>> {
   const tx = auxClient.generateSignSubmitWaitForTransaction({
     sender: placeOrderInput.sender,
     payload: placeOrderPayload(auxClient, placeOrderInput),
-    transactionOptions,
+    options,
   });
   return tx.then((tx) => {
     return {
@@ -91,24 +91,24 @@ export async function placeOrder(
 export async function cancelOrder(
   auxClient: AuxClient,
   cancelOrderInput: CancelOrderInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
   return auxClient.generateSignSubmitWaitForTransaction({
     sender: cancelOrderInput.sender,
     payload: cancelOrderPayload(auxClient, cancelOrderInput),
-    transactionOptions,
+    options,
   });
 }
 
 export async function cancelAll(
   auxClient: AuxClient,
   cancelAllInput: CancelAllInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
   return auxClient.generateSignSubmitWaitForTransaction({
     sender: cancelAllInput.sender,
     payload: cancelAllPayload(auxClient, cancelAllInput),
-    transactionOptions,
+    options,
   });
 }
 

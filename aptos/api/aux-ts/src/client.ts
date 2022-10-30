@@ -6,7 +6,7 @@ import {
   MaybeHexString,
   TxnBuilderTypes,
   Types,
-  WaitForTransactionError
+  WaitForTransactionError,
 } from "aptos";
 import BN from "bn.js";
 import * as fs from "fs";
@@ -48,12 +48,7 @@ export class AuxClient {
   aptosClient: AptosClient;
   faucetClient: FaucetClient | undefined;
 
-  readonly moduleAddress: Types.Address;
-  readonly moduleAuthority: AptosAccount | undefined;
-
-  options: TransactionOptions | undefined;
-  simulatorAddress: Types.Address | undefined;
-  simulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey | undefined;
+  options: AuxClientOptions;
 
   // Internal state.
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
@@ -63,38 +58,40 @@ export class AuxClient {
     aptosNetwork: AptosNetwork,
     aptosClient: AptosClient,
     faucetClient?: FaucetClient,
-    options?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ) {
     this.aptosNetwork = aptosNetwork;
     this.aptosClient = aptosClient;
     this.faucetClient = faucetClient;
+
+    let moduleAddress, moduleAuthority, simulatorPublicKey, simulatorAddress;
     switch (aptosNetwork) {
       case "mainnet":
-        this.moduleAddress =
+        moduleAddress =
           "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541";
-        this.simulatorPublicKey = mustEd25519PublicKey(
+        simulatorAddress =
+          "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
+        simulatorPublicKey = mustEd25519PublicKey(
           "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
         );
-        this.simulatorAddress =
-          "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
         break;
       case "testnet":
-        this.moduleAddress =
+        moduleAddress =
           "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53";
-        this.simulatorPublicKey = mustEd25519PublicKey(
+        simulatorAddress =
+          "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
+        simulatorPublicKey = mustEd25519PublicKey(
           "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
         );
-        this.simulatorAddress =
-          "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
         break;
       case "devnet":
-        this.moduleAddress =
+        moduleAddress =
           "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a";
-        this.simulatorPublicKey = mustEd25519PublicKey(
+        simulatorAddress =
+          "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f";
+        simulatorPublicKey = mustEd25519PublicKey(
           "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
         );
-        this.simulatorAddress =
-          "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f";
         break;
       case "localnet":
         const profile = getAptosProfile("localnet");
@@ -104,20 +101,44 @@ export class AuxClient {
               "Could not find required profile `localnet` in ~/.aptos/config.yaml"
           );
         }
-        this.moduleAuthority = AptosAccount.fromAptosAccountObject({
+        moduleAuthority = AptosAccount.fromAptosAccountObject({
           privateKeyHex: profile.private_key,
         });
-        this.moduleAddress = deriveModuleAddress(this.moduleAuthority);
-        this.simulatorPublicKey = mustEd25519PublicKey(profile.public_key);
-        this.simulatorAddress = profile.account;
+        moduleAddress = deriveModuleAddress(moduleAuthority);
+        simulatorPublicKey = mustEd25519PublicKey(profile.public_key);
+        simulatorAddress = profile.account;
         break;
       default:
         const exhaustiveCheck: never = aptosNetwork;
         throw new Error(exhaustiveCheck);
     }
-    this.options = options;
+
+    // overrides
+    moduleAddress = options?.moduleAddress ?? moduleAddress;
+    moduleAuthority = options?.moduleAuthority ?? moduleAuthority;
+
+    const simulate = options?.simulate ?? false;
+    simulatorAddress = options?.simulatorAddress ?? simulatorAddress;
+    simulatorPublicKey = options?.simulatorPublicKey ?? simulatorPublicKey;
+
+    this.options = {
+      moduleAddress,
+      moduleAuthority,
+      simulate,
+      simulatorAddress,
+      simulatorPublicKey,
+      ...options,
+    };
     this.coinInfo = new Map();
     this.vaults = new Map();
+  }
+
+  get moduleAddress(): Types.Address {
+    return this.options.moduleAddress;
+  }
+
+  get moduleAuthority(): AptosAccount | undefined {
+    return this.options.moduleAuthority;
   }
 
   /**
@@ -148,37 +169,26 @@ export class AuxClient {
   async dataSimulate({
     payload,
     simulatorAccount,
-    transactionOptions,
+    options,
   }: {
     payload: Types.EntryFunctionPayload;
-    simulatorAccount?: AptosAccount | undefined;
-    transactionOptions?: TransactionOptions | undefined;
+    simulatorAccount?: AptosAccount;
+    options?: Partial<AuxClientOptions>;
   }): Promise<Types.UserTransaction> {
-    transactionOptions =
-      transactionOptions === undefined ? this.options : transactionOptions;
-
-    const options = Object.fromEntries(
-      Object.entries({
-        sequence_number: transactionOptions?.sequenceNumber?.toString(),
-        max_gas_amount: transactionOptions?.maxGasAmount?.toString(),
-        gas_unit_price: transactionOptions?.gasUnitPrice?.toString(),
-        expiration_timestamp_secs:
-          transactionOptions?.expirationTimestampSecs?.toString(),
-        timeoutSecs: transactionOptions?.timeoutSecs?.toNumber(),
-        checkSuccess: transactionOptions?.checkSuccess,
-      }).filter(([_, v]) => v !== undefined)
-    );
-
+    _.defaults(this.options, options);
+    const simulatorAddress =
+      simulatorAccount?.address.toString() ?? this.options.simulatorAddress;
+    const simulatorPublicKey = simulatorAccount?.pubKey
+      ? mustEd25519PublicKey(simulatorAccount.pubKey.toString())
+      : this.options.simulatorPublicKey;
     const rawTxn = await this.aptosClient.generateTransaction(
-      simulatorAccount?.address.toString() || this.simulatorAddress!,
+      simulatorAddress,
       payload,
-      options
+      serialize(options)
     );
 
     const simTxn = await this.aptosClient.simulateTransaction(
-      !!simulatorAccount
-        ? mustEd25519PublicKey(simulatorAccount.pubKey.toString())
-        : this.simulatorPublicKey!,
+      simulatorPublicKey,
       rawTxn,
       {
         estimateGasUnitPrice: true,
@@ -197,35 +207,20 @@ export class AuxClient {
   async generateSignSubmitWaitForTransaction({
     sender,
     payload,
-    transactionOptions,
+    options,
   }: {
     sender: AptosAccount;
     payload: Types.EntryFunctionPayload;
-    transactionOptions?: TransactionOptions | undefined;
+    options?: Partial<AuxClientOptions> | undefined;
   }): Promise<Types.UserTransaction> {
-    transactionOptions =
-      transactionOptions === undefined ? this.options : transactionOptions;
-
-    const options = Object.fromEntries(
-      Object.entries({
-        sequence_number: transactionOptions?.sequenceNumber?.toString(),
-        max_gas_amount: transactionOptions?.maxGasAmount?.toString(),
-        gas_unit_price: transactionOptions?.gasUnitPrice?.toString(),
-        expiration_timestamp_secs:
-          transactionOptions?.expirationTimestampSecs?.toString(),
-        timeoutSecs: transactionOptions?.timeoutSecs?.toNumber(),
-        checkSuccess: transactionOptions?.checkSuccess,
-      }).filter(([_, v]) => v !== undefined)
-    );
-
+    _.defaults(options, this.options);
     const rawTxn = await this.aptosClient.generateTransaction(
       sender.address(),
       payload,
-      options
+      serialize(options)
     );
 
-    const simulate =
-      this.options?.simulate ?? transactionOptions?.simulate ?? false;
+    const simulate = this.options?.simulate ?? options?.simulate ?? false;
     if (simulate) {
       const simTxn = await this.aptosClient.simulateTransaction(
         sender,
@@ -246,7 +241,7 @@ export class AuxClient {
     const pendingTxn = await this.aptosClient.submitTransaction(signedTxn);
     const userTxn = await this.aptosClient.waitForTransactionWithResult(
       pendingTxn.hash,
-      options
+      serialize(options)
     );
     if (userTxn.type !== "user_transaction") {
       throw new WaitForTransactionError(
@@ -600,12 +595,12 @@ export class AuxClient {
     sender,
     coin,
     amount,
-    transactionOptions,
+    options,
   }: {
     sender: AptosAccount;
     coin: FakeCoin;
     amount: AnyUnits;
-    transactionOptions?: TransactionOptions | undefined;
+    options?: Partial<AuxClientOptions> | undefined;
   }): Promise<Types.UserTransaction> {
     const coinType = this.getWrappedFakeCoinType(coin);
     return this.generateSignSubmitWaitForTransaction({
@@ -615,7 +610,7 @@ export class AuxClient {
         type_arguments: [this.getUnwrappedFakeCoinType(coin)],
         arguments: [(await this.toAtomicUnits(coinType, amount)).toU64()],
       },
-      transactionOptions,
+      options,
     });
   }
 
@@ -643,7 +638,7 @@ export class AuxClient {
     owner: AptosAccount,
     coin: FakeCoin,
     amount: AnyUnits,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<Types.UserTransaction> {
     const coinType = this.getUnwrappedFakeCoinType(coin);
     return await this.generateSignSubmitWaitForTransaction({
@@ -653,7 +648,7 @@ export class AuxClient {
         type_arguments: [coinType],
         arguments: [(await this.toAtomicUnits(coinType, amount)).toU64()],
       },
-      transactionOptions,
+      options,
     });
   }
 
@@ -664,7 +659,7 @@ export class AuxClient {
     sender: AptosAccount,
     recipient: Types.Address,
     amount: AnyUnits,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<Types.UserTransaction> {
     const au = this.toAtomicUnits(this.getAuxCoin(), amount);
     return this.generateSignSubmitWaitForTransaction({
@@ -674,7 +669,7 @@ export class AuxClient {
         type_arguments: [],
         arguments: [recipient, (await au).toU64()],
       },
-      transactionOptions,
+      options,
     });
   }
 
@@ -683,7 +678,7 @@ export class AuxClient {
    */
   async registerAuxCoin(
     sender: AptosAccount,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<Types.UserTransaction> {
     return this.generateSignSubmitWaitForTransaction({
       sender,
@@ -692,7 +687,7 @@ export class AuxClient {
         type_arguments: [],
         arguments: [],
       },
-      transactionOptions,
+      options,
     });
   }
 
@@ -717,34 +712,53 @@ export class AuxClientError extends Error {
 }
 
 export interface AuxClientOptions {
-  nodeUrl: string;
-  faucetUrl: string;
-  moduleAddress: string;
+  // module overrides
+  readonly moduleAddress: Types.Address;
+  readonly moduleAuthority: AptosAccount | undefined;
+
+  // simulate overrides
   simulate: boolean;
-  transactionOptions: TransactionOptions;
   simulatorAddress: Types.Address;
   simulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey;
-}
 
-export type TransactionOptions = Partial<{
+  // tx options (passed through to `AptosClient`)
+  sender?: AptosAccount;
   // The sequence number for an account indicates the number of transactions that have been
   // submitted and committed on chain from that account. It is incremented every time a
   // transaction sent from that account is executed or aborted and stored in the blockchain.
-  sequenceNumber: BN;
-  maxGasAmount: AtomicUnits;
-  gasUnitPrice: AtomicUnits;
+  sequenceNumber?: BN;
+  maxGasAmount?: AtomicUnits;
+  gasUnitPrice?: AtomicUnits;
   // Unix timestamp in seconds
-  expirationTimestampSecs: BN;
+  expirationTimestampSecs?: BN;
   // If transaction is not processed within the specified timeout, throws WaitForTransactionError.
-  timeoutSecs: BN;
+  timeoutSecs?: BN;
   // If `checkSuccess` is false (the default), this function returns
   // the transaction response just like in case 1, in which the `success` field
   // will be false. If `checkSuccess` is true, it will instead throw FailedTransactionError.
-  checkSuccess: boolean;
-  simulate: boolean;
-  simulatorAddress?: Types.Address | undefined;
-  simulatorPublicKey?: TxnBuilderTypes.Ed25519PublicKey | undefined;
-}>;
+  checkSuccess?: boolean;
+}
+
+function serialize(auxClientOptions?: Partial<AuxClientOptions>): Partial<
+  Types.SubmitTransactionRequest & {
+    timeoutSecs?: number;
+    checkSuccess?: boolean;
+  }
+> {
+  return _.pickBy(
+    {
+      sender: auxClientOptions?.sender?.address().toString(),
+      sequence_number: auxClientOptions?.sequenceNumber?.toString(),
+      max_gas_amount: auxClientOptions?.maxGasAmount?.toString(),
+      gas_unit_price: auxClientOptions?.gasUnitPrice?.toString(),
+      expiration_timestamp_secs:
+        auxClientOptions?.expirationTimestampSecs?.toString(),
+      timeoutSecs: auxClientOptions?.timeoutSecs?.toNumber(),
+      checkSuccess: auxClientOptions?.checkSuccess,
+    },
+    _.negate(_.isUndefined)
+  );
+}
 
 /**
  * returns the desired profile name for aptos based on environment variables.
@@ -773,9 +787,9 @@ export interface AptosYamlProfiles {
 
 /**
  * Returns a local Aptos profile by reading from `$HOME/.aptos/config.yaml`.
- * 
+ *
  * Note this assumes you have ran `aptos set-global-config`.
- * 
+ *
  * @param profileName
  * @param configPath
  * @returns

@@ -1,6 +1,6 @@
 import type { AptosAccount, Types } from "aptos";
 import type BN from "bn.js";
-import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
+import type { AuxClient, CoinInfo, AuxClientOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import {
   AnyUnits,
@@ -240,7 +240,7 @@ export default class Market implements core.query.Market {
       timeoutTimestamp,
       stpActionType,
     }: PlaceOrderParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<PlaceOrderEvent[]>> {
     const limitPriceAu: Types.U64 = this.makeRoundTick(
       toAtomicUnits(limitPrice, this.quoteDecimals)
@@ -275,7 +275,7 @@ export default class Market implements core.query.Market {
             ? stpActionType
             : STPActionType.CANCEL_PASSIVE,
       },
-      transactionOptions
+      options
     );
   }
 
