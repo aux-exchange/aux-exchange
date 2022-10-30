@@ -772,7 +772,10 @@ export interface AptosYamlProfiles {
 }
 
 /**
- * Returns a local Aptos profile.
+ * Returns a local Aptos profile by reading from `$HOME/.aptos/config.yaml`.
+ * 
+ * Note this assumes you have ran `aptos set-global-config`.
+ * 
  * @param profileName
  * @param configPath
  * @returns
