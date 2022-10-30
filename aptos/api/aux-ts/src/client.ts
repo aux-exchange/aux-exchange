@@ -28,11 +28,11 @@ export const APTOS_NETWORKS = ["mainnet", "testnet", "devnet", "localnet"];
  *
  * A fully-featured Typescript client for interacting with AUX exchange.
  *
- * const auxClient = new AuxClient("mainnet")  // uses "https://fullnode.mainnet.aptoslabs.com/v1"
- * const auxClient = new AuxClient("devnet", new AptosClient("https://fullnode.devnet.aptoslabs.com/v1"))  // uses "https://fullnode.devnet.aptoslabs.com/v1"
+ * const auxClient = new AuxClient("mainnet", new AptosClient("https://fullnode.mainnet.aptoslabs.com/v1"))
+ * const auxClient = new AuxClient("devnet", new AptosClient("https://fullnode.devnet.aptoslabs.com/v1"))
  *
- * // use your own fullnode
- * const auxClient = new AuxClient("mainnet", { nodeUrl: "http://localhost:8080" })
+ * // use your own Full Node
+ * const auxClient = new AuxClient("mainnet", new AptosClient("http://localhost:8080"))
  *
  * This will also look in your `~/.aptos/config.yaml` file for Full Node REST urls.
  *
