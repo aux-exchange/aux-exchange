@@ -7,24 +7,21 @@
  *
  * We HIGHLY recommend using your own full node to avoid rate limits:
  *
- *  APTOS_NODE=https://your/node/address \
+ *  APTOS_NODE_URL=https://your/node/address \
  *  yarn ts-node mainnet-clob-maker.ts
  */
 import { AptosAccount } from "aptos";
-import * as coins from "../src/coins";
+import * as coins from "../src/coin";
 import { DU } from "../src";
-import { AuxClient, getAptosProfile, Network } from "../src/client";
+import { AuxClient, getAptosProfile } from "../src/client";
 import { FTXMarketMakingStrategy } from "../bots/clob";
 import { BN } from "bn.js";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
-const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+const nodeUrl = process.env["APTOS_NODE_URL"] ?? DEFAULT_MAINNET;
 
 async function main(): Promise<void> {
-  const auxClient = AuxClient.create({
-    network: Network.Mainnet,
-    validatorAddress: aptosNode,
-  });
+  const auxClient = new AuxClient("mainnet", { nodeUrl });
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

@@ -5,13 +5,10 @@
 import { AptosAccount } from "aptos";
 import { assert } from "console";
 import { DU, Pool } from "../src";
-import { AuxClient, getAptosProfile, Network } from "../src/client";
+import { AuxClient, getAptosProfile } from "../src/client";
 
 async function main() {
-  const auxClient = AuxClient.create({
-    network: Network.Mainnet,
-  });
-
+  const auxClient = new AuxClient("mainnet");
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

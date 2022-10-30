@@ -1,5 +1,6 @@
 import type { AptosAccount, HexString, Types } from "aptos";
-import type { AuxClient, FakeCoin } from "../../client";
+import type { AuxClient } from "../../client";
+import type { FakeCoin } from "../../coin";
 import {
   AnyUnits,
   AtomicUnits,

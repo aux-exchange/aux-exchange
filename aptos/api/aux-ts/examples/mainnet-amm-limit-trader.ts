@@ -14,19 +14,16 @@
  *  yarn ts-node mainnet-amm-limit-trader.ts
  */
 import { AptosAccount } from "aptos";
-import * as coins from "../src/coins";
+import * as coins from "../src/coin";
 import { DU } from "../src";
-import { AuxClient, getAptosProfile, Network } from "../src/client";
+import { AuxClient, getAptosProfile } from "../src/client";
 import { FTXArbitrageStrategy } from "../bots/amm";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
-const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
 async function main(): Promise<void> {
-  const auxClient = AuxClient.create({
-    network: Network.Mainnet,
-    validatorAddress: aptosNode,
-  });
+  const auxClient = new AuxClient("mainnet", { nodeUrl });
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

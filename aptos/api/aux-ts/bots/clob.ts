@@ -3,7 +3,7 @@ import type { AuxClient } from "../src/client";
 import AuxAccount from "../src/account";
 import Market from "../src/clob/dsl/market";
 import Vault from "../src/vault/dsl/vault";
-import { COIN_MAPPING, USDC_eth } from "../src/coins";
+import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
 import { onMarketUpdate } from "./ftx";
 import { AU, DecimalUnits, DU } from "../src/units";
 import BN from "bn.js";
@@ -150,20 +150,20 @@ export class FTXMarketMakingStrategy {
 
     const existingQuote = await this.vault.availableBalance(
       this.trader.address().toString(),
-      USDC_eth
+      USDC_ETH_WH
     );
     if (existingQuote.toNumber() < this.transferQuote.toNumber()) {
       this.log.info(
-        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_eth} to AUX`
+        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_ETH_WH} to AUX`
       );
-      await this.vault.deposit(this.trader, USDC_eth, this.transferQuote);
+      await this.vault.deposit(this.trader, USDC_ETH_WH, this.transferQuote);
     }
   }
 
   async cancelAll(market: Market) {
     const orders = await this.account.openOrders({
       baseCoinType: this.baseCoin,
-      quoteCoinType: USDC_eth,
+      quoteCoinType: USDC_ETH_WH,
     });
     for (const order of orders) {
       // Cancel all orders that were set to this strategy.
@@ -184,12 +184,12 @@ export class FTXMarketMakingStrategy {
       const stratBid = this.bidPrice.eqn(0)
         ? "N/A"
         : (
-            await this.client.toDecimalUnits(USDC_eth, AU(this.bidPrice))
+            await this.client.toDecimalUnits(USDC_ETH_WH, AU(this.bidPrice))
           ).toString();
       const stratAsk = this.askPrice.eqn(0)
         ? "N/A"
         : (
-            await this.client.toDecimalUnits(USDC_eth, AU(this.askPrice))
+            await this.client.toDecimalUnits(USDC_ETH_WH, AU(this.askPrice))
           ).toString();
       this.log.info(
         `     FTX Bid: ${bid}; FTX Ask: ${ask}; Strategy Bid: ${stratBid}; Strategy Ask: ${stratAsk}`
@@ -228,11 +228,11 @@ export class FTXMarketMakingStrategy {
     );
 
     const idealBidPrice = market.makeRoundTick(
-      await this.client.toAtomicUnits(USDC_eth, DU(bid - newPriceAdjustment))
+      await this.client.toAtomicUnits(USDC_ETH_WH, DU(bid - newPriceAdjustment))
     );
 
     const idealAskPrice = market.makeRoundTick(
-      await this.client.toAtomicUnits(USDC_eth, DU(ask + newPriceAdjustment))
+      await this.client.toAtomicUnits(USDC_ETH_WH, DU(ask + newPriceAdjustment))
     );
 
     const moveInAu = DU(this.moveInSpreadFraction * spread).toAtomicUnits(
@@ -262,7 +262,7 @@ export class FTXMarketMakingStrategy {
           (
             await this.vault.availableBalance(
               this.trader.address().toString(),
-              USDC_eth
+              USDC_ETH_WH
             )
           )
             .toAtomicUnits(market.quoteDecimals)
@@ -414,7 +414,7 @@ export class FTXMarketMakingStrategy {
     await this.maybeInitializeAccount();
     const maybeMarket = await Market.read(this.client, {
       baseCoinType: this.baseCoin,
-      quoteCoinType: USDC_eth,
+      quoteCoinType: USDC_ETH_WH,
     });
     if (maybeMarket === undefined) {
       throw new Error(`No market for ${this.baseCoin}`);
@@ -577,13 +577,13 @@ export class FTXArbitrageStrategy {
 
     const existingQuote = await this.vault.availableBalance(
       this.trader.address().toString(),
-      USDC_eth
+      USDC_ETH_WH
     );
     if (existingQuote.toNumber() < this.transferQuote.toNumber()) {
       this.log.info(
-        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_eth} to AUX`
+        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_ETH_WH} to AUX`
       );
-      await this.vault.deposit(this.trader, USDC_eth, this.transferQuote);
+      await this.vault.deposit(this.trader, USDC_ETH_WH, this.transferQuote);
     }
   }
 
@@ -605,7 +605,7 @@ export class FTXArbitrageStrategy {
     await this.maybeInitializeAccount();
     const maybeMarket = await Market.read(this.client, {
       baseCoinType: this.baseCoin,
-      quoteCoinType: USDC_eth,
+      quoteCoinType: USDC_ETH_WH,
     });
     if (maybeMarket === undefined) {
       throw new Error(`No market for ${this.baseCoin}`);
@@ -648,7 +648,7 @@ export class FTXArbitrageStrategy {
       if (bid / marketAsk > this.deviationThreshold) {
         const quoteBalance = await this.client.getCoinBalanceDecimals({
           account: this.trader.address(),
-          coinType: USDC_eth,
+          coinType: USDC_ETH_WH,
         });
         if (quoteBalance.toNumber() > this.dollarsPerTrade.toNumber()) {
           if (netPositionNumTrades < this.maxPositionNumTrades) {

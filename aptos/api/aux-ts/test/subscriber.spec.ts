@@ -1,6 +1,7 @@
 import type { AptosAccount } from "aptos";
 import { describe, it } from "mocha";
-import { AuxClient, FakeCoin } from "../src/client";
+import { FakeCoin } from "../src/coin";
+import { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
 import MarketSubscriber from "../src/subscriber";
@@ -8,7 +9,8 @@ import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice_and_bob";
 
-const [auxClient, aux] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient("localnet");
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
 const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
@@ -33,8 +35,8 @@ describe("Subscriber DSL tests", function () {
       auxClient.registerAuxCoin(bob),
     ]);
 
-    await auxClient.mintAux(aux, aliceAddr, AU(100_000_000));
-    await auxClient.mintAux(aux, bobAddr, AU(100_000_000));
+    await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000));
+    await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000));
 
     const vault = new Vault(auxClient);
     await Promise.all([
@@ -47,7 +49,7 @@ describe("Subscriber DSL tests", function () {
     ]);
 
     const market = await Market.create(auxClient, {
-      sender: aux,
+      sender: moduleAuthority,
       baseCoinType: baseCoin,
       quoteCoinType: quoteCoin,
       baseLotSize: new AtomicUnits(1000),

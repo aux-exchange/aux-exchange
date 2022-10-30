@@ -5,7 +5,8 @@ import Pool from "../src/amm/dsl/pool";
 import { AuxClient } from "../src/client";
 import { DecimalUnits } from "../src/units";
 
-const [auxClient, sender] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient("localnet");
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const aptosCoin = "0x1::aptos_coin::AptosCoin";
@@ -17,9 +18,9 @@ describe("AUX Client tests", function () {
 
   it("propagate errors", async function () {
     assert.rejects(async () => {
-      await auxClient.registerAuxCoin(sender);
+      await auxClient.registerAuxCoin(moduleAuthority);
       // coin already registered
-      await auxClient.registerAuxCoin(sender, {
+      await auxClient.registerAuxCoin(moduleAuthority, {
         checkSuccess: true,
       });
     }, FailedTransactionError);
@@ -33,7 +34,7 @@ describe("AUX Client tests", function () {
       });
       if (maybePool == undefined) {
         pool = await Pool.create(auxClient, {
-          sender,
+          sender: moduleAuthority,
           coinTypeX: auxCoin,
           coinTypeY: aptosCoin,
           feePct: 0,
@@ -43,12 +44,12 @@ describe("AUX Client tests", function () {
       }
       await Promise.all([
         pool.addExactLiquidity({
-          sender,
+          sender: moduleAuthority,
           amountX: new DecimalUnits(0.000001),
           amountY: new DecimalUnits(0.0000001),
         }),
         pool.addExactLiquidity({
-          sender,
+          sender: moduleAuthority,
           amountX: new DecimalUnits(0.000002),
           amountY: new DecimalUnits(0.0000002),
         }),

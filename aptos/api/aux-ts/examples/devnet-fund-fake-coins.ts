@@ -1,14 +1,14 @@
 import { AptosAccount } from "aptos";
 import { AU, DU } from "../src";
-import { AuxClient, FakeCoin, getAptosProfile, Network } from "../src/client";
+import { AuxClient, getAptosProfile } from "../src/client";
+import { FakeCoin } from "../src/coin";
 
 // While you can technically connect directly to Devnet, we strongly recommend
-// running a full validator for RPCs.
-// const auxClient = AuxClient.create(Network.Devnet);
-const auxClient = AuxClient.create({
-  network: Network.Devnet,
-  // validatorAddress: "http://localhost:8080",
-});
+// running your own Full Node.
+//
+// e.g.
+// const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
+const auxClient = new AuxClient("devnet");
 
 // Get the account that has authority over the module from local profile
 // This is also the account that deployed the Aux program
@@ -19,7 +19,7 @@ const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
 
 // We fund trader and module authority with Aptos, BTC, and USDC coins
 async function setupTrader(): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000_000),
   });

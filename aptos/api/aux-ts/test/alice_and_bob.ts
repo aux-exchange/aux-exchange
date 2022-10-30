@@ -1,13 +1,9 @@
 import { AptosAccount, HexString } from "aptos";
 import * as assert from "assert";
 import { Vault } from "../src";
-import {
-  ALL_FAKE_COINS,
-  AuxClient,
-  FakeCoin,
-  getAptosProfile,
-  getAptosProfileNameFromEnvironment,
-} from "../src/client";
+import { AuxClient, getAptosProfile } from "../src/client";
+import { ALL_FAKE_COINS, FakeCoin } from "../src/coin";
+import { env } from "../src/env";
 import { AU } from "../src/units";
 
 function sleep(ms: number) {
@@ -28,7 +24,7 @@ async function getUser(
     });
   } else {
     sleep(2000);
-    await auxClient.airdropNativeCoin({
+    await auxClient.fundAccount({
       account: user.address(),
       quantity: AU(1_000_000_000),
     });
@@ -77,14 +73,8 @@ export async function getAliceBob(
   auxClient: AuxClient
 ): Promise<[AptosAccount, AptosAccount]> {
   if (!is_init) {
-    alice = await getUser(
-      `alice-${getAptosProfileNameFromEnvironment()}`,
-      auxClient
-    );
-    bob = await getUser(
-      `bob-${getAptosProfileNameFromEnvironment()}`,
-      auxClient
-    );
+    alice = await getUser(`alice-${env().aptosNetwork}`, auxClient);
+    bob = await getUser(`bob-${env().aptosNetwork}`, auxClient);
     is_init = true;
   }
   await fundFakeCoin(auxClient, alice);

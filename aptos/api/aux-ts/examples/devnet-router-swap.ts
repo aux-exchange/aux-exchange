@@ -3,16 +3,17 @@
  */
 import { AptosAccount } from "aptos";
 import { AU, DU } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient } from "../src/client";
+import { FakeCoin } from "../src/coin";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
 
 async function main() {
-  const auxClient = AuxClient.create({
-    network: Network.Devnet,
-    // We highly recommend running a local node and connecting to it rather than
-    // hitting the devnet node.
-    // validatorAddress: "http://localhost:8080",
-  });
+  // While you can technically connect directly to Devnet, we strongly recommend
+  // running your own Full Node.
+  //
+  // e.g.
+  // const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
+  const auxClient = new AuxClient("devnet");
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.
@@ -21,7 +22,7 @@ async function main() {
   // shortcut for DecimalUnits, the fixed-precision representation that will be
   // converted to AU in API calls.
   const trader = new AptosAccount();
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(10_000_000),
   });

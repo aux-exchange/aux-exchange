@@ -1,7 +1,7 @@
 import type { AptosAccount, Types } from "aptos";
 import type { AuxClient } from "../src/client";
 import Pool from "../src/amm/dsl/pool";
-import { COIN_MAPPING, USDC_eth } from "../src/coins";
+import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
 import { onMarketUpdate } from "./ftx";
 import { DecimalUnits, DU } from "../src/units";
 import { Logger } from "tslog";
@@ -62,7 +62,7 @@ export class FTXArbitrageStrategy {
   async run() {
     const maybePool = await Pool.read(this.client, {
       coinTypeX: this.baseCoin,
-      coinTypeY: USDC_eth,
+      coinTypeY: USDC_ETH_WH,
     });
 
     if (maybePool === undefined) {
@@ -113,7 +113,7 @@ export class FTXArbitrageStrategy {
       if (bid / poolPrice > this.deviationThreshold) {
         const quoteBalance = await this.client.getCoinBalanceDecimals({
           account: this.trader.address(),
-          coinType: USDC_eth,
+          coinType: USDC_ETH_WH,
         });
         if (quoteBalance.toNumber() > this.dollarsPerSwap.toNumber()) {
           if (netPositionNumTrades < this.maxPositionNumTrades) {

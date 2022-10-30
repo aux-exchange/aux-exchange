@@ -14,20 +14,17 @@
  *  yarn ts-node mainnet-clob-taker.ts
  */
 
-import { AptosAccount } from "aptos";
-import * as coins from "../src/coins";
-import { DU } from "../src";
-import { AuxClient, getAptosProfile, Network } from "../src/client";
+import { AptosAccount, AptosClient } from "aptos";
 import { FTXArbitrageStrategy } from "../bots/clob";
+import { DU } from "../src";
+import { AuxClient, getAptosProfile } from "../src/client";
+import * as coins from "../src/coin";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
 async function main(): Promise<void> {
-  const auxClient = AuxClient.create({
-    network: Network.Mainnet,
-    validatorAddress: aptosNode,
-  });
+  const auxClient = new AuxClient("mainnet", new AptosClient(aptosNode));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

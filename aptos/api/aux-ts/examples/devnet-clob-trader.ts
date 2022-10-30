@@ -10,8 +10,9 @@ import axios from "axios";
 import type BN from "bn.js";
 import { assert } from "console";
 import { AU, DU, Market, MarketSubscriber, Vault } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import { FakeCoin } from "../src/coin";
 
 const AUX_TRADER_CONFIG = {
   // The frequency at which we fetch price updates from both FTX and AUX,
@@ -26,17 +27,17 @@ const AUX_TRADER_CONFIG = {
 };
 
 // While you can technically connect directly to Devnet, we strongly recommend
-// running a full validator for RPCs.
-const auxClient = AuxClient.create({
-  network: Network.Devnet,
-  // validatorAddress: "http://localhost:8080",
-});
+// running your own Full Node.
+//
+// e.g.
+// const auxClient = new AuxClient("devnet", { nodeUrl: "http://localhost:8080" });
+const auxClient = new AuxClient("devnet");
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
 
 async function setupTrader(): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000),
   });

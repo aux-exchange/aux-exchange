@@ -4,7 +4,7 @@ import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
 import { poolEvents, pools } from "../../amm/core/query";
-import { ALL_FAKE_COINS } from "../../client";
+import { ALL_FAKE_COINS } from "../../coin";
 import { auxClient, redisClient } from "../connection";
 import {
   Account,
@@ -243,7 +243,7 @@ export const query = {
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolReadParams = args.poolInputs
       ? args.poolInputs
-      : await aux.Pool.index(auxClient);
+      : (await aux.Pool.index(auxClient));
     const pools = await Promise.all(
       poolReadParams.map((poolReadParam) =>
         aux.Pool.read(auxClient, poolReadParam)

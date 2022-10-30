@@ -1,9 +1,11 @@
 import { parsePoolType } from "../src/amm/core/query";
-import { AuxClient, FakeCoin } from "../src/client";
+import { AuxClient } from "../src/client";
 import { parseMarketType } from "../src/clob/core/query";
+import { FakeCoin } from "../src/coin";
+import { env } from "../src/env";
 
 async function main() {
-  const auxClient = AuxClient.createFromEnvForTesting({})[0];
+  const auxClient = new AuxClient(env().aptosNetwork);
   const moduleAddress = auxClient.moduleAddress;
   const resources = await auxClient.aptosClient.getAccountResources(
     auxClient.moduleAddress

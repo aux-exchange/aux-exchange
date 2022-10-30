@@ -3,17 +3,17 @@ import WebSocket from "ws";
 import { AptosAccount, HexString, Types } from "aptos";
 import { Market, Pool, Vault } from "../../src";
 import {
-  ALL_FAKE_COINS,
-  ALL_FAKE_VOLATILES,
   AuxClient,
-  FakeCoin,
 } from "../../src/client";
 import { OrderType } from "../../src/clob/core/mutation";
 import { AU, DU } from "../../src/units";
 import _ from "lodash";
-import { assert } from "console";
+import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
+import assert from "assert";
+import { env } from "../../src/env";
 
-const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient(env().aptosNetwork);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {
   ready: boolean;
@@ -24,7 +24,7 @@ async function setupTraders(
   privateKeyHexs?: Types.HexEncodedBytes[],
   n?: number
 ): Promise<Trader[]> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: moduleAuthority.address(),
     quantity: AU(1_000_000_000_000),
   });

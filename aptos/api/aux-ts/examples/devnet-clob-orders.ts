@@ -3,18 +3,13 @@
  */
 import { AptosAccount } from "aptos";
 import { assert } from "console";
-import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { AU, DU, Market, Vault } from "../src";
-import { AuxClient, FakeCoin } from "../src/client";
+import { AuxClient } from "../src/client";
+import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import { FakeCoin } from "../src/coin";
 
 async function main() {
-  const auxClient = AuxClient.createFromEnv({});
-  // const auxClient = AuxClient.create({
-  //   network: Network.Devnet,
-  //   // We highly recommend running a local node and connecting to it rather than
-  //   // hitting the devnet node.
-  //   // validatorAddress: "http://localhost:8080",
-  // });
+  const auxClient = new AuxClient("devnet");
 
   // Create a new trader for the demo and provide a bit of native token and fake
   // currency to play with.
@@ -23,7 +18,7 @@ async function main() {
   // shortcut for DecimalUnits, the fixed-precision representation that will be
   // converted to AU in API calls.
   const trader = new AptosAccount();
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000_000),
   });

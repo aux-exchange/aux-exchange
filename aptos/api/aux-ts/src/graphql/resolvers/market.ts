@@ -1,6 +1,10 @@
 import _ from "lodash";
 import * as aux from "../../";
-import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coins";
+import {
+  ALL_USD_STABLES,
+  COIN_MAPPING,
+  fakeMapping
+} from "../../coin";
 import { auxClient, pythClient, redisClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
@@ -17,7 +21,7 @@ import {
   Order,
   PythRating,
   Resolution as GqlResolution,
-  Side,
+  Side
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
