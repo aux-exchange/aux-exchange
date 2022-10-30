@@ -1,35 +1,40 @@
 #!/usr/bin/env bash
-cd ~/aux-exchange/aptos/api/aux-ts
-git fetch -p
-git checkout origin/main
-yarn install
 
-cd ~/aux-exchange-beta/aptos/api/aux-ts
-git fetch -p
-git checkout origin/main
-yarn install
+WD=~/projects/aux-exchange/aptos/api/aux-ts
+cd $WD
 
-cd ~/aux-exchange-devnet/aptos/api/aux-ts
-git fetch -p
-git checkout origin/main
-yarn install
+if [ ! -z "$(git status --porcelain)" ]
+then
+    echo $0: "Unclean git directory $WD. Stop."
+    exit 1
+fi
 
-cd ~/aux-exchange-vybe/aptos/api/aux-ts
-git fetch -p
-git checkout origin/vybe
-yarn install
+if [ -z $1 ]
+then
+    echo "$0: Missing argument: expected one of [all, mainnet, mainnet-beta, testnet, devnet, devnet-beta, vybe, atrix, mojito]. Stop."
+    exit 1
+fi
 
-cd ~/aux-exchange-atrix/aptos/api/aux-ts
-git fetch -p
-git checkout origin/atrix
-yarn install
 
-cd ~/aux-exchange-mojito/aptos/api/aux-ts
-git fetch -p
-git checkout origin/mojito
-yarn install
+if [ $1 == all ]
+then
+    setup "mainnet"
+    setup "mainnet-beta"
+    setup "testnet"
+    setup "devnet"
+    setup "devnet-beta"
+    setup "vybe"
+    setup "atrix"
+    setup "mojito"
+else
+    setup $1
+fi
 
-cd
-pm2 flush
-pm2 reloadLogs
-pm2 reload all
+setup() {
+    git checkout origin/$1
+    yarn install
+    yarn build
+    pm2 flush
+    pm2 reloadLogs
+    pm2 reload $1
+}
