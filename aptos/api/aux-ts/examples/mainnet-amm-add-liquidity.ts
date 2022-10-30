@@ -11,6 +11,9 @@ import { getAptosProfile } from "../src/env";
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
+const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
+const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+
 async function main() {
   const auxClient = new AuxClient("mainnet", new AptosClient(nodeUrl));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
