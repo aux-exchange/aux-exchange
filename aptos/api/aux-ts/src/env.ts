@@ -42,8 +42,19 @@ export class AuxEnv {
     if (_.isUndefined(process.env["APTOS_NETWORK"])) {
       throw new Error("`APTOS_NETWORK` must be specified");
     }
-    const aptosProfile = getAptosProfile(process.env["APTOS_NETWORK"]);
-    const aptosClient = new AptosClient(aptosProfile.rest_url);
+    const aptosProfile = getAptosProfile(
+      process.env["APTOS_PROFILE"] ?? "default"
+    );
+
+    const urls = {
+      mainnet: "https://fullnode.mainnet.aptoslabs.com/v1",
+      testnet: "https://fullnode.testnet.aptoslabs.com/v1",
+      devnet: "https://fullnode.devnet.aptoslabs.com/v1",
+      localnet: "http://localhost:8081",
+    };
+    const aptosClient = new AptosClient(
+      aptosProfile.rest_url ?? urls[aptosNetwork]
+    );
 
     this.aptosNetwork = aptosNetwork;
     this.aptosProfile = aptosProfile;
@@ -67,7 +78,6 @@ export function getAptosProfile(
   const profiles = YAML.parse(
     fs.readFileSync(configPath, { encoding: "utf-8" })
   );
-
   const profile = profiles.profiles[aptosProfile];
   if (_.isUndefined(profile)) {
     throw new Error(
@@ -77,10 +87,15 @@ export function getAptosProfile(
   return profile;
 }
 
+/**
+ * These values are intentionally not typed as `string | undefined`.
+ *
+ * Either the key will be set, or it will not be present (vs. explicitly set to undefined).
+ */
 export interface AptosProfile {
-  private_key: string;
-  public_key: string;
-  account: string;
-  rest_url: string;
-  faucet_url: string;
+  private_key?: string;
+  public_key?: string;
+  account?: string;
+  rest_url?: string;
+  faucet_url?: string;
 }

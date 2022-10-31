@@ -6,7 +6,7 @@ import {
   MaybeHexString,
   TxnBuilderTypes,
   Types,
-  WaitForTransactionError,
+  WaitForTransactionError
 } from "aptos";
 import BN from "bn.js";
 import * as SHA3 from "js-sha3";
@@ -14,7 +14,7 @@ import "reflect-metadata";
 
 import _ from "lodash";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
-import { getAptosProfile } from "./env";
+import { AuxEnv } from "./env";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
@@ -42,105 +42,95 @@ export const APTOS_NETWORKS = ["mainnet", "testnet", "devnet", "localnet"];
  * `new AuxClient("mainnet")` will use "http://localhost:8080"
  */
 export class AuxClient {
-  aptosNetwork: AptosNetwork;
-  aptosClient: AptosClient;
-  faucetClient: FaucetClient | undefined;
-
-  options: AuxClientOptions;
+  // "Required" fields. All other options may not be explicitly set.
+  moduleAddress: Types.Address;
+  defaultSimulator: MaybeHexString;
+  defaultSimulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey;
 
   // Internal state.
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
   vaults: Map<Types.Address, HexString>;
 
   constructor(
-    aptosNetwork: AptosNetwork,
-    aptosClient: AptosClient,
-    faucetClient?: FaucetClient,
-    options?: Partial<AuxClientOptions>
+    public aptosNetwork: AptosNetwork,
+    public aptosClient: AptosClient,
+    // The named options are set on the client, whereas AuxClientOptions can also be reconfigured
+    // as part of each tx
+    public options?: {
+      faucetClient?: FaucetClient;
+      moduleAddress?: Types.Address;
+      moduleAuthority?: AptosAccount;
+    } & AuxClientOptions
   ) {
     this.aptosNetwork = aptosNetwork;
     this.aptosClient = aptosClient;
-    this.faucetClient = faucetClient;
 
-    let moduleAddress, moduleAuthority, simulatorPublicKey, simulatorAddress;
+    let moduleAddress, moduleAuthority, simulatorPublicKey, simulator;
     switch (aptosNetwork) {
       case "mainnet":
         moduleAddress =
           "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541";
-        simulatorAddress =
+        simulator =
           "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
-        simulatorPublicKey = mustEd25519PublicKey(
+        simulatorPublicKey = toEd25519PublicKey(
           "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
         );
         break;
       case "testnet":
         moduleAddress =
           "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53";
-        simulatorAddress =
+        simulator =
           "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8";
-        simulatorPublicKey = mustEd25519PublicKey(
+        simulatorPublicKey = toEd25519PublicKey(
           "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
         );
         break;
       case "devnet":
         moduleAddress =
           "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a";
-        simulatorAddress =
+        simulator =
           "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f";
-        simulatorPublicKey = mustEd25519PublicKey(
+        simulatorPublicKey = toEd25519PublicKey(
           "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
         );
         break;
       case "localnet":
-        const profile = getAptosProfile("localnet");
+        const profile = new AuxEnv().aptosProfile;
         if (_.isUndefined(profile)) {
           throw new Error(
             "Failure to create localnet AuxClient: " +
-              "Could not find required profile `localnet` in ~/.aptos/config.yaml"
+              `Could not find required profile ${profile} in ~/.aptos/config.yaml`
           );
         }
-        moduleAuthority = AptosAccount.fromAptosAccountObject({
-          privateKeyHex: profile.private_key,
-        });
-        moduleAddress = deriveModuleAddress(moduleAuthority);
-        simulatorPublicKey = mustEd25519PublicKey(profile.public_key);
-        simulatorAddress = profile.account;
+        for (const [key, value] of Object.entries(profile)) {
+          if (_.isUndefined(value)) {
+            console.warn(
+              `[AuxClient (localnet)]: missing key ${key} on profile ${profile} in ~/.aptos/config.yaml`
+            );
+          }
+        }
+        if (_.isUndefined(moduleAddress)) {
+          moduleAuthority =
+            moduleAuthority ??
+            AptosAccount.fromAptosAccountObject({
+              privateKeyHex: profile.private_key!,
+            });
+          moduleAddress = deriveModuleAddress(moduleAuthority);
+        }
+        simulatorPublicKey = toEd25519PublicKey(profile.public_key!);
+        simulator = profile.account!;
         break;
       default:
         const exhaustiveCheck: never = aptosNetwork;
         throw new Error(exhaustiveCheck);
     }
+    this.moduleAddress = options?.moduleAddress ?? moduleAddress;
+    this.defaultSimulator = options?.simulator ?? simulator;
+    this.defaultSimulatorPublicKey =
+      options?.simulatorPublicKey ?? simulatorPublicKey;
 
-    // overrides
-    moduleAddress = options?.moduleAddress ?? moduleAddress;
-    moduleAuthority = options?.moduleAuthority ?? moduleAuthority;
-
-    const simulate = options?.simulate ?? false;
-    simulatorAddress = options?.simulatorAddress ?? simulatorAddress;
-    simulatorPublicKey = options?.simulatorPublicKey ?? simulatorPublicKey;
-
-    this.options = {
-      moduleAddress,
-      moduleAuthority,
-      simulate,
-      simulatorAddress,
-      simulatorPublicKey,
-      ...options,
-    };
     this.coinInfo = new Map();
     this.vaults = new Map();
-  }
-
-  get moduleAddress(): Types.Address {
-    return this.options.moduleAddress;
-  }
-
-  get moduleAuthority(): AptosAccount | undefined {
-    return this.options.moduleAuthority;
-  }
-
-  get sender(): AptosAccount | undefined {
-    return this.options.sender;
   }
 
   /**
@@ -168,29 +158,24 @@ export class AuxClient {
   /**
    * Sends the payload as the sender and returns the transaction result.
    */
-  async dataSimulate({
+  async simulateTransaction({
     payload,
-    simulatorAccount,
+    simulator,
     options,
   }: {
     payload: Types.EntryFunctionPayload;
-    simulatorAccount?: AptosAccount;
+    simulator?: MaybeHexString;
     options?: Partial<AuxClientOptions>;
   }): Promise<Types.UserTransaction> {
-    _.defaults(this.options, options);
-    const simulatorAddress =
-      simulatorAccount?.address.toString() ?? this.options.simulatorAddress;
-    const simulatorPublicKey = simulatorAccount?.pubKey
-      ? mustEd25519PublicKey(simulatorAccount.pubKey.toString())
-      : this.options.simulatorPublicKey;
+    _.defaults(options, this.options);
     const rawTxn = await this.aptosClient.generateTransaction(
-      simulatorAddress,
+      simulator ?? this.defaultSimulator,
       payload,
       serialize(options)
     );
 
     const simTxn = await this.aptosClient.simulateTransaction(
-      simulatorPublicKey,
+      this.defaultSimulatorPublicKey,
       rawTxn,
       {
         estimateGasUnitPrice: true,
@@ -481,11 +466,11 @@ export class AuxClient {
     account: MaybeHexString;
     quantity: AnyUnits;
   }): Promise<string[]> {
-    if (this.faucetClient === undefined) {
+    if (this.options?.faucetClient === undefined) {
       throw new AuxClientError("not configured with faucet");
     }
     const au = await this.toAtomicUnits(APTOS_COIN_TYPE, quantity);
-    return this.faucetClient.fundAccount(account, au.toNumber());
+    return this.options?.faucetClient.fundAccount(account, au.toNumber());
   }
 
   /**
@@ -602,7 +587,7 @@ export class AuxClient {
     sender: AptosAccount;
     coin: FakeCoin;
     amount: AnyUnits;
-    options?: Partial<AuxClientOptions> | undefined;
+    options?: Partial<AuxClientOptions>;
   }): Promise<Types.UserTransaction> {
     const coinType = this.getWrappedFakeCoinType(coin);
     return this.generateSignSubmitWaitForTransaction({
@@ -706,28 +691,38 @@ export class AuxClient {
   }
 
   /**
-   * Prepares AuxClient to either send or simulate a tx.
+   * Either send or simulate a tx using AuxClient.
    *
    * If sending, there must be a sender.
    * If simulating, there must be a simulator.
    */
-  prepareTx(options?: AuxClientOptions) {
-    const simulate = options?.simulate ?? this.options.simulate ?? false;
+  transaction(
+    payload: Types.EntryFunctionPayload,
+    options?: Partial<AuxClientOptions> | undefined
+  ): Promise<Types.UserTransaction> {
+    const simulate = options?.simulate ?? this.options?.simulate ?? false;
     if (simulate) {
       if (
-        _.isUndefined(this.options.simulatorAddress) ||
-        _.isUndefined(this.options.simulatorPublicKey)
+        _.isUndefined(this.defaultSimulator) ||
+        _.isUndefined(this.defaultSimulatorPublicKey)
       ) {
         throw new Error(
           `Error simulating tx. Simulator is undefined but required.`
         );
       }
-    } else {
-      const sender = options?.sender ?? this.sender;
-      if (_.isUndefined(sender)) {
-        throw new Error(`Error sending tx. Sender is undefined but required.`);
-      }
+      return this.simulateTransaction(
+        options ? { payload, options } : { payload }
+      );
     }
+    const sender = options?.sender ?? this.options?.sender;
+    if (_.isUndefined(sender)) {
+      throw new Error(`Error sending tx. Sender is undefined but required.`);
+    }
+    return this.generateSignSubmitWaitForTransaction({
+      sender,
+      payload,
+      options,
+    });
   }
 }
 
@@ -738,35 +733,38 @@ export class AuxClientError extends Error {
   }
 }
 
+/**
+ * Options on the AuxClient that can be configured per-transaction. This is usually presented as
+ * Partial<AuxClientOptions> so the caller is can configure any subset of options.
+ *
+ * Note that options that can't be reconfigured per tx (e.g. moduleAddress) are passed directly to
+ * the AuxClient constructor.
+ */
 export interface AuxClientOptions {
-  // module overrides
-  readonly moduleAddress: Types.Address;
-  readonly moduleAuthority: AptosAccount | undefined;
-
   // simulate overrides
   simulate: boolean;
-  simulatorAddress: Types.Address;
+  simulator: MaybeHexString;
   simulatorPublicKey: TxnBuilderTypes.Ed25519PublicKey;
 
   // tx options (passed through to `AptosClient`)
-  sender?: AptosAccount;
+  sender: AptosAccount;
   // The sequence number for an account indicates the number of transactions that have been
   // submitted and committed on chain from that account. It is incremented every time a
   // transaction sent from that account is executed or aborted and stored in the blockchain.
-  sequenceNumber?: BN;
-  maxGasAmount?: AtomicUnits;
-  gasUnitPrice?: AtomicUnits;
+  sequenceNumber: BN;
+  maxGasAmount: AtomicUnits;
+  gasUnitPrice: AtomicUnits;
   // Unix timestamp in seconds
-  expirationTimestampSecs?: BN;
+  expirationTimestampSecs: BN;
   // If transaction is not processed within the specified timeout, throws WaitForTransactionError.
-  timeoutSecs?: BN;
+  timeoutSecs: BN;
   // If `checkSuccess` is false (the default), this function returns
   // the transaction response just like in case 1, in which the `success` field
   // will be false. If `checkSuccess` is true, it will instead throw FailedTransactionError.
-  checkSuccess?: boolean;
+  checkSuccess: boolean;
 }
 
-function serialize(auxClientOptions?: Partial<AuxClientOptions>): Partial<
+function serialize(options?: Partial<AuxClientOptions>): Partial<
   Types.SubmitTransactionRequest & {
     timeoutSecs?: number;
     checkSuccess?: boolean;
@@ -774,14 +772,13 @@ function serialize(auxClientOptions?: Partial<AuxClientOptions>): Partial<
 > {
   return _.pickBy(
     {
-      sender: auxClientOptions?.sender?.address().toString(),
-      sequence_number: auxClientOptions?.sequenceNumber?.toString(),
-      max_gas_amount: auxClientOptions?.maxGasAmount?.toString(),
-      gas_unit_price: auxClientOptions?.gasUnitPrice?.toString(),
-      expiration_timestamp_secs:
-        auxClientOptions?.expirationTimestampSecs?.toString(),
-      timeoutSecs: auxClientOptions?.timeoutSecs?.toNumber(),
-      checkSuccess: auxClientOptions?.checkSuccess,
+      sender: options?.sender?.address().toString(),
+      sequence_number: options?.sequenceNumber?.toString(),
+      max_gas_amount: options?.maxGasAmount?.toString(),
+      gas_unit_price: options?.gasUnitPrice?.toString(),
+      expiration_timestamp_secs: options?.expirationTimestampSecs?.toString(),
+      timeoutSecs: options?.timeoutSecs?.toNumber(),
+      checkSuccess: options?.checkSuccess,
     },
     _.negate(_.isUndefined)
   );
@@ -944,7 +941,7 @@ export function deriveResourceAccountAddress(
   return "0x" + SHA3.sha3_256(mergedArray);
 }
 
-function mustEd25519PublicKey(
+function toEd25519PublicKey(
   hexString: string
 ): TxnBuilderTypes.Ed25519PublicKey {
   return new TxnBuilderTypes.Ed25519PublicKey(
