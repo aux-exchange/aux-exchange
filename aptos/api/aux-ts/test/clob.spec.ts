@@ -48,7 +48,8 @@ describe("CLOB DSL tests", function () {
   let market: Market;
 
   it("fund accounts", async function () {
-    [alice, bob] = await getAliceBob(auxClient);
+    const auxClient = new AuxClient("mainnet", new AuxEnv().aptosClient);
+    const [alice, bob] = await getAliceBob(auxClient);
     aliceAddr = alice.address().toString();
     bobAddr = bob.address().toString();
 
