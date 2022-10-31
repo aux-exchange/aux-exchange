@@ -3,7 +3,6 @@ import axios from "axios";
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../client";
-import * as coins from "../../coins";
 import { auxClient, redisClient } from "../connection";
 import {
   Account,
@@ -20,7 +19,7 @@ import {
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
-const HOT_POOLS = [[coins.MOJO, coins.APT]];
+const HOT_POOLS: Array<[string, string]> = [];
 const PROMOTED_POOLS: Array<[string, string]> = [];
 export type Resolution =
   | "15s"
