@@ -57,6 +57,16 @@ use AUX to swap some APT to get the initial USDC balance.
   supported coins like WETH or WBTC to arb those pools. Remember that you need an
   initial balance on both sides for the bot to trade!
 
+- We want limited risk exposure to the assets we are trading. You can set `maxPositionNumTrades`
+  to limit the number of identical directional trades to do so. For example, if you set `maxPositionNumTrades=2`,
+  the sequence of trades would be 
+    * BUY BUY BUY (X)
+    * SELL SELL SELL (X)
+    * BUY BUY SELL BUY BUY (X)
+    * BUY BUY SELL BUY (O)
+    * SELL BUY BUY BUY (O)
+
+
 ## Running the AMM Arb Bot on Mainnet
 
 - If you have your own Aptos full node, great! Your bot won't be hindered by

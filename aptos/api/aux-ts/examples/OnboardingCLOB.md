@@ -46,7 +46,22 @@ following parameters:
   unlike `moveInSpreadFraction`, you can't set this too high: if the price moves
   against you and you don't cancel, you will probably get taken out adverserially.
 
-## Running the CLOB Arb Bot on Mainnet
+# Onboarding to the CLOB Taker Bot
+
+Please read the setup notes for the [AMM trading bot](OnboardingAMM.md) if you
+still need to set up node.js or the Aptos CLI.
+
+Very similar to the AMM arbitrage bot, we
+
+- Buy from the orderbook if it is cheaper than the bidding price at FTX by a margin
+
+- Sell if it is more expensive than the asking price at FTX by a margin
+
+## Configuring your Bot
+
+The same arbitrage logic runs on our CLOB arbitrage bot as our AMM arb bot. Please refer to the [configuration parameters](OnboardingAMM.md#configuring-your-bot) here.
+
+# Running the CLOB Arb Bot on Mainnet
 
 - If you have your own Aptos full node, great! Your bot won't be hindered by
   rate limiting. Run `APTOS_NODE=https://your/node/address yarn ts-node mainnet-clob-maker.ts`

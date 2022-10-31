@@ -7,8 +7,9 @@ import { COIN_MAPPING, USDC_eth } from "../src/coins";
 import { onMarketUpdate } from "./ftx";
 import { AU, DecimalUnits, DU } from "../src/units";
 import BN from "bn.js";
-import { OrderType } from "../src/clob/core/mutation";
+import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { Logger } from "tslog";
+
 export class FTXMarketMakingStrategy {
   log: Logger;
   client: AuxClient;
@@ -477,6 +478,261 @@ export class FTXMarketMakingStrategy {
 
       // After processing fills, we may need to place new orders.
       await this.updateOrders(market, previousBid, previousAsk);
+    }
+  }
+}
+
+export class FTXArbitrageStrategy {
+  log: Logger;
+  client: AuxClient;
+  trader: AptosAccount;
+  vault: Vault;
+  baseCoin: Types.MoveStructTag;
+  deviationThreshold: number;
+  limitThreshold: number;
+  inFlight: boolean;
+  dollarsPerTrade: DecimalUnits;
+  transferBase: DecimalUnits;
+  transferQuote: DecimalUnits;
+  maxPositionNumTrades: number;
+  previousPrint: number;
+
+  constructor({
+    client,
+    trader,
+    baseCoin,
+    deviationThreshold,
+    limitThreshold,
+    dollarsPerTrade,
+    transferBase,
+    transferQuote,
+    maxPositionNumTrades,
+  }: {
+    client: AuxClient;
+    trader: AptosAccount;
+    baseCoin: Types.MoveStructTag;
+
+    // Ratio that the price must deviate from FTX to make a trade. For example,
+    // 1.01 means if the price is 1% higher than ask or lower than bid, then
+    // make a trade.
+    deviationThreshold: number;
+
+    // Ratio applied to the price to compute the limit price in a trade. For
+    // example, 1.0005 means that purchases will be at least 5 bps lower than
+    // FTX bid and sells will be at least 5 bps higher than FTX ask.
+    limitThreshold: number;
+
+    // Dollars to trade in each transaction.
+    dollarsPerTrade: DecimalUnits;
+
+    // Transfers this amount of the base asset into the AUX vault for trading.
+    // For example, in the APT-USDC market, setting transferBase to 1 moves in 1
+    // APT to the vault.
+    transferBase: DecimalUnits;
+
+    // Transfers this amount of the quote asset into the AUX vault for trading.
+    // For example, in the APT-USDC market, setting transferQuote to 1 moves in 1
+    // USDC to the vault.
+    transferQuote: DecimalUnits;
+
+    // Only allow this many trades in a given direction. For example, Buy Buy
+    // Buy Sell results in two net buys. If maxPositionNumTrades were set to
+    // two, no further buys would be permitted.
+    maxPositionNumTrades: number;
+  }) {
+    this.log = new Logger();
+    this.client = client;
+    this.trader = trader;
+    this.vault = new Vault(client);
+    this.baseCoin = baseCoin;
+    this.deviationThreshold = deviationThreshold;
+    this.limitThreshold = limitThreshold;
+    this.dollarsPerTrade = dollarsPerTrade;
+    this.transferBase = transferBase;
+    this.transferQuote = transferQuote;
+    this.maxPositionNumTrades = maxPositionNumTrades;
+    this.inFlight = false;
+    this.previousPrint = 0;
+  }
+
+  async maybeInitializeAccount() {
+    const accountExists = await this.vault.accountExists(this.trader.address());
+    if (!accountExists) {
+      this.log.info("Creating AUX account");
+      await this.vault.createAuxAccount(this.trader);
+    }
+
+    const existingBase = await this.vault.availableBalance(
+      this.trader.address().toString(),
+      this.baseCoin
+    );
+    if (existingBase.toNumber() < this.transferBase.toNumber()) {
+      this.log.info(
+        `Depositing ${this.transferBase.toNumber()} units of ${
+          this.baseCoin
+        } to AUX`
+      );
+      await this.vault.deposit(this.trader, this.baseCoin, this.transferBase);
+    }
+
+    const existingQuote = await this.vault.availableBalance(
+      this.trader.address().toString(),
+      USDC_eth
+    );
+    if (existingQuote.toNumber() < this.transferQuote.toNumber()) {
+      this.log.info(
+        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_eth} to AUX`
+      );
+      await this.vault.deposit(this.trader, USDC_eth, this.transferQuote);
+    }
+  }
+
+  async maybePrint(
+    bid: number | undefined,
+    ask: number | undefined,
+    marketBid: number | undefined,
+    marketAsk: number | undefined
+  ) {
+    if (Date.now() > this.previousPrint + 10_000) {
+      this.log.info(
+        `     ${new Date()} | FTX Bid: ${bid}; FTX Ask: ${ask}; AUX Bid: ${marketBid}; AUX Ask: ${marketAsk};`
+      );
+      this.previousPrint = Date.now();
+    }
+  }
+
+  async run() {
+    await this.maybeInitializeAccount();
+    const maybeMarket = await Market.read(this.client, {
+      baseCoinType: this.baseCoin,
+      quoteCoinType: USDC_eth,
+    });
+    if (maybeMarket === undefined) {
+      throw new Error(`No market for ${this.baseCoin}`);
+    }
+    const market = maybeMarket as Market;
+
+    const ftxMarket = COIN_MAPPING.get(this.baseCoin)?.ftxInternationalMarket;
+    if (ftxMarket === undefined) {
+      throw new Error(`No FTX market for ${this.baseCoin}`);
+    }
+
+    let netPositionNumTrades = 0;
+    const maybeTrade = async (
+      bid: number | undefined,
+      ask: number | undefined,
+      marketBid: number | undefined,
+      marketAsk: number | undefined
+    ) => {
+      if (
+        bid === undefined ||
+        ask === undefined ||
+        marketBid === undefined ||
+        marketAsk === undefined ||
+        bid == 0 ||
+        ask == 0 ||
+        marketBid == 0 ||
+        marketAsk == 0
+      ) {
+        return;
+      }
+
+      if (this.inFlight) {
+        return;
+      }
+
+      this.inFlight = true;
+
+      await this.maybePrint(bid, ask, marketBid, marketAsk);
+
+      if (bid / marketAsk > this.deviationThreshold) {
+        const quoteBalance = await this.client.getCoinBalanceDecimals({
+          account: this.trader.address(),
+          coinType: USDC_eth,
+        });
+        if (quoteBalance.toNumber() > this.dollarsPerTrade.toNumber()) {
+          if (netPositionNumTrades < this.maxPositionNumTrades) {
+            const tx = await market.placeOrder({
+              sender: this.trader,
+              isBid: true,
+              limitPrice: DU(bid * this.limitThreshold),
+              quantity: this.dollarsPerTrade,
+              auxToBurn: DU(0),
+              orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
+              stpActionType: STPActionType.CANCEL_AGGRESSIVE,
+            });
+
+            this.log.info(
+              `>>>> ${new Date()} | BUY  | FTX: ${bid}; AUX: ${marketAsk}; Swap:`,
+              tx
+            );
+            netPositionNumTrades++;
+          } else {
+            this.log.info(
+              `>>>> ${new Date()} | BUY  | FTX: ${bid}; AUX: ${marketAsk}; RISK LIMIT REACHED`
+            );
+          }
+        } else {
+          this.log.info(
+            `>>>> ${new Date()} | BUY  | FTX: ${bid}; AUX: ${marketAsk}; INSUFFICIENT BALANCE`
+          );
+        }
+      } else if (marketBid / ask > this.deviationThreshold) {
+        const baseBalance = await this.client.getCoinBalanceDecimals({
+          account: this.trader.address(),
+          coinType: this.baseCoin,
+        });
+        const exactAmountIn = DU(this.dollarsPerTrade.toNumber() / marketBid);
+        if (baseBalance.toNumber() > exactAmountIn.toNumber()) {
+          if (netPositionNumTrades > -this.maxPositionNumTrades) {
+            const tx = await market.placeOrder({
+              sender: this.trader,
+              isBid: false,
+              limitPrice: DU(ask / this.limitThreshold),
+              quantity: exactAmountIn,
+              auxToBurn: DU(0),
+              orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
+              stpActionType: STPActionType.CANCEL_AGGRESSIVE,
+            });
+            this.log.info(
+              `>>>> ${new Date()} | SELL | FTX: ${ask}; AUX: ${marketBid}; Swap:`,
+              tx
+            );
+            netPositionNumTrades--;
+          } else {
+            this.log.warn(
+              `>>>> ${new Date()} | SELL | FTX: ${ask}; AUX: ${marketBid}; RISK LIMIT REACHED`
+            );
+          }
+        } else {
+          this.log.warn(
+            `>>>> ${new Date()} | SELL | FTX: ${ask}; AUX: ${marketBid}; INSUFFICIENT BALANCE`
+          );
+        }
+      }
+      this.inFlight = false;
+    };
+
+    let previousBid: number | undefined = undefined;
+    let previousAsk: number | undefined = undefined;
+    let previousMarketBid: number | undefined = undefined;
+    let previousMarketAsk: number | undefined = undefined;
+
+    onMarketUpdate(ftxMarket, async (bid, ask) => {
+      previousBid = bid;
+      previousAsk = ask;
+      await maybeTrade(bid, ask, previousMarketBid, previousMarketAsk);
+    });
+
+    while (true) {
+      await market.update();
+      const marketBid = market.l2.bids[0]?.price.toNumber();
+      const marketAsk = market.l2.asks[0]?.price.toNumber();
+      if (marketBid != previousMarketBid || marketAsk != previousMarketAsk) {
+        previousMarketBid = marketBid;
+        previousMarketAsk = marketAsk;
+        await maybeTrade(previousBid, previousAsk, marketBid, marketAsk);
+      }
     }
   }
 }
