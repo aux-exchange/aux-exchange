@@ -1,7 +1,9 @@
 import type { Types } from "aptos";
 import axios from "axios";
+import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
+import { poolEvents, pools } from "../../amm/core/query";
 import { ALL_FAKE_COINS } from "../../client";
 import { auxClient, redisClient } from "../connection";
 import {
@@ -16,6 +18,7 @@ import {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
+  SummaryMetrics,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -85,6 +88,83 @@ async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
 export const query = {
   address() {
     return auxClient.moduleAddress;
+  },
+
+  async summaryMetrics(_parent: any): Promise<SummaryMetrics> {
+    const allPools = await pools(auxClient);
+    const now = Date.now();
+    const nowMinus7D = now - 7 * 24 * 60 * 60 * 1000;
+    const nowMinus24H = now - 24 * 60 * 60 * 1000;
+
+    let dollarTVL = 0;
+    let dollarVolume7D = 0;
+    let dollarVolume24H = 0;
+    let transactions7D = 0;
+    let transactions24H = 0;
+    let allUsers7D = new Set<string>();
+    let allUsers24H = new Set<string>();
+
+    for (const pool of allPools) {
+      const loadedPool = await aux.Pool.read(auxClient, {
+        coinTypeX: pool.coinTypeX,
+        coinTypeY: pool.coinTypeY,
+      });
+      if (loadedPool === undefined) {
+        continue;
+      } else {
+        dollarTVL += getRecognizedTVL(
+          pool.coinTypeX,
+          loadedPool.amountX.toNumber()
+        );
+        dollarTVL += getRecognizedTVL(
+          pool.coinTypeY,
+          loadedPool.amountY.toNumber()
+        );
+      }
+
+      const allEvents = await poolEvents(auxClient, pool, {
+        start: new BN(0),
+      });
+      for (const event of allEvents) {
+        if (event.type == "SwapEvent") {
+          const eventMilliseconds = event.timestamp.toNumber() / 1000;
+          if (eventMilliseconds < nowMinus7D) {
+            continue;
+          }
+          const inUSD = getRecognizedTVL(
+            event.inCoinType,
+            (
+              await auxClient.toDecimalUnits(event.inCoinType, event.in)
+            ).toNumber()
+          );
+          const outUSD = getRecognizedTVL(
+            event.outCoinType,
+            (
+              await auxClient.toDecimalUnits(event.outCoinType, event.out)
+            ).toNumber()
+          );
+          const tradeUSD = Math.max(inUSD, outUSD);
+          dollarVolume7D += tradeUSD;
+          transactions7D++;
+          allUsers7D.add(event.senderAddr.toString());
+          if (eventMilliseconds >= nowMinus24H) {
+            dollarVolume24H += tradeUSD;
+            transactions24H++;
+            allUsers24H.add(event.senderAddr.toString());
+          }
+        }
+      }
+    }
+
+    return {
+      dollarTVL,
+      dollarVolume7D,
+      dollarVolume24H,
+      transactions7D,
+      transactions24H,
+      users7D: allUsers7D.size,
+      users24H: allUsers24H.size,
+    };
   },
 
   async coins(parent: any): Promise<CoinInfo[]> {

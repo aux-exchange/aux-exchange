@@ -472,6 +472,7 @@ export type Query = {
   markets: Array<Market>;
   pool?: Maybe<Pool>;
   pools: Array<Pool>;
+  summaryMetrics: SummaryMetrics;
 };
 
 
@@ -607,6 +608,17 @@ export type SubscriptionTradeArgs = {
 
 export type SubscriptionVolume24hArgs = {
   marketInputs?: InputMaybe<Array<MarketInput>>;
+};
+
+export type SummaryMetrics = {
+  __typename?: 'SummaryMetrics';
+  dollarTVL: Scalars['Float'];
+  dollarVolume7D: Scalars['Float'];
+  dollarVolume24H: Scalars['Float'];
+  transactions7D: Scalars['Int'];
+  transactions24H: Scalars['Int'];
+  users7D: Scalars['Int'];
+  users24H: Scalars['Int'];
 };
 
 export type Swap = {
@@ -800,6 +812,7 @@ export type ResolversTypes = {
   Side: Side;
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
+  SummaryMetrics: ResolverTypeWrapper<SummaryMetrics>;
   Swap: ResolverTypeWrapper<Swap>;
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
@@ -854,6 +867,7 @@ export type ResolversParentTypes = {
   RemoveLiquidityInput: RemoveLiquidityInput;
   String: Scalars['String'];
   Subscription: {};
+  SummaryMetrics: SummaryMetrics;
   Swap: Swap;
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
@@ -1078,6 +1092,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
   pool?: Resolver<Maybe<ResolversTypes['Pool']>, ParentType, ContextType, RequireFields<QueryPoolArgs, 'poolInput'>>;
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
+  summaryMetrics?: Resolver<ResolversTypes['SummaryMetrics'], ParentType, ContextType>;
 };
 
 export type RegisteredCoinInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredCoinInfo'] = ResolversParentTypes['RegisteredCoinInfo']> = {
@@ -1105,6 +1120,17 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   swap?: SubscriptionResolver<ResolversTypes['Swap'], "swap", ParentType, ContextType, Partial<SubscriptionSwapArgs>>;
   trade?: SubscriptionResolver<ResolversTypes['Order'], "trade", ParentType, ContextType, Partial<SubscriptionTradeArgs>>;
   volume24h?: SubscriptionResolver<ResolversTypes['Volume24h'], "volume24h", ParentType, ContextType, Partial<SubscriptionVolume24hArgs>>;
+};
+
+export type SummaryMetricsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SummaryMetrics'] = ResolversParentTypes['SummaryMetrics']> = {
+  dollarTVL?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  dollarVolume7D?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  dollarVolume24H?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  transactions7D?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transactions24H?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  users7D?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  users24H?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
@@ -1183,6 +1209,7 @@ export type Resolvers<ContextType = any> = {
   RegisteredCoinInfo?: RegisteredCoinInfoResolvers<ContextType>;
   RemoveLiquidity?: RemoveLiquidityResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  SummaryMetrics?: SummaryMetricsResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   Trade?: TradeResolvers<ContextType>;
@@ -1191,3 +1218,4 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+
