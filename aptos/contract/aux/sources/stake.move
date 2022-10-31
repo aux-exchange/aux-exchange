@@ -1,8 +1,11 @@
 module aux::stake {
+    use std::signer;
     use std::timestamp;
     use std::vector;
 
-    use aptos_framework::coin::Coin;
+    use aptos_framework::coin::{Self, Coin};
+
+    use aux::authority;
 
     /**********/
     /* ERRORS */
@@ -13,6 +16,10 @@ module aux::stake {
     /* CONSTANTS */
     /*************/
     const MIN_UNLOCK_SECONDS: u64 = 60;
+
+
+    /// TODO:
+    /// - handle rewards < 0 (either aggregate rewards or ensure params are such that reward amount cannot be < 0)
 
 
     ///
@@ -157,6 +164,36 @@ module aux::stake {
 
             i = i + 1;
         }
+    }
+
+    #[test_only]
+    public fun setup_module_for_test(sender: &signer) {
+        deployer::deployer::create_resource_account(sender, b"stake");
+        authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
+    }
+
+    #[test_only]
+    fun create_incentive_for_test<S, R>(sender: &signer, duration_micros: u64, unlock_seconds: u64, reward: Coin<R>) {
+        let start_time = timestamp::now_microseconds();
+        let module_authority = authority::get_signer_self();
+        move_to(&module_authority, Incentive<S, R> {
+            creator: signer::address_of(sender),
+            start_time,
+            end_time: start_time + duration_micros,
+            last_reward_update_time: start_time,  // timestamp (microseconds) of last reward update
+            unlock_seconds, // length of reward unlock period (seconds)
+            reward_remaining: coin::value<R>(&reward),
+            max_reward_per_stake_per_second: 1,   // MAX for: total_reward / (total_time * total_staked)
+            total_staked: 0,
+            stake: coin::zero<S>(),
+            reward: reward,
+            positions: vector::empty<Position>()
+        })
+    }
+
+    #[test]
+    fun test_update_reward() {
+
     }
 
     fun last_unlock_time(start_time: u64, now: u64, unlock_seconds: u64): u64 {
