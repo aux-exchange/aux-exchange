@@ -1,6 +1,7 @@
 type Query {
   address: Address!
   coins: [CoinInfo!]!
+  summaryMetrics: SummaryMetrics!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
   market(marketInput: MarketInput!): Market
@@ -56,6 +57,16 @@ type CoinInfo {
   decimals: Float!
   name: String!
   symbol: String!
+}
+
+type SummaryMetrics {
+  dollarTVL: Float!
+  dollarVolume24H: Float!
+  dollarVolume7D: Float!
+  transactions24H: Int!
+  transactions7D: Int!
+  users24H: Int!
+  users7D: Int!
 }
 
 scalar EntryFunctionPayload
