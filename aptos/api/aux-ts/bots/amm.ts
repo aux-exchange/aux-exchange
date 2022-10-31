@@ -4,8 +4,10 @@ import Pool from "../src/amm/dsl/pool";
 import { COIN_MAPPING, USDC_eth } from "../src/coins";
 import { onMarketUpdate } from "./ftx";
 import { DecimalUnits, DU } from "../src/units";
+import { Logger } from "tslog";
 
 export class FTXArbitrageStrategy {
+  log: Logger;
   client: AuxClient;
   trader: AptosAccount;
   baseCoin: Types.MoveStructTag;
@@ -46,6 +48,7 @@ export class FTXArbitrageStrategy {
     // two, no further buys would be permitted.
     maxPositionNumTrades: number;
   }) {
+    this.log = new Logger();
     this.client = client;
     this.trader = trader;
     this.baseCoin = baseCoin;
@@ -101,7 +104,7 @@ export class FTXArbitrageStrategy {
       // If the pool price > ask, we can buy from FTX and sell to the pool at ask.
 
       if (Date.now() > previousPrint + 10_000) {
-        console.log(
+        this.log.info(
           `     ${new Date()} | Bid: ${bid}; Ask: ${ask}; AMM: ${poolPrice}`
         );
         previousPrint = Date.now();
@@ -119,18 +122,18 @@ export class FTXArbitrageStrategy {
               exactAmountIn: this.dollarsPerSwap,
               minOutPerIn: DU(this.limitThreshold / bid),
             });
-            console.log(
+            this.log.info(
               `>>>> ${new Date()} | BUY  | FTX: ${bid}; AMM: ${poolPrice}; Swap:`,
               tx
             );
             netPositionNumTrades++;
           } else {
-            console.log(
+            this.log.info(
               `>>>> ${new Date()} | BUY  | FTX: ${bid}; AMM: ${poolPrice}; RISK LIMIT REACHED`
             );
           }
         } else {
-          console.log(
+          this.log.info(
             `>>>> ${new Date()} | BUY  | FTX: ${bid}; AMM: ${poolPrice}; INSUFFICIENT BALANCE`
           );
         }
@@ -147,18 +150,18 @@ export class FTXArbitrageStrategy {
               exactAmountIn,
               minOutPerIn: DU(ask * this.limitThreshold),
             });
-            console.log(
+            this.log.info(
               `>>>> ${new Date()} | SELL | FTX: ${ask}; AMM: ${poolPrice}; Swap:`,
               tx
             );
             netPositionNumTrades--;
           } else {
-            console.log(
+            this.log.warn(
               `>>>> ${new Date()} | SELL | FTX: ${ask}; AMM: ${poolPrice}; RISK LIMIT REACHED`
             );
           }
         } else {
-          console.log(
+          this.log.warn(
             `>>>> ${new Date()} | SELL | FTX: ${ask}; AMM: ${poolPrice}; INSUFFICIENT BALANCE`
           );
         }
