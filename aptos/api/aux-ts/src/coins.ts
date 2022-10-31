@@ -1,3 +1,5 @@
+import { AuxClient, FakeCoin } from "./client";
+
 export const MOJO =
   "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO";
 export const APT = "0x1::aptos_coin::AptosCoin";
@@ -51,3 +53,19 @@ COIN_MAPPING.set(WBTC, {
   pythSymbol: "Crypto.BTC/USD",
   ftxInternationalMarket: "BTC/USD",
 });
+
+export function fakeMapping(auxClient: AuxClient) {
+  const [fakeBtc, fakeEth, fakeSol, fakeUsdc] = [
+    auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
+    auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
+    auxClient.getWrappedFakeCoinType(FakeCoin.SOL),
+    auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
+  ];
+
+  const FAKE_MAPPING = new Map<string, string>();
+  FAKE_MAPPING.set(fakeBtc, WBTC);
+  FAKE_MAPPING.set(fakeEth, WETH);
+  FAKE_MAPPING.set(fakeSol, SOL);
+  FAKE_MAPPING.set(fakeUsdc, USDC_eth);
+  return FAKE_MAPPING;
+}

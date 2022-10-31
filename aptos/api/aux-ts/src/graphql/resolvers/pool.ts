@@ -1,6 +1,7 @@
 import * as aux from "../../";
+import { COIN_MAPPING, fakeMapping } from "../../coins";
 import { auxClient } from "../connection";
-import type {
+import {
   AddLiquidity,
   Maybe,
   Pool,
@@ -8,9 +9,13 @@ import type {
   PoolQuoteExactInArgs,
   PoolQuoteExactOutArgs,
   Position,
+  PythRatingColor,
+  QuoteExactIn,
+  QuoteExactOut,
   RemoveLiquidity,
   Swap,
 } from "../generated/types";
+import { LATEST_PYTH_PRICE } from "../pyth";
 
 export const pool = {
   priceX(parent: Pool): number {
@@ -106,8 +111,8 @@ export const pool = {
   },
   quoteExactIn(
     parent: Pool,
-    { coinTypeIn, amountIn }: PoolQuoteExactInArgs
-  ): number {
+    { coinTypeIn, amountIn, slippagePct }: PoolQuoteExactInArgs
+  ): QuoteExactIn {
     const inReserve =
       coinTypeIn === parent.coinInfoX.coinType
         ? parent.amountX
@@ -116,20 +121,76 @@ export const pool = {
       coinTypeIn === parent.coinInfoX.coinType
         ? parent.amountY
         : parent.amountX;
+    const coinTypeOut =
+      coinTypeIn === parent.coinInfoX.coinType
+        ? parent.coinInfoY.coinType
+        : parent.coinInfoX.coinType;
 
     if (inReserve === 0 || outReserve === 0) {
       throw new Error("Pool is empty");
     }
 
+    console.log(parent.coinInfoX.coinType);
+    console.log(parent.coinInfoY.coinType);
+    console.log("inReserve", inReserve);
+    console.log("outReserve", outReserve);
+
     const decimalUnitsInWithFee = amountIn * (1 - parent.feePercent / 100.0);
-    return (
-      (decimalUnitsInWithFee * outReserve) / (inReserve + decimalUnitsInWithFee)
-    );
+    const expectedAmountOut =
+      (decimalUnitsInWithFee * outReserve) /
+      (inReserve + decimalUnitsInWithFee);
+    const slippage = 1 - (slippagePct ?? 0.1) / 100.0;
+    const minAmountOut = expectedAmountOut * slippage;
+    const feeAmount = amountIn * (parent.feePercent / 100.0);
+    const FAKE_MAPPING = fakeMapping(auxClient);
+    const mappedCoinIn = FAKE_MAPPING.get(coinTypeIn) ?? coinTypeIn;
+    const inputCoinSymbol = COIN_MAPPING.get(mappedCoinIn)?.pythSymbol;
+    const pythPriceCoinIn = !!inputCoinSymbol
+      ? LATEST_PYTH_PRICE.get(inputCoinSymbol)
+      : null;
+    const feeAmountDollars = !!pythPriceCoinIn
+      ? pythPriceCoinIn * feeAmount
+      : null;
+    const instantaneousAmountOut = (outReserve / inReserve) * amountIn;
+    const priceImpactPct =
+      (instantaneousAmountOut - expectedAmountOut) / instantaneousAmountOut;
+    const priceIn = expectedAmountOut / amountIn;
+    const priceOut = amountIn / expectedAmountOut;
+    let ratio = null;
+    if (!!pythPriceCoinIn) {
+      ratio = (pythPriceCoinIn - priceIn) / pythPriceCoinIn;
+    } else {
+      const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
+      const outputCoinSymbol = COIN_MAPPING.get(mappedCoinOut)?.pythSymbol;
+      const pythPriceCoinOut = !!outputCoinSymbol
+        ? LATEST_PYTH_PRICE.get(outputCoinSymbol)
+        : null;
+      if (!!pythPriceCoinOut) {
+        ratio = (priceOut - pythPriceCoinOut) / pythPriceCoinOut;
+      }
+    }
+    const pythRating = !!ratio
+      ? ratio > 0.005
+        ? { price: priceOut, color: PythRatingColor.Red }
+        : ratio > 0.001
+        ? { price: priceOut, color: PythRatingColor.Yellow }
+        : { price: priceOut, color: PythRatingColor.Green }
+      : null;
+    return {
+      expectedAmountOut,
+      minAmountOut,
+      feeAmount,
+      feeAmountDollars,
+      priceImpactPct,
+      priceIn,
+      priceOut,
+      pythRating,
+    };
   },
   quoteExactOut(
     parent: Pool,
-    { coinTypeOut, amountOut }: PoolQuoteExactOutArgs
-  ): number {
+    { coinTypeOut, amountOut, slippagePct }: PoolQuoteExactOutArgs
+  ): QuoteExactOut {
     const inReserve =
       coinTypeOut == parent.coinInfoY.coinType
         ? parent.amountX
@@ -138,6 +199,14 @@ export const pool = {
       coinTypeOut == parent.coinInfoY.coinType
         ? parent.amountY
         : parent.amountX;
+
+    console.log("inReserve", inReserve);
+    console.log("outReserve", outReserve);
+
+    const coinTypeIn =
+      coinTypeOut === parent.coinInfoX.coinType
+        ? parent.coinInfoY.coinType
+        : parent.coinInfoX.coinType;
 
     if (inReserve == 0 || outReserve == 0) {
       throw new Error("Pool is empty");
@@ -149,6 +218,56 @@ export const pool = {
     const numerator = inReserve * amountOut;
     const denominator =
       (outReserve - amountOut) * (1 - parent.feePercent / 100.0);
-    return numerator / denominator;
+    const expectedAmountIn = numerator / denominator;
+    const slippage = (1 + (slippagePct ?? 0.1)) / 100.0;
+    const maxAmountIn = expectedAmountIn * slippage;
+    const maxFeeAmount = maxAmountIn * (parent.feePercent / 100.0);
+    const FAKE_MAPPING = fakeMapping(auxClient);
+    const mappedCoinIn = FAKE_MAPPING.get(coinTypeIn) ?? coinTypeIn;
+    const inputCoinSymbol = COIN_MAPPING.get(mappedCoinIn)?.pythSymbol;
+    const pythPriceCoinIn = !!inputCoinSymbol
+      ? LATEST_PYTH_PRICE.get(inputCoinSymbol)
+      : null;
+    const maxFeeAmountDollars = !!pythPriceCoinIn
+      ? pythPriceCoinIn * maxFeeAmount
+      : null;
+    const instantaneousAmountOut =
+      (outReserve / inReserve) *
+      expectedAmountIn *
+      (1 - parent.feePercent / 100.0);
+    const priceImpactPct =
+      (instantaneousAmountOut - amountOut) / instantaneousAmountOut;
+    const priceIn = amountOut / expectedAmountIn;
+    const priceOut = expectedAmountIn / amountOut;
+    let ratio = null;
+    if (!!pythPriceCoinIn) {
+      ratio = (pythPriceCoinIn - priceIn) / pythPriceCoinIn;
+    } else {
+      const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
+      const outputCoinSymbol = COIN_MAPPING.get(mappedCoinOut)?.pythSymbol;
+      const pythPriceCoinOut = !!outputCoinSymbol
+        ? LATEST_PYTH_PRICE.get(outputCoinSymbol)
+        : null;
+      if (!!pythPriceCoinOut) {
+        ratio = (priceOut - pythPriceCoinOut) / pythPriceCoinOut;
+      }
+    }
+    const pythRating = !!ratio
+      ? ratio > 0.005
+        ? { price: priceOut, color: PythRatingColor.Red }
+        : ratio > 0.001
+        ? { price: priceOut, color: PythRatingColor.Yellow }
+        : { price: priceOut, color: PythRatingColor.Green }
+      : null;
+    return {
+      maxAmountIn,
+      expectedAmountIn,
+      maxFeeAmount,
+      maxFeeAmountDollars,
+      priceImpactPct,
+      priceIn,
+      priceOut,
+      pythRating,
+    };
   },
 };

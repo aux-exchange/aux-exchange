@@ -1,14 +1,6 @@
 import _ from "lodash";
 import * as aux from "../../";
-import { FakeCoin } from "../../../src/client";
-import {
-  ALL_USD_STABLES,
-  COIN_MAPPING,
-  SOL,
-  USDC_eth,
-  WBTC,
-  WETH,
-} from "../../coins";
+import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coins";
 import { auxClient, pythClient, redisClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
@@ -199,19 +191,7 @@ export const market = {
     parent: Market,
     { price, side }: MarketPythRatingArgs
   ): Promise<Maybe<PythRating>> {
-    const [fakeBtc, fakeEth, fakeSol, fakeUsdc] = await Promise.all([
-      auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
-      auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
-      auxClient.getWrappedFakeCoinType(FakeCoin.SOL),
-      auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
-    ]);
-
-    const FAKE_MAPPING = new Map<string, string>();
-    FAKE_MAPPING.set(fakeBtc, WBTC);
-    FAKE_MAPPING.set(fakeEth, WETH);
-    FAKE_MAPPING.set(fakeSol, SOL);
-    FAKE_MAPPING.set(fakeUsdc, USDC_eth);
-
+    const FAKE_MAPPING = fakeMapping(auxClient);
     const mappedQuote =
       FAKE_MAPPING.get(parent.quoteCoinInfo.coinType) ??
       parent.quoteCoinInfo.coinType;
