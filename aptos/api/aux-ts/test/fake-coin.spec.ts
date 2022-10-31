@@ -17,10 +17,8 @@ describe("Fake Coin tests", function () {
     const [alice, _] = await getAliceBob(auxClient);
     const aliceAddr = alice.address();
 
-    await auxClient.registerAndMintFakeCoin({
+    await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, AU(100), {
       sender: alice,
-      coin: FakeCoin.USDC,
-      amount: AU(100),
     });
     const balance = await auxClient.getFakeCoinBalance(
       aliceAddr,

@@ -1,10 +1,10 @@
 import type { AptosAccount, Types } from "aptos";
 import type { AuxClient } from "../src/client";
-import Pool from "../src/amm/dsl/pool";
 import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
 import { onMarketUpdate } from "./ftx";
 import { DecimalUnits, DU } from "../src/units";
 import { Logger } from "tslog";
+import { Pool } from "../src/amm/pool";
 
 export class FTXArbitrageStrategy {
   log: Logger;
@@ -60,7 +60,7 @@ export class FTXArbitrageStrategy {
   }
 
   async run() {
-    const maybePool = await Pool.read(this.client, {
+    const maybePool = await new Pool(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });

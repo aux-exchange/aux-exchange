@@ -24,9 +24,11 @@ export const pool = {
   priceX(parent: Pool): number {
     return parent.amountX === 0 ? 0 : parent.amountY / parent.amountX;
   },
+
   priceY(parent: Pool): number {
     return parent.amountY === 0 ? 0 : parent.amountX / parent.amountY;
   },
+
   async swaps(parent: Pool): Promise<Swap[]> {
     const swaps = await aux.amm.core.query.swapEvents(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
@@ -34,23 +36,24 @@ export const pool = {
     });
     return swaps.map((swap) => {
       const coinInfoIn =
-        swap.inCoinType === parent.coinInfoX.coinType
+        swap.coinTypeIn === parent.coinInfoX.coinType
           ? parent.coinInfoX
           : parent.coinInfoY;
       const coinInfoOut =
-        swap.outCoinType === parent.coinInfoY.coinType
+        swap.coinTypeOut === parent.coinInfoY.coinType
           ? parent.coinInfoY
           : parent.coinInfoX;
       return {
         ...swap,
         coinInfoIn,
         coinInfoOut,
-        amountIn: swap.in.toDecimalUnits(coinInfoIn.decimals).toNumber(),
-        amountOut: swap.out.toDecimalUnits(coinInfoOut.decimals).toNumber(),
+        amountIn: swap.amountIn.toDecimalUnits(coinInfoIn.decimals).toNumber(),
+        amountOut: swap.amountOut.toDecimalUnits(coinInfoOut.decimals).toNumber(),
         time: swap.timestamp.divn(1000).toString(), // microseconds => milliseconds
       };
     });
   },
+
   async adds(parent: Pool): Promise<AddLiquidity[]> {
     const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
       auxClient,
@@ -73,6 +76,7 @@ export const pool = {
       time: addLiquidity.timestamp.divn(1000).toString(), // microseconds => milliseconds
     }));
   },
+
   async removes(parent: Pool): Promise<RemoveLiquidity[]> {
     const removeLiquiditys = await aux.amm.core.query.removeLiquidityEvents(
       auxClient,
@@ -95,6 +99,7 @@ export const pool = {
       time: removeLiquidity.timestamp.divn(1000).toString(), // microseconds => milliseconds
     }));
   },
+
   async position(
     parent: Pool,
     { owner }: PoolPositionArgs
@@ -112,6 +117,7 @@ export const pool = {
         }
       : null;
   },
+
   quoteExactIn(
     parent: Pool,
     { coinTypeIn, amountIn, slippagePct }: PoolQuoteExactInArgs
@@ -200,6 +206,7 @@ export const pool = {
           : RatingColor.Green,
     };
   },
+
   quoteExactOut(
     parent: Pool,
     { coinTypeOut, amountOut, slippagePct }: PoolQuoteExactOutArgs

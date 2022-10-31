@@ -18,7 +18,6 @@ export class AuxEnv {
 
   /**
    * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
-<<<<<<< HEAD
    * Otherwise, use defaults for the specified APTOS_NETWORK.
    *
    * This will look in your `~/.aptos/config.yaml` file for Full Node REST urls.
@@ -29,11 +28,6 @@ export class AuxEnv {
    *     rest_url: http://localhost:8080
    *
    * `new AuxClient("mainnet")` will use "http://localhost:8080"
-=======
-   *
-   * Otherwise use the default for APTOS_NETWORK
-   * @returns profile name
->>>>>>> 5a7675f (refactor: simulate and send tx)
    */
   constructor(aptosNetwork?: AptosNetwork, aptosProfile?: AptosProfile) {
     dotenv.config();
@@ -54,7 +48,6 @@ export class AuxEnv {
         `Invalid network \`${aptosNetworkEnv}\`: must be one of ${APTOS_NETWORKS}`
       );
     }
-<<<<<<< HEAD
     aptosNetwork = aptosNetwork ?? aptosNetworkEnv;
     aptosProfile =
       aptosProfile ??
@@ -63,14 +56,6 @@ export class AuxEnv {
           process.env["APTOS_NETWORK"] ??
           "default"
       );
-=======
-    if (_.isUndefined(process.env["APTOS_NETWORK"])) {
-      throw new Error("`APTOS_NETWORK` must be specified");
-    }
-    const aptosProfile = getAptosProfile(
-      process.env["APTOS_PROFILE"] ?? process.env["APTOS_NETWORK"] ?? "default"
-    );
->>>>>>> 5a7675f (refactor: simulate and send tx)
 
     const restUrls = {
       mainnet: "https://fullnode.mainnet.aptoslabs.com/v1",

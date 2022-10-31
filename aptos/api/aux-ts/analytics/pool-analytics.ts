@@ -14,7 +14,7 @@ import { AU } from "../src/units";
 
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 
-export class Analytics {
+export class PoolAnalytics {
   auxClient: AuxClient;
   pythClient: PythHttpClient;
   pythData: undefined | PythHttpClientResult;
@@ -58,41 +58,24 @@ export class Analytics {
         start: new BN(0),
       });
       for (const event of allEvents) {
-        switch (event.type) {
-          case "AddLiquidity":
-            totalUSDAdded += this.toUSD(
-              event.xCoinType,
-              (
-                await this.auxClient.toDecimalUnits(
-                  event.xCoinType,
-                  event.xAdded
-                )
-              ).toNumber()
-            );
-            totalUSDAdded += this.toUSD(
-              event.yCoinType,
-              (
-                await this.auxClient.toDecimalUnits(
-                  event.yCoinType,
-                  event.yAdded
-                )
-              ).toNumber()
-            );
-            break;
-
+        const kind = event.kind;
+        switch (kind) {
           case "SwapEvent":
             const inUSD = this.toUSD(
-              event.inCoinType,
+              event.coinTypeIn,
               (
-                await this.auxClient.toDecimalUnits(event.inCoinType, event.in)
+                await this.auxClient.toDecimalUnits(
+                  event.coinTypeIn,
+                  event.amountIn
+                )
               ).toNumber()
             );
             const outUSD = this.toUSD(
-              event.outCoinType,
+              event.coinTypeOut,
               (
                 await this.auxClient.toDecimalUnits(
-                  event.outCoinType,
-                  event.out
+                  event.coinTypeOut,
+                  event.amountOut
                 )
               ).toNumber()
             );
@@ -115,6 +98,33 @@ export class Analytics {
             totalUSDTraded += tradeUSD;
             users.add(event.senderAddr.hex());
             actions++;
+            break;
+          case "AddLiquidityEvent":
+            totalUSDAdded += this.toUSD(
+              event.xCoinType,
+              (
+                await this.auxClient.toDecimalUnits(
+                  event.xCoinType,
+                  event.xAdded
+                )
+              ).toNumber()
+            );
+            totalUSDAdded += this.toUSD(
+              event.yCoinType,
+              (
+                await this.auxClient.toDecimalUnits(
+                  event.yCoinType,
+                  event.yAdded
+                )
+              ).toNumber()
+            );
+            break;
+
+          case "RemoveLiquidityEvent":
+            break;
+          default:
+            const _exhaustiveCheck: never = kind;
+            return _exhaustiveCheck;
         }
       }
     }
@@ -192,7 +202,7 @@ export class Analytics {
 }
 
 async function main() {
-  const analytics = new Analytics();
+  const analytics = new PoolAnalytics();
   await analytics.compute();
 }
 

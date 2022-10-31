@@ -32,16 +32,8 @@ async function main() {
 
   // We support several fake coins that can be used for test trading. You can
   // mint and burn any quantities.
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000), // i.e. 1000 BTC
-  });
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000), // i.e. $1m
-  });
+  await auxClient.registerAndMintFakeCoin(trader, FakeCoin.BTC, DU(1000));
+  await auxClient.registerAndMintFakeCoin(trader, FakeCoin.USDC, DU(1_000_000));
 
   // The full type names for the fake coins. For real trading.
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
@@ -60,11 +52,11 @@ async function main() {
     exactAmountOut: DU(10),
   });
 
-  if (quoteResult.payload === undefined) {
+  if (quoteResult.output === undefined) {
     console.log("get quote failed:");
     throw new Error("get quote failed");
   }
-  const quote: RouterQuote = quoteResult.payload;
+  const quote: RouterQuote = quoteResult.output;
   console.log(`Quote for swapping BTC for ${DU(10)} USDC:`);
   console.log(`required BTC: ${quote.amount}`);
   console.log(`gas amount: ${quote.estGasAmount}`);
@@ -98,10 +90,10 @@ async function main() {
   });
 
   // The swap returns the sequence of AMM swaps and CLOB fills that occurred.
-  if (txResult.payload === undefined) {
+  if (txResult.output === undefined) {
     throw new Error("swap tx failed");
   } else {
-    for (const event of txResult.payload) {
+    for (const event of txResult.output) {
       console.log("event", event);
     }
   }

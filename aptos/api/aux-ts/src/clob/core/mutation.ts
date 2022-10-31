@@ -1,7 +1,7 @@
 import type { AptosAccount, Types } from "aptos";
 import { MAX_U64 } from "../../units";
 import type { AuxClient, AuxClientOptions } from "../../client";
-import type { TransactionResult } from "../../transaction";
+import type { AuxTransaction } from "../../client";
 import { parseRawEventsFromTx, PlaceOrderEvent } from "./events";
 import type { Market } from "./query";
 
@@ -61,29 +61,27 @@ export interface CancelAllInput {
 export async function createMarket(
   auxClient: AuxClient,
   createMarketInput: CreateMarketInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: createMarketInput.sender,
-    payload: createMarketPayload(auxClient, createMarketInput),
+  return auxClient.sendOrSimulateTransaction(
+    createMarketPayload(auxClient, createMarketInput),
     options,
-  });
+  );
 }
 
 export async function placeOrder(
   auxClient: AuxClient,
   placeOrderInput: PlaceOrderInput,
-  options?: Partial<AuxClientOptions>
-): Promise<TransactionResult<PlaceOrderEvent[]>> {
-  const tx = auxClient.sendOrSimulateTransaction({
-    sender: placeOrderInput.sender,
-    payload: placeOrderPayload(auxClient, placeOrderInput),
+  options: Partial<AuxClientOptions> = {}
+): Promise<AuxTransaction<PlaceOrderEvent[]>> {
+  const tx = auxClient.sendOrSimulateTransaction(
+    placeOrderPayload(auxClient, placeOrderInput),
     options,
-  });
+  );
   return tx.then((tx) => {
     return {
-      tx,
-      payload: parseRawEventsFromTx(auxClient, tx),
+      transaction: tx,
+      result: parseRawEventsFromTx(auxClient, tx),
     };
   });
 }
@@ -91,25 +89,23 @@ export async function placeOrder(
 export async function cancelOrder(
   auxClient: AuxClient,
   cancelOrderInput: CancelOrderInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: cancelOrderInput.sender,
-    payload: cancelOrderPayload(auxClient, cancelOrderInput),
+  return auxClient.sendOrSimulateTransaction(
+    cancelOrderPayload(auxClient, cancelOrderInput),
     options,
-  });
+  );
 }
 
 export async function cancelAll(
   auxClient: AuxClient,
   cancelAllInput: CancelAllInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: cancelAllInput.sender,
-    payload: cancelAllPayload(auxClient, cancelAllInput),
+  return auxClient.sendOrSimulateTransaction(
+    cancelAllPayload(auxClient, cancelAllInput),
     options,
-  });
+  );
 }
 
 export function createMarketPayload(

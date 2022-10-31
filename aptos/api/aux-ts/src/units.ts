@@ -25,7 +25,7 @@ export class Percent {
     this.percent = percent;
   }
 
-  toDecimal() {
+  toNumber() {
     return this.percent / 100;
   }
 }
@@ -44,7 +44,7 @@ export class Bps {
     this.bps = bps;
   }
 
-  toDecimal() {
+  toNumber() {
     return this.bps / 10000;
   }
 }

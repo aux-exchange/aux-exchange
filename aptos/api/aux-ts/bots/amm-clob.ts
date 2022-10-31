@@ -1,12 +1,12 @@
 import type { AptosAccount, Types } from "aptos";
 import type { AuxClient } from "../src/client";
-import Pool from "../src/amm/dsl/pool";
 import Market from "../src/clob/dsl/market";
 import Vault from "../src/vault/dsl/vault";
 import { USDC_ETH_WH } from "../src/coin";
-import { DecimalUnits, DU } from "../src/units";
+import { Bps, DecimalUnits, DU } from "../src/units";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { Logger } from "tslog";
+import { Pool } from "../src";
 
 export class AUXArbitrageStrategy {
   log: Logger;
@@ -130,7 +130,7 @@ export class AUXArbitrageStrategy {
     }
     const market = maybeMarket as Market;
 
-    const maybePool = await Pool.read(this.client, {
+    const maybePool = await new Pool(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });
@@ -211,7 +211,7 @@ export class AUXArbitrageStrategy {
               marketBid / this.limitThreshold
             };`
           );
-          for (const event of sellTx.payload) {
+          for (const event of sellTx.result ?? []) {
             if (event.type == "OrderFillEvent") {
               this.log.info(
                 `\n
@@ -260,7 +260,7 @@ export class AUXArbitrageStrategy {
               marketAsk * this.limitThreshold
             };`
           );
-          for (const event of buyTx.payload) {
+          for (const event of buyTx.result ?? []) {
             if (event.type == "OrderFillEvent") {
               this.log.info(
                 `\n
@@ -274,11 +274,12 @@ export class AUXArbitrageStrategy {
               );
             }
           }
-
-          const sellTx = await pool.swapYForXLimit({
-            sender: this.trader,
+          const sellTx = await pool.swap({
             exactAmountIn: roundlotQuantity,
-            minOutPerIn: DU(marketAsk),
+            priceImpact: {
+              minOutPerIn: DU(marketAsk),
+            },
+            slippage: new Bps(0)
           });
           this.log.info(
             `>>>> ${new Date()} | SELL  | AMM: ${poolPrice}; Limit: ${marketAsk}; Swap:`,

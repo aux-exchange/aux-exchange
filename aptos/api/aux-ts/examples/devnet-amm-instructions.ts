@@ -32,16 +32,8 @@ async function main() {
 
   // We support several fake coins that can be used for test trading. You can
   // mint and burn any quantities.
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000), // i.e. 1000 BTC
-  });
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000), // i.e. $1m
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000));
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000));
 
   // The full type names for the fake coins. For real trading.
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
@@ -77,7 +69,7 @@ async function main() {
 
   // The returned event includes information about the quantities actually added
   // and LP received.
-  console.log("add.payload:", add.payload);
+  console.log("add.output:", add.output);
 
   // Add liquidity in a more controlled way. Abort the add if the pool
   // parameters have moved against us, or if the rounding leads to a poor
@@ -106,7 +98,7 @@ async function main() {
   // The returned swap event includes information about the swapped quantities.
   // The swap instructions below also return this event, but we omit the output
   // for brevity.
-  console.log("swap.payload:", swap.payload);
+  console.log("swap.output:", swap.output);
 
   // We would like to receive 1000 USDC using a maximum of 0.1 BTC. Fail if this
   // cannot be done.

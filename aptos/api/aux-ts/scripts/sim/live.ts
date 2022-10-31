@@ -17,7 +17,7 @@ if (auxEnv.faucetClient === undefined) {
   throw new Error("Cannot sim:live without a faucet.")
 }
 const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient, auxEnv.faucetClient);
-const moduleAuthority = auxClient.moduleAuthority!;
+const moduleAuthority = auxClient.options.moduleAuthority!;
 
 interface Trader {
   ready: boolean;
@@ -112,12 +112,12 @@ async function mirrorCoinbase(
         }).then(
           (txResult) => {
             trader.ready = true;
-            if (!txResult.tx.success) {
+            if (!txResult.transaction.success) {
               console.log(
                 `[${data.product_id}] ${trader.account
                   .address()
-                  .hex()}: placed order: ${txResult.tx.hash}: vm_status: ${
-                  txResult.tx.vm_status
+                  .hex()}: placed order: ${txResult.transaction.hash}: vm_status: ${
+                  txResult.transaction.vm_status
                 }`
               );
             }
@@ -136,13 +136,13 @@ async function mirrorCoinbase(
           pools[data.product_id]!.swapXForY(swap).then(
             (txResult) => {
               trader.ready = true;
-              if (!txResult.tx.success) {
+              if (!txResult.transaction.success) {
                 console.log(
                   `[${data.product_id}] ${trader.account
                     .address()
                     .hex()}: swapped ${x} for ${y}: ${
-                    txResult.tx.hash
-                  }: vm_status: ${txResult.tx.vm_status}`
+                    txResult.transaction.hash
+                  }: vm_status: ${txResult.transaction.vm_status}`
                 );
               }
             },
@@ -157,13 +157,13 @@ async function mirrorCoinbase(
           pools[data.product_id]!.swapYForX(swap).then(
             (txResult) => {
               trader.ready = true;
-              if (!txResult.tx.success) {
+              if (!txResult.transaction.success) {
                 console.log(
                   `[${data.product_id}] ${trader.account
                     .address()
                     .hex()}: swapped ${y} for ${x}: ${
-                    txResult.tx.hash
-                  }: vm_status: ${txResult.tx.vm_status}`
+                    txResult.transaction.hash
+                  }: vm_status: ${txResult.transaction.vm_status}`
                 );
               }
             },

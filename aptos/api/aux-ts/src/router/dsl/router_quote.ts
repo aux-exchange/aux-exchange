@@ -1,10 +1,11 @@
 import { HexString, Types } from "aptos";
-import type { SwapEvent } from "../../amm/core/events";
-import type { TransactionResult } from "../..//transaction";
+import type { SwapEvent } from "../../amm/schema";
+import type { AuxTransaction } from "../../client";
 import { AtomicUnits, AU } from "../..//units";
 import type { AuxClient, CoinInfo } from "../../client";
 import type { OrderFillEvent } from "../../clob/core/events";
 import type { RouterEvent } from "../core/mutation";
+import _ from "lodash";
 
 export interface RouterQuote {
   type: "ExactIn" | "ExactOut";
@@ -42,14 +43,14 @@ export interface Route {
 export async function getRouterQuote(
   auxClient: AuxClient,
   type: "ExactIn" | "ExactOut",
-  txResult: TransactionResult<RouterEvent[]>,
+  txResult: AuxTransaction<RouterEvent[]>,
   combine: boolean,
   coinIn: Types.MoveStructTag,
   coinOut: Types.MoveStructTag
-): Promise<TransactionResult<RouterQuote | undefined>> {
-  const tx = txResult.tx;
-  if (!tx.success) {
-    return { tx, payload: undefined };
+): Promise<AuxTransaction<RouterQuote>> {
+  const tx = txResult.transaction;
+  if (_.isUndefined(txResult.result)) {
+    return { transaction: tx, result: undefined };
   }
   let quote: RouterQuote = {
     type,
@@ -63,9 +64,9 @@ export async function getRouterQuote(
     estGasPrice: tx.gas_unit_price,
     routes: [],
   };
-  for (let event of txResult.payload) {
+  for (let event of txResult.result) {
     let route: Route;
-    if (event.type == "OrderFillEvent") {
+    if ("owner" in event) {
       if (event.owner.toString() !== quote.sender.toString()) {
         continue;
       }
@@ -117,27 +118,27 @@ export async function getRouterQuote(
     }
     quote.routes.push(route);
   }
-  return { tx, payload: quote };
+  return { transaction: tx, result: quote };
 }
 
 function swapEventToRoute(swapEvent: SwapEvent): Route {
   let initPrice =
-    swapEvent.inReserve.toNumber() / swapEvent.outReserve.toNumber();
+    swapEvent.reserveIn.toNumber() / swapEvent.reserveOut.toNumber();
   let finalPrice =
-    (swapEvent.inReserve.toNumber() + swapEvent.in.toNumber()) /
-    (swapEvent.outReserve.toNumber() - swapEvent.out.toNumber());
+    (swapEvent.reserveIn.toNumber() + swapEvent.amountIn.toNumber()) /
+    (swapEvent.reserveOut.toNumber() - swapEvent.amountOut.toNumber());
   let priceImpactPct = ((finalPrice - initPrice) / initPrice) * 100;
   return {
     venue: "AMM",
-    coinIn: swapEvent.inCoinType,
-    coinOut: swapEvent.outCoinType,
-    amountIn: swapEvent.in,
-    amountOut: swapEvent.out,
-    feeAmount: AU((swapEvent.feeBps * swapEvent.in.toNumber()) / 10000),
+    coinIn: swapEvent.coinTypeIn,
+    coinOut: swapEvent.coinTypeOut,
+    amountIn: swapEvent.amountIn,
+    amountOut: swapEvent.amountOut,
+    feeAmount: AU((swapEvent.feeBps * swapEvent.amountIn.toNumber()) / 10000),
     rebateAmount: AU(0),
-    feeOrRebateCurrency: swapEvent.inCoinType,
-    initPriceNum: swapEvent.inReserve.toNumber(),
-    initPriceDenom: swapEvent.outReserve.toNumber(),
+    feeOrRebateCurrency: swapEvent.coinTypeIn,
+    initPriceNum: swapEvent.reserveIn.toNumber(),
+    initPriceDenom: swapEvent.reserveOut.toNumber(),
     priceImpactPct,
   };
 }

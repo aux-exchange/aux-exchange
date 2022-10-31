@@ -11,9 +11,6 @@ import { getAptosProfile } from "../src/env";
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
-const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
-const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
-
 async function main() {
   const auxClient = new AuxClient("mainnet", new AptosClient(nodeUrl));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
@@ -25,7 +22,7 @@ async function main() {
   const tAPT =
     "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114::staked_aptos_coin::StakedAptosCoin";
 
-  let maybePool = await Pool.read(auxClient, {
+  let maybePool = await new Pool(auxClient, {
     coinTypeX: APT,
     coinTypeY: tAPT,
   });
@@ -43,19 +40,18 @@ async function main() {
   );
 
   // Call update to refresh the internal variables.
-  await pool.update();
+  await pool.query();
 
   // Add some liquidity. This instruction may round the result in a way that is
   // unfavorable to me. Here we do not specify any limits on the rounding.
   const add = await pool.addApproximateLiquidity({
-    sender: trader,
     maxX: DU(1000),
     maxY: DU(1000),
   });
 
   // The returned event includes information about the quantities actually added
   // and LP received.
-  console.log("add.payload:", add.payload);
+  console.log("add.result:", add.result);
 }
 
 main();

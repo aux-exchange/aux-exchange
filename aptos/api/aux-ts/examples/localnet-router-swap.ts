@@ -101,7 +101,7 @@ async function main() {
     "local",
     new AptosClient("http://localhost:8081")
   );
-  const moduleAuthority = auxClient.moduleAuthority!;
+  const moduleAuthority = auxClient.options.moduleAuthority!;
 
   /***********************/
   /* INITIALIZE ACCOUNTS */
@@ -167,7 +167,7 @@ async function main() {
       amountX: DU(10),
       amountY: DU(220_000),
     });
-    assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
+    assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
   } else {
     const tx = await pool.addLiquidity({
       sender: alice,
@@ -175,7 +175,7 @@ async function main() {
       amountY: DU(220_000),
       maxSlippageBps: AU(100),
     });
-    assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
+    assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
   }
   await pool.update();
   console.log(`Pool reserves:`);
@@ -234,10 +234,10 @@ async function main() {
     orderType: OrderType.LIMIT_ORDER,
     stpActionType: STPActionType.CANCEL_PASSIVE,
   });
-  assert(tx.tx.success, tx.tx.hash);
-  console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-  assert.equal(1, tx.payload?.length);
-  let event = tx.payload[0]!;
+  assert(tx.transaction.success, tx.transaction.hash);
+  console.log("placeLimitOrder", tx.transaction.hash, tx.transaction.vm_status);
+  assert.equal(1, tx.result ?? []?.length);
+  let event = tx.result ?? [][0]!;
   assert.equal(event.type, "OrderPlacedEvent");
   assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -252,9 +252,9 @@ async function main() {
     orderType: OrderType.LIMIT_ORDER,
     stpActionType: STPActionType.CANCEL_PASSIVE,
   });
-  console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-  assert.equal(1, tx.payload?.length);
-  event = tx.payload[0]!;
+  console.log("placeLimitOrder", tx.transaction.hash, tx.transaction.vm_status);
+  assert.equal(1, tx.result ?? []?.length);
+  event = tx.result ?? [][0]!;
   assert.equal(event.type, "OrderPlacedEvent");
   assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 
@@ -272,11 +272,11 @@ async function main() {
     exactAmountOut: exactAmount,
   });
 
-  if (quoteResult.payload === undefined) {
+  if (quoteResult.output === undefined) {
     console.log("get quote failed");
-    console.log(quoteResult.tx);
+    console.log(quoteResult.transaction);
   } else {
-    await printQuote(auxClient, exactAmount, quoteResult.payload);
+    await printQuote(auxClient, exactAmount, quoteResult.output);
   }
 
   // Swap up to 0.1 BTC for exactly 1000 USDC. Choose the best price between AMM
@@ -285,8 +285,8 @@ async function main() {
     {
       coinTypeIn: usdcCoinType,
       coinTypeOut: btcCoinType,
-      maxAmountIn: !!quoteResult.payload
-        ? quoteResult.payload.amount
+      maxAmountIn: !!quoteResult.output
+        ? quoteResult.output.amount
         : DU(17_000),
       exactAmountOut: DU(0.749),
     },
@@ -295,14 +295,14 @@ async function main() {
       gasUnitPrice: AU(100),
     }
   );
-  console.log("swapCoinForExactCoin", txResult.tx.hash);
+  console.log("swapCoinForExactCoin", txResult.transaction.hash);
 
   // The swap returns the sequence of AMM swaps and CLOB fills that occurred.
-  if (!txResult.tx.success) {
-    console.log(txResult.tx);
+  if (!txResult.transaction.success) {
+    console.log(txResult.transaction);
     throw new Error("swap tx failed");
   } else {
-    for (const event of txResult.payload) {
+    for (const event of txResult.output) {
       console.log("event", event);
     }
   }
@@ -314,11 +314,11 @@ async function main() {
     exactAmountIn: exactAmount,
   });
 
-  if (quoteResult2.payload === undefined) {
+  if (quoteResult2.output === undefined) {
     console.log("get quote failed");
-    console.log(quoteResult2.tx);
+    console.log(quoteResult2.transaction);
   } else {
-    await printQuote(auxClient, exactAmount, quoteResult2.payload);
+    await printQuote(auxClient, exactAmount, quoteResult2.output);
   }
 
   //  Similar to the above function, the payload contains
@@ -328,8 +328,8 @@ async function main() {
       coinTypeIn: btcCoinType,
       coinTypeOut: usdcCoinType,
       exactAmountIn: exactAmount,
-      minAmountOut: !!quoteResult2.payload
-        ? quoteResult2.payload.amount
+      minAmountOut: !!quoteResult2.output
+        ? quoteResult2.output.amount
         : DU(17_000),
     },
     {
@@ -338,8 +338,8 @@ async function main() {
     }
   );
   // The swap returns the sequence of AMM swaps and CLOB fills that occurred.
-  if (!txResult2.tx.success) {
-    console.log(txResult.tx);
+  if (!txResult2.transaction.success) {
+    console.log(txResult.transaction);
     throw new Error("swap tx failed");
   } else {
     console.log("swap BTC to USDC succeeded");

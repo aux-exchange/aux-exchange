@@ -284,7 +284,7 @@ export class FTXMarketMakingStrategy {
             orderType: OrderType.LIMIT_ORDER,
             clientOrderId: this.strategyId.toString(),
           });
-          for (const event of tx.payload) {
+          for (const event of tx.result ?? []) {
             if (event.type == "OrderPlacedEvent") {
               this.remainingBidQuantity = event.quantity.toBN();
               this.bidPrice = event.price.toBN();
@@ -362,7 +362,7 @@ export class FTXMarketMakingStrategy {
             orderType: OrderType.LIMIT_ORDER,
             clientOrderId: this.strategyId.toString(),
           });
-          for (const event of tx.payload) {
+          for (const event of tx.result ?? []) {
             if (event.type == "OrderPlacedEvent") {
               this.remainingAskQuantity = event.quantity.toBN();
               this.askPrice = event.price.toBN();

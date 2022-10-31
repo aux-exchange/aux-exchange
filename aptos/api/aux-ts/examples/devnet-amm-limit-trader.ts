@@ -139,7 +139,7 @@ async function tradeAMM(): Promise<void> {
                 amountX: amountXToAdd,
                 amountY: amountYToAdd,
               });
-              console.log(">>>> Add Liquidity event:", tx.payload);
+              console.log(">>>> Add Liquidity event:", tx.result ?? []);
               await pool.update();
             }
           } catch (e) {
@@ -168,7 +168,7 @@ async function tradeAMM(): Promise<void> {
                 exactAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
                 minOutPerIn: DU(1 / bestBid),
               });
-              console.log(">>>> Swap event:", tx.payload);
+              console.log(">>>> Swap event:", tx.result ?? []);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from USDC to ETH failed with error: ", e);
@@ -186,7 +186,7 @@ async function tradeAMM(): Promise<void> {
                 exactAmountIn: AUX_TRADER_CONFIG.ethPerSwap,
                 minOutPerIn: DU(bestAsk),
               });
-              console.log(">>>> Swap event:", tx.payload);
+              console.log(">>>> Swap event:", tx.result ?? []);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from ETH to USDC failed with error: ", e);

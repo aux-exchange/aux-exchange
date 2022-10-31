@@ -160,17 +160,17 @@ async function replay(
       });
       trader.ready = true;
 
-      if (!txResult.tx.success || total == 859) {
+      if (!txResult.transaction.success || total == 859) {
         console.log(
           `${trader.account.address().hex()}: placed order: ${
-            txResult.tx.hash
+            txResult.transaction.hash
           }, based on line: ${line} at total lines ${total}, vm_status: ${
-            txResult.tx.vm_status
+            txResult.transaction.vm_status
           }`
         );
         fs.mkdirSync(`scripts/sim/txes`, { recursive: true });
         fs.writeFileSync(
-          `scripts/sim/txes/${txResult.tx.hash}.json`,
+          `scripts/sim/txes/${txResult.transaction.hash}.json`,
           JSON.stringify(txResult, undefined, "  ")
         );
       }

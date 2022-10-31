@@ -47,26 +47,26 @@ async function getUser(
 }
 
 async function fundFakeCoin(auxClient: AuxClient, user: AptosAccount) {
-  let tx = await auxClient.registerAndMintFakeCoin({
-    sender: user,
-    coin: FakeCoin.BTC,
-    amount: AU(5_000_000_000),
-  });
+  let tx = await auxClient.registerAndMintFakeCoin(
+    FakeCoin.BTC,
+    AU(5_000_000_000),
+    {
+      sender: user,
+    }
+  );
 
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
 
-  tx = await auxClient.registerAndMintFakeCoin({
-    sender: user,
-    coin: FakeCoin.SOL,
-    amount: AU(5_000_000_000_000),
-  });
+  tx = await auxClient.registerAndMintFakeCoin(
+    FakeCoin.SOL,
+    AU(5_000_000_000_000)
+  );
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
 
-  tx = await auxClient.registerAndMintFakeCoin({
-    sender: user,
-    coin: FakeCoin.AUX,
-    amount: AU(100_000_000_000),
-  });
+  tx = await auxClient.registerAndMintFakeCoin(
+    FakeCoin.AUX,
+    AU(100_000_000_000)
+  );
 
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
 }
@@ -101,7 +101,7 @@ export async function withrawAndBurn(auxClient: AuxClient, user: AptosAccount) {
       );
     }
 
-    const maybeBurn = await auxClient.burnAllFakeCoin(user, coin);
+    const maybeBurn = await auxClient.burnAllFakeCoin(coin);
     if (maybeBurn !== undefined) {
       assert.ok(
         maybeBurn.success,

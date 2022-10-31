@@ -1,6 +1,7 @@
 import type { Types } from "aptos";
-import * as amm from "./amm";
-import type { PoolInput, Position } from "./amm/core/query";
+import _ from "lodash";
+import { Pool } from "./amm/pool";
+import type { PoolInput, Position } from "./amm/schema";
 import type { AuxClient } from "./client";
 import type { OrderFillEvent, OrderPlacedEvent } from "./clob/core/events";
 import type { Order } from "./clob/core/query";
@@ -42,12 +43,32 @@ export default class AuxAccount {
   }
 
   // TODO: Support multiple positions in the pool.
-  async poolPosition(poolInput: PoolInput): Promise<Position | undefined> {
-    return amm.core.query.position(this.auxClient, this.owner, poolInput);
+  poolPosition(poolInput: PoolInput): Promise<Position | undefined> {
+    return new Pool(this.auxClient, poolInput).position(this.owner);
   }
 
   async poolPositions(): Promise<Position[]> {
-    return amm.core.query.positions(this.auxClient, this.owner);
+    const resources = await this.auxClient.aptosClient.getAccountResources(
+      this.owner
+    );
+    const positions = await Promise.all(
+      resources
+        .filter(
+          (resource) =>
+            resource.type.includes("amm::LP") &&
+            resource.type.includes("0x1::coin::CoinStore")
+        )
+        .map((resource) => resource.data as any)
+        .map(async (positionResource) => {
+          const [coinTypeX, coinTypeY] = positionResource.type;
+          const pool = new Pool(this.auxClient, {
+            coinTypeX: coinTypeX!,
+            coinTypeY: coinTypeY!,
+          });
+          return pool.position(this.owner);
+        })
+    );
+    return positions.filter((position) => position !== undefined);
   }
 
   async openOrders(marketInput: MarketInput): Promise<Order[]> {

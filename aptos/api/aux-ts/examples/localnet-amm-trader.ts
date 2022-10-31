@@ -38,7 +38,7 @@ auxClient.moduleAddress;
 
 // Get the account that has authority over the module from local profile
 // This is also the account that deployed the Aux program
-const moduleAuthority: AptosAccount = auxClient.moduleAuthority!;
+const moduleAuthority: AptosAccount = auxClient.options.moduleAuthority!;
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
@@ -91,9 +91,9 @@ async function tradeAMM(): Promise<void> {
           amountX: amountXToAdd,
           amountY: amountYToAdd,
         });
-        // The transaction contains the raw transaction (tx.tx) as well as a parsed
-        // payload (tx.payload).
-        console.log(">>>> Add Liquidity event:", tx.payload);
+        // The transaction contains the raw transaction (tx.transaction) as well as a parsed
+        // payload (tx.result ?? []).
+        console.log(">>>> Add Liquidity event:", tx.result ?? []);
       }
 
       // Note that amountX and amountY are DecimalUnits, so the ratio is the
@@ -137,7 +137,7 @@ async function tradeAMM(): Promise<void> {
             });
           }
 
-          console.log(">>>> Swap event:", tx.payload);
+          console.log(">>>> Swap event:", tx.result ?? []);
         } catch (e) {
           console.log("  Placing order failed with error", e);
         }

@@ -26,50 +26,45 @@ export interface TransferInput {
 
 export async function createAuxAccount(
   auxClient: AuxClient,
-  sender: AptosAccount,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender,
-    payload: createAuxAccountPayload(auxClient),
-    options,
-  });
+  return auxClient.sendOrSimulateTransaction(
+    createAuxAccountPayload(auxClient),
+    options
+  );
 }
 
 export async function deposit(
   auxClient: AuxClient,
   depositInput: DepositInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: depositInput.sender,
-    payload: depositPayload(auxClient, depositInput),
-    options,
-  });
+  return auxClient.sendOrSimulateTransaction(
+    depositPayload(auxClient, depositInput),
+    options
+  );
 }
 
 export async function withdraw(
   auxClient: AuxClient,
   withdrawInput: WithdrawInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: withdrawInput.sender,
-    payload: withdrawPayload(auxClient, withdrawInput),
-    options,
-  });
+  return auxClient.sendOrSimulateTransaction(
+    withdrawPayload(auxClient, withdrawInput),
+    options
+  );
 }
 
 export async function transfer(
   auxClient: AuxClient,
   transferInput: TransferInput,
-  options?: Partial<AuxClientOptions>
+  options: Partial<AuxClientOptions> = {}
 ): Promise<Types.UserTransaction> {
-  return auxClient.sendOrSimulateTransaction({
-    sender: transferInput.sender,
-    payload: transferPayload(auxClient, transferInput),
-    options,
-  });
+  return auxClient.sendOrSimulateTransaction(
+    transferPayload(auxClient, transferInput),
+    options
+  );
 }
 
 export function createAuxAccountPayload(

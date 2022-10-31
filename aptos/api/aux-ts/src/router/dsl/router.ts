@@ -1,5 +1,5 @@
 import { AptosAccount, CoinClient, Types } from "aptos";
-import type { TransactionResult } from "../../transaction";
+import type { AuxTransaction } from "../../client";
 import { AnyUnits, AU } from "../../units";
 import type { AuxClient, AuxClientOptions } from "../../client";
 import {
@@ -40,8 +40,8 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    options?: Partial<AuxClientOptions>
-  ): Promise<TransactionResult<RouterEvent[]>> {
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<RouterEvent[]>> {
     return swapExactCoinForCoin(
       this.client,
       {
@@ -72,8 +72,8 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    options?: Partial<AuxClientOptions>
-  ): Promise<TransactionResult<RouterEvent[]>> {
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<RouterEvent[]>> {
     const sender = this.sender;
     if (sender === undefined) {
       throw new Error("Router swap must have sender");
@@ -81,7 +81,6 @@ export default class Router {
     return swapCoinForExactCoin(
       this.client,
       {
-        sender,
         coinTypeIn,
         coinTypeOut,
         maxAmountAuIn: (
@@ -103,10 +102,8 @@ export default class Router {
     exactAmountIn: AnyUnits;
     coinTypeIn: Types.MoveStructTag;
     coinTypeOut: Types.MoveStructTag;
-  }): Promise<TransactionResult<RouterQuote | undefined>> {
-    const sender = this.sender || new AptosAccount();
+  }): Promise<AuxTransaction<RouterQuote | undefined>> {
     const payload = swapExactCoinForCoinPayload(this.client, {
-      sender,
       coinTypeIn,
       coinTypeOut,
       exactAmountAuIn: (
@@ -114,7 +111,7 @@ export default class Router {
       ).toU64(),
       minAmountAuOut: "0",
     });
-    const result = this.client.sendOrSimulateTransaction({ sender, payload });
+    const result = this.client.simulateTransaction(payload);
     return result.then((r) => {
       console.dir(r, { depth: null });
       return getRouterQuote(
@@ -136,7 +133,7 @@ export default class Router {
     exactAmountOut: AnyUnits;
     coinTypeIn: Types.MoveStructTag;
     coinTypeOut: Types.MoveStructTag;
-  }): Promise<TransactionResult<RouterQuote | undefined>> {
+  }): Promise<AuxTransaction<RouterQuote | undefined>> {
     const sender = this.sender || new AptosAccount();
     const payload = swapCoinForExactCoinPayload(this.client, {
       // @ts-ignore
@@ -155,7 +152,7 @@ export default class Router {
         )
       ).toU64(),
     });
-    const result = this.client.sendOrSimulateTransaction({ sender, payload }); // FIXME
+    const result = this.client.simulateTransaction(payload);
     return result.then((r) => {
       return getRouterQuote(
         this.client,

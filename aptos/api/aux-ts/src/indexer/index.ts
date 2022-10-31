@@ -52,11 +52,9 @@ async function publishAmmEvents() {
   let addCursor: BN = new BN.BN(0);
   let removeCursor: BN = new BN.BN(0);
 
-  const poolReadParams = await aux.Pool.index(auxClient);
+  const poolInputs = await auxClient.pools();
   const pools = await Promise.all(
-    poolReadParams.map((poolReadParam) =>
-      aux.Pool.read(auxClient, poolReadParam).then((pool) => pool!)
-    )
+    poolInputs.map((poolInput) => new aux.Pool(auxClient, poolInput))
   );
   while (true) {
     for (const pool of pools) {
@@ -66,8 +64,8 @@ async function publishAmmEvents() {
         }
         await redisPubSub.publish("SWAP", {
           ...swapEvent,
-          amountIn: swapEvent.in.toNumber(),
-          amountOut: swapEvent.out.toNumber(),
+          amountIn: swapEvent.amountIn.toNumber(),
+          amountOut: swapEvent.amountOut.toNumber(),
         });
         swapCursor = swapEvent.sequenceNumber;
       }

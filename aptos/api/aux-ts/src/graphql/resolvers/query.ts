@@ -3,7 +3,7 @@ import axios from "axios";
 import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
-import { poolEvents, pools } from "../../amm/core/query";
+import type { SwapEvent } from "../../amm/schema";
 import { ALL_FAKE_COINS } from "../../coin";
 import { auxClient, redisClient } from "../connection";
 import {
@@ -91,7 +91,7 @@ export const query = {
   },
 
   async summaryMetrics(_parent: any): Promise<SummaryMetrics> {
-    const allPools = await pools(auxClient);
+    const poolInputs = await auxClient.pools();
     const now = Date.now();
     const nowMinus7D = now - 7 * 24 * 60 * 60 * 1000;
     const nowMinus24H = now - 24 * 60 * 60 * 1000;
@@ -104,43 +104,44 @@ export const query = {
     let allUsers7D = new Set<string>();
     let allUsers24H = new Set<string>();
 
-    for (const pool of allPools) {
-      const loadedPool = await aux.Pool.read(auxClient, {
-        coinTypeX: pool.coinTypeX,
-        coinTypeY: pool.coinTypeY,
+    for (const poolInput of poolInputs) {
+      const pool = new aux.Pool(auxClient, {
+        coinTypeX: poolInput.coinTypeX!,
+        coinTypeY: poolInput.coinTypeY!,
       });
-      if (loadedPool === undefined) {
+      if (pool === undefined) {
         continue;
       } else {
         dollarTVL += getRecognizedTVL(
           pool.coinTypeX,
-          loadedPool.amountX.toNumber()
+          pool.amountX!.toNumber()
         );
         dollarTVL += getRecognizedTVL(
           pool.coinTypeY,
-          loadedPool.amountY.toNumber()
+          pool.amountY!.toNumber()
         );
       }
 
-      const allEvents = await poolEvents(auxClient, pool, {
+      const allEvents = await pool.poolEvents({
         start: new BN(0),
       });
-      for (const event of allEvents) {
-        if (event.type == "SwapEvent") {
+      for (const poolEvent of allEvents) {
+        if (poolEvent.kind === "SwapEvent") {
+          const event = poolEvent as SwapEvent;
           const eventMilliseconds = event.timestamp.toNumber() / 1000;
           if (eventMilliseconds < nowMinus7D) {
             continue;
           }
           const inUSD = getRecognizedTVL(
-            event.inCoinType,
+            event.coinTypeIn,
             (
-              await auxClient.toDecimalUnits(event.inCoinType, event.in)
+              await auxClient.toDecimalUnits(event.coinTypeIn, event.amountIn)
             ).toNumber()
           );
           const outUSD = getRecognizedTVL(
-            event.outCoinType,
+            event.coinTypeOut,
             (
-              await auxClient.toDecimalUnits(event.outCoinType, event.out)
+              await auxClient.toDecimalUnits(event.coinTypeOut, event.amountOut)
             ).toNumber()
           );
           const tradeUSD = Math.max(inUSD, outUSD);

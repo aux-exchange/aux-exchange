@@ -163,7 +163,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of tx.payload) {
+      for (const e of tx.result ?? []) {
         if (e.type == "OrderFillEvent") {
           console.log(
             "    Fill for ",
@@ -184,7 +184,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of tx.payload) {
+      for (const e of tx.result ?? []) {
         if (e.type == "OrderFillEvent") {
           console.log(
             "    Fill for ",
@@ -233,7 +233,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of bidTx.payload) {
+      for (const e of bidtx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           bidOrderId = e.orderId;
         }
@@ -255,7 +255,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of askTx.payload) {
+      for (const e of asktx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           askOrderId = e.orderId;
         }
