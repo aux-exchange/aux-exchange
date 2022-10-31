@@ -1,6 +1,10 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+
+	aptosCmd "github.com/fardream/go-aptos/aptos/cmd"
+)
 
 func GetRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -11,16 +15,16 @@ func GetRootCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		GetSetupAuxCmd(),
-		GetKeyAndMnemonicCmd(),
-		GetCalculateResourceAddressCmd(),
-		GetLaunchAptosNodeCmd(),
-		GetListAccountCmd(),
-		GetListMarketCmd(),
-		GetListChainCmd(),
-		GetListPoolCmd(),
-		GetListL2MarketCmd(),
-		GetListAllOrdersCmd(),
-		GetPlaceClobOrderCmd(),
+		aptosCmd.GetKeyAndMnemonicCmd(),
+		aptosCmd.GetCalculateResourceAddressCmd(),
+		aptosCmd.GetLaunchAptosNodeCmd(),
+		aptosCmd.GetListAccountCmd(),
+		aptosCmd.GetListMarketCmd(),
+		aptosCmd.GetListChainCmd(),
+		aptosCmd.GetListPoolCmd(),
+		aptosCmd.GetListL2MarketCmd(),
+		aptosCmd.GetListAllOrdersCmd(),
+		aptosCmd.GetPlaceClobOrderCmd(),
 	)
 
 	return cmd
