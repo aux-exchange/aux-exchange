@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/aux-exchange/aux-exchange/go-util/aptos"
+	"github.com/fardream/go-aptos/aptos"
 )
 
 func getConfigFileLocation() (string, bool) {

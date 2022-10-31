@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/aux-exchange/aux-exchange/go-util/aptos"
+	"github.com/fardream/go-aptos/aptos"
 	"github.com/spf13/cobra"
 )
 
@@ -130,7 +130,7 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 			fmt.Println(getOrPanic(aptos.RequestFromFaucet(context.Background(), config.FaucetUrl, &addr, 1_000_000_000)))
 		}
 
-		resourceAccount := getOrPanic(aptos.CalculateResourceAddress(getOrPanic(aptos.ParseAddress(config.Account)), []byte(seed))).String()
+		resourceAccount := aptos.CalculateResourceAddress(getOrPanic(aptos.ParseAddress(config.Account)), []byte(seed)).String()
 		if checkAccountExist(config.RestUrl, resourceAccount) {
 			redWarn.Printf("resource account: %s exists, maybe redeploy?\n", resourceAccount)
 		}

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/aux-exchange/aux-exchange/go-util/aptos/cmd"
+import "github.com/fardream/go-aptos/aptos/cmd"
 
 func main() {
 	cmd.GetCalculateResourceAddressCmd().Execute()

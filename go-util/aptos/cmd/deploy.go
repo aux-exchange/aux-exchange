@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/aux-exchange/aux-exchange/go-util/aptos"
+	"github.com/fardream/go-aptos/aptos"
 )
 
 func getCargoCommand(binaryName string) (string, []string) {
@@ -70,7 +70,7 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 			"-n", "aux",
 			"--package-path", auxDir,
 			"--redeploy-package", redeployDir,
-			"--target-address", getOrPanic(aptos.CalculateResourceAddress(getOrPanic(aptos.ParseAddress(account.Account)), []byte(seed))).String(),
+			"--target-address", aptos.CalculateResourceAddress(getOrPanic(aptos.ParseAddress(account.Account)), []byte(seed)).String(),
 		}
 		fmt.Printf("re-publish aux in %s\n", auxDir)
 		republishBinaryName := "republish-to-resource-account"
