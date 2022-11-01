@@ -8,7 +8,7 @@ import { AuxEnv } from "../env";
 
 async function main() {
   const auxEnv = new AuxEnv();
-const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
+  const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   let baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
   const quoteCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
   const market = await Market.read(auxClient, { baseCoinType, quoteCoinType });

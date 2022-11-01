@@ -155,7 +155,7 @@ export default class Router {
         )
       ).toU64(),
     });
-    const result = this.client.sendOrSimulateTransaction({ sender, payload });  // FIXME
+    const result = this.client.sendOrSimulateTransaction({ sender, payload }); // FIXME
     return result.then((r) => {
       return getRouterQuote(
         this.client,

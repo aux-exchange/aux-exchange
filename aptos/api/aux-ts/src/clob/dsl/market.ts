@@ -1,6 +1,11 @@
 import type { AptosAccount, Types } from "aptos";
 import type BN from "bn.js";
-import type { AuxClient, CoinInfo, AuxClientOptions } from "../../client";
+import type {
+  AuxClient,
+  CoinInfo,
+  AuxClientOptions,
+  Simulator,
+} from "../../client";
 import type { TransactionResult } from "../../transaction";
 import {
   AnyUnits,
@@ -403,13 +408,13 @@ export default class Market implements core.query.Market {
    * @returns
    */
   async orderbook(
-    simulatorAccount?: AptosAccount
+    simulator?: Simulator
   ): Promise<{ bids: core.query.Level[]; asks: core.query.Level[] }> {
     return core.query.orderbook(
       this.auxClient,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType,
-      simulatorAccount
+      simulator ?? this.auxClient.simulator
     );
   }
 

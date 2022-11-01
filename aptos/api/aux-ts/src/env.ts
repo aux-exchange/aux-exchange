@@ -18,7 +18,7 @@ export class AuxEnv {
 
   /**
    * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
-   * 
+   *
    * Otherwise use the default for APTOS_NETWORK
    * @returns profile name
    */
@@ -41,7 +41,7 @@ export class AuxEnv {
       throw new Error("`APTOS_NETWORK` must be specified");
     }
     const aptosProfile = getAptosProfile(
-      process.env["APTOS_PROFILE"] ?? "default"
+      process.env["APTOS_PROFILE"] ?? process.env["APTOS_NETWORK"] ?? "default"
     );
 
     const urls = {
@@ -77,7 +77,6 @@ export function getAptosProfile(
     fs.readFileSync(configPath, { encoding: "utf-8" })
   );
   const profile = profiles.profiles[aptosProfile];
-  console.log(profile)
   if (_.isUndefined(profile)) {
     throw new Error(
       `Could not find profile \`${aptosProfile}\` in ~/.aptos/config.yaml`
