@@ -208,11 +208,17 @@ function publishTrades(
     ),
     trades.forEach(
       async (trade) =>
-        await redisPubSub.publish("LAST_TRADE_PRICE", {
-          baseCoinType,
-          quoteCoinType,
-          price: trade.price,
-        })
+        await Promise.all([
+          redisPubSub.publish("LAST_TRADE_PRICE", {
+            baseCoinType,
+            quoteCoinType,
+            price: trade.price,
+          }),
+          redisClient.set(
+            `${baseCoinType}-${quoteCoinType}-last-trade-price`,
+            trade.price
+          ),
+        ])
     ),
     Promise.all(
       _.concat("24h", RESOLUTIONS).map((resolution) => {

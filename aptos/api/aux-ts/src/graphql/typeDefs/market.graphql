@@ -9,6 +9,7 @@ type Market {
   lotSizeString: String!
   tickSizeString: String!
   orderbook: Orderbook!
+  lastTradePrice: Float
   openOrders(owner: Address): [Order!]!
   orderHistory(owner: Address): [Order!]!
   tradeHistory(owner: Address): [Trade!]!
