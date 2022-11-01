@@ -91,7 +91,7 @@ module aux::stake {
         end_time: u64,
         // next_unlock_time: u64,
         // reward_per_stake: u64,
-        last_reward_update_time: u64,  // timestamp (microseconds) of last reward update
+        // last_reward_update_time: u64,  // timestamp (microseconds) of last reward update
         unlock_seconds: u64, // length of reward unlock period (seconds)
         reward_remaining: u64,
         max_reward_per_stake_per_second: u64,   // MAX for: total_reward / (total_time * total_staked)
@@ -135,7 +135,8 @@ module aux::stake {
         let stake = coin::withdraw<S>(sender, amount);
         coin::merge(&mut incentive.stake, stake);
         incentive.total_staked = incentive.total_staked + amount;
-        update_reward(incentive, true, signer::address_of(sender), amount)
+        update_reward(incentive, true, signer::address_of(sender), amount);
+        std::debug::print<u64>(&3);
     }
 
     // struct StakingVault<phantom StakeCoin, phantom RewardCoin> {
@@ -166,7 +167,6 @@ module aux::stake {
         let total_staked = incentive.total_staked;
         let unlock_microseconds = incentive.unlock_seconds * 1000000;
         let last_unlock_time = last_unlock_time(incentive.start_time, now, incentive.unlock_seconds);
-        let time_remaining = incentive.end_time - now;
 
         // iterate through all pre-existing positions
         let total_staked_check = 0;
@@ -178,14 +178,24 @@ module aux::stake {
                 pos.locked_reward = 0;
             };
             pos.next_unlock_time = last_unlock_time + unlock_microseconds;
+            let reward_denom = (total_staked * (incentive.end_time - pos.last_reward_update_time) as u128);
             let (unlocked_reward, locked_reward) = if (pos.last_reward_update_time < last_unlock_time) {
+                std::debug::print<u64>(&1);
+                std::debug::print<u64>(&pos.last_reward_update_time);
+                std::debug::print<u64>(&last_unlock_time);
+                std::debug::print<u64>(&pos.amount_staked);
+                std::debug::print<u64>(&total_staked);
+                std::debug::print<u128>(&reward_denom);
+                std::debug::print<u64>(&incentive.reward_remaining);
                 // rewards have unlocked since last update
-                let unlocked_reward = pos.amount_staked / total_staked * (last_unlock_time - pos.last_reward_update_time) / time_remaining * incentive.reward_remaining;
-                let locked_reward = pos.amount_staked / total_staked * (now - last_unlock_time) / time_remaining * incentive.reward_remaining;
+                let unlocked_reward = ((pos.amount_staked as u128)  * (last_unlock_time - pos.last_reward_update_time as u128) * (incentive.reward_remaining as u128) / reward_denom as u64);
+                std::debug::print<u64>(&unlocked_reward);
+                let locked_reward = ((pos.amount_staked as u128) * (now - last_unlock_time as u128) * (incentive.reward_remaining as u128) / reward_denom as u64);
                 (unlocked_reward, locked_reward)
             } else {
+                std::debug::print<u64>(&2);
                 // no rewards have unlocked since last update
-                let locked_reward = pos.amount_staked / total_staked * (now - pos.last_reward_update_time) / time_remaining * incentive.reward_remaining;
+                let locked_reward = ((pos.amount_staked as u128) * (now - pos.last_reward_update_time as u128) * (incentive.reward_remaining as u128) / reward_denom as u64);
                 (0, locked_reward)
             };
             pos.unlocked_reward = pos.unlocked_reward + unlocked_reward;
@@ -201,7 +211,7 @@ module aux::stake {
 
             i = i + 1;
         };
-        if (!staker_exists) {
+        if (update_stake && !staker_exists) {
             vector::push_back(&mut incentive.positions, Position {
                 owner: staker,
                 amount_staked,
@@ -240,7 +250,7 @@ module aux::stake {
             creator: signer::address_of(sender),
             start_time,
             end_time: start_time + duration_micros,
-            last_reward_update_time: start_time,  // timestamp (microseconds) of last reward update
+            // last_reward_update_time: start_time,  // timestamp (microseconds) of last reward update
             unlock_seconds, // length of reward unlock period (seconds)
             reward_remaining: coin::value<R>(&reward),
             max_reward_per_stake_per_second: 1,   // MAX for: total_reward / (total_time * total_staked)
@@ -278,10 +288,23 @@ module aux::stake {
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600;
         create_incentive_for_test<FakeCoin<ETH>, FakeCoin<USDC>>(sender, days_to_micros(30), days_to_seconds(1), reward);
+        {
+            let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            assert!(incentive.total_staked == 0, E_TEST_FAILURE);
+            assert!(incentive.creator == signer::address_of(sender), E_TEST_FAILURE);
+            assert!(incentive.start_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+            assert!(incentive.end_time == timestamp::now_microseconds() + duration_seconds * 1000000, E_TEST_FAILURE);
+            // assert!(incentive.last_reward_update_time == timestamp::now_microseconds() * 1000000, E_TEST_FAILURE);
+            assert!(incentive.unlock_seconds == 24*3600, E_TEST_FAILURE);
+            assert!(incentive.reward_remaining == reward_au, E_TEST_FAILURE);
+            assert!(incentive.max_reward_per_stake_per_second == 1, E_TEST_FAILURE);
+            assert!(coin::value(&incentive.reward) == reward_au, E_TEST_FAILURE);
+            assert!(vector::length(&incentive.positions) == 0, E_TEST_FAILURE);
+        };
 
         stake<FakeCoin<ETH>, FakeCoin<USDC>>(sender, 100);
-
         let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+        assert!(incentive.total_staked == 100, E_TEST_FAILURE);
         assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
         let pos = vector::borrow(&incentive.positions, 0);
         assert!(pos.owner == signer::address_of(sender), E_TEST_FAILURE);
@@ -296,11 +319,18 @@ module aux::stake {
 
         assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
         let pos = vector::borrow(&incentive.positions, 0);
-        // let total_reward = reward_au *
+        // let expected_total_reward = reward_au * 86400 / duration_seconds;
+        // let expected_locked_reward = reward_au * (86400 % incentive.unlock_seconds)  / duration_seconds;
+        let expected_locked_reward = ((reward_au * (86400 % incentive.unlock_seconds * 1000000) as u128)  / (duration_seconds * 1000000 as u128) as u64);
+        let expected_unlocked_reward = ((reward_au * (86400 - (86400 % incentive.unlock_seconds)) as u128) * 1000000  / (duration_seconds * 1000000 as u128) as u64);
+        std::debug::print<u64>(&expected_locked_reward);
+        std::debug::print<u64>(&expected_unlocked_reward);
         assert!(pos.owner == signer::address_of(sender), E_TEST_FAILURE);
         assert!(pos.amount_staked == 100, E_TEST_FAILURE);
-        assert!(pos.locked_reward == 0, E_TEST_FAILURE);
-        assert!(pos.unlocked_reward == 0, E_TEST_FAILURE);
+        std::debug::print<u64>(&pos.locked_reward);
+        std::debug::print<u64>(&pos.unlocked_reward);
+        assert!(pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+        assert!(pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
         assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
 
 
