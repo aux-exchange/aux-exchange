@@ -122,46 +122,65 @@ export async function orderFillEvents(
   auxClient: AuxClient,
   clobAddress: Types.Address,
   market: Market,
-  pagination?: {
-    start?: number;
-    limit?: number;
-  }
+  pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderFillEvent[]> {
-  const fillEvents: RawOrderFillEvent[] =
-    await auxClient.aptosClient.getEventsByEventHandle(
-      clobAddress,
-      market.type,
-      "fill_events",
-      pagination
-    );
+  pagination = pagination ?? { limit: new BN(100) };
+  const queryFunction =
+    "start" in pagination
+      ? auxClient.getEventsByEventHandleSince.bind(auxClient)
+      : auxClient.getEventsByEventHandleWithLookback.bind(auxClient);
+  const queryValue =
+    "start" in pagination ? pagination.start : pagination.limit;
+  const fillEvents: RawOrderFillEvent[] = await queryFunction(
+    clobAddress,
+    market.type,
+    "fill_events",
+    queryValue
+  );
   return parseRawOrderFillEvents(fillEvents);
 }
 
 export async function orderPlacedEvents(
   auxClient: AuxClient,
   clobAddress: Types.Address,
-  market: Market
+  market: Market,
+  pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderPlacedEvent[]> {
-  const placedEvents: RawOrderPlacedEvent[] =
-    await auxClient.aptosClient.getEventsByEventHandle(
-      clobAddress,
-      market.type,
-      "placed_events"
-    );
+  pagination = pagination ?? { limit: new BN(100) };
+  const queryFunction =
+    "start" in pagination
+      ? auxClient.getEventsByEventHandleSince.bind(auxClient)
+      : auxClient.getEventsByEventHandleWithLookback.bind(auxClient);
+  const queryValue =
+    "start" in pagination ? pagination.start : pagination.limit;
+  const placedEvents: RawOrderPlacedEvent[] = await queryFunction(
+    clobAddress,
+    market.type,
+    "placed_events",
+    queryValue
+  );
   return parseRawOrderPlacedEvents(placedEvents);
 }
 
 export async function orderCancelEvents(
   auxClient: AuxClient,
   clobAddress: Types.Address,
-  market: Market
+  market: Market,
+  pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderCancelEvent[]> {
-  const cancelEvents: RawOrderCancelEvent[] =
-    await auxClient.aptosClient.getEventsByEventHandle(
-      clobAddress,
-      market.type,
-      "cancel_events"
-    );
+  pagination = pagination ?? { limit: new BN(100) };
+  const queryFunction =
+    "start" in pagination
+      ? auxClient.getEventsByEventHandleSince.bind(auxClient)
+      : auxClient.getEventsByEventHandleWithLookback.bind(auxClient);
+  const queryValue =
+    "start" in pagination ? pagination.start : pagination.limit;
+  const cancelEvents: RawOrderCancelEvent[] = await queryFunction(
+    clobAddress,
+    market.type,
+    "cancel_events",
+    queryValue
+  );
   return parseRawOrderCancelEvents(cancelEvents);
 }
 
@@ -374,12 +393,14 @@ export async function orderHistory(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
   quoteCoinType: Types.MoveStructTag,
-  owner: Types.Address | undefined
+  owner: Types.Address | undefined,
+  pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderPlacedEvent[]> {
   const events = await orderPlacedEvents(
     auxClient,
     auxClient.moduleAddress,
-    await market(auxClient, baseCoinType, quoteCoinType)
+    await market(auxClient, baseCoinType, quoteCoinType),
+    pagination
   );
   return events.filter(
     (orderPlacedEvent) =>
@@ -391,13 +412,15 @@ export async function tradeHistory(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
   quoteCoinType: Types.MoveStructTag,
-  owner: Types.Address | undefined
+  owner: Types.Address | undefined,
+  pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderFillEvent[]> {
   return (
     await orderFillEvents(
       auxClient,
       auxClient.moduleAddress,
-      await market(auxClient, baseCoinType, quoteCoinType)
+      await market(auxClient, baseCoinType, quoteCoinType),
+      pagination
     )
   ).filter(
     (orderFillEvent) =>

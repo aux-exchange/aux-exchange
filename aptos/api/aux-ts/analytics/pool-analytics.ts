@@ -6,8 +6,10 @@ import type { PythHttpClientResult } from "@pythnetwork/client/lib/PythHttpClien
 import { Connection } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { poolEvents, pools } from "../src/amm/core/query";
+import Market from "../src/clob/dsl/market";
 import { AuxClient, Network } from "../src/client";
 import { ALL_USD_STABLES, COIN_MAPPING } from "../src/coins";
+import { AU } from "../src/units";
 
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 
@@ -116,6 +118,39 @@ export class Analytics {
       }
     }
 
+    let clobVolume24H = 0;
+    const allMarkets = await Market.index(this.auxClient);
+    for (const marketInfo of allMarkets) {
+      const market = await Market.read(this.auxClient, marketInfo);
+      const fills = await market.fills({ start: new BN(0) });
+      for (const fill of fills) {
+        console.log(fill);
+        // Fills are duplicated once for maker once for taker.
+        if (fill.sequenceNumber.mod(new BN(2)).eqn(0)) {
+          continue;
+        }
+        /*
+        const baseQuantity = fill.baseQuantity.toDecimalUnits(
+          market.baseDecimals
+        );
+        */
+        const quoteQuantity = AU(
+          fill.baseQuantity.toBN().mul(fill.price.toBN())
+        ).toDecimalUnits(market.baseDecimals + market.quoteDecimals);
+        const tradeValue = Math.max(
+          0,
+          // this.toUSD(market.baseCoinInfo.coinType, baseQuantity.toNumber()),
+          this.toUSD(market.quoteCoinInfo.coinType, quoteQuantity.toNumber())
+        );
+        if (
+          fill.timestamp.toNumber() / 1000 >
+          now - MILLISECONDS_PER_HOUR * 24
+        ) {
+          clobVolume24H += tradeValue;
+        }
+      }
+    }
+
     console.log("$TVL:", totalUSDAdded);
 
     console.log("Total/24h/h volume:", totalUSDTraded);
@@ -137,6 +172,7 @@ export class Analytics {
       }, cumulativeUsers).size
     );
     console.log(usersByHoursAgo.map((s) => s.size));
+    console.log("Clob 24H volume:", clobVolume24H);
   }
 
   toUSD(coinType: string, value: number): number {
