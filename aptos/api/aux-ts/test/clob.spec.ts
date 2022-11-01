@@ -15,7 +15,10 @@ import * as vault from "../src/vault/core";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient("localnet", auxEnv.aptosClient, {
+  faucetClient: auxEnv.faucetClient!,
+});
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
@@ -43,7 +46,6 @@ describe("CLOB DSL tests", function () {
   let market: Market;
 
   it("fund accounts", async function () {
-    const auxClient = new AuxClient("mainnet", new AuxEnv().aptosClient);
     const [alice, bob] = await getAliceBob(auxClient);
     aliceAddr = alice.address().toString();
     bobAddr = bob.address().toString();

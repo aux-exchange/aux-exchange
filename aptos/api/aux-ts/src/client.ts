@@ -54,7 +54,7 @@ export class AuxClient {
   simulator: Simulator;
 
   // Per-tx options will take priority over these
-  options: AuxClientOptions | undefined;
+  options: Partial<AuxClientOptions> | undefined;
 
   // Internal state.
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
@@ -70,7 +70,7 @@ export class AuxClient {
       moduleAddress?: Types.Address;
       moduleAuthority?: AptosAccount;
       simulator?: Simulator;
-    } & AuxClientOptions
+    } & Partial<AuxClientOptions>
   ) {
     let moduleAddress, moduleAuthority, simulator;
     switch (aptosNetwork) {
@@ -404,7 +404,8 @@ export class AuxClient {
       throw new AuxClientError("not configured with faucet");
     }
     const au = await this.toAtomicUnits(APTOS_COIN_TYPE, quantity);
-    return this.faucetClient.fundAccount(account, au.toNumber());
+    const faucetClient = new FaucetClient("http://100.110.50.17:8180", "https://faucet.devnet.aptoslabs.com")
+    return faucetClient.fundAccount(account, au.toNumber());
   }
 
   /**

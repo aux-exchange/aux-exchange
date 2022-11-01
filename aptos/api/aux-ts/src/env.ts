@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { AptosNetwork, APTOS_NETWORKS } from "./client";
 
-import { AptosClient } from "aptos";
+import { AptosClient, FaucetClient } from "aptos";
 import * as dotenv from "dotenv";
 import _ from "lodash";
 import os from "os";
@@ -15,6 +15,7 @@ export class AuxEnv {
   readonly aptosNetwork: AptosNetwork;
   readonly aptosProfile: AptosProfile;
   readonly aptosClient: AptosClient;
+  readonly faucetClient: FaucetClient | undefined;
 
   /**
    * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
@@ -50,13 +51,22 @@ export class AuxEnv {
       devnet: "https://fullnode.devnet.aptoslabs.com/v1",
       localnet: "http://localhost:8081",
     };
-    const aptosClient = new AptosClient(
-      aptosProfile.rest_url ?? urls[aptosNetwork]
-    );
+    const restUrl = aptosProfile.rest_url ?? urls[aptosNetwork];
+    const aptosClient = new AptosClient(restUrl);
+    let faucetClient;
+    if (aptosNetwork === "devnet") {
+      faucetClient = new FaucetClient(
+        restUrl,
+        "https://fullnode.devnet.aptoslabs.com/v1"
+      );
+    } else if (aptosNetwork === "localnet") {
+      faucetClient = new FaucetClient(restUrl, "http://localhost:8081");
+    }
 
     this.aptosNetwork = aptosNetwork;
     this.aptosProfile = aptosProfile;
     this.aptosClient = aptosClient;
+    this.faucetClient = faucetClient;
   }
 }
 

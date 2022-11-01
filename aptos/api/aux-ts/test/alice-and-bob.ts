@@ -3,7 +3,7 @@ import * as assert from "assert";
 import { Vault } from "../src";
 import type { AuxClient } from "../src/client";
 import { ALL_FAKE_COINS, FakeCoin } from "../src/coin";
-import { AuxEnv, getAptosProfile } from "../src/env";
+import { getAptosProfile } from "../src/env";
 import { AU } from "../src/units";
 
 function sleep(ms: number) {
@@ -16,14 +16,17 @@ async function getUser(
   name: string,
   auxClient: AuxClient
 ): Promise<AptosAccount> {
-  let userProfile = getAptosProfile(name);
+  let userProfile;
+  try {
+    userProfile = getAptosProfile(name);
+  } catch {}
   let user = new AptosAccount();
   if (userProfile !== undefined) {
     user = AptosAccount.fromAptosAccountObject({
       privateKeyHex: userProfile.private_key!,
     });
   } else {
-    sleep(2000);
+    sleep(500);
     await auxClient.fundAccount({
       account: user.address(),
       quantity: AU(1_000_000_000),
@@ -69,13 +72,12 @@ let is_init = false;
 let alice: AptosAccount;
 let bob: AptosAccount;
 
-const auxEnv = new AuxEnv();
 export async function getAliceBob(
   auxClient: AuxClient
 ): Promise<[AptosAccount, AptosAccount]> {
   if (!is_init) {
-    alice = await getUser(`alice-${auxEnv.aptosNetwork}`, auxClient);
-    bob = await getUser(`bob-${auxEnv.aptosNetwork}`, auxClient);
+    alice = await getUser(`alice-${process.env["APTOS_PROFILE"]}`, auxClient);
+    bob = await getUser(`bob-${process.env["APTOS_PROFILE"]}`, auxClient);
     is_init = true;
   }
   await fundFakeCoin(auxClient, alice);
