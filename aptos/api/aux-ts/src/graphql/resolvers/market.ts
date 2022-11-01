@@ -186,14 +186,6 @@ export const market = {
       .sortedUniqBy((bar) => bar.time)
       .reverse()
       .value();
-    // if (bars.length === countBack) {
-    //   return { bars, noData: false };
-    // } else {
-    //   // const nextTime =
-    //   //   Math.floor(bars[bars.length - 1]!.time / 1000) +
-    //   //   resolutionToSeconds(resolutionToString(resolution));
-    //   return { bars, noData: true };
-    // }
   },
   async pythRating(
     parent: Market,

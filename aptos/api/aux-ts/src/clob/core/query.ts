@@ -260,7 +260,7 @@ export async function market(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
-  const txResult = await auxClient.dataSimulate({
+  const txResult = await auxClient.sendOrSimulateTransaction({
     payload,
   });
 
@@ -302,7 +302,7 @@ export async function orderbook(
     arguments: [],
   };
   const args = simulatorAccount ? { payload, simulatorAccount } : { payload };
-  const txResult = await auxClient.dataSimulate(args);
+  const txResult = await auxClient.simulateTransaction();
   const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
   const bids: Level[] = event.data.bids.map((level) => {
     return {
@@ -363,7 +363,7 @@ export async function openOrders(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [owner],
   };
-  const txResult = await auxClient.dataSimulate({
+  const txResult = await auxClient.sendOrSimulateTransaction({
     payload,
   });
   const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;

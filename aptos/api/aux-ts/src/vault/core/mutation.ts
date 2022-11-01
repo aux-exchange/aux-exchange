@@ -29,7 +29,7 @@ export async function createAuxAccount(
   sender: AptosAccount,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender,
     payload: createAuxAccountPayload(auxClient),
     options,
@@ -41,7 +41,7 @@ export async function deposit(
   depositInput: DepositInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: depositInput.sender,
     payload: depositPayload(auxClient, depositInput),
     options,
@@ -53,7 +53,7 @@ export async function withdraw(
   withdrawInput: WithdrawInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: withdrawInput.sender,
     payload: withdrawPayload(auxClient, withdrawInput),
     options,
@@ -65,7 +65,7 @@ export async function transfer(
   transferInput: TransferInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: transferInput.sender,
     payload: transferPayload(auxClient, transferInput),
     options,

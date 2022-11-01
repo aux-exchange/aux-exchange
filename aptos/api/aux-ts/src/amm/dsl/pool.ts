@@ -561,7 +561,7 @@ export default class Pool implements core.query.Pool {
   ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
     const amountAuX = toAtomicUnits(amountX, this.coinInfoX.decimals).toU64();
     const amountAuY = toAtomicUnits(amountY, this.coinInfoY.decimals).toU64();
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload: {
         function: `${this.auxClient.moduleAddress}::amm::add_liquidity`,
@@ -627,7 +627,7 @@ export default class Pool implements core.query.Pool {
     options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
     return this.auxClient
-      .generateSignSubmitWaitForTransaction({
+      .sendOrSimulateTransaction({
         sender,
         payload: {
           function: `${this.auxClient.moduleAddress}::amm::add_approximate_liquidity`,
@@ -696,7 +696,7 @@ export default class Pool implements core.query.Pool {
       amountAuY,
       maxSlippageBps: maxSlippageBps.toU64(),
     });
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload,
       options,
@@ -728,7 +728,7 @@ export default class Pool implements core.query.Pool {
       coinTypeY: this.coinInfoY.coinType,
       amountAuLP,
     });
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload,
       options,

@@ -17,11 +17,9 @@ export class AuxEnv {
   readonly aptosClient: AptosClient;
 
   /**
-   * First, the environment variable APTOS_PROFILE is checked, and if it is set to non empty value,
-   * that profile will be read.
-   *
-   * Then, if will check if APTOS_PROFILE is set, and if it is set, use that profile for creating
-   * an AptosClient.
+   * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
+   * 
+   * Otherwise use the default for APTOS_NETWORK
    * @returns profile name
    */
   constructor() {
@@ -36,7 +34,7 @@ export class AuxEnv {
       )
     ) {
       throw new Error(
-        `Invalid \`network\` ${aptosNetwork}: must be one of ${APTOS_NETWORKS}`
+        `Invalid network \`${aptosNetwork}\`: must be one of ${APTOS_NETWORKS}`
       );
     }
     if (_.isUndefined(process.env["APTOS_NETWORK"])) {
@@ -79,9 +77,10 @@ export function getAptosProfile(
     fs.readFileSync(configPath, { encoding: "utf-8" })
   );
   const profile = profiles.profiles[aptosProfile];
+  console.log(profile)
   if (_.isUndefined(profile)) {
     throw new Error(
-      `Could not find profile for ${aptosProfile} in ~/.aptos/config.yaml`
+      `Could not find profile \`${aptosProfile}\` in ~/.aptos/config.yaml`
     );
   }
   return profile;

@@ -63,7 +63,7 @@ export async function createMarket(
   createMarketInput: CreateMarketInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: createMarketInput.sender,
     payload: createMarketPayload(auxClient, createMarketInput),
     options,
@@ -75,7 +75,7 @@ export async function placeOrder(
   placeOrderInput: PlaceOrderInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<PlaceOrderEvent[]>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: placeOrderInput.sender,
     payload: placeOrderPayload(auxClient, placeOrderInput),
     options,
@@ -93,7 +93,7 @@ export async function cancelOrder(
   cancelOrderInput: CancelOrderInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: cancelOrderInput.sender,
     payload: cancelOrderPayload(auxClient, cancelOrderInput),
     options,
@@ -105,7 +105,7 @@ export async function cancelAll(
   cancelAllInput: CancelAllInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: cancelAllInput.sender,
     payload: cancelAllPayload(auxClient, cancelAllInput),
     options,

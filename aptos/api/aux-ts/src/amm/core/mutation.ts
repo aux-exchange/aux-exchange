@@ -87,7 +87,7 @@ export async function createPool(
   input: CreatePoolInput,
   options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: createPoolPayload(auxClient, input),
     options,
@@ -99,7 +99,7 @@ export async function swapExactCoinForCoin(
   input: SwapExactCoinForCoinInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: swapExactCoinForCoinPayload(auxClient, input),
     options,
@@ -116,7 +116,7 @@ export async function swapExactCoinForCoinLimit(
   input: SwapExactCoinForCoinLimitInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::swap_exact_coin_for_coin_limit`,
@@ -141,7 +141,7 @@ export async function swapCoinForExactCoin(
   input: SwapCoinForExactCoinInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: swapCoinForExactCoinPayload(auxClient, input),
     options,
@@ -158,7 +158,7 @@ export async function swapCoinForExactCoinLimit(
   input: SwapCoinForExactCoinLimitInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::swap_coin_for_exact_coin_limit`,
@@ -184,7 +184,7 @@ export async function addExactLiquidity(
   input: AddExactLiquidityInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: addExactLiquidityPayload(auxClient, input),
     options,
@@ -201,7 +201,7 @@ export async function removeLiquidity(
   input: RemoveLiquidityInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: removeLiquidityPayload(auxClient, input),
     options,
@@ -218,7 +218,7 @@ export async function resetPool(
   input: ResetPoolInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::reset_pool`,

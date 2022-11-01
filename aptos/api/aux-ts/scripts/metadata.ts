@@ -1,14 +1,12 @@
-import { AptosClient } from "aptos";
 import { parsePoolType } from "../src/amm/core/query";
 import { AuxClient } from "../src/client";
 import { parseMarketType } from "../src/clob/core/query";
 import { FakeCoin } from "../src/coin";
+import { AuxEnv } from "../src/env";
 
 async function main() {
-  const auxClient = new AuxClient(
-    "localnet",
-    new AptosClient("http://localhost:8081")
-  );
+  const auxEnv = new AuxEnv();
+  const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   const moduleAddress = auxClient.moduleAddress;
   const resources = await auxClient.aptosClient.getAccountResources(
     auxClient.moduleAddress

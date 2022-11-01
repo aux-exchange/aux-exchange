@@ -1,6 +1,6 @@
 import { AptosAccount, CoinClient, Types } from "aptos";
-import type { TransactionResult } from "../..//transaction";
-import { AnyUnits, AU } from "../..//units";
+import type { TransactionResult } from "../../transaction";
+import { AnyUnits, AU } from "../../units";
 import type { AuxClient, AuxClientOptions } from "../../client";
 import {
   parseRouterEvents,
@@ -114,7 +114,7 @@ export default class Router {
       ).toU64(),
       minAmountAuOut: "0",
     });
-    const result = this.client.dataSimulate({ payload });
+    const result = this.client.sendOrSimulateTransaction({ sender, payload });
     return result.then((r) => {
       console.dir(r, { depth: null });
       return getRouterQuote(
@@ -155,7 +155,7 @@ export default class Router {
         )
       ).toU64(),
     });
-    const result = this.client.dataSimulate({ payload });
+    const result = this.client.sendOrSimulateTransaction({ sender, payload });  // FIXME
     return result.then((r) => {
       return getRouterQuote(
         this.client,

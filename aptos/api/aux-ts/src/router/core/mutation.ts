@@ -24,7 +24,7 @@ export async function swapExactCoinForCoin(
   swapInput: SwapExactCoinForCoinInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RouterEvent[]>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: swapInput.sender,
     payload: swapExactCoinForCoinPayload(auxClient, swapInput),
     options,
@@ -39,7 +39,7 @@ export async function swapCoinForExactCoin(
   swapInput: SwapCoinForExactCoinInput,
   options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RouterEvent[]>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: swapInput.sender,
     payload: swapCoinForExactCoinPayload(auxClient, swapInput),
     options,
