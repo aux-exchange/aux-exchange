@@ -3,18 +3,24 @@ import { Pool } from "../src";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
+<<<<<<< HEAD
 import { getAliceBob } from "../test/alice-and-bob";
+=======
+>>>>>>> 5a7675f (refactor: simulate and send tx)
 
 async function main() {
   const auxEnv = new AuxEnv();
   console.log(auxEnv);
   const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   console.log(auxClient);
+<<<<<<< HEAD
   const [alice, bob] = await getAliceBob(auxClient);
   console.log(alice)
   console.log(bob)
   alice
   bob
+=======
+>>>>>>> 5a7675f (refactor: simulate and send tx)
   // const auxClient = new AuxClient(
   //   "devnet",
   //   new AptosClient("http://100.110.50.17:8180")

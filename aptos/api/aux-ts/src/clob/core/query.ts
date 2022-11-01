@@ -301,7 +301,11 @@ export async function orderbook(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
+<<<<<<< HEAD
   const txResult = await auxClient.simulateTransaction({ payload, simulator });
+=======
+  const txResult = await auxClient.simulateTransaction(payload, simulator);
+>>>>>>> 5a7675f (refactor: simulate and send tx)
   const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
   const bids: Level[] = event.data.bids.map((level) => {
     return {
@@ -363,11 +367,18 @@ export async function openOrders(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [owner],
   };
+<<<<<<< HEAD
   simulator = simulator ?? auxClient.simulator;
   const txResult = await auxClient.simulateTransaction({
     payload,
     simulator,
   });
+=======
+  const txResult = await auxClient.simulateTransaction(
+    payload,
+    simulator ?? auxClient.simulator
+  );
+>>>>>>> 5a7675f (refactor: simulate and send tx)
   const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;
   if (_.isUndefined(event)) {
     return [];
