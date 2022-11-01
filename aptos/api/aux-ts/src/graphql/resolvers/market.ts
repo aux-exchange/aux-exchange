@@ -16,11 +16,10 @@ import {
   Maybe,
   Order,
   PythRating,
-  PythRatingColor,
   Resolution as GqlResolution,
   Side,
 } from "../generated/types";
-import { LATEST_PYTH_PRICE } from "../pyth";
+import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
 type Resolution = "15s" | "1m" | "5m" | "15m" | "1h" | "4h" | "1d" | "1w";
 
@@ -224,18 +223,10 @@ export const market = {
 
     if (side === Side.Buy) {
       const ratio = (price - pythPrice) / pythPrice;
-      return ratio > 0.005
-        ? { price, color: PythRatingColor.Red }
-        : ratio > 0.001
-        ? { price, color: PythRatingColor.Yellow }
-        : { price, color: PythRatingColor.Green };
+      return generatePythRating({ ratio, price, redPct: 0.5, yellowPct: 0.1 });
     } else {
       const ratio = (pythPrice - price) / pythPrice;
-      return ratio > 0.005
-        ? { price, color: PythRatingColor.Red }
-        : ratio > 0.001
-        ? { price, color: PythRatingColor.Yellow }
-        : { price, color: PythRatingColor.Green };
+      return generatePythRating({ ratio, price, redPct: 0.5, yellowPct: 0.1 });
     }
   },
 };
