@@ -30,10 +30,11 @@ type Market {
 
 type PythRating {
   price: Float!
-  color: PythRatingColor!
+  message: String!
+  color: RatingColor!
 }
 
-enum PythRatingColor {
+enum RatingColor {
   RED
   YELLOW
   GREEN

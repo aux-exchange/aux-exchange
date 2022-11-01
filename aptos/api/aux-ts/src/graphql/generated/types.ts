@@ -456,15 +456,10 @@ export type Position = {
 
 export type PythRating = {
   __typename?: 'PythRating';
-  color: PythRatingColor;
+  color: RatingColor;
+  message: Scalars['String'];
   price: Scalars['Float'];
 };
-
-export enum PythRatingColor {
-  Green = 'GREEN',
-  Red = 'RED',
-  Yellow = 'YELLOW'
-}
 
 export type Query = {
   __typename?: 'Query';
@@ -508,8 +503,10 @@ export type QuoteExactIn = {
   expectedAmountOut: Scalars['Float'];
   feeAmount: Scalars['Float'];
   feeAmountDollars?: Maybe<Scalars['Float']>;
+  feeCurrency: CoinInfo;
   minAmountOut: Scalars['Float'];
   priceImpactPct: Scalars['Float'];
+  priceImpactRating: RatingColor;
   priceIn: Scalars['Float'];
   priceOut: Scalars['Float'];
   pythRating?: Maybe<PythRating>;
@@ -518,14 +515,22 @@ export type QuoteExactIn = {
 export type QuoteExactOut = {
   __typename?: 'QuoteExactOut';
   expectedAmountIn: Scalars['Float'];
+  feeCurrency: CoinInfo;
   maxAmountIn: Scalars['Float'];
   maxFeeAmount: Scalars['Float'];
   maxFeeAmountDollars?: Maybe<Scalars['Float']>;
   priceImpactPct: Scalars['Float'];
+  priceImpactRating: RatingColor;
   priceIn: Scalars['Float'];
   priceOut: Scalars['Float'];
   pythRating?: Maybe<PythRating>;
 };
+
+export enum RatingColor {
+  Green = 'GREEN',
+  Red = 'RED',
+  Yellow = 'YELLOW'
+}
 
 export type RegisterCoinInput = {
   coinType: Scalars['String'];
@@ -828,10 +833,10 @@ export type ResolversTypes = {
   PoolInput: PoolInput;
   Position: ResolverTypeWrapper<Position>;
   PythRating: ResolverTypeWrapper<PythRating>;
-  PythRatingColor: PythRatingColor;
   Query: ResolverTypeWrapper<{}>;
   QuoteExactIn: ResolverTypeWrapper<QuoteExactIn>;
   QuoteExactOut: ResolverTypeWrapper<QuoteExactOut>;
+  RatingColor: RatingColor;
   RegisterCoinInput: RegisterCoinInput;
   RegisteredCoinInfo: ResolverTypeWrapper<RegisteredCoinInfo>;
   RemoveLiquidity: ResolverTypeWrapper<RemoveLiquidity>;
@@ -1111,7 +1116,8 @@ export type PositionResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PythRatingResolvers<ContextType = any, ParentType extends ResolversParentTypes['PythRating'] = ResolversParentTypes['PythRating']> = {
-  color?: Resolver<ResolversTypes['PythRatingColor'], ParentType, ContextType>;
+  color?: Resolver<ResolversTypes['RatingColor'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1131,8 +1137,10 @@ export type QuoteExactInResolvers<ContextType = any, ParentType extends Resolver
   expectedAmountOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   feeAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   feeAmountDollars?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  feeCurrency?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   minAmountOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   priceImpactPct?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  priceImpactRating?: Resolver<ResolversTypes['RatingColor'], ParentType, ContextType>;
   priceIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   priceOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   pythRating?: Resolver<Maybe<ResolversTypes['PythRating']>, ParentType, ContextType>;
@@ -1141,10 +1149,12 @@ export type QuoteExactInResolvers<ContextType = any, ParentType extends Resolver
 
 export type QuoteExactOutResolvers<ContextType = any, ParentType extends ResolversParentTypes['QuoteExactOut'] = ResolversParentTypes['QuoteExactOut']> = {
   expectedAmountIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  feeCurrency?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   maxAmountIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   maxFeeAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   maxFeeAmountDollars?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   priceImpactPct?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  priceImpactRating?: Resolver<ResolversTypes['RatingColor'], ParentType, ContextType>;
   priceIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   priceOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   pythRating?: Resolver<Maybe<ResolversTypes['PythRating']>, ParentType, ContextType>;
@@ -1276,3 +1286,4 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+

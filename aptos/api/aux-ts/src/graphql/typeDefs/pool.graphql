@@ -104,7 +104,9 @@ type QuoteExactIn {
   expectedAmountOut: Float!
   minAmountOut: Float!
   feeAmount: Float!
+  feeCurrency: CoinInfo!
   priceImpactPct: Float!
+  priceImpactRating: RatingColor!
   priceOut: Float!
   priceIn: Float!
   feeAmountDollars: Float
@@ -115,7 +117,9 @@ type QuoteExactOut {
   expectedAmountIn: Float!
   maxAmountIn: Float!
   maxFeeAmount: Float!
+  feeCurrency: CoinInfo!
   priceImpactPct: Float!
+  priceImpactRating: RatingColor!
   priceOut: Float!
   priceIn: Float!
   maxFeeAmountDollars: Float

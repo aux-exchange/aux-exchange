@@ -1,5 +1,6 @@
 import { ALL_USD_STABLES, COIN_MAPPING } from "../coins";
 import { pythConnection } from "./connection";
+import { PythRating, RatingColor } from "./generated/types";
 
 export const LATEST_PYTH_PRICE = new Map<string, number>();
 
@@ -25,4 +26,40 @@ export function getRecognizedTVL(coinType: string, amount: number): number {
     }
   }
   return 0;
+}
+
+export function generatePythRating({
+  ratio,
+  price,
+  redPct,
+  yellowPct,
+}: {
+  ratio: number;
+  price: number;
+  redPct: number;
+  yellowPct: number;
+}): PythRating {
+  return ratio > redPct * 0.01
+    ? {
+        price,
+        color: RatingColor.Red,
+        message: `${ratio * 100}% more expensive than Pyth`,
+      }
+    : ratio > yellowPct * 0.01
+    ? {
+        price,
+        color: RatingColor.Yellow,
+        message: `within ${redPct}% of Pyth`,
+      }
+    : ratio >= 0
+    ? {
+        price,
+        color: RatingColor.Green,
+        message: `within ${yellowPct}% of Pyth`,
+      }
+    : {
+        price,
+        color: RatingColor.Green,
+        message: `${ratio * -100}% cheaper than Pyth`,
+      };
 }

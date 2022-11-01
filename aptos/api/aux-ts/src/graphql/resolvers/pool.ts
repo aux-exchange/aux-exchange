@@ -9,13 +9,13 @@ import {
   PoolQuoteExactInArgs,
   PoolQuoteExactOutArgs,
   Position,
-  PythRatingColor,
+  RatingColor,
   QuoteExactIn,
   QuoteExactOut,
   RemoveLiquidity,
   Swap,
 } from "../generated/types";
-import { LATEST_PYTH_PRICE } from "../pyth";
+import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
 export const pool = {
   priceX(parent: Pool): number {
@@ -125,15 +125,14 @@ export const pool = {
       coinTypeIn === parent.coinInfoX.coinType
         ? parent.coinInfoY.coinType
         : parent.coinInfoX.coinType;
+    const coinInfoIn =
+      coinTypeIn === parent.coinInfoX.coinType
+        ? parent.coinInfoX
+        : parent.coinInfoY;
 
     if (inReserve === 0 || outReserve === 0) {
       throw new Error("Pool is empty");
     }
-
-    console.log(parent.coinInfoX.coinType);
-    console.log(parent.coinInfoY.coinType);
-    console.log("inReserve", inReserve);
-    console.log("outReserve", outReserve);
 
     const decimalUnitsInWithFee = amountIn * (1 - parent.feePercent / 100.0);
     const expectedAmountOut =
@@ -170,11 +169,7 @@ export const pool = {
       }
     }
     const pythRating = !!ratio
-      ? ratio > 0.005
-        ? { price: priceOut, color: PythRatingColor.Red }
-        : ratio > 0.001
-        ? { price: priceOut, color: PythRatingColor.Yellow }
-        : { price: priceOut, color: PythRatingColor.Green }
+      ? generatePythRating({ ratio, price: priceOut, redPct: 2, yellowPct: 1 })
       : null;
     return {
       expectedAmountOut,
@@ -185,6 +180,13 @@ export const pool = {
       priceIn,
       priceOut,
       pythRating,
+      feeCurrency: coinInfoIn,
+      priceImpactRating:
+        priceImpactPct > 0.2
+          ? RatingColor.Red
+          : priceImpactPct > 0.1
+          ? RatingColor.Yellow
+          : RatingColor.Green,
     };
   },
   quoteExactOut(
@@ -200,13 +202,12 @@ export const pool = {
         ? parent.amountY
         : parent.amountX;
 
-    console.log("inReserve", inReserve);
-    console.log("outReserve", outReserve);
-
-    const coinTypeIn =
+    const coinInfoIn =
       coinTypeOut === parent.coinInfoX.coinType
-        ? parent.coinInfoY.coinType
-        : parent.coinInfoX.coinType;
+        ? parent.coinInfoY
+        : parent.coinInfoX;
+
+    const coinTypeIn = coinInfoIn.coinType;
 
     if (inReserve == 0 || outReserve == 0) {
       throw new Error("Pool is empty");
@@ -253,11 +254,7 @@ export const pool = {
       }
     }
     const pythRating = !!ratio
-      ? ratio > 0.005
-        ? { price: priceOut, color: PythRatingColor.Red }
-        : ratio > 0.001
-        ? { price: priceOut, color: PythRatingColor.Yellow }
-        : { price: priceOut, color: PythRatingColor.Green }
+      ? generatePythRating({ ratio, price: priceOut, redPct: 2, yellowPct: 1 })
       : null;
     return {
       maxAmountIn,
@@ -268,6 +265,13 @@ export const pool = {
       priceIn,
       priceOut,
       pythRating,
+      feeCurrency: coinInfoIn,
+      priceImpactRating:
+        priceImpactPct > 0.2
+          ? RatingColor.Red
+          : priceImpactPct > 0.1
+          ? RatingColor.Yellow
+          : RatingColor.Green,
     };
   },
 };
