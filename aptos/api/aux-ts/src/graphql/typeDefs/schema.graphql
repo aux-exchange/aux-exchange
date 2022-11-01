@@ -44,7 +44,7 @@ type Subscription {
   addLiquidity(poolInputs: [PoolInput!]): AddLiquidity!
   removeLiquidity(poolInputs: [PoolInput!]): RemoveLiquidity!
   orderbook(marketInputs: [MarketInput!]): Orderbook!
-  trade(marketInputs: [MarketInput!]): Order!
+  trade(marketInputs: [MarketInput!]): Trade!
   lastTradePrice(marketInputs: [MarketInput!]): LastTradePrice!
   bar(marketInputs: [MarketInput!], resolution: Resolution!): Bar!
   high24h(marketInputs: [MarketInput!]): High24h!

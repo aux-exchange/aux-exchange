@@ -84,6 +84,11 @@ export function resolutionToSeconds(resolution: Resolution): number {
 }
 
 export const market = {
+  async lastTradePrice({ baseCoinInfo, quoteCoinInfo }: Market) {
+    return redisClient.get(
+      `${baseCoinInfo.coinType}-${quoteCoinInfo.coinType}-last-trade-price`
+    );
+  },
   async openOrders(
     parent: Market,
     { owner }: MarketOpenOrdersArgs
