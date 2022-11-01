@@ -344,10 +344,9 @@ export default class Market implements core.query.Market {
   /**
    * @returns all fill events
    */
-  async fills(pagination?: {
-    start?: number;
-    limit?: number;
-  }): Promise<OrderFillEvent[]> {
+  async fills(
+    pagination?: { start: BN } | { limit: BN }
+  ): Promise<OrderFillEvent[]> {
     return core.query.orderFillEvents(
       this.auxClient,
       this.clobAddress,
@@ -359,15 +358,29 @@ export default class Market implements core.query.Market {
   /**
    * @returns all cancel events
    */
-  async cancels(): Promise<OrderCancelEvent[]> {
-    return core.query.orderCancelEvents(this.auxClient, this.clobAddress, this);
+  async cancels(
+    pagination?: { start: BN } | { limit: BN }
+  ): Promise<OrderCancelEvent[]> {
+    return core.query.orderCancelEvents(
+      this.auxClient,
+      this.clobAddress,
+      this,
+      pagination
+    );
   }
 
   /**
    * @returns all order placed events
    */
-  async orders(): Promise<OrderPlacedEvent[]> {
-    return core.query.orderPlacedEvents(this.auxClient, this.clobAddress, this);
+  async orders(
+    pagination?: { start: BN } | { limit: BN }
+  ): Promise<OrderPlacedEvent[]> {
+    return core.query.orderPlacedEvents(
+      this.auxClient,
+      this.clobAddress,
+      this,
+      pagination
+    );
   }
 
   /**
@@ -405,12 +418,16 @@ export default class Market implements core.query.Market {
    * @param owner
    * @returns
    */
-  async orderHistory(owner: Types.Address): Promise<OrderPlacedEvent[]> {
+  async orderHistory(
+    owner: Types.Address,
+    pagination?: { start: BN } | { limit: BN }
+  ): Promise<OrderPlacedEvent[]> {
     return core.query.orderHistory(
       this.auxClient,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType,
-      owner
+      owner,
+      pagination
     );
   }
 
@@ -419,12 +436,16 @@ export default class Market implements core.query.Market {
    * @param owner
    * @returns
    */
-  async tradeHistory(owner?: Types.Address): Promise<OrderFillEvent[]> {
+  async tradeHistory(
+    owner?: Types.Address,
+    pagination?: { start: BN } | { limit: BN }
+  ): Promise<OrderFillEvent[]> {
     return core.query.tradeHistory(
       this.auxClient,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType,
-      owner
+      owner,
+      pagination
     );
   }
 

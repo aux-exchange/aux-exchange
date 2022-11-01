@@ -448,7 +448,7 @@ export class FTXMarketMakingStrategy {
 
     while (true) {
       const fills = await market.fills({
-        start: fillSequenceNumber + 1,
+        start: new BN(fillSequenceNumber + 1),
       });
       if (fills.length > 0) {
         fillSequenceNumber = fills[fills.length - 1]!.sequenceNumber.toNumber();
