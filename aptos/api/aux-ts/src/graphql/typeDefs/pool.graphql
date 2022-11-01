@@ -4,9 +4,9 @@ input PoolInput {
 }
 
 enum FeaturedStatus {
-  NONE,
-  HOT,
-  PROMOTED,
+  NONE
+  HOT
+  PROMOTED
 }
 
 type Pool {
@@ -24,8 +24,16 @@ type Pool {
   adds(owner: Address, first: Int, offset: Int): [AddLiquidity!]!
   removes(owner: Address, first: Int, offset: Int): [RemoveLiquidity!]!
   position(owner: Address!): Position
-  quoteExactIn(coinTypeIn: String!, amountIn: Float!): Float!
-  quoteExactOut(coinTypeOut: String!, amountOut: Float!): Float!
+  quoteExactIn(
+    coinTypeIn: String!
+    amountIn: Float!
+    slippagePct: Float
+  ): QuoteExactIn!
+  quoteExactOut(
+    coinTypeOut: String!
+    amountOut: Float!
+    slippagePct: Float
+  ): QuoteExactOut!
 }
 
 type Position {
@@ -59,7 +67,7 @@ input SwapExactInInput {
   coinTypeIn: String!
   amountIn: Float!
   quoteAmountOut: Float!
-  slippage: Float
+  slippagePct: Float
 }
 
 input SwapExactOutInput {
@@ -67,7 +75,7 @@ input SwapExactOutInput {
   coinTypeOut: String!
   amountOut: Float!
   quoteAmountIn: Float!
-  slippage: Float
+  slippagePct: Float
 }
 
 type Swap {
@@ -90,4 +98,26 @@ type RemoveLiquidity {
   amountRemovedY: Float!
   amountBurnedLP: Float!
   time: Timestamp!
+}
+
+type QuoteExactIn {
+  expectedAmountOut: Float!
+  minAmountOut: Float!
+  feeAmount: Float!
+  priceImpactPct: Float!
+  priceOut: Float!
+  priceIn: Float!
+  feeAmountDollars: Float
+  pythRating: PythRating
+}
+
+type QuoteExactOut {
+  expectedAmountIn: Float!
+  maxAmountIn: Float!
+  maxFeeAmount: Float!
+  priceImpactPct: Float!
+  priceOut: Float!
+  priceIn: Float!
+  maxFeeAmountDollars: Float
+  pythRating: PythRating
 }
