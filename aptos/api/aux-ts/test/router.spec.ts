@@ -15,7 +15,7 @@ import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const coinClient = new CoinClient(auxClient.aptosClient);

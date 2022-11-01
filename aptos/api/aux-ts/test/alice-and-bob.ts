@@ -1,4 +1,4 @@
-import { AptosAccount, HexString } from "aptos";
+import { AptosAccount, FaucetClient, HexString } from "aptos";
 import * as assert from "assert";
 import { Vault } from "../src";
 import type { AuxClient } from "../src/client";
@@ -22,15 +22,18 @@ async function getUser(
   } catch {}
   let user = new AptosAccount();
   if (userProfile !== undefined) {
+    console.log("HERE");
     user = AptosAccount.fromAptosAccountObject({
       privateKeyHex: userProfile.private_key!,
     });
   } else {
     sleep(500);
-    await auxClient.fundAccount({
-      account: user.address(),
-      quantity: AU(1_000_000_000),
-    });
+    auxClient;
+    const faucetClient = new FaucetClient(
+      "http://0.0.0.0:8080/v1",
+      "http://0.0.0.0:8081"
+    );
+    await faucetClient.fundAccount(user.address(), 1_000_000_000);
     let privateKey = HexString.fromUint8Array(user.signingKey.secretKey);
     console.log(`
     ${name}:

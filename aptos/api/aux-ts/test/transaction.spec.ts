@@ -6,7 +6,7 @@ import { AuxClient } from "../src/client";
 import { AuxEnv } from "../src/env";
 import { DecimalUnits } from "../src/units";
 
-const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;

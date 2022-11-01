@@ -8,7 +8,12 @@ import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
 import { AU, DU } from "../src/units";
 
-const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;

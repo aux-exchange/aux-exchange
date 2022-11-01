@@ -98,7 +98,7 @@ async function setupAccount(
 
 async function main() {
   const auxClient = new AuxClient(
-    "localnet",
+    "local",
     new AptosClient("http://localhost:8081")
   );
   const moduleAuthority = auxClient.moduleAuthority!;

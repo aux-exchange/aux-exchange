@@ -29,7 +29,7 @@ const AUX_TRADER_CONFIG = {
 
 // Start an AUX client
 const auxClient = new AuxClient(
-  "localnet",
+  "local",
   new AptosClient("http://localhost:8081")
 );
 

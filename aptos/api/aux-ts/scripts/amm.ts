@@ -3,12 +3,18 @@ import { Pool } from "../src";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
+import { getAliceBob } from "../test/alice-and-bob";
 
 async function main() {
   const auxEnv = new AuxEnv();
   console.log(auxEnv);
   const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   console.log(auxClient);
+  const [alice, bob] = await getAliceBob(auxClient);
+  console.log(alice)
+  console.log(bob)
+  alice
+  bob
   // const auxClient = new AuxClient(
   //   "devnet",
   //   new AptosClient("http://100.110.50.17:8180")

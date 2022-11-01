@@ -10,7 +10,7 @@ import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 import { AuxEnv } from "../src/env";
 
-const auxClient = new AuxClient("localnet", new AuxEnv().aptosClient);
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);

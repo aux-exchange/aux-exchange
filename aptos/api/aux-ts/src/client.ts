@@ -14,12 +14,9 @@ import "reflect-metadata";
 
 import _ from "lodash";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
-import { AuxEnv } from "./env";
+import { AptosNetwork, AuxEnv } from "./env";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
-
-export type AptosNetwork = "mainnet" | "testnet" | "devnet" | "localnet";
-export const APTOS_NETWORKS = ["mainnet", "testnet", "devnet", "localnet"];
 
 /**
  * AuxClient
@@ -48,29 +45,23 @@ export class AuxClient {
   // relatively fixed across txs.
   //
   // Nonetheless, they can still be overriden via `auxClient.defaultSimulator = ...`.
-  faucetClient: FaucetClient | undefined;
   moduleAddress: Types.Address;
   moduleAuthority: AptosAccount | undefined;
+  sender: AptosAccount | undefined;
   simulator: Simulator;
 
   // Per-tx options will take priority over these
-  options: Partial<AuxClientOptions> | undefined;
+  options: Partial<AuxClientOptions>;
 
   // Internal state.
   coinInfo: Map<Types.MoveStructTag, CoinInfo>;
   vaults: Map<Types.Address, HexString>;
 
   constructor(
-    public aptosNetwork: AptosNetwork,
-    public aptosClient: AptosClient,
-    // The named options are set on the client, whereas AuxClientOptions can also be reconfigured
-    // as part of each tx
-    options?: {
-      faucetClient?: FaucetClient;
-      moduleAddress?: Types.Address;
-      moduleAuthority?: AptosAccount;
-      simulator?: Simulator;
-    } & Partial<AuxClientOptions>
+    readonly aptosNetwork: AptosNetwork,
+    readonly aptosClient: AptosClient,
+    readonly faucetClient: FaucetClient | undefined = undefined,
+    options?: Partial<AuxClientOptions>
   ) {
     let moduleAddress, moduleAuthority, simulator;
     switch (aptosNetwork) {
@@ -107,7 +98,8 @@ export class AuxClient {
           ),
         };
         break;
-      case "localnet":
+      case "local":
+      case "custom":
         const profile = new AuxEnv().aptosProfile;
         if (_.isUndefined(profile)) {
           throw new Error(
@@ -141,11 +133,11 @@ export class AuxClient {
 
     // Lifting these optional fields to be explicitly set at the top-level
     // (see `options` parameter in constructor)
-    this.faucetClient = options?.faucetClient;
     this.moduleAddress = options?.moduleAddress ?? moduleAddress;
     this.moduleAuthority = options?.moduleAuthority ?? moduleAuthority;
+    this.sender = options?.sender;
     this.simulator = options?.simulator ?? simulator;
-    this.options = options;
+    this.options = options ?? {};
 
     this.coinInfo = new Map();
     this.vaults = new Map();
@@ -404,7 +396,10 @@ export class AuxClient {
       throw new AuxClientError("not configured with faucet");
     }
     const au = await this.toAtomicUnits(APTOS_COIN_TYPE, quantity);
-    const faucetClient = new FaucetClient("http://100.110.50.17:8180", "https://faucet.devnet.aptoslabs.com")
+    const faucetClient = new FaucetClient(
+      "http://100.110.50.17:8180",
+      "https://faucet.devnet.aptoslabs.com"
+    );
     return faucetClient.fundAccount(account, au.toNumber());
   }
 
@@ -532,7 +527,7 @@ export class AuxClient {
         type_arguments: [this.getUnwrappedFakeCoinType(coin)],
         arguments: [(await this.toAtomicUnits(coinType, amount)).toU64()],
       },
-      options,
+      options: options ?? {},
     });
   }
 
@@ -570,7 +565,7 @@ export class AuxClient {
         type_arguments: [coinType],
         arguments: [(await this.toAtomicUnits(coinType, amount)).toU64()],
       },
-      options,
+      options: options ?? {},
     });
   }
 
@@ -591,7 +586,7 @@ export class AuxClient {
         type_arguments: [],
         arguments: [recipient, (await au).toU64()],
       },
-      options,
+      options: options ?? {},
     });
   }
 
@@ -609,7 +604,7 @@ export class AuxClient {
         type_arguments: [],
         arguments: [],
       },
-      options,
+      options: options ?? {},
     });
   }
 
@@ -638,11 +633,11 @@ export class AuxClient {
   }: {
     payload: Types.EntryFunctionPayload;
     sender?: AptosAccount | undefined;
-    options?: Partial<AuxClientOptions> | undefined;
+    options?: Partial<AuxClientOptions>;
   }): Promise<Types.UserTransaction> {
     _.defaults(options, this.options);
     const simulate = options?.simulate ?? false;
-    sender = sender ?? options?.sender;
+    sender = sender ?? this.sender;
 
     // AUX has a default simulator for every network, so only matters when sending real txs
     if (!simulate && _.isUndefined(sender)) {
@@ -732,6 +727,10 @@ export class AuxClientError extends Error {
  * the AuxClient constructor.
  */
 export interface AuxClientOptions {
+  // module overrides
+  moduleAddress?: Types.Address;
+  moduleAuthority?: AptosAccount;
+
   // simulate overrides
   simulate: boolean;
   simulator: Simulator;

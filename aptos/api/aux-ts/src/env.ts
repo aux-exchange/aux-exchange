@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { AptosNetwork, APTOS_NETWORKS } from "./client";
 
 import { AptosClient, FaucetClient } from "aptos";
 import * as dotenv from "dotenv";
@@ -15,7 +14,6 @@ export class AuxEnv {
   readonly aptosNetwork: AptosNetwork;
   readonly aptosProfile: AptosProfile;
   readonly aptosClient: AptosClient;
-  readonly faucetClient: FaucetClient | undefined;
 
   /**
    * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
@@ -23,50 +21,60 @@ export class AuxEnv {
    * Otherwise use the default for APTOS_NETWORK
    * @returns profile name
    */
-  constructor() {
+  constructor(
+    aptosNetwork?: AptosNetwork,
+    aptosProfile?: AptosProfile,
+    aptosClient?: AptosClient,
+    readonly faucetClient?: FaucetClient | undefined
+  ) {
     dotenv.config();
-    const aptosNetwork = process.env["APTOS_NETWORK"];
+    const aptosNetworkEnv = process.env["APTOS_NETWORK"];
     if (
-      !(
-        aptosNetwork === "mainnet" ||
-        aptosNetwork === "testnet" ||
-        aptosNetwork === "devnet" ||
-        aptosNetwork === "localnet"
-      )
+      aptosNetworkEnv === "mainnet" ||
+      aptosNetworkEnv === "testnet" ||
+      aptosNetworkEnv === "devnet" ||
+      aptosNetworkEnv === "local"
     ) {
+      aptosNetwork = aptosNetwork ?? aptosNetworkEnv;
+    } else if (!_.isUndefined(aptosNetworkEnv)) {
       throw new Error(
         `Invalid network \`${aptosNetwork}\`: must be one of ${APTOS_NETWORKS}`
       );
     }
-    if (_.isUndefined(process.env["APTOS_NETWORK"])) {
-      throw new Error("`APTOS_NETWORK` must be specified");
+    if (_.isUndefined(aptosNetwork)) {
+      throw new Error(
+        `Either pass in aptosNetwork or \`APTOS_NETWORK\` envvar must be set to ${APTOS_NETWORKS}`
+      );
     }
-    const aptosProfile = getAptosProfile(
-      process.env["APTOS_PROFILE"] ?? process.env["APTOS_NETWORK"] ?? "default"
-    );
+    aptosProfile =
+      aptosProfile ??
+      getAptosProfile(
+        process.env["APTOS_PROFILE"] ??
+          process.env["APTOS_NETWORK"] ??
+          "default"
+      );
 
-    const urls = {
+    const restUrls = {
       mainnet: "https://fullnode.mainnet.aptoslabs.com/v1",
       testnet: "https://fullnode.testnet.aptoslabs.com/v1",
       devnet: "https://fullnode.devnet.aptoslabs.com/v1",
-      localnet: "http://localhost:8081",
+      local: "http://0.0.0.0:8080/v1",
+      custom: "http://0.0.0.0:8080/v1",
     };
-    const restUrl = aptosProfile.rest_url ?? urls[aptosNetwork];
-    const aptosClient = new AptosClient(restUrl);
-    let faucetClient;
-    if (aptosNetwork === "devnet") {
-      faucetClient = new FaucetClient(
-        restUrl,
-        "https://fullnode.devnet.aptoslabs.com/v1"
-      );
-    } else if (aptosNetwork === "localnet") {
-      faucetClient = new FaucetClient(restUrl, "http://localhost:8081");
-    }
+    const faucetUrls: Record<string, string> = {
+      devnet: "https://fullnode.devnet.aptoslabs.com/v1",
+      local: "http://0.0.0.0:8081",
+    };
+    const restUrl = aptosProfile.rest_url ?? restUrls[aptosNetwork];
+    const faucetUrl = aptosProfile.faucet_url ?? faucetUrls[aptosNetwork];
 
     this.aptosNetwork = aptosNetwork;
     this.aptosProfile = aptosProfile;
-    this.aptosClient = aptosClient;
-    this.faucetClient = faucetClient;
+    this.aptosClient = aptosClient ?? new AptosClient(restUrl);
+    faucetClient =
+      faucetClient ?? _.isUndefined(faucetUrl)
+        ? undefined
+        : new FaucetClient(restUrl, faucetUrl);
   }
 }
 
@@ -94,6 +102,21 @@ export function getAptosProfile(
   }
   return profile;
 }
+
+export type AptosNetwork =
+  | "mainnet"
+  | "testnet"
+  | "devnet"
+  | "local"
+  | "custom";
+
+export const APTOS_NETWORKS = [
+  "mainnet",
+  "testnet",
+  "devnet",
+  "local",
+  "custom",
+];
 
 /**
  * These values are intentionally not typed as `string | undefined`.

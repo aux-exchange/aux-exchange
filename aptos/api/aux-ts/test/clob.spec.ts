@@ -16,9 +16,11 @@ import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
 const auxEnv = new AuxEnv();
-const auxClient = new AuxClient("localnet", auxEnv.aptosClient, {
-  faucetClient: auxEnv.faucetClient!,
-});
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
@@ -37,7 +39,7 @@ function getZeroAuxOrderId(orderCounter: BN): string {
   return r.toString();
 }
 
-describe("CLOB DSL tests", function () {
+describe.only("CLOB DSL tests", function () {
   this.timeout(30000);
 
   let quoteCoinInfo: CoinInfo;
@@ -45,7 +47,7 @@ describe("CLOB DSL tests", function () {
   let vault: Vault;
   let market: Market;
 
-  it("fund accounts", async function () {
+  it.only("fund accounts", async function () {
     const [alice, bob] = await getAliceBob(auxClient);
     aliceAddr = alice.address().toString();
     bobAddr = bob.address().toString();
