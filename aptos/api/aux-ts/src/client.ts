@@ -266,7 +266,7 @@ export class AuxClient {
     return this.create({
       network: profileName as Network,
       validatorAddress: validator,
-      faucetAddress: faucet,
+      faucetAddress: faucet !== "" ? faucet : undefined,
       moduleAddress,
       forceSimulate,
       transactionOptions,
