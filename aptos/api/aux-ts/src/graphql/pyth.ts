@@ -43,7 +43,7 @@ export function generatePythRating({
     ? {
         price,
         color: RatingColor.Red,
-        message: `${ratio * 100}% more expensive than Pyth`,
+        message: `${Math.round(ratio * 10000) / 100}% more expensive than Pyth`,
       }
     : ratio > yellowPct * 0.01
     ? {
