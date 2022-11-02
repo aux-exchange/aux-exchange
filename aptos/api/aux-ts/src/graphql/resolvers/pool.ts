@@ -152,7 +152,8 @@ export const pool = {
       : null;
     const instantaneousAmountOut = (outReserve / inReserve) * amountIn;
     const priceImpactPct =
-      (instantaneousAmountOut - expectedAmountOut) / instantaneousAmountOut;
+      (100 * (instantaneousAmountOut - expectedAmountOut)) /
+      instantaneousAmountOut;
     const priceIn = expectedAmountOut / amountIn;
     const priceOut = amountIn / expectedAmountOut;
     let ratio = null;
