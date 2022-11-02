@@ -15,7 +15,7 @@ import {
   RemoveLiquidity,
   Swap,
 } from "../generated/types";
-import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
+import { generatePythRating, getPythPrice, LATEST_PYTH_PRICE } from "../pyth";
 
 export const pool = {
   priceX(parent: Pool): number {
@@ -230,12 +230,7 @@ export const pool = {
     const maxFeeAmount = maxAmountIn * (parent.feePercent / 100.0);
     const FAKE_MAPPING = fakeMapping(auxClient);
     const mappedCoinIn = FAKE_MAPPING.get(coinTypeIn) ?? coinTypeIn;
-    const inputCoinSymbol = COIN_MAPPING.get(mappedCoinIn)?.pythSymbol;
-    const pythPriceCoinIn = !!inputCoinSymbol
-      ? ALL_USD_STABLES.includes(inputCoinSymbol)
-        ? 1
-        : LATEST_PYTH_PRICE.get(inputCoinSymbol)
-      : null;
+    const pythPriceCoinIn = getPythPrice(mappedCoinIn);
     const maxFeeAmountDollars = !!pythPriceCoinIn
       ? pythPriceCoinIn * maxFeeAmount
       : null;
@@ -247,21 +242,16 @@ export const pool = {
       100.0 * (instantaneousAmountOut - amountOut) / instantaneousAmountOut;
     const priceIn = amountOut / expectedAmountIn;
     const priceOut = expectedAmountIn / amountOut;
+    const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
+    const pythPriceCoinOut = getPythPrice(mappedCoinOut);
+    console.log("pyth price coin in", pythPriceCoinIn);
+    console.log("pyth price coin out", pythPriceCoinOut);
     let ratio = null;
-    if (!!pythPriceCoinIn) {
-      ratio = (pythPriceCoinIn - priceIn) / pythPriceCoinIn;
-    } else {
-      const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
-      const outputCoinSymbol = COIN_MAPPING.get(mappedCoinOut)?.pythSymbol;
-      const pythPriceCoinOut = !!outputCoinSymbol
-        ? ALL_USD_STABLES.includes(outputCoinSymbol)
-          ? 1
-          : LATEST_PYTH_PRICE.get(outputCoinSymbol)
-        : null;
-      if (!!pythPriceCoinOut) {
-        ratio = (priceOut - pythPriceCoinOut) / pythPriceCoinOut;
-      }
+    if (!!pythPriceCoinIn && !!pythPriceCoinOut) {
+      const pythPriceOut = pythPriceCoinOut / pythPriceCoinIn
+      ratio = (priceOut - pythPriceOut) / pythPriceOut;
     }
+    console.log(ratio);
     const pythRating = !!ratio
       ? generatePythRating({ ratio, price: priceOut, redPct: 2, yellowPct: 1 })
       : null;

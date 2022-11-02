@@ -28,6 +28,18 @@ export function getRecognizedTVL(coinType: string, amount: number): number {
   return 0;
 }
 
+export function getPythPrice(coinType: string): number | undefined {
+  if (ALL_USD_STABLES.includes(coinType)) {
+    return 1
+  } else {
+    const outputCoinSymbol = COIN_MAPPING.get(coinType)?.pythSymbol;
+    return !!outputCoinSymbol
+      ?  LATEST_PYTH_PRICE.get(outputCoinSymbol)
+      : undefined;
+  }
+
+}
+
 export function generatePythRating({
   ratio,
   price,
@@ -43,7 +55,7 @@ export function generatePythRating({
     ? {
         price,
         color: RatingColor.Red,
-        message: `${Math.round(ratio * 10000) / 100}% more expensive than Pyth`,
+        message: `${ratio * 100.0}% more expensive than Pyth`,
       }
     : ratio > yellowPct * 0.01
     ? {
