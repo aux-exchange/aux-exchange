@@ -138,6 +138,9 @@ export const pool = {
     }
 
     const decimalUnitsInWithFee = amountIn * (1 - parent.feePercent / 100.0);
+    const expectedAmountOutNoFee =
+      (amountIn * outReserve) /
+      (inReserve + amountIn);
     const expectedAmountOut =
       (decimalUnitsInWithFee * outReserve) /
       (inReserve + decimalUnitsInWithFee);
@@ -157,7 +160,7 @@ export const pool = {
       : null;
     const instantaneousAmountOut = (outReserve / inReserve) * amountIn;
     const priceImpactPct =
-      (100.0 * (instantaneousAmountOut - expectedAmountOut)) /
+      (100.0 * (instantaneousAmountOut - expectedAmountOutNoFee)) /
       instantaneousAmountOut;
     const priceIn = expectedAmountOut / amountIn;
     const priceOut = amountIn / expectedAmountOut;
