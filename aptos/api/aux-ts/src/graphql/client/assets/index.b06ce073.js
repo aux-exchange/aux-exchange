@@ -7946,9 +7946,11 @@ function SwapDetailsView({
   inputCoin,
   outputCoin,
   priceImpact,
+  priceImpactRating,
   expectedOutput,
   pythRating
 }) {
+  var _a2;
   const getPythColor = (color) => {
     switch (color) {
       case RatingColor.Green:
@@ -7991,7 +7993,7 @@ function SwapDetailsView({
               tip: `The amount your swap price worsens from the current pool price due to market impact.`
             })]
           }), /* @__PURE__ */ jsxs("div", {
-            className: `${getPythColor(pythRating == null ? void 0 : pythRating.color)}  font-bold`,
+            className: `${(_a2 = getPythColor(priceImpactRating)) != null ? _a2 : ""}  font-bold`,
             children: [priceImpact == null ? void 0 : priceImpact.toLocaleString("en-US", {
               maximumFractionDigits: 3
             }), "%"]
@@ -10023,7 +10025,7 @@ function SwapFormView({
   quoteOut,
   requiresConfirm
 }) {
-  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j, _k, _l, _m, _n2;
+  var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j, _k, _l, _m, _n2, _o;
   const wallet = dist.useWallet();
   return /* @__PURE__ */ jsxs(Aa, {
     className: "w-[700px] mx-auto self-center justify-self-center border border-primary-700",
@@ -10062,7 +10064,8 @@ function SwapFormView({
       inputCoin: primaryCoin != null ? primaryCoin : void 0,
       outputCoin: secondaryCoin != null ? secondaryCoin : void 0,
       priceImpact: (_k = (_j = quoteIn == null ? void 0 : quoteIn.pool) == null ? void 0 : _j.quoteExactIn) == null ? void 0 : _k.priceImpactPct,
-      pythRating: (_n2 = (_m = (_l = quoteIn == null ? void 0 : quoteIn.pool) == null ? void 0 : _l.quoteExactIn) == null ? void 0 : _m.pythRating) != null ? _n2 : void 0
+      pythRating: (_n2 = (_m = (_l = quoteIn == null ? void 0 : quoteIn.pool) == null ? void 0 : _l.quoteExactIn) == null ? void 0 : _m.pythRating) != null ? _n2 : void 0,
+      priceImpactRating: (_o = quoteIn == null ? void 0 : quoteIn.pool) == null ? void 0 : _o.quoteExactIn.priceImpactRating
     }), helperText ? /* @__PURE__ */ jsx("div", {
       className: "mt-6 text-red-300 text-left w-full",
       children: helperText
@@ -10262,6 +10265,12 @@ const PoolPriceInDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "priceImpactPct"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "priceImpactRating"
                 }
               }, {
                 "kind": "Field",
@@ -10492,6 +10501,12 @@ const PoolPriceOutDocument = {
                 "name": {
                   "kind": "Name",
                   "value": "priceImpactPct"
+                }
+              }, {
+                "kind": "Field",
+                "name": {
+                  "kind": "Name",
+                  "value": "priceImpactRating"
                 }
               }, {
                 "kind": "Field",
