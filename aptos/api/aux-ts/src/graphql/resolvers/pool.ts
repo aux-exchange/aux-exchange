@@ -150,9 +150,10 @@ export const pool = {
     const feeAmountDollars = !!pythPriceCoinIn
       ? pythPriceCoinIn * feeAmount
       : null;
-    const instantaneousAmountOut = (outReserve / inReserve) * amountIn;
+    const instantaneousPrice = outReserve / inReserve;
+    const averageFillPrice = expectedAmountOut / amountIn;
     const priceImpactPct =
-      (instantaneousAmountOut - expectedAmountOut) / instantaneousAmountOut;
+      (instantaneousPrice - averageFillPrice) / instantaneousPrice;
     const priceIn = expectedAmountOut / amountIn;
     const priceOut = amountIn / expectedAmountOut;
     let ratio = null;
