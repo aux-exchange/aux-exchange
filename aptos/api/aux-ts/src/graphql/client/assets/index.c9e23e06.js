@@ -10681,25 +10681,23 @@ function SwapFormContainer({}) {
     var _a3, _b2, _c2;
     return (_c2 = (_a3 = firstCoinPrice.error) == null ? void 0 : _a3.message) != null ? _c2 : (_b2 = secondCoinPrice.error) == null ? void 0 : _b2.message;
   }, [firstCoinPrice, secondCoinPrice]);
-  return /* @__PURE__ */ jsx(SlippageProvider, {
-    children: /* @__PURE__ */ jsx(SwapFormView, {
-      requiresConfirm: confirmRequired,
-      coins,
-      handleSwap,
-      invertSelections,
-      onSelectPrimary,
-      onSelectSecondary,
-      primaryCoin: firstCoin,
-      secondaryCoin: secondCoin,
-      onChangeValueIn: onChangeAmountIn,
-      onChangeValueOut: onChangeAmountOut,
-      valueIn,
-      valueOut,
-      loading: firstCoinPrice.loading,
-      helperText: error,
-      quoteIn: firstCoinPrice.data,
-      quoteOut: secondCoinPrice.data
-    })
+  return /* @__PURE__ */ jsx(SwapFormView, {
+    requiresConfirm: confirmRequired,
+    coins,
+    handleSwap,
+    invertSelections,
+    onSelectPrimary,
+    onSelectSecondary,
+    primaryCoin: firstCoin,
+    secondaryCoin: secondCoin,
+    onChangeValueIn: onChangeAmountIn,
+    onChangeValueOut: onChangeAmountOut,
+    valueIn,
+    valueOut,
+    loading: firstCoinPrice.loading,
+    helperText: error,
+    quoteIn: firstCoinPrice.data,
+    quoteOut: secondCoinPrice.data
   });
 }
 function SwapModalView({}) {
@@ -16491,38 +16489,40 @@ function App() {
               id: "bgcontainer",
               className: "bg-cover flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] justify-center",
               children: /* @__PURE__ */ jsx(CoinXYParamCtxProvider, {
-                children: /* @__PURE__ */ jsxs(Routes, {
-                  children: [/* @__PURE__ */ jsx(Route, {
-                    path: "/",
-                    element: /* @__PURE__ */ jsx(SwapFormContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/add-liquidity",
-                    element: /* @__PURE__ */ jsx(AddLiquidityContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/create-pool",
-                    element: /* @__PURE__ */ jsx(CreatePoolContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/remove-liquidity",
-                    element: /* @__PURE__ */ jsx(RemoveLiquidityContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/pools",
-                    element: /* @__PURE__ */ jsx(PoolsContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/pool",
-                    element: /* @__PURE__ */ jsx(PoolContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/trade",
-                    element: /* @__PURE__ */ jsx(TradeContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/portfolio",
-                    element: /* @__PURE__ */ jsx(PortfolioContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/stats",
-                    element: /* @__PURE__ */ jsx(AppStatsContainer, {})
-                  }), /* @__PURE__ */ jsx(Route, {
-                    path: "/account",
-                    element: /* @__PURE__ */ jsx(CreateAccountWizard, {})
-                  })]
+                children: /* @__PURE__ */ jsx(SlippageProvider, {
+                  children: /* @__PURE__ */ jsxs(Routes, {
+                    children: [/* @__PURE__ */ jsx(Route, {
+                      path: "/",
+                      element: /* @__PURE__ */ jsx(SwapFormContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/add-liquidity",
+                      element: /* @__PURE__ */ jsx(AddLiquidityContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/create-pool",
+                      element: /* @__PURE__ */ jsx(CreatePoolContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/remove-liquidity",
+                      element: /* @__PURE__ */ jsx(RemoveLiquidityContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/pools",
+                      element: /* @__PURE__ */ jsx(PoolsContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/pool",
+                      element: /* @__PURE__ */ jsx(PoolContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/trade",
+                      element: /* @__PURE__ */ jsx(TradeContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/portfolio",
+                      element: /* @__PURE__ */ jsx(PortfolioContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/stats",
+                      element: /* @__PURE__ */ jsx(AppStatsContainer, {})
+                    }), /* @__PURE__ */ jsx(Route, {
+                      path: "/account",
+                      element: /* @__PURE__ */ jsx(CreateAccountWizard, {})
+                    })]
+                  })
                 })
               })
             })]
