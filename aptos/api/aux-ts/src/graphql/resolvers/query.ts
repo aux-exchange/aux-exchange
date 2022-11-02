@@ -333,7 +333,7 @@ export const query = {
         )
       ).map((market) => {
         return {
-          name: `${market.baseCoinInfo.name}-${market.quoteCoinInfo.name}`,
+          name: `${market.baseCoinInfo.symbol}-${market.quoteCoinInfo.symbol}`,
           baseCoinInfo: market.baseCoinInfo,
           quoteCoinInfo: market.quoteCoinInfo,
           lotSize: market.lotSize.toNumber(),
