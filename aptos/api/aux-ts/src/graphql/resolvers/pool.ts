@@ -17,6 +17,9 @@ import {
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
+const PRICE_IMPACT_PCT_RED: number = 0.5
+const PRICE_IMPACT_PCT_YELLOW: number = 0.2
+
 export const pool = {
   priceX(parent: Pool): number {
     return parent.amountX === 0 ? 0 : parent.amountY / parent.amountX;
@@ -187,9 +190,9 @@ export const pool = {
       pythRating,
       feeCurrency: coinInfoIn,
       priceImpactRating:
-        priceImpactPct > 0.2
+        priceImpactPct > PRICE_IMPACT_PCT_RED
           ? RatingColor.Red
-          : priceImpactPct > 0.1
+          : priceImpactPct > PRICE_IMPACT_PCT_YELLOW
           ? RatingColor.Yellow
           : RatingColor.Green,
     };
@@ -276,9 +279,9 @@ export const pool = {
       pythRating,
       feeCurrency: coinInfoIn,
       priceImpactRating:
-        priceImpactPct > 0.2
+        priceImpactPct > PRICE_IMPACT_PCT_RED
           ? RatingColor.Red
-          : priceImpactPct > 0.1
+          : priceImpactPct > PRICE_IMPACT_PCT_YELLOW
           ? RatingColor.Yellow
           : RatingColor.Green,
     };
