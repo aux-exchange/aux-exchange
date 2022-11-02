@@ -1388,7 +1388,7 @@ module aux::clob_market {
 
         // round quantity down (router may submit un-quantized quantities)
         let lot_size = market.lot_size;
-        let tick_size = market.lot_size;
+        let tick_size = market.tick_size;
         let rounded_quantity = quantity / lot_size * lot_size;
         let rounded_price = limit_price / tick_size * tick_size;
 
