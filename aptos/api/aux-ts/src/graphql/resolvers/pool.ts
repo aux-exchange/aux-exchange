@@ -1,5 +1,5 @@
 import * as aux from "../../";
-import { COIN_MAPPING, fakeMapping } from "../../coins";
+import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coins";
 import { auxClient } from "../connection";
 import {
   AddLiquidity,
@@ -145,7 +145,9 @@ export const pool = {
     const mappedCoinIn = FAKE_MAPPING.get(coinTypeIn) ?? coinTypeIn;
     const inputCoinSymbol = COIN_MAPPING.get(mappedCoinIn)?.pythSymbol;
     const pythPriceCoinIn = !!inputCoinSymbol
-      ? LATEST_PYTH_PRICE.get(inputCoinSymbol)
+      ? ALL_USD_STABLES.includes(inputCoinSymbol)
+        ? 1
+        : LATEST_PYTH_PRICE.get(inputCoinSymbol)
       : null;
     const feeAmountDollars = !!pythPriceCoinIn
       ? pythPriceCoinIn * feeAmount
@@ -163,7 +165,9 @@ export const pool = {
       const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
       const outputCoinSymbol = COIN_MAPPING.get(mappedCoinOut)?.pythSymbol;
       const pythPriceCoinOut = !!outputCoinSymbol
-        ? LATEST_PYTH_PRICE.get(outputCoinSymbol)
+        ? ALL_USD_STABLES.includes(outputCoinSymbol)
+          ? 1
+          : LATEST_PYTH_PRICE.get(outputCoinSymbol)
         : null;
       if (!!pythPriceCoinOut) {
         ratio = (priceOut - pythPriceCoinOut) / pythPriceCoinOut;
@@ -228,7 +232,9 @@ export const pool = {
     const mappedCoinIn = FAKE_MAPPING.get(coinTypeIn) ?? coinTypeIn;
     const inputCoinSymbol = COIN_MAPPING.get(mappedCoinIn)?.pythSymbol;
     const pythPriceCoinIn = !!inputCoinSymbol
-      ? LATEST_PYTH_PRICE.get(inputCoinSymbol)
+      ? ALL_USD_STABLES.includes(inputCoinSymbol)
+        ? 1
+        : LATEST_PYTH_PRICE.get(inputCoinSymbol)
       : null;
     const maxFeeAmountDollars = !!pythPriceCoinIn
       ? pythPriceCoinIn * maxFeeAmount
@@ -248,7 +254,9 @@ export const pool = {
       const mappedCoinOut = FAKE_MAPPING.get(coinTypeOut) ?? coinTypeOut;
       const outputCoinSymbol = COIN_MAPPING.get(mappedCoinOut)?.pythSymbol;
       const pythPriceCoinOut = !!outputCoinSymbol
-        ? LATEST_PYTH_PRICE.get(outputCoinSymbol)
+        ? ALL_USD_STABLES.includes(outputCoinSymbol)
+          ? 1
+          : LATEST_PYTH_PRICE.get(outputCoinSymbol)
         : null;
       if (!!pythPriceCoinOut) {
         ratio = (priceOut - pythPriceCoinOut) / pythPriceCoinOut;
