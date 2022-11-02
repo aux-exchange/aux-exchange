@@ -1,6 +1,6 @@
 use aptos_sdk::{
     crypto::{ed25519::Ed25519PrivateKey, hash::HashValue},
-    rest_client::{Account, Client, Transaction},
+    rest_client::{Client, Transaction},
     transaction_builder::TransactionFactory,
     types::{
         account_address::AccountAddress, chain_id::ChainId, transaction::TransactionPayload,
