@@ -22536,6 +22536,82 @@ function useReactTable(options) {
   }));
   return tableRef.current;
 }
+function ArrowLongRightIcon$2({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /* @__PURE__ */ jsxs("svg", {
+    ...Object.assign({
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 20 20",
+      fill: "currentColor",
+      "aria-hidden": "true",
+      ref: svgRef,
+      "aria-labelledby": titleId
+    }, props),
+    children: [title ? /* @__PURE__ */ jsx("title", {
+      id: titleId,
+      children: title
+    }) : null, /* @__PURE__ */ jsx("path", {
+      fillRule: "evenodd",
+      d: "M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z",
+      clipRule: "evenodd"
+    })]
+  });
+}
+const ForwardRef$d = react.exports.forwardRef(ArrowLongRightIcon$2);
+const ArrowLongRightIcon$3 = ForwardRef$d;
+function InformationCircleIcon({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /* @__PURE__ */ jsxs("svg", {
+    ...Object.assign({
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 20 20",
+      fill: "currentColor",
+      "aria-hidden": "true",
+      ref: svgRef,
+      "aria-labelledby": titleId
+    }, props),
+    children: [title ? /* @__PURE__ */ jsx("title", {
+      id: titleId,
+      children: title
+    }) : null, /* @__PURE__ */ jsx("path", {
+      fillRule: "evenodd",
+      d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z",
+      clipRule: "evenodd"
+    })]
+  });
+}
+const ForwardRef$c = react.exports.forwardRef(InformationCircleIcon);
+const InformationCircleIcon$1 = ForwardRef$c;
+function XMarkIcon({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /* @__PURE__ */ jsxs("svg", {
+    ...Object.assign({
+      xmlns: "http://www.w3.org/2000/svg",
+      viewBox: "0 0 20 20",
+      fill: "currentColor",
+      "aria-hidden": "true",
+      ref: svgRef,
+      "aria-labelledby": titleId
+    }, props),
+    children: [title ? /* @__PURE__ */ jsx("title", {
+      id: titleId,
+      children: title
+    }) : null, /* @__PURE__ */ jsx("path", {
+      d: "M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+    })]
+  });
+}
+const ForwardRef$b = react.exports.forwardRef(XMarkIcon);
+const XMarkIcon$1 = ForwardRef$b;
 var genericMessage = "Invariant Violation";
 var _a$3 = Object.setPrototypeOf, setPrototypeOf = _a$3 === void 0 ? function(obj, proto) {
   obj.__proto__ = proto;
@@ -58173,6 +58249,3876 @@ var SafePalWallet = {};
   __exportStar(WalletProviders, exports);
   __exportStar(WalletAdapters, exports);
 })(dist$2);
+var DefaultContext = {
+  color: void 0,
+  size: void 0,
+  className: void 0,
+  style: void 0,
+  attr: void 0
+};
+var IconContext = React.createContext && React.createContext(DefaultContext);
+var __assign = globalThis && globalThis.__assign || function() {
+  __assign = Object.assign || function(t2) {
+    for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
+      s2 = arguments[i2];
+      for (var p2 in s2)
+        if (Object.prototype.hasOwnProperty.call(s2, p2))
+          t2[p2] = s2[p2];
+    }
+    return t2;
+  };
+  return __assign.apply(this, arguments);
+};
+var __rest = globalThis && globalThis.__rest || function(s2, e3) {
+  var t2 = {};
+  for (var p2 in s2)
+    if (Object.prototype.hasOwnProperty.call(s2, p2) && e3.indexOf(p2) < 0)
+      t2[p2] = s2[p2];
+  if (s2 != null && typeof Object.getOwnPropertySymbols === "function")
+    for (var i2 = 0, p2 = Object.getOwnPropertySymbols(s2); i2 < p2.length; i2++) {
+      if (e3.indexOf(p2[i2]) < 0 && Object.prototype.propertyIsEnumerable.call(s2, p2[i2]))
+        t2[p2[i2]] = s2[p2[i2]];
+    }
+  return t2;
+};
+function Tree2Element(tree) {
+  return tree && tree.map(function(node, i2) {
+    return React.createElement(node.tag, __assign({
+      key: i2
+    }, node.attr), Tree2Element(node.child));
+  });
+}
+function GenIcon(data2) {
+  return function(props) {
+    return /* @__PURE__ */ jsx(IconBase, {
+      ...__assign({
+        attr: __assign({}, data2.attr)
+      }, props),
+      children: Tree2Element(data2.child)
+    });
+  };
+}
+function IconBase(props) {
+  var elem = function(conf) {
+    var attr = props.attr, size = props.size, title = props.title, svgProps = __rest(props, ["attr", "size", "title"]);
+    var computedSize = size || conf.size || "1em";
+    var className;
+    if (conf.className)
+      className = conf.className;
+    if (props.className)
+      className = (className ? className + " " : "") + props.className;
+    return /* @__PURE__ */ jsxs("svg", {
+      ...__assign({
+        stroke: "currentColor",
+        fill: "currentColor",
+        strokeWidth: "0"
+      }, conf.attr, attr, svgProps, {
+        className,
+        style: __assign(__assign({
+          color: props.color || conf.color
+        }, conf.style), props.style),
+        height: computedSize,
+        width: computedSize,
+        xmlns: "http://www.w3.org/2000/svg"
+      }),
+      children: [title && /* @__PURE__ */ jsx("title", {
+        children: title
+      }), props.children]
+    });
+  };
+  return IconContext !== void 0 ? /* @__PURE__ */ jsx(IconContext.Consumer, {
+    children: function(conf) {
+      return elem(conf);
+    }
+  }) : elem(DefaultContext);
+}
+function HiChevronDown(props) {
+  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z", "clipRule": "evenodd" } }] })(props);
+}
+function HiStar(props) {
+  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "d": "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" } }] })(props);
+}
+function HiX(props) {
+  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", "clipRule": "evenodd" } }] })(props);
+}
+function HiOutlineChevronDown(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M19 9l-7 7-7-7" } }] })(props);
+}
+function HiOutlineChevronLeft(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M15 19l-7-7 7-7" } }] })(props);
+}
+function HiOutlineChevronRight(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M9 5l7 7-7 7" } }] })(props);
+}
+function HiOutlineChevronUp(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M5 15l7-7 7 7" } }] })(props);
+}
+function HiOutlineX(props) {
+  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M6 18L18 6M6 6l12 12" } }] })(props);
+}
+const excludeClassName = (props) => {
+  return exclude({
+    key: "className",
+    source: props
+  });
+};
+const exclude = ({ key, source }) => {
+  delete source[key];
+  return source;
+};
+const theme = {
+  accordion: {
+    base: "divide-y divide-gray-200 border-gray-200 dark:divide-gray-700 dark:border-gray-700",
+    content: {
+      base: "py-5 px-5 last:rounded-b-lg dark:bg-gray-900 first:rounded-t-lg"
+    },
+    flush: {
+      off: "rounded-lg border",
+      on: "border-b"
+    },
+    title: {
+      arrow: {
+        base: "h-6 w-6 shrink-0",
+        open: {
+          off: "",
+          on: "rotate-180"
+        }
+      },
+      base: "flex w-full items-center justify-between first:rounded-t-lg last:rounded-b-lg py-5 px-5 text-left font-medium text-gray-500 dark:text-gray-400",
+      flush: {
+        off: "hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-800",
+        on: "!bg-transparent dark:!bg-transparent"
+      },
+      heading: "",
+      open: {
+        off: "",
+        on: "text-gray-900 bg-gray-100 dark:bg-gray-800 dark:text-white"
+      }
+    }
+  },
+  alert: {
+    base: "flex flex-col gap-2 p-4 text-sm",
+    borderAccent: "border-t-4",
+    closeButton: {
+      base: "-mx-1.5 -my-1.5 ml-auto inline-flex h-8 w-8 rounded-lg p-1.5 focus:ring-2",
+      color: {
+        info: "bg-blue-100 text-blue-500 hover:bg-blue-200 focus:ring-blue-400 dark:bg-blue-200 dark:text-blue-600 dark:hover:bg-blue-300",
+        gray: "bg-gray-100 text-gray-500 hover:bg-gray-200 focus:ring-gray-400 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
+        failure: "bg-red-100 text-red-500 hover:bg-red-200 focus:ring-red-400 dark:bg-red-200 dark:text-red-600 dark:hover:bg-red-300",
+        success: "bg-green-100 text-green-500 hover:bg-green-200 focus:ring-green-400 dark:bg-green-200 dark:text-green-600 dark:hover:bg-green-300",
+        warning: "bg-yellow-100 text-yellow-500 hover:bg-yellow-200 focus:ring-yellow-400 dark:bg-yellow-200 dark:text-yellow-600 dark:hover:bg-yellow-300"
+      }
+    },
+    color: {
+      info: "text-blue-700 bg-blue-100 border-blue-500 dark:bg-blue-200 dark:text-blue-800",
+      gray: "text-gray-700 bg-gray-100 border-gray-500 dark:bg-gray-700 dark:text-gray-300",
+      failure: "text-red-700 bg-red-100 border-red-500 dark:bg-red-200 dark:text-red-800",
+      success: "text-green-700 bg-green-100 border-green-500 dark:bg-green-200 dark:text-green-800",
+      warning: "text-yellow-700 bg-yellow-100 border-yellow-500 dark:bg-yellow-200 dark:text-yellow-800"
+    },
+    icon: "mr-3 inline h-5 w-5 flex-shrink-0",
+    rounded: "rounded-lg"
+  },
+  avatar: {
+    base: "flex items-center space-x-4",
+    bordered: "p-1 ring-2 ring-gray-300 dark:ring-gray-500",
+    img: {
+      off: "rounded relative overflow-hidden bg-gray-100 dark:bg-gray-600",
+      on: "rounded"
+    },
+    rounded: "!rounded-full",
+    size: {
+      xs: "w-6 h-6",
+      sm: "w-8 h-8",
+      md: "w-10 h-10",
+      lg: "w-20 h-20",
+      xl: "w-36 h-36"
+    },
+    stacked: "ring-2 ring-gray-300 dark:ring-gray-500",
+    status: {
+      away: "bg-yellow-400",
+      base: "absolute h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-800",
+      busy: "bg-red-400",
+      offline: "bg-gray-400",
+      online: "bg-green-400"
+    },
+    statusPosition: {
+      "bottom-left": "-bottom-1 -left-1",
+      "bottom-center": "-botton-1 center",
+      "bottom-right": "-bottom-1 -right-1",
+      "top-left": "-top-1 -left-1",
+      "top-center": "-top-1 center",
+      "top-right": "-top-1 -right-1",
+      "center-right": "center -right-1",
+      center: "center center",
+      "center-left": "center -left-1"
+    },
+    initials: {
+      text: "font-medium text-gray-600 dark:text-gray-300",
+      base: "inline-flex overflow-hidden relative justify-center items-center w-10 h-10 bg-gray-100 dark:bg-gray-600"
+    }
+  },
+  badge: {
+    base: "flex h-fit items-center gap-1 font-semibold",
+    color: {
+      info: "bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 group-hover:bg-blue-200 dark:group-hover:bg-blue-300",
+      gray: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-600",
+      failure: "bg-red-100 text-red-800 dark:bg-red-200 dark:text-red-900 group-hover:bg-red-200 dark:group-hover:bg-red-300",
+      success: "bg-green-100 text-green-800 dark:bg-green-200 dark:text-green-900 group-hover:bg-green-200 dark:group-hover:bg-green-300",
+      warning: "bg-yellow-100 text-yellow-800 dark:bg-yellow-200 dark:text-yellow-900 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-300",
+      indigo: "bg-indigo-100 text-indigo-800 dark:bg-indigo-200 dark:text-indigo-900 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-300",
+      purple: "bg-purple-100 text-purple-800 dark:bg-purple-200 dark:text-purple-900 group-hover:bg-purple-200 dark:group-hover:bg-purple-300",
+      pink: "bg-pink-100 text-pink-800 dark:bg-pink-200 dark:text-pink-900 group-hover:bg-pink-200 dark:group-hover:bg-pink-300"
+    },
+    href: "group",
+    icon: {
+      off: "rounded px-2 py-0.5",
+      on: "rounded-full p-1.5",
+      size: {
+        xs: "w-3 h-3",
+        sm: "w-3.5 h-3.5"
+      }
+    },
+    size: {
+      xs: "p-1 text-xs",
+      sm: "p-1.5 text-sm"
+    }
+  },
+  breadcrumb: {
+    item: {
+      base: "group flex items-center",
+      chevron: "mx-1 h-6 w-6 text-gray-400 group-first:hidden md:mx-2",
+      href: {
+        off: "flex items-center text-sm font-medium text-gray-500 dark:text-gray-400",
+        on: "flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+      },
+      icon: "mr-2 h-4 w-4"
+    },
+    list: "flex items-center"
+  },
+  button: {
+    base: "w-full group flex h-min items-center justify-center p-0.5 text-center font-medium focus:z-10",
+    color: {
+      dark: "text-white bg-gray-800 border border-transparent hover:bg-gray-900 focus:ring-4 focus:ring-gray-300 disabled:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-800 dark:border-gray-700 dark:disabled:hover:bg-gray-800",
+      failure: "text-white bg-red-700 border border-transparent hover:bg-red-800 focus:ring-4 focus:ring-red-300 disabled:hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 dark:disabled:hover:bg-red-600",
+      gray: "text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 disabled:hover:bg-white focus:ring-blue-700 focus:text-blue-700 dark:bg-transparent dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 dark:disabled:hover:bg-gray-800",
+      info: "text-white bg-blue-700 border border-transparent hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 disabled:hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 dark:disabled:hover:bg-blue-600",
+      light: "text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 disabled:hover:bg-white dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700",
+      purple: "text-white bg-purple-700 border border-transparent hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 disabled:hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 dark:disabled:hover:bg-purple-600",
+      success: "text-white bg-green-700 border border-transparent hover:bg-green-800 focus:ring-4 focus:ring-green-300 disabled:hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 dark:disabled:hover:bg-green-600",
+      warning: "text-white bg-yellow-400 border border-transparent hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 disabled:hover:bg-yellow-400 dark:focus:ring-yellow-900 dark:disabled:hover:bg-yellow-400"
+    },
+    disabled: "cursor-not-allowed opacity-50",
+    gradient: {
+      cyan: "text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800",
+      failure: "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800",
+      info: "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 ",
+      lime: "text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:ring-lime-300 dark:focus:ring-lime-800",
+      pink: "text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-800",
+      purple: "text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800",
+      success: "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800",
+      teal: "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-800"
+    },
+    gradientDuoTone: {
+      cyanToBlue: "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800",
+      greenToBlue: "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800",
+      pinkToOrange: "text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:ring-pink-200 dark:focus:ring-pink-800",
+      purpleToBlue: "text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800",
+      purpleToPink: "text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:ring-purple-200 dark:focus:ring-purple-800",
+      redToYellow: "text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-4 focus:ring-red-100 dark:focus:ring-red-400",
+      tealToLime: "text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 hover:!text-gray-900 focus:ring-4 focus:ring-lime-200 dark:focus:ring-teal-700"
+    },
+    inner: {
+      base: "flex items-center",
+      position: {
+        none: "",
+        start: "rounded-r-none",
+        middle: "!rounded-none",
+        end: "rounded-l-none"
+      },
+      outline: "border border-transparent"
+    },
+    label: "ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800",
+    outline: {
+      color: {
+        gray: "border border-gray-900 dark:border-white",
+        default: "border-0",
+        light: ""
+      },
+      off: "",
+      on: "bg-white text-gray-900 transition-all duration-75 ease-in group-hover:bg-opacity-0 group-hover:text-inherit dark:bg-gray-900 dark:text-white",
+      pill: {
+        off: "rounded-md",
+        on: "rounded-full"
+      }
+    },
+    pill: {
+      off: "rounded-lg",
+      on: "rounded-full"
+    },
+    size: {
+      xs: "text-xs px-2 py-1",
+      sm: "text-sm px-3 py-1.5",
+      md: "text-sm px-4 py-2",
+      lg: "text-base px-5 py-2.5",
+      xl: "text-base px-6 py-3"
+    }
+  },
+  buttonGroup: {
+    base: "inline-flex",
+    position: {
+      none: "focus:!ring-2",
+      start: "rounded-r-none",
+      middle: "!rounded-none border-l-0 pl-0",
+      end: "rounded-l-none border-l-0 pl-0"
+    }
+  },
+  card: {
+    base: "flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800",
+    children: "flex h-full flex-col justify-center gap-4 p-6",
+    horizontal: {
+      off: "flex-col",
+      on: "flex-col md:max-w-xl md:flex-row"
+    },
+    href: "hover:bg-gray-100 dark:hover:bg-gray-700",
+    img: {
+      base: "",
+      horizontal: {
+        off: "rounded-t-lg",
+        on: "h-96 w-full rounded-t-lg object-cover md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
+      }
+    }
+  },
+  carousel: {
+    base: "relative h-full w-full",
+    indicators: {
+      active: {
+        off: "bg-white/50 hover:bg-white dark:bg-gray-800/50 dark:hover:bg-gray-800",
+        on: "bg-white dark:bg-gray-800"
+      },
+      base: "h-3 w-3 rounded-full",
+      wrapper: "absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3"
+    },
+    item: {
+      base: "absolute top-1/2 left-1/2 block w-full -translate-x-1/2 -translate-y-1/2",
+      wrapper: "w-full flex-shrink-0 transform cursor-grab snap-center"
+    },
+    control: {
+      base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10",
+      icon: "h-5 w-5 text-white dark:text-gray-800 sm:h-6 sm:w-6"
+    },
+    leftControl: "absolute top-0 left-0 flex h-full items-center justify-center px-4 focus:outline-none",
+    rightControl: "absolute top-0 right-0 flex h-full items-center justify-center px-4 focus:outline-none",
+    scrollContainer: {
+      base: "flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-lg",
+      snap: "snap-x"
+    }
+  },
+  darkThemeToggle: {
+    base: "rounded-lg p-2.5 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700",
+    icon: "h-5 w-5"
+  },
+  dropdown: {
+    floating: {
+      target: "w-fit",
+      base: "z-10 w-fit rounded divide-y divide-gray-100 shadow",
+      animation: "transition-opacity",
+      hidden: "invisible opacity-0",
+      style: {
+        dark: "bg-gray-900 text-white dark:bg-gray-700",
+        light: "border border-gray-200 bg-white text-gray-900",
+        auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
+      },
+      header: "block py-2 px-4 text-sm text-gray-700 dark:text-gray-200",
+      content: "py-1 text-sm text-gray-700 dark:text-gray-200",
+      arrow: {
+        base: "absolute z-10 h-2 w-2 rotate-45",
+        style: {
+          dark: "bg-gray-900 dark:bg-gray-700",
+          light: "bg-white",
+          auto: "bg-white dark:bg-gray-700"
+        },
+        placement: "-4px"
+      },
+      item: {
+        base: "flex items-center justify-start py-2 px-4 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white",
+        icon: "mr-2 h-4 w-4"
+      },
+      divider: "my-1 h-px bg-gray-100 dark:bg-gray-600"
+    },
+    arrowIcon: "ml-2 h-4 w-4",
+    inlineWrapper: "flex items-center",
+    content: "py-1"
+  },
+  footer: {
+    base: "w-full rounded-lg bg-white shadow dark:bg-gray-800 md:flex md:items-center md:justify-between",
+    container: "w-full p-6",
+    bgDark: "bg-gray-800",
+    groupLink: {
+      base: "flex flex-wrap text-sm text-gray-500 dark:text-white",
+      link: {
+        base: "last:mr-0 md:mr-6",
+        href: "hover:underline"
+      },
+      col: "flex-col space-y-4"
+    },
+    icon: {
+      base: "text-gray-500 dark:hover:text-white",
+      size: "h-5 w-5"
+    },
+    title: {
+      base: "mb-6 text-sm font-semibold uppercase text-gray-500 dark:text-white"
+    },
+    divider: {
+      base: "w-full my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8"
+    },
+    copyright: {
+      base: "text-sm text-gray-500 dark:text-gray-400 sm:text-center",
+      href: "ml-1 hover:underline",
+      span: "ml-1"
+    },
+    brand: {
+      base: "mb-4 flex items-center sm:mb-0",
+      img: "mr-3 h-8",
+      span: "self-center whitespace-nowrap text-2xl font-semibold text-gray-800 dark:text-white"
+    }
+  },
+  formControls: {
+    helperText: {
+      base: "mt-2 text-sm",
+      colors: {
+        gray: "text-gray-500 dark:text-gray-400",
+        info: "text-blue-700 dark:text-blue-800",
+        success: "text-green-600 dark:text-green-500",
+        failure: "text-red-600 dark:text-red-500",
+        warning: "text-yellow-500 dark:text-yellow-600"
+      }
+    },
+    label: {
+      base: "text-sm font-medium",
+      colors: {
+        default: "text-gray-900 dark:text-gray-300",
+        info: "text-blue-500 dark:text-blue-600",
+        failure: "text-red-700 dark:text-red-500",
+        warning: "text-yellow-500 dark:text-yellow-600",
+        success: "text-green-700 dark:text-green-500"
+      },
+      disabled: "opacity-50"
+    },
+    radio: {
+      base: "h-4 w-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:bg-blue-600 dark:focus:ring-blue-600"
+    },
+    checkbox: {
+      base: "h-4 w-4 rounded border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+    },
+    textInput: {
+      base: "flex",
+      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
+      field: {
+        base: "relative w-full",
+        icon: {
+          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
+          svg: "h-5 w-5 text-gray-500 dark:text-gray-400"
+        },
+        input: {
+          base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
+          sizes: {
+            sm: "p-2 sm:text-xs",
+            md: "p-2.5 text-sm",
+            lg: "sm:text-md p-4"
+          },
+          colors: {
+            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
+            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
+            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
+          },
+          withIcon: {
+            on: "pl-10",
+            off: ""
+          },
+          withAddon: {
+            on: "rounded-r-lg",
+            off: "rounded-lg"
+          },
+          withShadow: {
+            on: "shadow-sm dark:shadow-sm-light",
+            off: ""
+          }
+        }
+      }
+    },
+    fileInput: {
+      base: "flex",
+      field: {
+        base: "relative w-full",
+        input: {
+          base: "rounded-lg block w-full border disabled:cursor-not-allowed disabled:opacity-50",
+          sizes: {
+            sm: "sm:text-xs",
+            md: "text-sm",
+            lg: "sm:text-md"
+          },
+          colors: {
+            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
+            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
+            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
+          }
+        }
+      }
+    },
+    toggleSwitch: {
+      base: "group relative flex items-center rounded-lg focus:outline-none",
+      active: {
+        on: "cursor-pointer",
+        off: "cursor-not-allowed opacity-50"
+      },
+      toggle: {
+        base: "toggle-bg h-6 w-11 rounded-full border group-focus:ring-4 group-focus:ring-blue-500/25",
+        checked: {
+          on: "border-blue-700 bg-blue-700 after:translate-x-full after:border-white",
+          off: "border-gray-200 bg-gray-200 dark:border-gray-600 dark:bg-gray-700"
+        }
+      },
+      label: "ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+    },
+    textarea: {
+      base: "block w-full rounded-lg border disabled:cursor-not-allowed disabled:opacity-50",
+      colors: {
+        gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+        info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+        failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
+        warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
+        success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
+      },
+      withShadow: {
+        on: "shadow-sm dark:shadow-sm-light",
+        off: ""
+      }
+    },
+    select: {
+      base: "flex",
+      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
+      field: {
+        base: "relative w-full",
+        icon: {
+          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
+          svg: "h-5 w-5 text-gray-500 dark:text-gray-400"
+        },
+        select: {
+          base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
+          withIcon: {
+            on: "pl-10",
+            off: ""
+          },
+          withAddon: {
+            on: "rounded-r-lg",
+            off: "rounded-lg"
+          },
+          withShadow: {
+            on: "shadow-sm dark:shadow-sm-light",
+            off: ""
+          },
+          sizes: {
+            sm: "p-2 sm:text-xs",
+            md: "p-2.5 text-sm",
+            lg: "sm:text-md p-4"
+          },
+          colors: {
+            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
+            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
+            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
+            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
+          }
+        }
+      }
+    }
+  },
+  listGroup: {
+    base: "list-none rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white",
+    item: {
+      active: {
+        off: "hover:bg-gray-100 hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:text-white dark:focus:ring-gray-500",
+        on: "bg-blue-700 text-white dark:bg-gray-800"
+      },
+      base: "flex w-full cursor-pointer border-b border-gray-200 py-2 px-4 first:rounded-t-lg last:rounded-b-lg last:border-b-0 dark:border-gray-600",
+      href: {
+        off: "",
+        on: ""
+      },
+      icon: "mr-2 h-4 w-4 fill-current"
+    }
+  },
+  modal: {
+    base: "fixed top-0 right-0 left-0 z-50 h-modal overflow-y-auto overflow-x-hidden md:inset-0 md:h-full",
+    show: {
+      on: "flex bg-gray-900 bg-opacity-50 dark:bg-opacity-80",
+      off: "hidden"
+    },
+    content: {
+      base: "relative h-full w-full p-4 md:h-auto",
+      inner: "relative rounded-lg bg-white shadow dark:bg-gray-700"
+    },
+    body: {
+      base: "p-6",
+      popup: "pt-0"
+    },
+    header: {
+      base: "flex items-start justify-between rounded-t dark:border-gray-600 border-b p-5",
+      popup: "!p-2 !border-b-0",
+      title: "text-xl font-medium text-gray-900 dark:text-white",
+      close: {
+        base: "ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white",
+        icon: "h-5 w-5"
+      }
+    },
+    footer: {
+      base: "flex items-center space-x-2 rounded-b border-gray-200 p-6 dark:border-gray-600",
+      popup: "border-t"
+    },
+    sizes: {
+      sm: "max-w-sm",
+      md: "max-w-md",
+      lg: "max-w-lg",
+      xl: "max-w-xl",
+      "2xl": "max-w-2xl",
+      "3xl": "max-w-3xl",
+      "4xl": "max-w-4xl",
+      "5xl": "max-w-5xl",
+      "6xl": "max-w-6xl",
+      "7xl": "max-w-7xl"
+    },
+    positions: {
+      "top-left": "items-start justify-start",
+      "top-center": "items-start justify-center",
+      "top-right": "items-start justify-end",
+      "center-left": "items-center justify-start",
+      center: "items-center justify-center",
+      "center-right": "items-center justify-end",
+      "bottom-right": "items-end justify-end",
+      "bottom-center": "items-end justify-center",
+      "bottom-left": "items-end justify-start"
+    }
+  },
+  navbar: {
+    base: "border-gray-200 bg-white px-2 py-2.5 dark:border-gray-700 dark:bg-gray-800 sm:px-4",
+    rounded: {
+      on: "rounded",
+      off: ""
+    },
+    bordered: {
+      on: "border",
+      off: ""
+    },
+    inner: {
+      base: "mx-auto flex flex-wrap items-center justify-between",
+      fluid: {
+        on: "",
+        off: "container"
+      }
+    },
+    brand: "flex items-center",
+    collapse: {
+      base: "w-full md:block md:w-auto",
+      list: "mt-4 flex flex-col md:mt-0 md:flex-row md:space-x-8 md:text-sm md:font-medium",
+      hidden: {
+        on: "hidden",
+        off: ""
+      }
+    },
+    link: {
+      base: "block py-2 pr-4 pl-3 md:p-0",
+      active: {
+        on: "bg-blue-700 text-white dark:text-white md:bg-transparent md:text-blue-700",
+        off: "border-b border-gray-100  text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-white"
+      },
+      disabled: {
+        on: "text-gray-400 hover:cursor-not-allowed dark:text-gray-600",
+        off: ""
+      }
+    },
+    toggle: {
+      base: "inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden",
+      icon: "h-6 w-6 shrink-0"
+    }
+  },
+  rating: {
+    base: "flex items-center",
+    star: {
+      sizes: {
+        sm: "w-5 h-5",
+        md: "w-7 h-7",
+        lg: "w-10 h-10"
+      },
+      filled: "text-yellow-400",
+      empty: "text-gray-300 dark:text-gray-500"
+    },
+    advanced: {
+      base: "flex items-center",
+      label: "text-sm font-medium text-blue-600 dark:text-blue-500",
+      progress: {
+        base: "mx-4 h-5 w-2/4 rounded bg-gray-200 dark:bg-gray-700",
+        fill: "h-5 rounded bg-yellow-400",
+        label: "text-sm font-medium text-blue-600 dark:text-blue-500"
+      }
+    }
+  },
+  pagination: {
+    base: "",
+    layout: {
+      table: {
+        base: "text-sm text-gray-700 dark:text-gray-400",
+        span: "font-semibold text-gray-900 dark:text-white"
+      }
+    },
+    pages: {
+      base: "xs:mt-0 mt-2 inline-flex items-center -space-x-px",
+      showIcon: "inline-flex",
+      previous: {
+        base: "ml-0 rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
+        icon: "h-5 w-5"
+      },
+      next: {
+        base: "rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
+        icon: "h-5 w-5"
+      },
+      selector: {
+        base: "w-12 border border-gray-300 bg-white py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
+        active: "bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+      }
+    }
+  },
+  sidebar: {
+    base: "h-full",
+    inner: "h-full overflow-y-auto overflow-x-hidden rounded bg-white py-4 px-3 dark:bg-gray-800",
+    collapsed: {
+      on: "w-16",
+      off: "w-64"
+    },
+    collapse: {
+      button: "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700",
+      icon: {
+        base: "h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+        open: {
+          off: "",
+          on: "text-gray-900"
+        }
+      },
+      label: {
+        base: "ml-3 flex-1 whitespace-nowrap text-left",
+        icon: "h-6 w-6"
+      },
+      list: "space-y-2 py-2"
+    },
+    cta: {
+      base: "mt-6 rounded-lg p-4",
+      color: {
+        blue: "bg-blue-50 dark:bg-blue-900",
+        dark: "bg-dark-50 dark:bg-dark-900",
+        failure: "bg-red-50 dark:bg-red-900",
+        gray: "bg-alternative-50 dark:bg-alternative-900",
+        green: "bg-green-50 dark:bg-green-900",
+        light: "bg-light-50 dark:bg-light-900",
+        red: "bg-red-50 dark:bg-red-900",
+        purple: "bg-purple-50 dark:bg-purple-900",
+        success: "bg-green-50 dark:bg-green-900",
+        yellow: "bg-yellow-50 dark:bg-yellow-900",
+        warning: "bg-yellow-50 dark:bg-yellow-900"
+      }
+    },
+    item: {
+      base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700",
+      active: "bg-gray-100 dark:bg-gray-700",
+      collapsed: {
+        insideCollapse: "group w-full pl-8 transition duration-75",
+        noIcon: "font-bold"
+      },
+      content: {
+        base: "px-3 flex-1 whitespace-nowrap"
+      },
+      icon: {
+        base: "h-6 w-6 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
+        active: "text-gray-700 dark:text-gray-100"
+      }
+    },
+    items: "",
+    itemGroup: "mt-4 space-y-2 border-t border-gray-200 pt-4 first:mt-0 first:border-t-0 first:pt-0 dark:border-gray-700",
+    logo: {
+      base: "mb-5 flex items-center pl-2.5",
+      collapsed: {
+        on: "hidden",
+        off: "self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+      },
+      img: "mr-3 h-6 sm:h-7"
+    }
+  },
+  progress: {
+    base: "w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700",
+    label: "mb-1 flex justify-between font-medium dark:text-white",
+    bar: "flex items-center justify-center rounded-full text-center font-medium leading-none text-blue-100",
+    color: {
+      dark: "bg-gray-600 dark:bg-gray-300",
+      blue: "bg-blue-600",
+      red: "bg-red-600 dark:bg-red-500",
+      green: "bg-green-600 dark:bg-green-500",
+      yellow: "bg-yellow-400",
+      indigo: "bg-indigo-600 dark:bg-indigo-500",
+      purple: "bg-purple-600 dark:bg-purple-500"
+    },
+    size: {
+      sm: "h-1.5",
+      md: "h-2.5",
+      lg: "h-4",
+      xl: "h-6"
+    }
+  },
+  spinner: {
+    base: "inline animate-spin text-gray-200",
+    color: {
+      failure: "fill-red-600",
+      gray: "fill-gray-600",
+      info: "fill-blue-600",
+      pink: "fill-pink-600",
+      purple: "fill-purple-600",
+      success: "fill-green-500",
+      warning: "fill-yellow-400"
+    },
+    light: {
+      off: {
+        base: "dark:text-gray-600",
+        color: {
+          failure: "",
+          gray: "dark:fill-gray-300",
+          info: "",
+          pink: "",
+          purple: "",
+          success: "",
+          warning: ""
+        }
+      },
+      on: {
+        base: "",
+        color: {
+          failure: "",
+          gray: "",
+          info: "",
+          pink: "",
+          purple: "",
+          success: "",
+          warning: ""
+        }
+      }
+    },
+    size: {
+      xs: "w-3 h-3",
+      sm: "w-4 h-4",
+      md: "w-6 h-6",
+      lg: "w-8 h-8",
+      xl: "w-10 h-10"
+    }
+  },
+  tab: {
+    base: "flex flex-col gap-2",
+    tablist: {
+      base: "flex text-center",
+      styles: {
+        default: "flex-wrap border-b border-gray-200 dark:border-gray-700",
+        underline: "flex-wrap -mb-px border-b border-gray-200 dark:border-gray-700",
+        pills: "flex-wrap font-medium text-sm text-gray-500 dark:text-gray-400",
+        fullWidth: "hidden text-sm font-medium rounded-lg divide-x divide-gray-200 shadow sm:flex dark:divide-gray-700 dark:text-gray-400"
+      },
+      tabitem: {
+        base: "flex items-center justify-center p-4 text-sm font-medium first:ml-0 disabled:cursor-not-allowed disabled:text-gray-400 disabled:dark:text-gray-500",
+        styles: {
+          default: {
+            base: "rounded-t-lg",
+            active: {
+              on: "bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500",
+              off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800  dark:hover:text-gray-300"
+            }
+          },
+          underline: {
+            base: "rounded-t-lg",
+            active: {
+              on: "text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500",
+              off: "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
+            }
+          },
+          pills: {
+            base: "",
+            active: {
+              on: "rounded-lg bg-blue-600 text-white",
+              off: "rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
+            }
+          },
+          fullWidth: {
+            base: "ml-2 first:ml-0 w-full first:rounded-l-lg last:rounded-r-lg",
+            active: {
+              on: "inline-block p-4 w-full text-gray-900 bg-gray-100 focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white",
+              off: "bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+            }
+          }
+        },
+        icon: "mr-2 h-5 w-5"
+      }
+    },
+    tabpanel: "p-4"
+  },
+  toast: {
+    base: "flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400",
+    closed: "opacity-0 ease-out",
+    removed: "hidden",
+    toggle: {
+      base: "-mx-1.5 -my-1.5 ml-auto inline-flex h-8 w-8 rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white",
+      icon: "h-5 w-5 shrink-0"
+    }
+  },
+  tooltip: {
+    target: "w-fit",
+    base: "absolute inline-block z-10 rounded-lg py-2 px-3 text-sm font-medium shadow-sm",
+    animation: "transition-opacity",
+    hidden: "invisible opacity-0",
+    style: {
+      dark: "bg-gray-900 text-white dark:bg-gray-700",
+      light: "border border-gray-200 bg-white text-gray-900",
+      auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
+    },
+    content: "relative z-20",
+    arrow: {
+      base: "absolute z-10 h-2 w-2 rotate-45",
+      style: {
+        dark: "bg-gray-900 dark:bg-gray-700",
+        light: "bg-white",
+        auto: "bg-white dark:bg-gray-700"
+      },
+      placement: "-4px"
+    }
+  }
+};
+const ThemeContext = react.exports.createContext({
+  theme
+});
+function useTheme() {
+  return react.exports.useContext(ThemeContext);
+}
+const AccordionPanelContext = react.exports.createContext(void 0);
+function useAccordionContext() {
+  const context = react.exports.useContext(AccordionPanelContext);
+  if (!context) {
+    throw new Error("useAccordionContext should be used within the AccordionPanelContext provider!");
+  }
+  return context;
+}
+const AccordionContent = ({ children, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const { isOpen } = useAccordionContext();
+  const theme2 = useTheme().theme.accordion.content;
+  return jsx("div", { className: theme2.base, "data-testid": "flowbite-accordion-content", hidden: !isOpen, ...theirProps, children });
+};
+const AccordionPanel = ({ children, ...props }) => {
+  const { alwaysOpen } = props;
+  const [isOpen, setOpen] = react.exports.useState(props.isOpen);
+  const provider2 = alwaysOpen ? {
+    ...props,
+    isOpen,
+    setOpen: () => setOpen(!isOpen)
+  } : props;
+  return jsx(AccordionPanelContext.Provider, { value: provider2, children });
+};
+const AccordionTitle = ({ as: Heading = "h2", children, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const { arrowIcon: ArrowIcon, flush, isOpen, setOpen } = useAccordionContext();
+  const theme2 = useTheme().theme.accordion.title;
+  const onClick = () => typeof setOpen !== "undefined" && setOpen();
+  return jsxs("button", { className: classNames(theme2.base, theme2.flush[flush ? "on" : "off"], theme2.open[isOpen ? "on" : "off"]), onClick, type: "button", ...theirProps, children: [jsx(Heading, { className: theme2.heading, "data-testid": "flowbite-accordion-heading", children }), ArrowIcon && jsx(ArrowIcon, { "aria-hidden": true, className: classNames(theme2.arrow.base, theme2.arrow.open[isOpen ? "on" : "off"]), "data-testid": "flowbite-accordion-arrow" })] });
+};
+const AccordionComponent = ({ alwaysOpen = false, arrowIcon = HiChevronDown, children, flush = false, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const [isOpen, setOpen] = react.exports.useState(0);
+  const panels = react.exports.useMemo(() => react.exports.Children.map(children, (child, i2) => react.exports.cloneElement(child, { alwaysOpen, arrowIcon, flush, isOpen: isOpen === i2, setOpen: () => setOpen(i2) })), [alwaysOpen, arrowIcon, children, flush, isOpen]);
+  const theme2 = useTheme().theme.accordion;
+  return jsx("div", { className: classNames(theme2.base, theme2.flush[flush ? "on" : "off"]), "data-testid": "flowbite-accordion", ...theirProps, children: panels });
+};
+AccordionComponent.displayName = "Accordion";
+AccordionPanel.displayName = "Accordion.Panel";
+AccordionTitle.displayName = "Accordion.Title";
+AccordionContent.displayName = "Accordion.Content";
+Object.assign(AccordionComponent, {
+  Panel: AccordionPanel,
+  Title: AccordionTitle,
+  Content: AccordionContent
+});
+const AvatarGroup = ({ children }) => {
+  return jsx("div", { "data-testid": "avatar-group-element", className: "mb-5 flex -space-x-4", children });
+};
+AvatarGroup.displayName = "Avatar.Group";
+const AvatarGroupCounter = ({ total, href }) => {
+  return jsxs("a", { className: "relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white ring-2 ring-gray-300 hover:bg-gray-600  dark:ring-gray-500 ", href, children: ["+", total] });
+};
+AvatarGroupCounter.displayName = "Avatar.GroupCounter";
+const AvatarComponent = ({ alt = "", bordered = false, children, img, rounded = false, size = "md", stacked = false, status, statusPosition = "top-left", placeholderInitials = "", ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.avatar;
+  return jsxs("div", { className: theme2.base, "data-testid": "flowbite-avatar", ...theirProps, children: [jsxs("div", { className: "relative", children: [img ? jsx("img", { alt, className: classNames(bordered && theme2.bordered, rounded && theme2.rounded, stacked && theme2.stacked, theme2.img.on, theme2.size[size]), "data-testid": "flowbite-avatar-img", src: img }) : placeholderInitials ? jsx("div", { className: classNames(theme2.img.off, theme2.initials.base, rounded && theme2.rounded, stacked && theme2.stacked, bordered && theme2.bordered), children: jsx("span", { className: classNames(theme2.initials.text), "data-testid": "flowbite-avatar-initials-placeholder", children: placeholderInitials }) }) : jsx("div", { className: classNames(bordered && theme2.bordered, rounded && theme2.rounded, stacked && theme2.stacked, theme2.img.off, theme2.size[size]), "data-testid": "flowbite-avatar-img", children: jsx("svg", { className: "absolute -bottom-1 h-auto w-auto text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", children: jsx("path", { fillRule: "evenodd", d: "M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z", clipRule: "evenodd" }) }) }), status && jsx("span", { className: classNames(theme2.status.base, theme2.status[status], theme2.statusPosition[statusPosition]) })] }), children && jsx("div", { children })] });
+};
+AvatarComponent.displayName = "Avatar";
+Object.assign(AvatarComponent, {
+  Group: AvatarGroup,
+  Counter: AvatarGroupCounter
+});
+const Badge = ({ children, color: color2 = "info", href, icon: Icon, size = "xs", ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.badge;
+  const Content = () => jsxs("span", { className: classNames(theme2.base, theme2.color[color2], theme2.icon[Icon ? "on" : "off"], theme2.size[size]), "data-testid": "flowbite-badge", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon.size[size], "data-testid": "flowbite-badge-icon" }), children && jsx("span", { children })] });
+  return href ? jsx("a", { className: theme2.href, href, children: jsx(Content, {}) }) : jsx(Content, {});
+};
+const BreadcrumbItem = ({ children, href, icon: Icon, ...props }) => {
+  const isLink = typeof href !== "undefined";
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.breadcrumb.item;
+  const Component = isLink ? "a" : "span";
+  return jsxs("li", { className: theme2.base, ...theirProps, children: [jsx(HiOutlineChevronRight, { "aria-hidden": true, className: theme2.chevron, "data-testid": "flowbite-breadcrumb-separator" }), jsxs(Component, { className: theme2.href[isLink ? "on" : "off"], "data-testid": "flowbite-breadcrumb-item", href, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon }), children] })] });
+};
+BreadcrumbItem.displayName = "Breadcrumb.Item";
+const BreadcrumbComponent = ({ children, ...props }) => {
+  const theme2 = useTheme().theme.breadcrumb;
+  return jsx("nav", { "aria-label": "Breadcrumb", ...props, children: jsx("ol", { className: theme2.list, children }) });
+};
+BreadcrumbComponent.displayName = "Breadcrumb";
+Object.assign(BreadcrumbComponent, { Item: BreadcrumbItem });
+const ButtonGroup = ({ children, outline, pill, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const items = react.exports.useMemo(() => react.exports.Children.map(children, (child, index2) => react.exports.cloneElement(child, {
+    outline,
+    pill,
+    positionInGroup: index2 === 0 ? "start" : index2 === children.length - 1 ? "end" : "middle"
+  })), [children, outline, pill]);
+  const theme2 = useTheme().theme.buttonGroup;
+  return jsx("div", { className: theme2.base, role: "group", ...theirProps, children: items });
+};
+ButtonGroup.displayName = "Button.Group";
+const ButtonComponent = react.exports.forwardRef(({ children, color: color2 = "info", disabled = false, gradientDuoTone, gradientMonochrome, href, label, outline = false, pill = false, positionInGroup = "none", size = "md", ...props }, ref) => {
+  var _a2;
+  const isLink = typeof href !== "undefined";
+  const theirProps = excludeClassName(props);
+  const { buttonGroup: groupTheme, button: theme2 } = useTheme().theme;
+  const Component = isLink ? "a" : "button";
+  return jsx(Component, { className: classNames(disabled && theme2.disabled, !gradientDuoTone && !gradientMonochrome && theme2.color[color2], gradientDuoTone && !gradientMonochrome && theme2.gradientDuoTone[gradientDuoTone], !gradientDuoTone && gradientMonochrome && theme2.gradient[gradientMonochrome], groupTheme.position[positionInGroup], outline && ((_a2 = theme2.outline.color[color2]) != null ? _a2 : theme2.outline.color.default), theme2.base, theme2.pill[pill ? "on" : "off"]), disabled, href, type: isLink ? void 0 : "button", ref, ...theirProps, children: jsx("span", { className: classNames(theme2.inner.base, theme2.inner.position[positionInGroup], theme2.outline[outline ? "on" : "off"], theme2.outline.pill[outline && pill ? "on" : "off"], theme2.size[size], outline && !theme2.outline.color[color2] && theme2.inner.outline), children: jsxs(Fragment, { children: [typeof children !== "undefined" && children, typeof label !== "undefined" && jsx("span", { className: theme2.label, "data-testid": "flowbite-button-label", children: label })] }) }) });
+});
+ButtonComponent.displayName = "Button";
+const Button = Object.assign(ButtonComponent, {
+  Group: ButtonGroup
+});
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+var n$1 = function(t2, e3) {
+  return (n$1 = Object.setPrototypeOf || {
+    __proto__: []
+  } instanceof Array && function(t3, e4) {
+    t3.__proto__ = e4;
+  } || function(t3, e4) {
+    for (var n2 in e4)
+      e4.hasOwnProperty(n2) && (t3[n2] = e4[n2]);
+  })(t2, e3);
+};
+var o, r, i = (function(t2) {
+  /*!
+    Copyright (c) 2017 Jed Watson.
+    Licensed under the MIT License (MIT), see
+    http://jedwatson.github.io/classnames
+  */
+  !function() {
+    var e3 = {}.hasOwnProperty;
+    function n2() {
+      for (var t3 = [], o2 = 0; o2 < arguments.length; o2++) {
+        var r2 = arguments[o2];
+        if (r2) {
+          var i2 = typeof r2;
+          if ("string" === i2 || "number" === i2)
+            t3.push(r2);
+          else if (Array.isArray(r2) && r2.length) {
+            var s2 = n2.apply(null, r2);
+            s2 && t3.push(s2);
+          } else if ("object" === i2)
+            for (var l2 in r2)
+              e3.call(r2, l2) && r2[l2] && t3.push(l2);
+        }
+      }
+      return t3.join(" ");
+    }
+    t2.exports ? (n2.default = n2, t2.exports = n2) : window.classNames = n2;
+  }();
+}(r = {
+  path: o,
+  exports: {},
+  require: function(t2, e3) {
+    return function() {
+      throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");
+    }(null == e3 && r.path);
+  }
+}, r.exports), r.exports);
+function s$1(t2, e3, n2) {
+  var o2, r2, i2, s2, l2;
+  function a2() {
+    var c3 = Date.now() - s2;
+    c3 < e3 && c3 >= 0 ? o2 = setTimeout(a2, e3 - c3) : (o2 = null, n2 || (l2 = t2.apply(i2, r2), i2 = r2 = null));
+  }
+  null == e3 && (e3 = 100);
+  var c2 = function() {
+    i2 = this, r2 = arguments, s2 = Date.now();
+    var c3 = n2 && !o2;
+    return o2 || (o2 = setTimeout(a2, e3)), c3 && (l2 = t2.apply(i2, r2), i2 = r2 = null), l2;
+  };
+  return c2.clear = function() {
+    o2 && (clearTimeout(o2), o2 = null);
+  }, c2.flush = function() {
+    o2 && (l2 = t2.apply(i2, r2), i2 = r2 = null, clearTimeout(o2), o2 = null);
+  }, c2;
+}
+s$1.debounce = s$1;
+var l$1 = s$1;
+!function(t2, e3) {
+  void 0 === e3 && (e3 = {});
+  var n2 = e3.insertAt;
+  if (t2 && "undefined" != typeof document) {
+    var o2 = document.head || document.getElementsByTagName("head")[0], r2 = document.createElement("style");
+    r2.type = "text/css", "top" === n2 && o2.firstChild ? o2.insertBefore(r2, o2.firstChild) : o2.appendChild(r2), r2.styleSheet ? r2.styleSheet.cssText = t2 : r2.appendChild(document.createTextNode(t2));
+  }
+}(".indiana-scroll-container {\n  overflow: auto; }\n  .indiana-scroll-container--dragging {\n    scroll-behavior: auto !important; }\n    .indiana-scroll-container--dragging > * {\n      pointer-events: none;\n      cursor: -webkit-grab;\n      cursor: grab; }\n  .indiana-scroll-container--hide-scrollbars {\n    overflow: hidden;\n    overflow: -moz-scrollbars-none;\n    -ms-overflow-style: none;\n    scrollbar-width: none; }\n    .indiana-scroll-container--hide-scrollbars::-webkit-scrollbar {\n      display: none !important;\n      height: 0 !important;\n      width: 0 !important;\n      background: transparent !important;\n      -webkit-appearance: none !important; }\n  .indiana-scroll-container--native-scroll {\n    overflow: auto; }\n\n.indiana-dragging {\n  cursor: -webkit-grab;\n  cursor: grab; }\n");
+var a, c = (a = "indiana-scroll-container", function(t2, e3) {
+  if (!t2)
+    return a;
+  var n2;
+  "string" == typeof t2 ? n2 = t2 : e3 = t2;
+  var o2 = a;
+  return n2 && (o2 += "__" + n2), o2 + (e3 ? Object.keys(e3).reduce(function(t3, n3) {
+    var r2 = e3[n3];
+    return r2 && (t3 += " " + ("boolean" == typeof r2 ? o2 + "--" + n3 : o2 + "--" + n3 + "_" + r2)), t3;
+  }, "") : "");
+});
+(function(e3) {
+  function o2(n2) {
+    var o3 = e3.call(this, n2) || this;
+    return o3.onEndScroll = function() {
+      o3.scrolling = false, !o3.pressed && o3.started && o3.processEnd();
+    }, o3.onScroll = function(t2) {
+      var e4 = o3.container.current;
+      e4.scrollLeft === o3.scrollLeft && e4.scrollTop === o3.scrollTop || (o3.scrolling = true, o3.processScroll(t2), o3.onEndScroll());
+    }, o3.onTouchStart = function(t2) {
+      var e4 = o3.props.nativeMobileScroll;
+      if (o3.isDraggable(t2.target))
+        if (o3.internal = true, e4 && o3.scrolling)
+          o3.pressed = true;
+        else {
+          var n3 = t2.touches[0];
+          o3.processClick(t2, n3.clientX, n3.clientY), !e4 && o3.props.stopPropagation && t2.stopPropagation();
+        }
+    }, o3.onTouchEnd = function(t2) {
+      var e4 = o3.props.nativeMobileScroll;
+      o3.pressed && (!o3.started || o3.scrolling && e4 ? o3.pressed = false : o3.processEnd(), o3.forceUpdate());
+    }, o3.onTouchMove = function(t2) {
+      var e4 = o3.props.nativeMobileScroll;
+      if (o3.pressed && (!e4 || !o3.isMobile)) {
+        var n3 = t2.touches[0];
+        n3 && o3.processMove(t2, n3.clientX, n3.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation();
+      }
+    }, o3.onMouseDown = function(t2) {
+      o3.isDraggable(t2.target) && o3.isScrollable() && (o3.internal = true, -1 !== o3.props.buttons.indexOf(t2.button) && (o3.processClick(t2, t2.clientX, t2.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation()));
+    }, o3.onMouseMove = function(t2) {
+      o3.pressed && (o3.processMove(t2, t2.clientX, t2.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation());
+    }, o3.onMouseUp = function(t2) {
+      o3.pressed && (o3.started ? o3.processEnd() : (o3.internal = false, o3.pressed = false, o3.forceUpdate(), o3.props.onClick && o3.props.onClick(t2)), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation());
+    }, o3.container = React.createRef(), o3.onEndScroll = l$1(o3.onEndScroll, 300), o3.scrolling = false, o3.started = false, o3.pressed = false, o3.internal = false, o3.getRef = o3.getRef.bind(o3), o3;
+  }
+  return function(t2, e4) {
+    function o3() {
+      this.constructor = t2;
+    }
+    n$1(t2, e4), t2.prototype = null === e4 ? Object.create(e4) : (o3.prototype = e4.prototype, new o3());
+  }(o2, e3), o2.prototype.componentDidMount = function() {
+    var t2 = this.props.nativeMobileScroll, e4 = this.container.current;
+    window.addEventListener("mouseup", this.onMouseUp), window.addEventListener("mousemove", this.onMouseMove), window.addEventListener("touchmove", this.onTouchMove, {
+      passive: false
+    }), window.addEventListener("touchend", this.onTouchEnd), e4.addEventListener("touchstart", this.onTouchStart, {
+      passive: false
+    }), e4.addEventListener("mousedown", this.onMouseDown, {
+      passive: false
+    }), t2 && (this.isMobile = this.isMobileDevice(), this.isMobile && this.forceUpdate());
+  }, o2.prototype.componentWillUnmount = function() {
+    window.removeEventListener("mouseup", this.onMouseUp), window.removeEventListener("mousemove", this.onMouseMove), window.removeEventListener("touchmove", this.onTouchMove), window.removeEventListener("touchend", this.onTouchEnd);
+  }, o2.prototype.getElement = function() {
+    return this.container.current;
+  }, o2.prototype.isMobileDevice = function() {
+    return void 0 !== window.orientation || -1 !== navigator.userAgent.indexOf("IEMobile");
+  }, o2.prototype.isDraggable = function(t2) {
+    var e4 = this.props.ignoreElements;
+    if (e4) {
+      var n2 = t2.closest(e4);
+      return null === n2 || n2.contains(this.getElement());
+    }
+    return true;
+  }, o2.prototype.isScrollable = function() {
+    var t2 = this.container.current;
+    return t2 && (t2.scrollWidth > t2.clientWidth || t2.scrollHeight > t2.clientHeight);
+  }, o2.prototype.processClick = function(t2, e4, n2) {
+    var o3 = this.container.current;
+    this.scrollLeft = o3.scrollLeft, this.scrollTop = o3.scrollTop, this.clientX = e4, this.clientY = n2, this.pressed = true;
+  }, o2.prototype.processStart = function(t2) {
+    void 0 === t2 && (t2 = true);
+    var e4 = this.props.onStartScroll;
+    this.started = true, t2 && document.body.classList.add("indiana-dragging"), e4 && e4({
+      external: !this.internal
+    }), this.forceUpdate();
+  }, o2.prototype.processScroll = function(t2) {
+    if (this.started) {
+      var e4 = this.props.onScroll;
+      e4 && e4({
+        external: !this.internal
+      });
+    } else
+      this.processStart(false);
+  }, o2.prototype.processMove = function(t2, e4, n2) {
+    var o3 = this.props, r2 = o3.horizontal, i2 = o3.vertical, s2 = o3.activationDistance, l2 = o3.onScroll, a2 = this.container.current;
+    this.started ? (r2 && (a2.scrollLeft -= e4 - this.clientX), i2 && (a2.scrollTop -= n2 - this.clientY), l2 && l2({
+      external: !this.internal
+    }), this.clientX = e4, this.clientY = n2, this.scrollLeft = a2.scrollLeft, this.scrollTop = a2.scrollTop) : (r2 && Math.abs(e4 - this.clientX) > s2 || i2 && Math.abs(n2 - this.clientY) > s2) && (this.clientX = e4, this.clientY = n2, this.processStart());
+  }, o2.prototype.processEnd = function() {
+    var t2 = this.props.onEndScroll;
+    this.container.current && t2 && t2({
+      external: !this.internal
+    }), this.pressed = false, this.started = false, this.scrolling = false, this.internal = false, document.body.classList.remove("indiana-dragging"), this.forceUpdate();
+  }, o2.prototype.getRef = function(t2) {
+    [this.container, this.props.innerRef].forEach(function(e4) {
+      e4 && ("function" == typeof e4 ? e4(t2) : e4.current = t2);
+    });
+  }, o2.prototype.render = function() {
+    var e4 = this.props, n2 = e4.children, o3 = e4.draggingClassName, r2 = e4.className, s2 = e4.style, l2 = e4.hideScrollbars, a2 = e4.component;
+    return React.createElement(a2, {
+      className: i(r2, this.pressed && o3, c({
+        dragging: this.pressed,
+        "hide-scrollbars": l2,
+        "native-scroll": this.isMobile
+      })),
+      style: s2,
+      ref: this.getRef,
+      onScroll: this.onScroll
+    }, n2);
+  }, o2.defaultProps = {
+    nativeMobileScroll: true,
+    hideScrollbars: true,
+    activationDistance: 10,
+    vertical: true,
+    horizontal: true,
+    stopPropagation: false,
+    style: {},
+    component: "div",
+    buttons: [0]
+  }, o2;
+})(react.exports.PureComponent);
+function uuid() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c2) {
+    const r2 = Math.random() * 16 | 0, v2 = c2 == "x" ? r2 : r2 & 3 | 8;
+    return v2.toString(16);
+  });
+}
+function getSide(placement) {
+  return placement.split("-")[0];
+}
+function getAlignment(placement) {
+  return placement.split("-")[1];
+}
+function getMainAxisFromPlacement(placement) {
+  return ["top", "bottom"].includes(getSide(placement)) ? "x" : "y";
+}
+function getLengthFromAxis(axis) {
+  return axis === "y" ? "height" : "width";
+}
+function computeCoordsFromPlacement(_ref, placement, rtl) {
+  let {
+    reference,
+    floating
+  } = _ref;
+  const commonX = reference.x + reference.width / 2 - floating.width / 2;
+  const commonY = reference.y + reference.height / 2 - floating.height / 2;
+  const mainAxis = getMainAxisFromPlacement(placement);
+  const length = getLengthFromAxis(mainAxis);
+  const commonAlign = reference[length] / 2 - floating[length] / 2;
+  const side = getSide(placement);
+  const isVertical = mainAxis === "x";
+  let coords;
+  switch (side) {
+    case "top":
+      coords = {
+        x: commonX,
+        y: reference.y - floating.height
+      };
+      break;
+    case "bottom":
+      coords = {
+        x: commonX,
+        y: reference.y + reference.height
+      };
+      break;
+    case "right":
+      coords = {
+        x: reference.x + reference.width,
+        y: commonY
+      };
+      break;
+    case "left":
+      coords = {
+        x: reference.x - floating.width,
+        y: commonY
+      };
+      break;
+    default:
+      coords = {
+        x: reference.x,
+        y: reference.y
+      };
+  }
+  switch (getAlignment(placement)) {
+    case "start":
+      coords[mainAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+    case "end":
+      coords[mainAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+  }
+  return coords;
+}
+const computePosition$1 = async (reference, floating, config) => {
+  const {
+    placement = "bottom",
+    strategy = "absolute",
+    middleware = [],
+    platform: platform2
+  } = config;
+  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(floating));
+  let rects = await platform2.getElementRects({
+    reference,
+    floating,
+    strategy
+  });
+  let {
+    x: x2,
+    y: y2
+  } = computeCoordsFromPlacement(rects, placement, rtl);
+  let statefulPlacement = placement;
+  let middlewareData = {};
+  let resetCount = 0;
+  for (let i2 = 0; i2 < middleware.length; i2++) {
+    const {
+      name,
+      fn
+    } = middleware[i2];
+    const {
+      x: nextX,
+      y: nextY,
+      data: data2,
+      reset
+    } = await fn({
+      x: x2,
+      y: y2,
+      initialPlacement: placement,
+      placement: statefulPlacement,
+      strategy,
+      middlewareData,
+      rects,
+      platform: platform2,
+      elements: {
+        reference,
+        floating
+      }
+    });
+    x2 = nextX != null ? nextX : x2;
+    y2 = nextY != null ? nextY : y2;
+    middlewareData = {
+      ...middlewareData,
+      [name]: {
+        ...middlewareData[name],
+        ...data2
+      }
+    };
+    if (reset && resetCount <= 50) {
+      resetCount++;
+      if (typeof reset === "object") {
+        if (reset.placement) {
+          statefulPlacement = reset.placement;
+        }
+        if (reset.rects) {
+          rects = reset.rects === true ? await platform2.getElementRects({
+            reference,
+            floating,
+            strategy
+          }) : reset.rects;
+        }
+        ({
+          x: x2,
+          y: y2
+        } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
+      }
+      i2 = -1;
+      continue;
+    }
+  }
+  return {
+    x: x2,
+    y: y2,
+    placement: statefulPlacement,
+    strategy,
+    middlewareData
+  };
+};
+function expandPaddingObject(padding) {
+  return {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    ...padding
+  };
+}
+function getSideObjectFromPadding(padding) {
+  return typeof padding !== "number" ? expandPaddingObject(padding) : {
+    top: padding,
+    right: padding,
+    bottom: padding,
+    left: padding
+  };
+}
+function rectToClientRect(rect) {
+  return {
+    ...rect,
+    top: rect.y,
+    left: rect.x,
+    right: rect.x + rect.width,
+    bottom: rect.y + rect.height
+  };
+}
+async function detectOverflow(middlewareArguments, options) {
+  var _await$platform$isEle;
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    x: x2,
+    y: y2,
+    platform: platform2,
+    rects,
+    elements,
+    strategy
+  } = middlewareArguments;
+  const {
+    boundary = "clippingAncestors",
+    rootBoundary = "viewport",
+    elementContext = "floating",
+    altBoundary = false,
+    padding = 0
+  } = options;
+  const paddingObject = getSideObjectFromPadding(padding);
+  const altContext = elementContext === "floating" ? "reference" : "floating";
+  const element = elements[altBoundary ? altContext : elementContext];
+  const clippingClientRect = rectToClientRect(await platform2.getClippingRect({
+    element: ((_await$platform$isEle = await (platform2.isElement == null ? void 0 : platform2.isElement(element))) != null ? _await$platform$isEle : true) ? element : element.contextElement || await (platform2.getDocumentElement == null ? void 0 : platform2.getDocumentElement(elements.floating)),
+    boundary,
+    rootBoundary,
+    strategy
+  }));
+  const elementClientRect = rectToClientRect(platform2.convertOffsetParentRelativeRectToViewportRelativeRect ? await platform2.convertOffsetParentRelativeRectToViewportRelativeRect({
+    rect: elementContext === "floating" ? {
+      ...rects.floating,
+      x: x2,
+      y: y2
+    } : rects.reference,
+    offsetParent: await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(elements.floating)),
+    strategy
+  }) : rects[elementContext]);
+  return {
+    top: clippingClientRect.top - elementClientRect.top + paddingObject.top,
+    bottom: elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom,
+    left: clippingClientRect.left - elementClientRect.left + paddingObject.left,
+    right: elementClientRect.right - clippingClientRect.right + paddingObject.right
+  };
+}
+const min$1 = Math.min;
+const max$1 = Math.max;
+function within(min$1$1, value, max$1$1) {
+  return max$1(min$1$1, min$1(value, max$1$1));
+}
+const arrow = (options) => ({
+  name: "arrow",
+  options,
+  async fn(middlewareArguments) {
+    const {
+      element,
+      padding = 0
+    } = options != null ? options : {};
+    const {
+      x: x2,
+      y: y2,
+      placement,
+      rects,
+      platform: platform2
+    } = middlewareArguments;
+    if (element == null) {
+      return {};
+    }
+    const paddingObject = getSideObjectFromPadding(padding);
+    const coords = {
+      x: x2,
+      y: y2
+    };
+    const axis = getMainAxisFromPlacement(placement);
+    const alignment = getAlignment(placement);
+    const length = getLengthFromAxis(axis);
+    const arrowDimensions = await platform2.getDimensions(element);
+    const minProp = axis === "y" ? "top" : "left";
+    const maxProp = axis === "y" ? "bottom" : "right";
+    const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
+    const startDiff = coords[axis] - rects.reference[axis];
+    const arrowOffsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element));
+    let clientSize = arrowOffsetParent ? axis === "y" ? arrowOffsetParent.clientHeight || 0 : arrowOffsetParent.clientWidth || 0 : 0;
+    if (clientSize === 0) {
+      clientSize = rects.floating[length];
+    }
+    const centerToReference = endDiff / 2 - startDiff / 2;
+    const min2 = paddingObject[minProp];
+    const max2 = clientSize - arrowDimensions[length] - paddingObject[maxProp];
+    const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
+    const offset2 = within(min2, center, max2);
+    const alignmentPadding = alignment === "start" ? paddingObject[minProp] : paddingObject[maxProp];
+    const shouldAddOffset = alignmentPadding > 0 && center !== offset2 && rects.reference[length] <= rects.floating[length];
+    const alignmentOffset = shouldAddOffset ? center < min2 ? min2 - center : max2 - center : 0;
+    return {
+      [axis]: coords[axis] - alignmentOffset,
+      data: {
+        [axis]: offset2,
+        centerOffset: center - offset2
+      }
+    };
+  }
+});
+const hash$1 = {
+  left: "right",
+  right: "left",
+  bottom: "top",
+  top: "bottom"
+};
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, (matched) => hash$1[matched]);
+}
+function getAlignmentSides(placement, rects, rtl) {
+  if (rtl === void 0) {
+    rtl = false;
+  }
+  const alignment = getAlignment(placement);
+  const mainAxis = getMainAxisFromPlacement(placement);
+  const length = getLengthFromAxis(mainAxis);
+  let mainAlignmentSide = mainAxis === "x" ? alignment === (rtl ? "end" : "start") ? "right" : "left" : alignment === "start" ? "bottom" : "top";
+  if (rects.reference[length] > rects.floating[length]) {
+    mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
+  }
+  return {
+    main: mainAlignmentSide,
+    cross: getOppositePlacement(mainAlignmentSide)
+  };
+}
+const hash = {
+  start: "end",
+  end: "start"
+};
+function getOppositeAlignmentPlacement(placement) {
+  return placement.replace(/start|end/g, (matched) => hash[matched]);
+}
+const sides = ["top", "right", "bottom", "left"];
+const allPlacements = /* @__PURE__ */ sides.reduce((acc, side) => acc.concat(side, side + "-start", side + "-end"), []);
+function getPlacementList(alignment, autoAlignment, allowedPlacements) {
+  const allowedPlacementsSortedByAlignment = alignment ? [...allowedPlacements.filter((placement) => getAlignment(placement) === alignment), ...allowedPlacements.filter((placement) => getAlignment(placement) !== alignment)] : allowedPlacements.filter((placement) => getSide(placement) === placement);
+  return allowedPlacementsSortedByAlignment.filter((placement) => {
+    if (alignment) {
+      return getAlignment(placement) === alignment || (autoAlignment ? getOppositeAlignmentPlacement(placement) !== placement : false);
+    }
+    return true;
+  });
+}
+const autoPlacement = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "autoPlacement",
+    options,
+    async fn(middlewareArguments) {
+      var _middlewareData$autoP, _middlewareData$autoP2, _middlewareData$autoP3, _middlewareData$autoP4, _placementsSortedByLe;
+      const {
+        x: x2,
+        y: y2,
+        rects,
+        middlewareData,
+        placement,
+        platform: platform2,
+        elements
+      } = middlewareArguments;
+      const {
+        alignment = null,
+        allowedPlacements = allPlacements,
+        autoAlignment = true,
+        ...detectOverflowOptions
+      } = options;
+      const placements = getPlacementList(alignment, autoAlignment, allowedPlacements);
+      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
+      const currentIndex = (_middlewareData$autoP = (_middlewareData$autoP2 = middlewareData.autoPlacement) == null ? void 0 : _middlewareData$autoP2.index) != null ? _middlewareData$autoP : 0;
+      const currentPlacement = placements[currentIndex];
+      if (currentPlacement == null) {
+        return {};
+      }
+      const {
+        main,
+        cross
+      } = getAlignmentSides(currentPlacement, rects, await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)));
+      if (placement !== currentPlacement) {
+        return {
+          x: x2,
+          y: y2,
+          reset: {
+            placement: placements[0]
+          }
+        };
+      }
+      const currentOverflows = [overflow[getSide(currentPlacement)], overflow[main], overflow[cross]];
+      const allOverflows = [...(_middlewareData$autoP3 = (_middlewareData$autoP4 = middlewareData.autoPlacement) == null ? void 0 : _middlewareData$autoP4.overflows) != null ? _middlewareData$autoP3 : [], {
+        placement: currentPlacement,
+        overflows: currentOverflows
+      }];
+      const nextPlacement = placements[currentIndex + 1];
+      if (nextPlacement) {
+        return {
+          data: {
+            index: currentIndex + 1,
+            overflows: allOverflows
+          },
+          reset: {
+            placement: nextPlacement
+          }
+        };
+      }
+      const placementsSortedByLeastOverflow = allOverflows.slice().sort((a2, b2) => a2.overflows[0] - b2.overflows[0]);
+      const placementThatFitsOnAllSides = (_placementsSortedByLe = placementsSortedByLeastOverflow.find((_ref) => {
+        let {
+          overflows
+        } = _ref;
+        return overflows.every((overflow2) => overflow2 <= 0);
+      })) == null ? void 0 : _placementsSortedByLe.placement;
+      const resetPlacement = placementThatFitsOnAllSides != null ? placementThatFitsOnAllSides : placementsSortedByLeastOverflow[0].placement;
+      if (resetPlacement !== placement) {
+        return {
+          data: {
+            index: currentIndex + 1,
+            overflows: allOverflows
+          },
+          reset: {
+            placement: resetPlacement
+          }
+        };
+      }
+      return {};
+    }
+  };
+};
+function getExpandedPlacements(placement) {
+  const oppositePlacement = getOppositePlacement(placement);
+  return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
+}
+const flip = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "flip",
+    options,
+    async fn(middlewareArguments) {
+      var _middlewareData$flip;
+      const {
+        placement,
+        middlewareData,
+        rects,
+        initialPlacement,
+        platform: platform2,
+        elements
+      } = middlewareArguments;
+      const {
+        mainAxis: checkMainAxis = true,
+        crossAxis: checkCrossAxis = true,
+        fallbackPlacements: specifiedFallbackPlacements,
+        fallbackStrategy = "bestFit",
+        flipAlignment = true,
+        ...detectOverflowOptions
+      } = options;
+      const side = getSide(placement);
+      const isBasePlacement = side === initialPlacement;
+      const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
+      const placements = [initialPlacement, ...fallbackPlacements];
+      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
+      const overflows = [];
+      let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
+      if (checkMainAxis) {
+        overflows.push(overflow[side]);
+      }
+      if (checkCrossAxis) {
+        const {
+          main,
+          cross
+        } = getAlignmentSides(placement, rects, await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)));
+        overflows.push(overflow[main], overflow[cross]);
+      }
+      overflowsData = [...overflowsData, {
+        placement,
+        overflows
+      }];
+      if (!overflows.every((side2) => side2 <= 0)) {
+        var _middlewareData$flip$, _middlewareData$flip2;
+        const nextIndex = ((_middlewareData$flip$ = (_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) != null ? _middlewareData$flip$ : 0) + 1;
+        const nextPlacement = placements[nextIndex];
+        if (nextPlacement) {
+          return {
+            data: {
+              index: nextIndex,
+              overflows: overflowsData
+            },
+            reset: {
+              placement: nextPlacement
+            }
+          };
+        }
+        let resetPlacement = "bottom";
+        switch (fallbackStrategy) {
+          case "bestFit": {
+            var _overflowsData$map$so;
+            const placement2 = (_overflowsData$map$so = overflowsData.map((d2) => [d2, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$map$so[0].placement;
+            if (placement2) {
+              resetPlacement = placement2;
+            }
+            break;
+          }
+          case "initialPlacement":
+            resetPlacement = initialPlacement;
+            break;
+        }
+        if (placement !== resetPlacement) {
+          return {
+            reset: {
+              placement: resetPlacement
+            }
+          };
+        }
+      }
+      return {};
+    }
+  };
+};
+async function convertValueToCoords(middlewareArguments, value) {
+  const {
+    placement,
+    platform: platform2,
+    elements
+  } = middlewareArguments;
+  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
+  const side = getSide(placement);
+  const alignment = getAlignment(placement);
+  const isVertical = getMainAxisFromPlacement(placement) === "x";
+  const mainAxisMulti = ["left", "top"].includes(side) ? -1 : 1;
+  const crossAxisMulti = rtl && isVertical ? -1 : 1;
+  const rawValue = typeof value === "function" ? value(middlewareArguments) : value;
+  let {
+    mainAxis,
+    crossAxis,
+    alignmentAxis
+  } = typeof rawValue === "number" ? {
+    mainAxis: rawValue,
+    crossAxis: 0,
+    alignmentAxis: null
+  } : {
+    mainAxis: 0,
+    crossAxis: 0,
+    alignmentAxis: null,
+    ...rawValue
+  };
+  if (alignment && typeof alignmentAxis === "number") {
+    crossAxis = alignment === "end" ? alignmentAxis * -1 : alignmentAxis;
+  }
+  return isVertical ? {
+    x: crossAxis * crossAxisMulti,
+    y: mainAxis * mainAxisMulti
+  } : {
+    x: mainAxis * mainAxisMulti,
+    y: crossAxis * crossAxisMulti
+  };
+}
+const offset$1 = function(value) {
+  if (value === void 0) {
+    value = 0;
+  }
+  return {
+    name: "offset",
+    options: value,
+    async fn(middlewareArguments) {
+      const {
+        x: x2,
+        y: y2
+      } = middlewareArguments;
+      const diffCoords = await convertValueToCoords(middlewareArguments, value);
+      return {
+        x: x2 + diffCoords.x,
+        y: y2 + diffCoords.y,
+        data: diffCoords
+      };
+    }
+  };
+};
+function getCrossAxis(axis) {
+  return axis === "x" ? "y" : "x";
+}
+const shift = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "shift",
+    options,
+    async fn(middlewareArguments) {
+      const {
+        x: x2,
+        y: y2,
+        placement
+      } = middlewareArguments;
+      const {
+        mainAxis: checkMainAxis = true,
+        crossAxis: checkCrossAxis = false,
+        limiter = {
+          fn: (_ref) => {
+            let {
+              x: x3,
+              y: y3
+            } = _ref;
+            return {
+              x: x3,
+              y: y3
+            };
+          }
+        },
+        ...detectOverflowOptions
+      } = options;
+      const coords = {
+        x: x2,
+        y: y2
+      };
+      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
+      const mainAxis = getMainAxisFromPlacement(getSide(placement));
+      const crossAxis = getCrossAxis(mainAxis);
+      let mainAxisCoord = coords[mainAxis];
+      let crossAxisCoord = coords[crossAxis];
+      if (checkMainAxis) {
+        const minSide = mainAxis === "y" ? "top" : "left";
+        const maxSide = mainAxis === "y" ? "bottom" : "right";
+        const min2 = mainAxisCoord + overflow[minSide];
+        const max2 = mainAxisCoord - overflow[maxSide];
+        mainAxisCoord = within(min2, mainAxisCoord, max2);
+      }
+      if (checkCrossAxis) {
+        const minSide = crossAxis === "y" ? "top" : "left";
+        const maxSide = crossAxis === "y" ? "bottom" : "right";
+        const min2 = crossAxisCoord + overflow[minSide];
+        const max2 = crossAxisCoord - overflow[maxSide];
+        crossAxisCoord = within(min2, crossAxisCoord, max2);
+      }
+      const limitedCoords = limiter.fn({
+        ...middlewareArguments,
+        [mainAxis]: mainAxisCoord,
+        [crossAxis]: crossAxisCoord
+      });
+      return {
+        ...limitedCoords,
+        data: {
+          x: limitedCoords.x - x2,
+          y: limitedCoords.y - y2
+        }
+      };
+    }
+  };
+};
+function isWindow(value) {
+  return value && value.document && value.location && value.alert && value.setInterval;
+}
+function getWindow$1(node) {
+  if (node == null) {
+    return window;
+  }
+  if (!isWindow(node)) {
+    const ownerDocument = node.ownerDocument;
+    return ownerDocument ? ownerDocument.defaultView || window : window;
+  }
+  return node;
+}
+function getComputedStyle$1(element) {
+  return getWindow$1(element).getComputedStyle(element);
+}
+function getNodeName(node) {
+  return isWindow(node) ? "" : node ? (node.nodeName || "").toLowerCase() : "";
+}
+function getUAString() {
+  const uaData = navigator.userAgentData;
+  if (uaData != null && uaData.brands) {
+    return uaData.brands.map((item) => item.brand + "/" + item.version).join(" ");
+  }
+  return navigator.userAgent;
+}
+function isHTMLElement$1(value) {
+  return value instanceof getWindow$1(value).HTMLElement;
+}
+function isElement$1(value) {
+  return value instanceof getWindow$1(value).Element;
+}
+function isNode(value) {
+  return value instanceof getWindow$1(value).Node;
+}
+function isShadowRoot(node) {
+  if (typeof ShadowRoot === "undefined") {
+    return false;
+  }
+  const OwnElement = getWindow$1(node).ShadowRoot;
+  return node instanceof OwnElement || node instanceof ShadowRoot;
+}
+function isOverflowElement(element) {
+  const {
+    overflow,
+    overflowX,
+    overflowY,
+    display
+  } = getComputedStyle$1(element);
+  return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
+}
+function isTableElement(element) {
+  return ["table", "td", "th"].includes(getNodeName(element));
+}
+function isContainingBlock(element) {
+  const isFirefox = /firefox/i.test(getUAString());
+  const css = getComputedStyle$1(element);
+  return css.transform !== "none" || css.perspective !== "none" || isFirefox && css.willChange === "filter" || isFirefox && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective"].some((value) => css.willChange.includes(value)) || ["paint", "layout", "strict", "content"].some(
+    (value) => {
+      const contain = css.contain;
+      return contain != null ? contain.includes(value) : false;
+    }
+  );
+}
+function isLayoutViewport() {
+  return !/^((?!chrome|android).)*safari/i.test(getUAString());
+}
+function isLastTraversableNode(node) {
+  return ["html", "body", "#document"].includes(getNodeName(node));
+}
+const min = Math.min;
+const max = Math.max;
+const round = Math.round;
+function getBoundingClientRect(element, includeScale, isFixedStrategy) {
+  var _win$visualViewport$o, _win$visualViewport, _win$visualViewport$o2, _win$visualViewport2;
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+  const clientRect = element.getBoundingClientRect();
+  let scaleX = 1;
+  let scaleY = 1;
+  if (includeScale && isHTMLElement$1(element)) {
+    scaleX = element.offsetWidth > 0 ? round(clientRect.width) / element.offsetWidth || 1 : 1;
+    scaleY = element.offsetHeight > 0 ? round(clientRect.height) / element.offsetHeight || 1 : 1;
+  }
+  const win = isElement$1(element) ? getWindow$1(element) : window;
+  const addVisualOffsets = !isLayoutViewport() && isFixedStrategy;
+  const x2 = (clientRect.left + (addVisualOffsets ? (_win$visualViewport$o = (_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) != null ? _win$visualViewport$o : 0 : 0)) / scaleX;
+  const y2 = (clientRect.top + (addVisualOffsets ? (_win$visualViewport$o2 = (_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) != null ? _win$visualViewport$o2 : 0 : 0)) / scaleY;
+  const width = clientRect.width / scaleX;
+  const height = clientRect.height / scaleY;
+  return {
+    width,
+    height,
+    top: y2,
+    right: x2 + width,
+    bottom: y2 + height,
+    left: x2,
+    x: x2,
+    y: y2
+  };
+}
+function getDocumentElement(node) {
+  return ((isNode(node) ? node.ownerDocument : node.document) || window.document).documentElement;
+}
+function getNodeScroll(element) {
+  if (isElement$1(element)) {
+    return {
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop
+    };
+  }
+  return {
+    scrollLeft: element.pageXOffset,
+    scrollTop: element.pageYOffset
+  };
+}
+function getWindowScrollBarX(element) {
+  return getBoundingClientRect(getDocumentElement(element)).left + getNodeScroll(element).scrollLeft;
+}
+function isScaled(element) {
+  const rect = getBoundingClientRect(element);
+  return round(rect.width) !== element.offsetWidth || round(rect.height) !== element.offsetHeight;
+}
+function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
+  const isOffsetParentAnElement = isHTMLElement$1(offsetParent);
+  const documentElement = getDocumentElement(offsetParent);
+  const rect = getBoundingClientRect(
+    element,
+    isOffsetParentAnElement && isScaled(offsetParent),
+    strategy === "fixed"
+  );
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  const offsets = {
+    x: 0,
+    y: 0
+  };
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== "fixed") {
+    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isHTMLElement$1(offsetParent)) {
+      const offsetRect = getBoundingClientRect(offsetParent, true);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    } else if (documentElement) {
+      offsets.x = getWindowScrollBarX(documentElement);
+    }
+  }
+  return {
+    x: rect.left + scroll.scrollLeft - offsets.x,
+    y: rect.top + scroll.scrollTop - offsets.y,
+    width: rect.width,
+    height: rect.height
+  };
+}
+function getParentNode(node) {
+  if (getNodeName(node) === "html") {
+    return node;
+  }
+  return node.assignedSlot || node.parentNode || (isShadowRoot(node) ? node.host : null) || getDocumentElement(node);
+}
+function getTrueOffsetParent(element) {
+  if (!isHTMLElement$1(element) || getComputedStyle$1(element).position === "fixed") {
+    return null;
+  }
+  return element.offsetParent;
+}
+function getContainingBlock(element) {
+  let currentNode = getParentNode(element);
+  if (isShadowRoot(currentNode)) {
+    currentNode = currentNode.host;
+  }
+  while (isHTMLElement$1(currentNode) && !isLastTraversableNode(currentNode)) {
+    if (isContainingBlock(currentNode)) {
+      return currentNode;
+    } else {
+      const parent = currentNode.parentNode;
+      currentNode = isShadowRoot(parent) ? parent.host : parent;
+    }
+  }
+  return null;
+}
+function getOffsetParent(element) {
+  const window2 = getWindow$1(element);
+  let offsetParent = getTrueOffsetParent(element);
+  while (offsetParent && isTableElement(offsetParent) && getComputedStyle$1(offsetParent).position === "static") {
+    offsetParent = getTrueOffsetParent(offsetParent);
+  }
+  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle$1(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
+    return window2;
+  }
+  return offsetParent || getContainingBlock(element) || window2;
+}
+function getDimensions(element) {
+  if (isHTMLElement$1(element)) {
+    return {
+      width: element.offsetWidth,
+      height: element.offsetHeight
+    };
+  }
+  const rect = getBoundingClientRect(element);
+  return {
+    width: rect.width,
+    height: rect.height
+  };
+}
+function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
+  let {
+    rect,
+    offsetParent,
+    strategy
+  } = _ref;
+  const isOffsetParentAnElement = isHTMLElement$1(offsetParent);
+  const documentElement = getDocumentElement(offsetParent);
+  if (offsetParent === documentElement) {
+    return rect;
+  }
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  const offsets = {
+    x: 0,
+    y: 0
+  };
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== "fixed") {
+    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isHTMLElement$1(offsetParent)) {
+      const offsetRect = getBoundingClientRect(offsetParent, true);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    }
+  }
+  return {
+    ...rect,
+    x: rect.x - scroll.scrollLeft + offsets.x,
+    y: rect.y - scroll.scrollTop + offsets.y
+  };
+}
+function getViewportRect(element, strategy) {
+  const win = getWindow$1(element);
+  const html = getDocumentElement(element);
+  const visualViewport = win.visualViewport;
+  let width = html.clientWidth;
+  let height = html.clientHeight;
+  let x2 = 0;
+  let y2 = 0;
+  if (visualViewport) {
+    width = visualViewport.width;
+    height = visualViewport.height;
+    const layoutViewport = isLayoutViewport();
+    if (layoutViewport || !layoutViewport && strategy === "fixed") {
+      x2 = visualViewport.offsetLeft;
+      y2 = visualViewport.offsetTop;
+    }
+  }
+  return {
+    width,
+    height,
+    x: x2,
+    y: y2
+  };
+}
+function getDocumentRect(element) {
+  var _element$ownerDocumen;
+  const html = getDocumentElement(element);
+  const scroll = getNodeScroll(element);
+  const body = (_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body;
+  const width = max(html.scrollWidth, html.clientWidth, body ? body.scrollWidth : 0, body ? body.clientWidth : 0);
+  const height = max(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
+  let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
+  const y2 = -scroll.scrollTop;
+  if (getComputedStyle$1(body || html).direction === "rtl") {
+    x2 += max(html.clientWidth, body ? body.clientWidth : 0) - width;
+  }
+  return {
+    width,
+    height,
+    x: x2,
+    y: y2
+  };
+}
+function getNearestOverflowAncestor(node) {
+  const parentNode = getParentNode(node);
+  if (isLastTraversableNode(parentNode)) {
+    return node.ownerDocument.body;
+  }
+  if (isHTMLElement$1(parentNode) && isOverflowElement(parentNode)) {
+    return parentNode;
+  }
+  return getNearestOverflowAncestor(parentNode);
+}
+function getOverflowAncestors(node, list) {
+  var _node$ownerDocument;
+  if (list === void 0) {
+    list = [];
+  }
+  const scrollableAncestor = getNearestOverflowAncestor(node);
+  const isBody = scrollableAncestor === ((_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.body);
+  const win = getWindow$1(scrollableAncestor);
+  const target = isBody ? [win].concat(win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : []) : scrollableAncestor;
+  const updatedList = list.concat(target);
+  return isBody ? updatedList : updatedList.concat(getOverflowAncestors(target));
+}
+function contains(parent, child) {
+  const rootNode = child.getRootNode == null ? void 0 : child.getRootNode();
+  if (parent.contains(child)) {
+    return true;
+  } else if (rootNode && isShadowRoot(rootNode)) {
+    let next = child;
+    do {
+      if (next && parent === next) {
+        return true;
+      }
+      next = next.parentNode || next.host;
+    } while (next);
+  }
+  return false;
+}
+function getNearestParentCapableOfEscapingClipping(element, clippingAncestors) {
+  let currentNode = element;
+  while (currentNode && !isLastTraversableNode(currentNode) && !clippingAncestors.includes(currentNode)) {
+    if (isElement$1(currentNode) && ["absolute", "fixed"].includes(getComputedStyle$1(currentNode).position)) {
+      break;
+    }
+    const parentNode = getParentNode(currentNode);
+    currentNode = isShadowRoot(parentNode) ? parentNode.host : parentNode;
+  }
+  return currentNode;
+}
+function getInnerBoundingClientRect(element, strategy) {
+  const clientRect = getBoundingClientRect(element, false, strategy === "fixed");
+  const top = clientRect.top + element.clientTop;
+  const left = clientRect.left + element.clientLeft;
+  return {
+    top,
+    left,
+    x: left,
+    y: top,
+    right: left + element.clientWidth,
+    bottom: top + element.clientHeight,
+    width: element.clientWidth,
+    height: element.clientHeight
+  };
+}
+function getClientRectFromClippingAncestor(element, clippingParent, strategy) {
+  if (clippingParent === "viewport") {
+    return rectToClientRect(getViewportRect(element, strategy));
+  }
+  if (isElement$1(clippingParent)) {
+    return getInnerBoundingClientRect(clippingParent, strategy);
+  }
+  return rectToClientRect(getDocumentRect(getDocumentElement(element)));
+}
+function getClippingAncestors(element) {
+  const clippingAncestors = getOverflowAncestors(element);
+  const nearestEscapableParent = getNearestParentCapableOfEscapingClipping(element, clippingAncestors);
+  let clipperElement = null;
+  if (nearestEscapableParent && isHTMLElement$1(nearestEscapableParent)) {
+    const offsetParent = getOffsetParent(nearestEscapableParent);
+    if (isOverflowElement(nearestEscapableParent)) {
+      clipperElement = nearestEscapableParent;
+    } else if (isHTMLElement$1(offsetParent)) {
+      clipperElement = offsetParent;
+    }
+  }
+  if (!isElement$1(clipperElement)) {
+    return [];
+  }
+  return clippingAncestors.filter((clippingAncestors2) => clipperElement && isElement$1(clippingAncestors2) && contains(clippingAncestors2, clipperElement) && getNodeName(clippingAncestors2) !== "body");
+}
+function getClippingRect(_ref) {
+  let {
+    element,
+    boundary,
+    rootBoundary,
+    strategy
+  } = _ref;
+  const mainClippingAncestors = boundary === "clippingAncestors" ? getClippingAncestors(element) : [].concat(boundary);
+  const clippingAncestors = [...mainClippingAncestors, rootBoundary];
+  const firstClippingAncestor = clippingAncestors[0];
+  const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
+    const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
+    accRect.top = max(rect.top, accRect.top);
+    accRect.right = min(rect.right, accRect.right);
+    accRect.bottom = min(rect.bottom, accRect.bottom);
+    accRect.left = max(rect.left, accRect.left);
+    return accRect;
+  }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
+  return {
+    width: clippingRect.right - clippingRect.left,
+    height: clippingRect.bottom - clippingRect.top,
+    x: clippingRect.left,
+    y: clippingRect.top
+  };
+}
+const platform = {
+  getClippingRect,
+  convertOffsetParentRelativeRectToViewportRelativeRect,
+  isElement: isElement$1,
+  getDimensions,
+  getOffsetParent,
+  getDocumentElement,
+  getElementRects: (_ref) => {
+    let {
+      reference,
+      floating,
+      strategy
+    } = _ref;
+    return {
+      reference: getRectRelativeToOffsetParent(reference, getOffsetParent(floating), strategy),
+      floating: {
+        ...getDimensions(floating),
+        x: 0,
+        y: 0
+      }
+    };
+  },
+  getClientRects: (element) => Array.from(element.getClientRects()),
+  isRTL: (element) => getComputedStyle$1(element).direction === "rtl"
+};
+function autoUpdate(reference, floating, update, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    ancestorScroll: _ancestorScroll = true,
+    ancestorResize = true,
+    elementResize = true,
+    animationFrame = false
+  } = options;
+  const ancestorScroll = _ancestorScroll && !animationFrame;
+  const ancestors = ancestorScroll || ancestorResize ? [...isElement$1(reference) ? getOverflowAncestors(reference) : reference.contextElement ? getOverflowAncestors(reference.contextElement) : [], ...getOverflowAncestors(floating)] : [];
+  ancestors.forEach((ancestor) => {
+    ancestorScroll && ancestor.addEventListener("scroll", update, {
+      passive: true
+    });
+    ancestorResize && ancestor.addEventListener("resize", update);
+  });
+  let observer = null;
+  if (elementResize) {
+    let initialUpdate = true;
+    observer = new ResizeObserver(() => {
+      if (!initialUpdate) {
+        update();
+      }
+      initialUpdate = false;
+    });
+    isElement$1(reference) && !animationFrame && observer.observe(reference);
+    if (!isElement$1(reference) && reference.contextElement && !animationFrame) {
+      observer.observe(reference.contextElement);
+    }
+    observer.observe(floating);
+  }
+  let frameId;
+  let prevRefRect = animationFrame ? getBoundingClientRect(reference) : null;
+  if (animationFrame) {
+    frameLoop();
+  }
+  function frameLoop() {
+    const nextRefRect = getBoundingClientRect(reference);
+    if (prevRefRect && (nextRefRect.x !== prevRefRect.x || nextRefRect.y !== prevRefRect.y || nextRefRect.width !== prevRefRect.width || nextRefRect.height !== prevRefRect.height)) {
+      update();
+    }
+    prevRefRect = nextRefRect;
+    frameId = requestAnimationFrame(frameLoop);
+  }
+  update();
+  return () => {
+    var _observer;
+    ancestors.forEach((ancestor) => {
+      ancestorScroll && ancestor.removeEventListener("scroll", update);
+      ancestorResize && ancestor.removeEventListener("resize", update);
+    });
+    (_observer = observer) == null ? void 0 : _observer.disconnect();
+    observer = null;
+    if (animationFrame) {
+      cancelAnimationFrame(frameId);
+    }
+  };
+}
+const computePosition = (reference, floating, options) => computePosition$1(reference, floating, {
+  platform,
+  ...options
+});
+var index$1 = typeof document !== "undefined" ? react.exports.useLayoutEffect : react.exports.useEffect;
+function deepEqual(a2, b2) {
+  if (a2 === b2) {
+    return true;
+  }
+  if (typeof a2 !== typeof b2) {
+    return false;
+  }
+  if (typeof a2 === "function" && a2.toString() === b2.toString()) {
+    return true;
+  }
+  let length, i2, keys;
+  if (a2 && b2 && typeof a2 == "object") {
+    if (Array.isArray(a2)) {
+      length = a2.length;
+      if (length != b2.length)
+        return false;
+      for (i2 = length; i2-- !== 0; ) {
+        if (!deepEqual(a2[i2], b2[i2])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    keys = Object.keys(a2);
+    length = keys.length;
+    if (length !== Object.keys(b2).length) {
+      return false;
+    }
+    for (i2 = length; i2-- !== 0; ) {
+      if (!Object.prototype.hasOwnProperty.call(b2, keys[i2])) {
+        return false;
+      }
+    }
+    for (i2 = length; i2-- !== 0; ) {
+      const key = keys[i2];
+      if (key === "_owner" && a2.$$typeof) {
+        continue;
+      }
+      if (!deepEqual(a2[key], b2[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return a2 !== a2 && b2 !== b2;
+}
+function useLatestRef$1(value) {
+  const ref = react.exports.useRef(value);
+  index$1(() => {
+    ref.current = value;
+  });
+  return ref;
+}
+function useFloating$1(_temp) {
+  let {
+    middleware,
+    placement = "bottom",
+    strategy = "absolute",
+    whileElementsMounted
+  } = _temp === void 0 ? {} : _temp;
+  const [data2, setData] = react.exports.useState({
+    x: null,
+    y: null,
+    strategy,
+    placement,
+    middlewareData: {}
+  });
+  const [latestMiddleware, setLatestMiddleware] = react.exports.useState(middleware);
+  if (!deepEqual(latestMiddleware == null ? void 0 : latestMiddleware.map((_ref) => {
+    let {
+      name,
+      options
+    } = _ref;
+    return {
+      name,
+      options
+    };
+  }), middleware == null ? void 0 : middleware.map((_ref2) => {
+    let {
+      name,
+      options
+    } = _ref2;
+    return {
+      name,
+      options
+    };
+  }))) {
+    setLatestMiddleware(middleware);
+  }
+  const reference = react.exports.useRef(null);
+  const floating = react.exports.useRef(null);
+  const cleanupRef = react.exports.useRef(null);
+  const dataRef = react.exports.useRef(data2);
+  const whileElementsMountedRef = useLatestRef$1(whileElementsMounted);
+  const update = react.exports.useCallback(() => {
+    if (!reference.current || !floating.current) {
+      return;
+    }
+    computePosition(reference.current, floating.current, {
+      middleware: latestMiddleware,
+      placement,
+      strategy
+    }).then((data3) => {
+      if (isMountedRef.current && !deepEqual(dataRef.current, data3)) {
+        dataRef.current = data3;
+        reactDom.exports.flushSync(() => {
+          setData(data3);
+        });
+      }
+    });
+  }, [latestMiddleware, placement, strategy]);
+  index$1(() => {
+    if (isMountedRef.current) {
+      update();
+    }
+  }, [update]);
+  const isMountedRef = react.exports.useRef(false);
+  index$1(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+  const runElementMountCallback = react.exports.useCallback(() => {
+    if (typeof cleanupRef.current === "function") {
+      cleanupRef.current();
+      cleanupRef.current = null;
+    }
+    if (reference.current && floating.current) {
+      if (whileElementsMountedRef.current) {
+        const cleanupFn = whileElementsMountedRef.current(reference.current, floating.current, update);
+        cleanupRef.current = cleanupFn;
+      } else {
+        update();
+      }
+    }
+  }, [update, whileElementsMountedRef]);
+  const setReference = react.exports.useCallback((node) => {
+    reference.current = node;
+    runElementMountCallback();
+  }, [runElementMountCallback]);
+  const setFloating = react.exports.useCallback((node) => {
+    floating.current = node;
+    runElementMountCallback();
+  }, [runElementMountCallback]);
+  const refs = react.exports.useMemo(() => ({
+    reference,
+    floating
+  }), []);
+  return react.exports.useMemo(() => ({
+    ...data2,
+    update,
+    refs,
+    reference: setReference,
+    floating: setFloating
+  }), [data2, update, refs, setReference, setFloating]);
+}
+var index = typeof document !== "undefined" ? react.exports.useLayoutEffect : react.exports.useEffect;
+function createPubSub() {
+  const map2 = /* @__PURE__ */ new Map();
+  return {
+    emit(event, data2) {
+      var _map$get;
+      (_map$get = map2.get(event)) == null ? void 0 : _map$get.forEach((handler) => handler(data2));
+    },
+    on(event, listener) {
+      map2.set(event, [...map2.get(event) || [], listener]);
+    },
+    off(event, listener) {
+      map2.set(event, (map2.get(event) || []).filter((l2) => l2 !== listener));
+    }
+  };
+}
+let serverHandoffComplete = false;
+let count = 0;
+const genId = () => "floating-ui-" + count++;
+function useFloatingId() {
+  const [id2, setId] = react.exports.useState(() => serverHandoffComplete ? genId() : void 0);
+  index(() => {
+    if (id2 == null) {
+      setId(genId());
+    }
+  }, []);
+  react.exports.useEffect(() => {
+    if (!serverHandoffComplete) {
+      serverHandoffComplete = true;
+    }
+  }, []);
+  return id2;
+}
+const useReactId = React$1[/* @__PURE__ */ "useId".toString()];
+const useId = useReactId != null ? useReactId : useFloatingId;
+const FloatingNodeContext = /* @__PURE__ */ react.exports.createContext(null);
+const FloatingTreeContext = /* @__PURE__ */ react.exports.createContext(null);
+const useFloatingParentNodeId = () => {
+  var _React$useContext$id, _React$useContext;
+  return (_React$useContext$id = (_React$useContext = react.exports.useContext(FloatingNodeContext)) == null ? void 0 : _React$useContext.id) != null ? _React$useContext$id : null;
+};
+const useFloatingTree = () => react.exports.useContext(FloatingTreeContext);
+function getDocument(floating) {
+  var _floating$ownerDocume;
+  return (_floating$ownerDocume = floating == null ? void 0 : floating.ownerDocument) != null ? _floating$ownerDocume : document;
+}
+function getWindow(value) {
+  var _getDocument$defaultV;
+  return (_getDocument$defaultV = getDocument(value).defaultView) != null ? _getDocument$defaultV : window;
+}
+function isElement(value) {
+  return value ? value instanceof getWindow(value).Element : false;
+}
+function isHTMLElement(value) {
+  return value ? value instanceof getWindow(value).HTMLElement : false;
+}
+const useInsertionEffect = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
+function useEvent(callback) {
+  const ref = react.exports.useRef(() => {
+  });
+  if (useInsertionEffect) {
+    useInsertionEffect(() => {
+      ref.current = callback;
+    });
+  } else {
+    ref.current = callback;
+  }
+  return react.exports.useCallback(function() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    return ref.current == null ? void 0 : ref.current(...args);
+  }, []);
+}
+function useFloating(_temp) {
+  let {
+    open = false,
+    onOpenChange: unstable_onOpenChange,
+    whileElementsMounted,
+    placement,
+    middleware,
+    strategy,
+    nodeId
+  } = _temp === void 0 ? {} : _temp;
+  const [domReference, setDomReference] = react.exports.useState(null);
+  const tree = useFloatingTree();
+  const domReferenceRef = react.exports.useRef(null);
+  const dataRef = react.exports.useRef({});
+  const events = react.exports.useState(() => createPubSub())[0];
+  const position = useFloating$1({
+    placement,
+    middleware,
+    strategy,
+    whileElementsMounted
+  });
+  const onOpenChange = useEvent(unstable_onOpenChange);
+  const refs = react.exports.useMemo(() => ({
+    ...position.refs,
+    domReference: domReferenceRef
+  }), [position.refs]);
+  const context = react.exports.useMemo(() => ({
+    ...position,
+    refs,
+    dataRef,
+    nodeId,
+    events,
+    open,
+    onOpenChange,
+    _: {
+      domReference
+    }
+  }), [position, nodeId, events, open, onOpenChange, refs, domReference]);
+  index(() => {
+    const node = tree == null ? void 0 : tree.nodesRef.current.find((node2) => node2.id === nodeId);
+    if (node) {
+      node.context = context;
+    }
+  });
+  const {
+    reference
+  } = position;
+  const setReference = react.exports.useCallback((node) => {
+    if (isElement(node) || node === null) {
+      context.refs.domReference.current = node;
+      setDomReference(node);
+    }
+    reference(node);
+  }, [reference, context.refs]);
+  return react.exports.useMemo(() => ({
+    ...position,
+    context,
+    refs,
+    reference: setReference
+  }), [position, refs, context, setReference]);
+}
+function mergeProps(userProps, propsList, elementKey) {
+  const map2 = /* @__PURE__ */ new Map();
+  return {
+    ...elementKey === "floating" && {
+      tabIndex: -1
+    },
+    ...userProps,
+    ...propsList.map((value) => value ? value[elementKey] : null).concat(userProps).reduce((acc, props) => {
+      if (!props) {
+        return acc;
+      }
+      Object.entries(props).forEach((_ref) => {
+        let [key, value] = _ref;
+        if (key.indexOf("on") === 0) {
+          if (!map2.has(key)) {
+            map2.set(key, []);
+          }
+          if (typeof value === "function") {
+            var _map$get;
+            (_map$get = map2.get(key)) == null ? void 0 : _map$get.push(value);
+            acc[key] = function() {
+              var _map$get2;
+              for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+              }
+              (_map$get2 = map2.get(key)) == null ? void 0 : _map$get2.forEach((fn) => fn(...args));
+            };
+          }
+        } else {
+          acc[key] = value;
+        }
+      });
+      return acc;
+    }, {})
+  };
+}
+const useInteractions = function(propsList) {
+  if (propsList === void 0) {
+    propsList = [];
+  }
+  return {
+    getReferenceProps: (userProps) => mergeProps(userProps, propsList, "reference"),
+    getFloatingProps: (userProps) => mergeProps(userProps, propsList, "floating"),
+    getItemProps: (userProps) => mergeProps(userProps, propsList, "item")
+  };
+};
+const TYPEABLE_SELECTOR = "input:not([type='hidden']):not([disabled]),[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
+function isTypeableElement(element) {
+  return isHTMLElement(element) && element.matches(TYPEABLE_SELECTOR);
+}
+function useLatestRef(value) {
+  const ref = react.exports.useRef(value);
+  index(() => {
+    ref.current = value;
+  });
+  return ref;
+}
+function usePrevious(value) {
+  const ref = react.exports.useRef();
+  index(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+function getDelay(value, prop, pointerType) {
+  if (pointerType && pointerType !== "mouse") {
+    return 0;
+  }
+  if (typeof value === "number") {
+    return value;
+  }
+  return value == null ? void 0 : value[prop];
+}
+const useHover = function(context, _temp) {
+  let {
+    enabled = true,
+    delay: delay2 = 0,
+    handleClose = null,
+    mouseOnly = false,
+    restMs = 0,
+    move = true
+  } = _temp === void 0 ? {} : _temp;
+  const {
+    open,
+    onOpenChange,
+    dataRef,
+    events,
+    refs,
+    _: _2
+  } = context;
+  const tree = useFloatingTree();
+  const parentId = useFloatingParentNodeId();
+  const handleCloseRef = useLatestRef(handleClose);
+  const delayRef = useLatestRef(delay2);
+  const previousOpen = usePrevious(open);
+  const pointerTypeRef = react.exports.useRef();
+  const timeoutRef = react.exports.useRef();
+  const handlerRef = react.exports.useRef();
+  const restTimeoutRef = react.exports.useRef();
+  const blockMouseMoveRef = react.exports.useRef(true);
+  const performedPointerEventsMutationRef = react.exports.useRef(false);
+  const isHoverOpen = react.exports.useCallback(() => {
+    var _dataRef$current$open;
+    const type = (_dataRef$current$open = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open.type;
+    return (type == null ? void 0 : type.includes("mouse")) && type !== "mousedown";
+  }, [dataRef]);
+  react.exports.useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    function onDismiss() {
+      clearTimeout(timeoutRef.current);
+      clearTimeout(restTimeoutRef.current);
+      blockMouseMoveRef.current = true;
+    }
+    events.on("dismiss", onDismiss);
+    return () => {
+      events.off("dismiss", onDismiss);
+    };
+  }, [enabled, events, refs]);
+  react.exports.useEffect(() => {
+    if (!enabled || !handleCloseRef.current) {
+      return;
+    }
+    function onLeave() {
+      if (isHoverOpen()) {
+        onOpenChange(false);
+      }
+    }
+    const html = getDocument(refs.floating.current).documentElement;
+    html.addEventListener("mouseleave", onLeave);
+    return () => {
+      html.removeEventListener("mouseleave", onLeave);
+    };
+  }, [refs, onOpenChange, enabled, handleCloseRef, dataRef, isHoverOpen]);
+  const closeWithDelay = react.exports.useCallback(function(runElseBranch) {
+    if (runElseBranch === void 0) {
+      runElseBranch = true;
+    }
+    const closeDelay = getDelay(delayRef.current, "close", pointerTypeRef.current);
+    if (closeDelay && !handlerRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => onOpenChange(false), closeDelay);
+    } else if (runElseBranch) {
+      clearTimeout(timeoutRef.current);
+      onOpenChange(false);
+    }
+  }, [delayRef, onOpenChange]);
+  const cleanupPointerMoveHandler = react.exports.useCallback(() => {
+    if (handlerRef.current) {
+      getDocument(refs.floating.current).removeEventListener("pointermove", handlerRef.current);
+      handlerRef.current = void 0;
+    }
+  }, [refs]);
+  const clearPointerEvents = react.exports.useCallback(() => {
+    getDocument(refs.floating.current).body.style.pointerEvents = "";
+    performedPointerEventsMutationRef.current = false;
+  }, [refs]);
+  react.exports.useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    function isClickLikeOpenEvent() {
+      return dataRef.current.openEvent ? ["click", "mousedown"].includes(dataRef.current.openEvent.type) : false;
+    }
+    function onMouseEnter(event) {
+      clearTimeout(timeoutRef.current);
+      blockMouseMoveRef.current = false;
+      if (mouseOnly && pointerTypeRef.current !== "mouse" || restMs > 0 && getDelay(delayRef.current, "open") === 0) {
+        return;
+      }
+      dataRef.current.openEvent = event;
+      const openDelay = getDelay(delayRef.current, "open", pointerTypeRef.current);
+      if (openDelay) {
+        timeoutRef.current = setTimeout(() => {
+          onOpenChange(true);
+        }, openDelay);
+      } else {
+        onOpenChange(true);
+      }
+    }
+    function onMouseLeave(event) {
+      if (isClickLikeOpenEvent()) {
+        return;
+      }
+      const doc = getDocument(refs.floating.current);
+      clearTimeout(restTimeoutRef.current);
+      if (handleCloseRef.current) {
+        clearTimeout(timeoutRef.current);
+        handlerRef.current && doc.removeEventListener("pointermove", handlerRef.current);
+        handlerRef.current = handleCloseRef.current({
+          ...context,
+          tree,
+          x: event.clientX,
+          y: event.clientY,
+          onClose() {
+            clearPointerEvents();
+            cleanupPointerMoveHandler();
+            closeWithDelay();
+          }
+        });
+        doc.addEventListener("pointermove", handlerRef.current);
+        return;
+      }
+      closeWithDelay();
+    }
+    function onScrollMouseLeave(event) {
+      if (isClickLikeOpenEvent()) {
+        return;
+      }
+      handleCloseRef.current == null ? void 0 : handleCloseRef.current({
+        ...context,
+        tree,
+        x: event.clientX,
+        y: event.clientY,
+        leave: true,
+        onClose() {
+          clearPointerEvents();
+          cleanupPointerMoveHandler();
+          closeWithDelay();
+        }
+      })(event);
+    }
+    const floating = refs.floating.current;
+    const reference = refs.domReference.current;
+    if (isElement(reference)) {
+      open && reference.addEventListener("mouseleave", onScrollMouseLeave);
+      floating == null ? void 0 : floating.addEventListener("mouseleave", onScrollMouseLeave);
+      move && reference.addEventListener("mousemove", onMouseEnter, {
+        once: true
+      });
+      reference.addEventListener("mouseenter", onMouseEnter);
+      reference.addEventListener("mouseleave", onMouseLeave);
+      return () => {
+        open && reference.removeEventListener("mouseleave", onScrollMouseLeave);
+        floating == null ? void 0 : floating.removeEventListener("mouseleave", onScrollMouseLeave);
+        move && reference.removeEventListener("mousemove", onMouseEnter);
+        reference.removeEventListener("mouseenter", onMouseEnter);
+        reference.removeEventListener("mouseleave", onMouseLeave);
+      };
+    }
+  }, [
+    _2.domReference,
+    enabled,
+    context,
+    mouseOnly,
+    restMs,
+    move,
+    closeWithDelay,
+    cleanupPointerMoveHandler,
+    clearPointerEvents,
+    onOpenChange,
+    open,
+    tree,
+    refs,
+    delayRef,
+    handleCloseRef,
+    dataRef
+  ]);
+  index(() => {
+    if (!enabled) {
+      return;
+    }
+    if (open && handleCloseRef.current && handleCloseRef.current.__options.blockPointerEvents && isHoverOpen()) {
+      getDocument(refs.floating.current).body.style.pointerEvents = "none";
+      performedPointerEventsMutationRef.current = true;
+      const reference = refs.domReference.current;
+      const floating = refs.floating.current;
+      if (isElement(reference) && floating) {
+        var _tree$nodesRef$curren, _tree$nodesRef$curren2;
+        const parentFloating = tree == null ? void 0 : (_tree$nodesRef$curren = tree.nodesRef.current.find((node) => node.id === parentId)) == null ? void 0 : (_tree$nodesRef$curren2 = _tree$nodesRef$curren.context) == null ? void 0 : _tree$nodesRef$curren2.refs.floating.current;
+        if (parentFloating) {
+          parentFloating.style.pointerEvents = "";
+        }
+        reference.style.pointerEvents = "auto";
+        floating.style.pointerEvents = "auto";
+        return () => {
+          reference.style.pointerEvents = "";
+          floating.style.pointerEvents = "";
+        };
+      }
+    }
+  }, [enabled, open, parentId, refs, tree, handleCloseRef, dataRef, isHoverOpen]);
+  index(() => {
+    if (previousOpen && !open) {
+      pointerTypeRef.current = void 0;
+      cleanupPointerMoveHandler();
+      clearPointerEvents();
+    }
+  });
+  react.exports.useEffect(() => {
+    return () => {
+      cleanupPointerMoveHandler();
+      clearTimeout(timeoutRef.current);
+      clearTimeout(restTimeoutRef.current);
+      if (performedPointerEventsMutationRef.current) {
+        clearPointerEvents();
+      }
+    };
+  }, [enabled, cleanupPointerMoveHandler, clearPointerEvents]);
+  if (!enabled) {
+    return {};
+  }
+  function setPointerRef(event) {
+    pointerTypeRef.current = event.pointerType;
+  }
+  return {
+    reference: {
+      onPointerDown: setPointerRef,
+      onPointerEnter: setPointerRef,
+      onMouseMove() {
+        if (open || restMs === 0) {
+          return;
+        }
+        clearTimeout(restTimeoutRef.current);
+        restTimeoutRef.current = setTimeout(() => {
+          if (!blockMouseMoveRef.current) {
+            onOpenChange(true);
+          }
+        }, restMs);
+      }
+    },
+    floating: {
+      onMouseEnter() {
+        clearTimeout(timeoutRef.current);
+      },
+      onMouseLeave() {
+        closeWithDelay(false);
+      }
+    }
+  };
+};
+const useRole = function(_ref, _temp) {
+  let {
+    open
+  } = _ref;
+  let {
+    enabled = true,
+    role = "dialog"
+  } = _temp === void 0 ? {} : _temp;
+  const rootId = useId();
+  const referenceId = useId();
+  const floatingProps = {
+    id: rootId,
+    role
+  };
+  if (!enabled) {
+    return {};
+  }
+  if (role === "tooltip") {
+    return {
+      reference: {
+        "aria-describedby": open ? rootId : void 0
+      },
+      floating: floatingProps
+    };
+  }
+  return {
+    reference: {
+      "aria-expanded": open ? "true" : "false",
+      "aria-haspopup": role === "alertdialog" ? "dialog" : role,
+      "aria-controls": open ? rootId : void 0,
+      ...role === "listbox" && {
+        role: "combobox"
+      },
+      ...role === "menu" && {
+        id: referenceId
+      }
+    },
+    floating: {
+      ...floatingProps,
+      ...role === "menu" && {
+        "aria-labelledby": referenceId
+      }
+    }
+  };
+};
+function isButtonTarget(event) {
+  return isHTMLElement(event.target) && event.target.tagName === "BUTTON";
+}
+const useClick = function(_ref, _temp) {
+  let {
+    open,
+    onOpenChange,
+    dataRef,
+    refs
+  } = _ref;
+  let {
+    enabled = true,
+    pointerDown = false,
+    toggle = true,
+    ignoreMouse = false,
+    keyboardHandlers = true
+  } = _temp === void 0 ? {} : _temp;
+  const pointerTypeRef = react.exports.useRef();
+  function isSpaceIgnored() {
+    return isTypeableElement(refs.domReference.current);
+  }
+  if (!enabled) {
+    return {};
+  }
+  return {
+    reference: {
+      onPointerDown(event) {
+        pointerTypeRef.current = event.pointerType;
+      },
+      onMouseDown(event) {
+        if (event.button !== 0) {
+          return;
+        }
+        if (pointerTypeRef.current === "mouse" && ignoreMouse) {
+          return;
+        }
+        if (!pointerDown) {
+          return;
+        }
+        if (open) {
+          if (toggle && (dataRef.current.openEvent ? dataRef.current.openEvent.type === "mousedown" : true)) {
+            onOpenChange(false);
+          }
+        } else {
+          onOpenChange(true);
+        }
+        dataRef.current.openEvent = event.nativeEvent;
+      },
+      onClick(event) {
+        if (pointerDown && pointerTypeRef.current) {
+          pointerTypeRef.current = void 0;
+          return;
+        }
+        if (pointerTypeRef.current === "mouse" && ignoreMouse) {
+          return;
+        }
+        if (open) {
+          if (toggle && (dataRef.current.openEvent ? dataRef.current.openEvent.type === "click" : true)) {
+            onOpenChange(false);
+          }
+        } else {
+          onOpenChange(true);
+        }
+        dataRef.current.openEvent = event.nativeEvent;
+      },
+      onKeyDown(event) {
+        pointerTypeRef.current = void 0;
+        if (!keyboardHandlers) {
+          return;
+        }
+        if (isButtonTarget(event)) {
+          return;
+        }
+        if (event.key === " " && !isSpaceIgnored()) {
+          event.preventDefault();
+        }
+        if (event.key === "Enter") {
+          if (open) {
+            if (toggle) {
+              onOpenChange(false);
+            }
+          } else {
+            onOpenChange(true);
+          }
+        }
+      },
+      onKeyUp(event) {
+        if (!keyboardHandlers) {
+          return;
+        }
+        if (isButtonTarget(event) || isSpaceIgnored()) {
+          return;
+        }
+        if (event.key === " ") {
+          if (open) {
+            if (toggle) {
+              onOpenChange(false);
+            }
+          } else {
+            onOpenChange(true);
+          }
+        }
+      }
+    }
+  };
+};
+const useFocus = function(_ref, _temp) {
+  let {
+    open,
+    onOpenChange,
+    dataRef,
+    refs,
+    events
+  } = _ref;
+  let {
+    enabled = true,
+    keyboardOnly = true
+  } = _temp === void 0 ? {} : _temp;
+  const pointerTypeRef = react.exports.useRef("");
+  const blockFocusRef = react.exports.useRef(false);
+  const timeoutRef = react.exports.useRef();
+  react.exports.useEffect(() => {
+    var _doc$defaultView;
+    if (!enabled) {
+      return;
+    }
+    const doc = getDocument(refs.floating.current);
+    const win = (_doc$defaultView = doc.defaultView) != null ? _doc$defaultView : window;
+    function onBlur() {
+      if (!open && isHTMLElement(refs.domReference.current)) {
+        refs.domReference.current.blur();
+      }
+    }
+    win.addEventListener("blur", onBlur);
+    return () => {
+      win.removeEventListener("blur", onBlur);
+    };
+  }, [refs, open, enabled]);
+  react.exports.useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    function onDismiss() {
+      blockFocusRef.current = true;
+    }
+    events.on("dismiss", onDismiss);
+    return () => {
+      events.off("dismiss", onDismiss);
+    };
+  }, [events, enabled]);
+  react.exports.useEffect(() => {
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
+  }, []);
+  if (!enabled) {
+    return {};
+  }
+  return {
+    reference: {
+      onPointerDown(_ref2) {
+        let {
+          pointerType
+        } = _ref2;
+        pointerTypeRef.current = pointerType;
+        blockFocusRef.current = !!(pointerType && keyboardOnly);
+      },
+      onPointerLeave() {
+        blockFocusRef.current = false;
+      },
+      onFocus(event) {
+        var _dataRef$current$open, _refs$domReference$cu, _dataRef$current$open2;
+        if (blockFocusRef.current) {
+          return;
+        }
+        if (event.type === "focus" && ((_dataRef$current$open = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open.type) === "mousedown" && (_refs$domReference$cu = refs.domReference.current) != null && _refs$domReference$cu.contains((_dataRef$current$open2 = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open2.target)) {
+          return;
+        }
+        dataRef.current.openEvent = event.nativeEvent;
+        onOpenChange(true);
+      },
+      onBlur(event) {
+        const target = event.relatedTarget;
+        timeoutRef.current = setTimeout(() => {
+          var _refs$floating$curren, _refs$domReference$cu2;
+          if ((_refs$floating$curren = refs.floating.current) != null && _refs$floating$curren.contains(target) || (_refs$domReference$cu2 = refs.domReference.current) != null && _refs$domReference$cu2.contains(target)) {
+            return;
+          }
+          blockFocusRef.current = false;
+          onOpenChange(false);
+        });
+      }
+    }
+  };
+};
+const getMiddleware = ({ arrowRef, placement }) => {
+  const middleware = [];
+  middleware.push(offset$1(8));
+  middleware.push(placement === "auto" ? autoPlacement() : flip());
+  middleware.push(shift({ padding: 8 }));
+  if (arrowRef.current) {
+    middleware.push(arrow({ element: arrowRef.current }));
+  }
+  return middleware;
+};
+const getPlacement = ({ placement }) => {
+  return placement === "auto" ? void 0 : placement;
+};
+const getArrowPlacement = ({ placement }) => {
+  return {
+    top: "bottom",
+    right: "left",
+    bottom: "top",
+    left: "right"
+  }[placement.split("-")[0]];
+};
+const Floating = ({ children, content, theme: theme2, animation = "duration-300", arrow: arrow2 = true, placement = "top", style = "dark", trigger = "hover", closeRequestKey, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const arrowRef = react.exports.useRef(null);
+  const [open, setOpen] = react.exports.useState(false);
+  const floatingTooltip = useFloating({
+    middleware: getMiddleware({ arrowRef, placement }),
+    onOpenChange: setOpen,
+    open,
+    placement: getPlacement({ placement })
+  });
+  const { context, floating, middlewareData: { arrow: { x: arrowX, y: arrowY } = {} }, reference, refs, strategy, update, x: x2, y: y2 } = floatingTooltip;
+  const { getFloatingProps, getReferenceProps } = useInteractions([
+    useClick(context, { enabled: trigger === "click" }),
+    useFocus(context),
+    useHover(context, { enabled: trigger === "hover" }),
+    useRole(context, { role: "tooltip" })
+  ]);
+  react.exports.useEffect(() => {
+    if (refs.reference.current && refs.floating.current && open) {
+      return autoUpdate(refs.reference.current, refs.floating.current, update);
+    }
+  }, [open, refs.floating, refs.reference, update]);
+  react.exports.useEffect(() => {
+    if (closeRequestKey !== void 0)
+      setOpen(false);
+  }, [closeRequestKey]);
+  return jsxs(Fragment, { children: [jsx("div", { className: theme2.target, ...getReferenceProps({ ref: reference }), "data-testid": "flowbite-tooltip-target", children }), jsxs("div", { "data-testid": "flowbite-tooltip", ...getFloatingProps({
+    className: classNames(theme2.base, animation && `${theme2.animation} ${animation}`, !open && theme2.hidden, theme2.style[style]),
+    ref: floating,
+    style: {
+      position: strategy,
+      top: y2 != null ? y2 : " ",
+      left: x2 != null ? x2 : " "
+    },
+    ...theirProps
+  }), children: [jsx("div", { className: theme2.content, children: content }), arrow2 && jsx("div", { className: classNames(theme2.arrow.base, {
+    [theme2.arrow.style.dark]: style === "dark",
+    [theme2.arrow.style.light]: style === "light",
+    [theme2.arrow.style.auto]: style === "auto"
+  }), "data-testid": "flowbite-tooltip-arrow", ref: arrowRef, style: {
+    top: arrowY != null ? arrowY : " ",
+    left: arrowX != null ? arrowX : " ",
+    right: " ",
+    bottom: " ",
+    [getArrowPlacement({ placement: floatingTooltip.placement })]: theme2.arrow.placement
+  }, children: "\xA0" })] })] });
+};
+const DropdownDivider = () => {
+  const theme2 = useTheme().theme.dropdown.floating.divider;
+  return jsx("div", { className: theme2 });
+};
+const DropdownHeader = ({ children, ...props }) => {
+  const theme2 = useTheme().theme.dropdown.floating.header;
+  const theirProps = excludeClassName(props);
+  return jsxs(Fragment, { children: [jsx("div", { className: theme2, ...theirProps, children }), jsx(DropdownDivider, {})] });
+};
+const DropdownItem = ({ children, onClick, icon: Icon }) => {
+  const theme2 = useTheme().theme.dropdown.floating.item;
+  return jsxs("li", { className: theme2.base, onClick, children: [Icon && jsx(Icon, { className: theme2.icon }), children] });
+};
+const icons = {
+  top: HiOutlineChevronUp,
+  right: HiOutlineChevronRight,
+  bottom: HiOutlineChevronDown,
+  left: HiOutlineChevronLeft
+};
+const DropdownComponent = ({ children, ...props }) => {
+  const theme2 = useTheme().theme.dropdown;
+  const theirProps = excludeClassName(props);
+  const { placement = props.inline ? "bottom-start" : "bottom", trigger = "click", label, inline, floatingArrow = false, arrowIcon = true, ...buttonProps } = theirProps;
+  const Icon = react.exports.useMemo(() => {
+    var _a2;
+    const [p2] = placement.split("-");
+    return (_a2 = icons[p2]) != null ? _a2 : HiOutlineChevronDown;
+  }, [placement]);
+  const [closeRequestKey, setCloseRequestKey] = react.exports.useState(void 0);
+  const attachCloseListener = (node) => {
+    if (!React.isValidElement(node))
+      return node;
+    if (node.type === DropdownItem)
+      return React.cloneElement(node, {
+        onClick: () => {
+          var _a2, _b;
+          (_b = (_a2 = node.props).onClick) == null ? void 0 : _b.call(_a2);
+          setCloseRequestKey(uuid());
+        }
+      });
+    if (node.props.children && typeof node.props.children === "object") {
+      return React.cloneElement(node, { children: react.exports.Children.map(node.props.children, attachCloseListener) });
+    }
+    return node;
+  };
+  const content = react.exports.useMemo(() => jsx("ul", { className: theme2.content, children: react.exports.Children.map(children, attachCloseListener) }), [children, theme2]);
+  const TriggerWrapper = ({ children: children2 }) => inline ? jsx("button", { className: theme2.inlineWrapper, children: children2 }) : jsx(Button, { ...buttonProps, children: children2 });
+  return jsx(Floating, { content, style: "auto", animation: "duration-100", placement, arrow: floatingArrow, trigger, theme: theme2.floating, closeRequestKey, children: jsxs(TriggerWrapper, { children: [label, arrowIcon && jsx(Icon, { className: theme2.arrowIcon })] }) });
+};
+DropdownComponent.displayName = "Dropdown";
+DropdownItem.displayName = "Dropdown.Item";
+DropdownHeader.displayName = "Dropdown.Header";
+DropdownDivider.displayName = "Dropdown.Divider";
+Object.assign(DropdownComponent, {
+  Item: DropdownItem,
+  Header: DropdownHeader,
+  Divider: DropdownDivider
+});
+const FooterBrand = ({ alt, children, href, name, src }) => {
+  const theme2 = useTheme().theme.footer.brand;
+  return jsx("div", { children: href ? jsxs("a", { "data-testid": "flowbite-footer-brand", href, className: theme2.base, children: [jsx("img", { alt, src, className: theme2.img }), jsx("span", { "data-testid": "flowbite-footer-brand-span", className: theme2.span, children: name }), children] }) : jsx("img", { alt, "data-testid": "flowbite-footer-brand", src, className: theme2.img }) });
+};
+const FooterCopyright = ({ href, by, year }) => {
+  const theme2 = useTheme().theme.footer.copyright;
+  return jsx("div", { children: jsxs("span", { className: theme2.base, "data-testid": "flowbite-footer-copyright", children: ["\xA9 ", year, href ? jsx("a", { href, className: theme2.href, children: by }) : jsx("span", { "data-testid": "flowbite-footer-copyright-span", className: theme2.span, children: by })] }) });
+};
+const FooterDivider = () => {
+  const theme2 = useTheme().theme.footer.divider;
+  return jsx("hr", { "data-testid": "footer-divider", className: theme2.base });
+};
+const FooterIcon = ({ href, ariaLabel, icon: Icon }) => {
+  const theme2 = useTheme().theme.footer.icon;
+  return jsx("div", { children: href ? jsx("a", { "aria-label": ariaLabel, "data-testid": "flowbite-footer-icon", href, className: theme2.base, children: jsx(Icon, { className: theme2.size }) }) : jsx(Icon, { "data-testid": "flowbite-footer-icon", className: theme2.size }) });
+};
+const FooterLink = ({ children, href }) => {
+  const theme2 = useTheme().theme.footer.groupLink.link;
+  return jsx("li", { className: theme2.base, children: jsx("a", { href, className: theme2.href, children }) });
+};
+const FooterLinkGroup = ({ children, col = false }) => {
+  const theme2 = useTheme().theme.footer.groupLink;
+  return jsx("ul", { "data-testid": "footer-groupLink", className: classNames(theme2.base, col && theme2.col), children });
+};
+const FooterTitle = ({ title }) => {
+  const theme2 = useTheme().theme.footer.title;
+  return jsx("h2", { "data-testid": "flowbite-footer-title", className: theme2.base, children: title });
+};
+const FooterComponent = ({ children, bgDark = false, container = false }) => {
+  const theme2 = useTheme().theme.footer;
+  return jsx("footer", { "data-testid": "flowbite-footer", className: classNames(theme2.base, bgDark && theme2.bgDark, container && theme2.container), children });
+};
+FooterComponent.displayName = "Footer";
+FooterCopyright.displayName = "Footer.Copyright";
+FooterLink.displayName = "Footer.Link";
+FooterBrand.displayName = "Footer.Brand";
+FooterLinkGroup.displayName = "Footer.LinkGroup";
+FooterIcon.displayName = "Footer.Icon";
+FooterTitle.displayName = "Footer.Title";
+FooterDivider.displayName = "Footer.Divider";
+Object.assign(FooterComponent, {
+  Copyright: FooterCopyright,
+  Link: FooterLink,
+  LinkGroup: FooterLinkGroup,
+  Brand: FooterBrand,
+  Icon: FooterIcon,
+  Title: FooterTitle,
+  Divider: FooterDivider
+});
+const Checkbox = react.exports.forwardRef((props, ref) => {
+  const theme2 = useTheme().theme.formControls.checkbox;
+  const theirProps = excludeClassName(props);
+  return jsx("input", { ref, className: theme2.base, type: "checkbox", ...theirProps });
+});
+Checkbox.displayName = "Checkbox";
+const HelperText = ({ value, children, color: color2 = "default", ...props }) => {
+  var _a2;
+  const theme2 = useTheme().theme.formControls.helperText;
+  const theirProps = excludeClassName(props);
+  return jsx("p", { className: classNames(theme2.base, theme2.colors[color2]), ...theirProps, children: (_a2 = value != null ? value : children) != null ? _a2 : "" });
+};
+const FileInput = react.exports.forwardRef(({ sizing = "md", helperText, color: color2 = "gray", ...props }, ref) => {
+  const theme2 = useTheme().theme.formControls.fileInput;
+  const theirProps = excludeClassName(props);
+  return jsxs(Fragment, { children: [jsx("div", { className: theme2.base, children: jsx("div", { className: theme2.field.base, children: jsx("input", { className: classNames(theme2.field.input.base, theme2.field.input.colors[color2], theme2.field.input.sizes[sizing]), ...theirProps, type: "file", ref }) }) }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
+});
+FileInput.displayName = "FileInput";
+const Radio = react.exports.forwardRef((props, ref) => {
+  const theme2 = useTheme().theme.formControls.radio;
+  const theirProps = excludeClassName(props);
+  return jsx("input", { ref, className: theme2.base, type: "radio", ...theirProps });
+});
+Radio.displayName = "Radio";
+const Select = react.exports.forwardRef(({ children, sizing = "md", shadow, helperText, addon, icon: Icon, color: color2 = "gray", ...props }, ref) => {
+  const theme2 = useTheme().theme.formControls.select;
+  const theirProps = excludeClassName(props);
+  return jsxs("div", { className: theme2.base, children: [addon && jsx("span", { className: theme2.addon, children: addon }), jsxs("div", { className: theme2.field.base, children: [Icon && jsx("div", { className: theme2.field.icon.base, children: jsx(Icon, { className: theme2.field.icon.svg }) }), jsx("select", { className: classNames(theme2.field.select.base, theme2.field.select.colors[color2], theme2.field.select.withIcon[Icon ? "on" : "off"], theme2.field.select.withAddon[addon ? "on" : "off"], theme2.field.select.withShadow[shadow ? "on" : "off"], theme2.field.select.sizes[sizing]), ...theirProps, ref, children }), helperText && jsx(HelperText, { color: color2, children: helperText })] })] });
+});
+Select.displayName = "Select";
+const Textarea = react.exports.forwardRef(({ shadow, helperText, color: color2 = "gray", ...props }, ref) => {
+  const theme2 = useTheme().theme.formControls.textarea;
+  const theirProps = excludeClassName(props);
+  return jsxs(Fragment, { children: [jsx("textarea", { ref, className: classNames(theme2.base, theme2.colors[color2], theme2.withShadow[shadow ? "on" : "off"]), ...theirProps }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
+});
+Textarea.displayName = "Textarea";
+const TextInput = react.exports.forwardRef(({ sizing = "md", shadow, helperText, addon, icon: Icon, color: color2 = "gray", ...props }, ref) => {
+  const theme2 = useTheme().theme.formControls.textInput;
+  const theirProps = excludeClassName(props);
+  return jsxs(Fragment, { children: [jsxs("div", { className: theme2.base, children: [addon && jsx("span", { className: theme2.addon, children: addon }), jsxs("div", { className: theme2.field.base, children: [Icon && jsx("div", { className: theme2.field.icon.base, children: jsx(Icon, { className: theme2.field.icon.svg }) }), jsx("input", { className: classNames(theme2.field.input.base, theme2.field.input.colors[color2], theme2.field.input.withIcon[Icon ? "on" : "off"], theme2.field.input.withAddon[addon ? "on" : "off"], theme2.field.input.withShadow[shadow ? "on" : "off"], theme2.field.input.sizes[sizing]), ...theirProps, ref })] })] }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
+});
+TextInput.displayName = "TextInput";
+const ListGroupItem = ({ active: isActive, children, href, icon: Icon, onClick, ...props }) => {
+  const isLink = typeof href !== "undefined";
+  const Component = isLink ? "a" : "button";
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.listGroup.item;
+  return jsx("li", { children: jsxs(Component, { className: classNames(theme2.active[isActive ? "on" : "off"], theme2.base, theme2.href[isLink ? "on" : "off"]), href, onClick, type: isLink ? void 0 : "button", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon, "data-testid": "flowbite-list-group-item-icon" }), children] }) });
+};
+const ListGroupComponent = ({ children, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.listGroup.base;
+  return jsx("ul", { className: theme2, ...theirProps, children });
+};
+ListGroupComponent.displayName = "ListGroup";
+ListGroupItem.displayName = "ListGroup.Item";
+Object.assign(ListGroupComponent, { Item: ListGroupItem });
+const ModalContext = react.exports.createContext(void 0);
+function useModalContext() {
+  const context = react.exports.useContext(ModalContext);
+  if (!context) {
+    throw new Error("useModalContext should be used within the ModalContext provider!");
+  }
+  return context;
+}
+const ModalBody = ({ children, ...props }) => {
+  const { popup } = useModalContext();
+  const theme2 = useTheme().theme.modal.body;
+  const theirProps = excludeClassName(props);
+  return jsx("div", { className: classNames(theme2.base, {
+    [theme2.popup]: popup
+  }), ...theirProps, children });
+};
+const ModalFooter = ({ children, ...props }) => {
+  const { popup } = useModalContext();
+  const theme2 = useTheme().theme.modal.footer;
+  const theirProps = excludeClassName(props);
+  return jsx("div", { className: classNames(theme2.base, {
+    [theme2.popup]: !popup
+  }), ...theirProps, children });
+};
+const ModalHeader = ({ children, ...props }) => {
+  const { popup, onClose } = useModalContext();
+  const theme2 = useTheme().theme.modal.header;
+  const theirProps = excludeClassName(props);
+  return jsxs("div", { className: classNames(theme2.base, {
+    [theme2.popup]: popup
+  }), ...theirProps, children: [jsx("h3", { className: theme2.title, children }), jsx("button", { "aria-label": "Close", className: theme2.close.base, type: "button", onClick: onClose, children: jsx(HiOutlineX, { "aria-hidden": true, className: theme2.close.icon }) })] });
+};
+const ModalComponent = ({ children, show, root: root2, popup, size = "2xl", position = "center", onClose, ...props }) => {
+  const [parent, setParent] = react.exports.useState(root2);
+  const [container, setContainer] = react.exports.useState();
+  const theme2 = useTheme().theme.modal;
+  const theirProps = excludeClassName(props);
+  react.exports.useEffect(() => {
+    if (!parent)
+      setParent(document.body);
+    if (!container)
+      setContainer(document.createElement("div"));
+  }, []);
+  react.exports.useEffect(() => {
+    if (!container || !parent || !show) {
+      return;
+    }
+    parent.appendChild(container);
+    return () => {
+      if (container) {
+        parent.removeChild(container);
+      }
+    };
+  }, [container, parent, show]);
+  return container ? reactDom.exports.createPortal(jsx(ModalContext.Provider, { value: { popup, onClose }, children: jsx("div", { "aria-hidden": !show, className: classNames(theme2.base, theme2.positions[position], show ? theme2.show.on : theme2.show.off), "data-testid": "modal", role: "dialog", ...theirProps, children: jsx("div", { className: classNames(theme2.content.base, theme2.sizes[size]), children: jsx("div", { className: theme2.content.inner, children }) }) }) }), container) : null;
+};
+ModalComponent.displayName = "Modal";
+ModalHeader.displayName = "Modal.Header";
+ModalBody.displayName = "Modal.Body";
+ModalFooter.displayName = "Modal.Footer";
+Object.assign(ModalComponent, { Header: ModalHeader, Body: ModalBody, Footer: ModalFooter });
+const NavbarBrand = ({ children, href, ...props }) => {
+  const theme2 = useTheme().theme.navbar;
+  const theirProps = excludeClassName(props);
+  return jsx("a", { href, className: theme2.brand, ...theirProps, children });
+};
+const NavbarContext = react.exports.createContext(void 0);
+function useNavbarContext() {
+  const context = react.exports.useContext(NavbarContext);
+  if (!context) {
+    throw new Error("useNavBarContext should be used within the NavbarContext provider!");
+  }
+  return context;
+}
+const NavbarCollapse = ({ children, ...props }) => {
+  const { isOpen } = useNavbarContext();
+  const theme2 = useTheme().theme.navbar.collapse;
+  const theirProps = excludeClassName(props);
+  return jsx("div", { className: classNames(theme2.base, theme2.hidden[!isOpen ? "on" : "off"]), "data-testid": "flowbite-navbar-collapse", ...theirProps, children: jsx("ul", { className: theme2.list, children }) });
+};
+const NavbarLink = ({ active, disabled, href, children, ...props }) => {
+  const theme2 = useTheme().theme.navbar.link;
+  const theirProps = excludeClassName(props);
+  return jsx("li", { children: jsx("a", { href, className: classNames(theme2.base, {
+    [theme2.active.on]: active,
+    [theme2.active.off]: !active && !disabled
+  }, theme2.disabled[disabled ? "on" : "off"]), ...theirProps, children }) });
+};
+function GoThreeBars(props) {
+  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 12 16" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z" } }] })(props);
+}
+const NavbarToggle = ({ barIcon: BarIcon = GoThreeBars, ...props }) => {
+  const { isOpen, setIsOpen } = useNavbarContext();
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+  const theme2 = useTheme().theme.navbar.toggle;
+  const theirProps = excludeClassName(props);
+  return jsxs("button", { className: theme2.base, "data-testid": "flowbite-navbar-toggle", onClick: handleClick, ...theirProps, children: [jsx("span", { className: "sr-only", children: "Open main menu" }), jsx(BarIcon, { className: theme2.icon })] });
+};
+const NavbarComponent = ({ children, menuOpen, fluid = false, rounded, border, ...props }) => {
+  const [isOpen, setIsOpen] = react.exports.useState(menuOpen);
+  const theme2 = useTheme().theme.navbar;
+  const theirProps = excludeClassName(props);
+  return jsx(NavbarContext.Provider, { value: { isOpen, setIsOpen }, children: jsx("nav", { className: classNames(theme2.base, theme2.bordered[border ? "on" : "off"], theme2.rounded[rounded ? "on" : "off"]), ...theirProps, children: jsx("div", { className: classNames(theme2.inner.base, theme2.inner.fluid[fluid ? "on" : "off"]), children }) }) });
+};
+NavbarComponent.displayName = "Navbar";
+NavbarBrand.displayName = "Navbar.Brand";
+NavbarCollapse.displayName = "Navbar.Collapse";
+NavbarLink.displayName = "Navbar.Link";
+NavbarToggle.displayName = "Navbar.Toggle";
+Object.assign(NavbarComponent, {
+  Brand: NavbarBrand,
+  Collapse: NavbarCollapse,
+  Link: NavbarLink,
+  Toggle: NavbarToggle
+});
+const RatingAdvanced = ({ percentFilled = 0, children, ...props }) => {
+  const theme2 = useTheme().theme.rating.advanced;
+  const theirProps = excludeClassName(props);
+  return jsxs("div", { className: theme2.base, ...theirProps, children: [jsx("span", { className: theme2.label, children }), jsx("div", { className: theme2.progress.base, children: jsx("div", { className: theme2.progress.fill, "data-testid": "flowbite-rating-fill", style: { width: `${percentFilled}%` } }) }), jsx("span", { className: theme2.progress.label, children: `${percentFilled}%` })] });
+};
+const RatingContext = react.exports.createContext(void 0);
+function useRatingContext() {
+  const context = react.exports.useContext(RatingContext);
+  if (!context) {
+    throw new Error("useRatingContext should be used within the RatingContext provider!");
+  }
+  return context;
+}
+const RatingStar = ({ filled = true, starIcon: Icon = HiStar }) => {
+  const { size = "sm" } = useRatingContext();
+  const theme2 = useTheme().theme.rating.star;
+  return jsx(Icon, { className: classNames(theme2.sizes[size], theme2[filled ? "filled" : "empty"]), "data-testid": "flowbite-rating-star" });
+};
+const RatingComponent = ({ children, size = "sm", ...props }) => {
+  const theme2 = useTheme().theme.rating;
+  const theirProps = excludeClassName(props);
+  return jsx(RatingContext.Provider, { value: { size }, children: jsx("div", { className: theme2.base, ...theirProps, children }) });
+};
+RatingComponent.displayName = "Rating";
+RatingStar.displayName = "Rating.Star";
+RatingAdvanced.displayName = "Rating.Advanced";
+Object.assign(RatingComponent, {
+  Star: RatingStar,
+  Advanced: RatingAdvanced
+});
+const Tooltip = ({ animation = "duration-300", arrow: arrow2 = true, children, content, placement = "top", style = "dark", trigger = "hover", ...props }) => {
+  const theme2 = useTheme().theme.tooltip;
+  const theirProps = excludeClassName(props);
+  return jsx(Floating, { content, style, animation, placement, arrow: arrow2, trigger, theme: theme2, ...theirProps, children });
+};
+const SidebarContext = react.exports.createContext(void 0);
+function useSidebarContext() {
+  const context = react.exports.useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebarContext should be used within the SidebarContext provider!");
+  }
+  return context;
+}
+const SidebarItemContext = react.exports.createContext(void 0);
+function useSidebarItemContext() {
+  const context = react.exports.useContext(SidebarItemContext);
+  if (!context) {
+    throw new Error("useSidebarItemContext should be used within the SidebarItemContext provider!");
+  }
+  return context;
+}
+const SidebarCollapse = ({ children, icon: Icon, label, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const id2 = react.exports.useId();
+  const { isCollapsed } = useSidebarContext();
+  const [isOpen, setOpen] = react.exports.useState(false);
+  const theme2 = useTheme().theme.sidebar.collapse;
+  const Wrapper = ({ children: children2 }) => jsx("li", { children: isCollapsed ? jsx(Tooltip, { content: label, placement: "right", children: children2 }) : children2 });
+  return jsxs(Wrapper, { children: [jsxs("button", { className: theme2.button, id: `flowbite-sidebar-collapse-${id2}`, onClick: () => setOpen(!isOpen), type: "button", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: classNames(theme2.icon.base, theme2.icon.open[isOpen ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), isCollapsed ? jsx("span", { className: "sr-only", children: label }) : jsxs(Fragment, { children: [jsx("span", { className: theme2.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: label }), jsx(HiChevronDown, { "aria-hidden": true, className: theme2.label.icon })] })] }), jsx("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${id2}`, className: theme2.list, hidden: !isOpen, children: jsx(SidebarItemContext.Provider, { value: { isInsideCollapse: true }, children }) })] });
+};
+SidebarCollapse.displayName = "Sidebar.Collapse";
+const SidebarCTA = ({ children, color: color2 = "info", ...props }) => {
+  const theirProps = excludeClassName(props);
+  const { isCollapsed } = useSidebarContext();
+  const theme2 = useTheme().theme.sidebar.cta;
+  return jsx("div", { className: classNames(theme2.base, theme2.color[color2]), "data-testid": "sidebar-cta", hidden: isCollapsed, ...theirProps, children });
+};
+SidebarCTA.displayName = "Sidebar.CTA";
+const SidebarItem = ({ as: Component = "a", children, icon: Icon, active: isActive, label, labelColor = "info", ...props }) => {
+  var _a2;
+  const theirProps = excludeClassName(props);
+  const id2 = react.exports.useId();
+  const { isCollapsed } = useSidebarContext();
+  const { isInsideCollapse } = useSidebarItemContext();
+  const theme2 = useTheme().theme.sidebar.item;
+  const ListItem = ({ children: wrapperChildren }) => jsx("li", { children: isCollapsed ? jsx(Tooltip, { content: jsx(TooltipContent, { children }), placement: "right", children: wrapperChildren }) : wrapperChildren });
+  const TooltipContent = ({ children: children2 }) => jsx(Children, { children: children2 });
+  const Children = ({ children: children2 }) => jsx("span", { className: classNames(theme2.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${id2}`, children: children2 });
+  return jsx(ListItem, { children: jsxs(Component, { "aria-labelledby": `flowbite-sidebar-item-${id2}`, className: classNames(theme2.base, isActive && theme2.active, !isCollapsed && isInsideCollapse && theme2.collapsed.insideCollapse), ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: classNames(theme2.icon.base, isActive && theme2.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), isCollapsed && !Icon && jsx("span", { className: theme2.collapsed.noIcon, children: (_a2 = children.charAt(0).toLocaleUpperCase()) != null ? _a2 : "?" }), !isCollapsed && jsx(Children, { children }), !isCollapsed && label && jsx(Badge, { color: labelColor, "data-testid": "flowbite-sidebar-label", hidden: isCollapsed, children: label })] }) });
+};
+SidebarItem.displayName = "Sidebar.Item";
+const SidebarItemGroup = ({ children, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.sidebar.itemGroup;
+  return jsx("ul", { className: theme2, "data-testid": "flowbite-sidebar-item-group", ...theirProps, children: jsx(SidebarItemContext.Provider, { value: { isInsideCollapse: false }, children }) });
+};
+SidebarItemGroup.displayName = "Sidebar.ItemGroup";
+const SidebarItems = ({ children, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.sidebar.items;
+  return jsx("div", { className: theme2, "data-testid": "flowbite-sidebar-items", ...theirProps, children });
+};
+SidebarItems.displayName = "Sidebar.Items";
+const SidebarLogo = ({ children, href, img, imgAlt = "", ...props }) => {
+  const theirProps = excludeClassName(props);
+  const id2 = react.exports.useId();
+  const { isCollapsed } = useSidebarContext();
+  const theme2 = useTheme().theme.sidebar.logo;
+  return jsxs("a", { "aria-labelledby": `flowbite-sidebar-logo-${id2}`, className: theme2.base, href, ...theirProps, children: [jsx("img", { alt: imgAlt, className: theme2.img, src: img }), jsx("span", { className: theme2.collapsed[isCollapsed ? "on" : "off"], id: `flowbite-sidebar-logo-${id2}`, children })] });
+};
+SidebarLogo.displayName = "Sidebar.Logo";
+const SidebarComponent = ({ children, collapseBehavior = "collapse", collapsed: isCollapsed = false, ...props }) => {
+  const theirProps = excludeClassName(props);
+  const theme2 = useTheme().theme.sidebar;
+  return jsx(SidebarContext.Provider, { value: { isCollapsed }, children: jsx("aside", { "aria-label": "Sidebar", className: classNames(theme2.base, theme2.collapsed[isCollapsed ? "on" : "off"]), hidden: isCollapsed && collapseBehavior === "hide", ...theirProps, children: jsx("div", { className: theme2.inner, children }) }) });
+};
+SidebarComponent.displayName = "Sidebar";
+Object.assign(SidebarComponent, {
+  Collapse: SidebarCollapse,
+  CTA: SidebarCTA,
+  Item: SidebarItem,
+  Items: SidebarItems,
+  ItemGroup: SidebarItemGroup,
+  Logo: SidebarLogo
+});
+const TableBody = ({ children, ...props }) => {
+  return jsx("tbody", { ...props, children });
+};
+const TableCell = ({ children, className, ...props }) => {
+  return jsx("td", { className: classNames("px-6 py-4", className), ...props, children });
+};
+const TableContext = react.exports.createContext(void 0);
+function useTableContext() {
+  const context = react.exports.useContext(TableContext);
+  if (!context) {
+    throw new Error("useTableContext should be used within the TableContext provider!");
+  }
+  return context;
+}
+const TableHead = ({ children, className, ...props }) => {
+  return jsx("thead", { className: classNames("bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400", className), ...props, children: jsx("tr", { children }) });
+};
+const TableHeadCell = ({ children, className, ...props }) => {
+  return jsx("th", { className: classNames("px-6 py-3", className), ...props, children });
+};
+const TableRow = ({ children, className, ...props }) => {
+  const { striped, hoverable } = useTableContext();
+  return jsx("tr", { "data-testid": "table-row-element", className: classNames({
+    "odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700": striped,
+    "hover:bg-gray-50 dark:hover:bg-gray-600": hoverable
+  }, className), ...props, children });
+};
+const TableComponent = ({ children, striped, hoverable, className, ...props }) => {
+  return jsx("div", { "data-testid": "table-element", className: "relative overflow-x-auto shadow-md sm:rounded-lg", children: jsx(TableContext.Provider, { value: { striped, hoverable }, children: jsx("table", { className: classNames("w-full text-left text-sm text-gray-500 dark:text-gray-400", className), ...props, children }) }) });
+};
+TableComponent.displayName = "Table";
+TableHead.displayName = "Table.Head";
+TableBody.displayName = "Table.Body";
+TableRow.displayName = "Table.Row";
+TableCell.displayName = "Table.Cell";
+TableHeadCell.displayName = "Table.HeadCell";
+Object.assign(TableComponent, {
+  Head: TableHead,
+  Body: TableBody,
+  Row: TableRow,
+  Cell: TableCell,
+  HeadCell: TableHeadCell
+});
+const TimelineBody = ({ children, className, ...props }) => {
+  return jsx("p", { className: classNames("mb-4 text-base font-normal text-gray-500 dark:text-gray-400", className), ...props, children });
+};
+const TimelineContext = react.exports.createContext(void 0);
+function useTimelineContext() {
+  const context = react.exports.useContext(TimelineContext);
+  if (!context) {
+    throw new Error("useTimelineContext should be used within the TimelineContext providor!");
+  }
+  return context;
+}
+const TimelineContent = ({ children, className, ...props }) => {
+  const { horizontal } = useTimelineContext();
+  return jsx("div", { "data-testid": "timeline-content", className: classNames({ "mt-3 sm:pr-8": horizontal }, className), ...props, children });
+};
+const TimelineItem = ({ children, className, ...props }) => {
+  const { horizontal } = useTimelineContext();
+  return jsx("li", { "data-testid": "timeline-item", className: classNames({ "mb-10 ml-6": !horizontal, "relative mb-6 sm:mb-0": horizontal }, className), ...props, children });
+};
+const TimelinePoint = ({ children, className, icon: Icon, ...props }) => {
+  const { horizontal } = useTimelineContext();
+  return jsxs("div", { "data-testid": "timeline-point", className: classNames({ "flex items-center": horizontal }, className), ...props, children: [children, Icon ? jsx("span", { className: "absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-200 ring-8 ring-white dark:bg-blue-900 dark:ring-gray-900", children: jsx(Icon, { "aria-hidden": true, className: "h-3 w-3 text-blue-600 dark:text-blue-300" }) }) : jsx("div", { className: "absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-gray-200 dark:border-gray-900 dark:bg-gray-700" }), horizontal ? jsx("div", { className: "hidden h-0.5 w-full bg-gray-200 dark:bg-gray-700 sm:flex" }) : ""] });
+};
+const TimelineTime = ({ children, className, ...props }) => {
+  return jsx("time", { className: classNames("mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500", className), ...props, children });
+};
+const TimelineTitle = ({ children, className, as = "h3", ...props }) => {
+  const Tag = as;
+  return jsx(Tag, { className: classNames("text-lg font-semibold text-gray-900 dark:text-white", className), ...props, children });
+};
+const TimelineComponent = ({ children, horizontal }) => {
+  return jsx(TimelineContext.Provider, { value: { horizontal }, children: jsx("ol", { "data-testid": "timeline-component", className: classNames({
+    "relative border-l border-gray-200 dark:border-gray-700": !horizontal,
+    "items-center sm:flex": horizontal
+  }), children }) });
+};
+TimelineComponent.displayName = "Timeline";
+TimelineItem.displayName = "Timeline.Item";
+TimelinePoint.displayName = "Timeline.Point";
+TimelineContent.displayName = "Timeline.Content";
+TimelineTime.displayName = "Timeline.Time";
+TimelineTitle.displayName = "Timeline.Title";
+TimelineBody.displayName = "Timeline.Body";
+Object.assign(TimelineComponent, {
+  Item: TimelineItem,
+  Point: TimelinePoint,
+  Content: TimelineContent,
+  Time: TimelineTime,
+  Title: TimelineTitle,
+  Body: TimelineBody
+});
+const ToastContext = react.exports.createContext(void 0);
+function useToastContext() {
+  const context = react.exports.useContext(ToastContext);
+  if (!context) {
+    throw new Error("useToastContext should be used within the ToastContext provider!");
+  }
+  return context;
+}
+const ToastToggle = ({ xIcon: XIcon = HiX }) => {
+  const { duration, isClosed, isRemoved, setIsClosed, setIsRemoved } = useToastContext();
+  const theme2 = useTheme().theme.toast.toggle;
+  const handleClick = () => {
+    setIsClosed(!isClosed);
+    setTimeout(() => setIsRemoved(!isRemoved), duration);
+  };
+  return jsx("button", { "aria-label": "Close", onClick: handleClick, type: "button", className: theme2.base, children: jsx(XIcon, { className: theme2.icon }) });
+};
+const durationClasses = {
+  75: "duration-75",
+  100: "duration-100",
+  150: "duration-150",
+  200: "duration-200",
+  300: "duration-300",
+  500: "duration-500",
+  700: "duration-700",
+  1e3: "duration-1000"
+};
+const ToastComponent = ({ children, duration = 300, ...props }) => {
+  const [isClosed, setIsClosed] = react.exports.useState(false);
+  const [isRemoved, setIsRemoved] = react.exports.useState(false);
+  const theme2 = useTheme().theme.toast;
+  const theirProps = excludeClassName(props);
+  return jsx(ToastContext.Provider, { value: { duration, isClosed, isRemoved, setIsClosed, setIsRemoved }, children: jsx("div", { "data-testid": "flowbite-toast", className: classNames(theme2.base, durationClasses[duration], { [theme2.closed]: isClosed }, { [theme2.removed]: isRemoved }), ...theirProps, children }) });
+};
+ToastComponent.displayName = "Toast";
+ToastToggle.displayName = "Toast.Toggle";
+Object.assign(ToastComponent, {
+  Toggle: ToastToggle
+});
 function ArrowDownIcon({
   title,
   titleId,
@@ -58197,8 +62143,8 @@ function ArrowDownIcon({
     })]
   });
 }
-const ForwardRef$d = react.exports.forwardRef(ArrowDownIcon);
-const ArrowDownIcon$1 = ForwardRef$d;
+const ForwardRef$a = react.exports.forwardRef(ArrowDownIcon);
+const ArrowDownIcon$1 = ForwardRef$a;
 function ArrowsUpDownIcon({
   title,
   titleId,
@@ -58223,8 +62169,8 @@ function ArrowsUpDownIcon({
     })]
   });
 }
-const ForwardRef$c = react.exports.forwardRef(ArrowsUpDownIcon);
-const ArrowsUpDownIcon$1 = ForwardRef$c;
+const ForwardRef$9 = react.exports.forwardRef(ArrowsUpDownIcon);
+const ArrowsUpDownIcon$1 = ForwardRef$9;
 function ChevronDownIcon({
   title,
   titleId,
@@ -58249,8 +62195,8 @@ function ChevronDownIcon({
     })]
   });
 }
-const ForwardRef$b = react.exports.forwardRef(ChevronDownIcon);
-const ChevronDownIcon$1 = ForwardRef$b;
+const ForwardRef$8 = react.exports.forwardRef(ChevronDownIcon);
+const ChevronDownIcon$1 = ForwardRef$8;
 function ChevronUpIcon({
   title,
   titleId,
@@ -58275,8 +62221,8 @@ function ChevronUpIcon({
     })]
   });
 }
-const ForwardRef$a = react.exports.forwardRef(ChevronUpIcon);
-const ChevronUpIcon$1 = ForwardRef$a;
+const ForwardRef$7 = react.exports.forwardRef(ChevronUpIcon);
+const ChevronUpIcon$1 = ForwardRef$7;
 function MagnifyingGlassIcon({
   title,
   titleId,
@@ -58301,8 +62247,8 @@ function MagnifyingGlassIcon({
     })]
   });
 }
-const ForwardRef$9 = react.exports.forwardRef(MagnifyingGlassIcon);
-const MagnifyingGlassIcon$1 = ForwardRef$9;
+const ForwardRef$6 = react.exports.forwardRef(MagnifyingGlassIcon);
+const MagnifyingGlassIcon$1 = ForwardRef$6;
 function ArrowLongLeftIcon({
   title,
   titleId,
@@ -58329,9 +62275,9 @@ function ArrowLongLeftIcon({
     })]
   });
 }
-const ForwardRef$8 = react.exports.forwardRef(ArrowLongLeftIcon);
-const ArrowLongLeftIcon$1 = ForwardRef$8;
-function ArrowLongRightIcon$2({
+const ForwardRef$5 = react.exports.forwardRef(ArrowLongLeftIcon);
+const ArrowLongLeftIcon$1 = ForwardRef$5;
+function ArrowLongRightIcon({
   title,
   titleId,
   ...props
@@ -58357,8 +62303,8 @@ function ArrowLongRightIcon$2({
     })]
   });
 }
-const ForwardRef$7 = react.exports.forwardRef(ArrowLongRightIcon$2);
-const ArrowLongRightIcon$3 = ForwardRef$7;
+const ForwardRef$4 = react.exports.forwardRef(ArrowLongRightIcon);
+const ArrowLongRightIcon$1 = ForwardRef$4;
 function CheckCircleIcon({
   title,
   titleId,
@@ -58385,8 +62331,8 @@ function CheckCircleIcon({
     })]
   });
 }
-const ForwardRef$6 = react.exports.forwardRef(CheckCircleIcon);
-const CheckCircleIcon$1 = ForwardRef$6;
+const ForwardRef$3 = react.exports.forwardRef(CheckCircleIcon);
+const CheckCircleIcon$1 = ForwardRef$3;
 function CogIcon({
   title,
   titleId,
@@ -58413,8 +62359,8 @@ function CogIcon({
     })]
   });
 }
-const ForwardRef$5 = react.exports.forwardRef(CogIcon);
-const CogIcon$1 = ForwardRef$5;
+const ForwardRef$2 = react.exports.forwardRef(CogIcon);
+const CogIcon$1 = ForwardRef$2;
 function DocumentDuplicateIcon({
   title,
   titleId,
@@ -58441,8 +62387,8 @@ function DocumentDuplicateIcon({
     })]
   });
 }
-const ForwardRef$4 = react.exports.forwardRef(DocumentDuplicateIcon);
-const DocumentDuplicateIcon$1 = ForwardRef$4;
+const ForwardRef$1 = react.exports.forwardRef(DocumentDuplicateIcon);
+const DocumentDuplicateIcon$1 = ForwardRef$1;
 function LockClosedIcon({
   title,
   titleId,
@@ -58469,8 +62415,8 @@ function LockClosedIcon({
     })]
   });
 }
-const ForwardRef$3 = react.exports.forwardRef(LockClosedIcon);
-const LockClosedIcon$1 = ForwardRef$3;
+const ForwardRef = react.exports.forwardRef(LockClosedIcon);
+const LockClosedIcon$1 = ForwardRef;
 class LuxonError extends Error {
 }
 class InvalidDateTimeError extends LuxonError {
@@ -58502,153 +62448,153 @@ class ZoneIsAbstractError extends LuxonError {
     super("Zone is an abstract class");
   }
 }
-const n$1 = "numeric", s$1 = "short", l$1 = "long";
+const n = "numeric", s = "short", l = "long";
 const DATE_SHORT = {
-  year: n$1,
-  month: n$1,
-  day: n$1
+  year: n,
+  month: n,
+  day: n
 };
 const DATE_MED = {
-  year: n$1,
-  month: s$1,
-  day: n$1
+  year: n,
+  month: s,
+  day: n
 };
 const DATE_MED_WITH_WEEKDAY = {
-  year: n$1,
-  month: s$1,
-  day: n$1,
-  weekday: s$1
+  year: n,
+  month: s,
+  day: n,
+  weekday: s
 };
 const DATE_FULL = {
-  year: n$1,
-  month: l$1,
-  day: n$1
+  year: n,
+  month: l,
+  day: n
 };
 const DATE_HUGE = {
-  year: n$1,
-  month: l$1,
-  day: n$1,
-  weekday: l$1
+  year: n,
+  month: l,
+  day: n,
+  weekday: l
 };
 const TIME_SIMPLE = {
-  hour: n$1,
-  minute: n$1
+  hour: n,
+  minute: n
 };
 const TIME_WITH_SECONDS = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1
+  hour: n,
+  minute: n,
+  second: n
 };
 const TIME_WITH_SHORT_OFFSET = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
-  timeZoneName: s$1
+  hour: n,
+  minute: n,
+  second: n,
+  timeZoneName: s
 };
 const TIME_WITH_LONG_OFFSET = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
-  timeZoneName: l$1
+  hour: n,
+  minute: n,
+  second: n,
+  timeZoneName: l
 };
 const TIME_24_SIMPLE = {
-  hour: n$1,
-  minute: n$1,
+  hour: n,
+  minute: n,
   hourCycle: "h23"
 };
 const TIME_24_WITH_SECONDS = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
+  hour: n,
+  minute: n,
+  second: n,
   hourCycle: "h23"
 };
 const TIME_24_WITH_SHORT_OFFSET = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
+  hour: n,
+  minute: n,
+  second: n,
   hourCycle: "h23",
-  timeZoneName: s$1
+  timeZoneName: s
 };
 const TIME_24_WITH_LONG_OFFSET = {
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
+  hour: n,
+  minute: n,
+  second: n,
   hourCycle: "h23",
-  timeZoneName: l$1
+  timeZoneName: l
 };
 const DATETIME_SHORT = {
-  year: n$1,
-  month: n$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1
+  year: n,
+  month: n,
+  day: n,
+  hour: n,
+  minute: n
 };
 const DATETIME_SHORT_WITH_SECONDS = {
-  year: n$1,
-  month: n$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1,
-  second: n$1
+  year: n,
+  month: n,
+  day: n,
+  hour: n,
+  minute: n,
+  second: n
 };
 const DATETIME_MED = {
-  year: n$1,
-  month: s$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1
+  year: n,
+  month: s,
+  day: n,
+  hour: n,
+  minute: n
 };
 const DATETIME_MED_WITH_SECONDS = {
-  year: n$1,
-  month: s$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1,
-  second: n$1
+  year: n,
+  month: s,
+  day: n,
+  hour: n,
+  minute: n,
+  second: n
 };
 const DATETIME_MED_WITH_WEEKDAY = {
-  year: n$1,
-  month: s$1,
-  day: n$1,
-  weekday: s$1,
-  hour: n$1,
-  minute: n$1
+  year: n,
+  month: s,
+  day: n,
+  weekday: s,
+  hour: n,
+  minute: n
 };
 const DATETIME_FULL = {
-  year: n$1,
-  month: l$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1,
-  timeZoneName: s$1
+  year: n,
+  month: l,
+  day: n,
+  hour: n,
+  minute: n,
+  timeZoneName: s
 };
 const DATETIME_FULL_WITH_SECONDS = {
-  year: n$1,
-  month: l$1,
-  day: n$1,
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
-  timeZoneName: s$1
+  year: n,
+  month: l,
+  day: n,
+  hour: n,
+  minute: n,
+  second: n,
+  timeZoneName: s
 };
 const DATETIME_HUGE = {
-  year: n$1,
-  month: l$1,
-  day: n$1,
-  weekday: l$1,
-  hour: n$1,
-  minute: n$1,
-  timeZoneName: l$1
+  year: n,
+  month: l,
+  day: n,
+  weekday: l,
+  hour: n,
+  minute: n,
+  timeZoneName: l
 };
 const DATETIME_HUGE_WITH_SECONDS = {
-  year: n$1,
-  month: l$1,
-  day: n$1,
-  weekday: l$1,
-  hour: n$1,
-  minute: n$1,
-  second: n$1,
-  timeZoneName: l$1
+  year: n,
+  month: l,
+  day: n,
+  weekday: l,
+  hour: n,
+  minute: n,
+  second: n,
+  timeZoneName: l
 };
 function isUndefined(o2) {
   return typeof o2 === "undefined";
@@ -61111,7 +65057,7 @@ function oneOf(strings, startIndex) {
     };
   }
 }
-function offset$1(regex, groups) {
+function offset(regex, groups) {
   return { regex, deser: ([, h2, m2]) => signedOffset(h2, m2), groups };
 }
 function simple(regex) {
@@ -61217,9 +65163,9 @@ function unitForToken(token, loc) {
         return oneOf(loc.weekdays("long", true, false), 1);
       case "Z":
       case "ZZ":
-        return offset$1(new RegExp(`([+-]${oneOrTwo.source})(?::(${two.source}))?`), 2);
+        return offset(new RegExp(`([+-]${oneOrTwo.source})(?::(${two.source}))?`), 2);
       case "ZZZ":
-        return offset$1(new RegExp(`([+-]${oneOrTwo.source})(${two.source})?`), 2);
+        return offset(new RegExp(`([+-]${oneOrTwo.source})(${two.source})?`), 2);
       case "z":
         return simple(/[a-z_+-/]{1,256}?/i);
       default:
@@ -62501,3952 +66447,6 @@ function friendlyDateTime(dateTimeish) {
     );
   }
 }
-function ArrowLongRightIcon({
-  title,
-  titleId,
-  ...props
-}, svgRef) {
-  return /* @__PURE__ */ jsxs("svg", {
-    ...Object.assign({
-      xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "0 0 20 20",
-      fill: "currentColor",
-      "aria-hidden": "true",
-      ref: svgRef,
-      "aria-labelledby": titleId
-    }, props),
-    children: [title ? /* @__PURE__ */ jsx("title", {
-      id: titleId,
-      children: title
-    }) : null, /* @__PURE__ */ jsx("path", {
-      fillRule: "evenodd",
-      d: "M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z",
-      clipRule: "evenodd"
-    })]
-  });
-}
-const ForwardRef$2 = react.exports.forwardRef(ArrowLongRightIcon);
-const ArrowLongRightIcon$1 = ForwardRef$2;
-function InformationCircleIcon({
-  title,
-  titleId,
-  ...props
-}, svgRef) {
-  return /* @__PURE__ */ jsxs("svg", {
-    ...Object.assign({
-      xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "0 0 20 20",
-      fill: "currentColor",
-      "aria-hidden": "true",
-      ref: svgRef,
-      "aria-labelledby": titleId
-    }, props),
-    children: [title ? /* @__PURE__ */ jsx("title", {
-      id: titleId,
-      children: title
-    }) : null, /* @__PURE__ */ jsx("path", {
-      fillRule: "evenodd",
-      d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z",
-      clipRule: "evenodd"
-    })]
-  });
-}
-const ForwardRef$1 = react.exports.forwardRef(InformationCircleIcon);
-const InformationCircleIcon$1 = ForwardRef$1;
-function XMarkIcon({
-  title,
-  titleId,
-  ...props
-}, svgRef) {
-  return /* @__PURE__ */ jsxs("svg", {
-    ...Object.assign({
-      xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "0 0 20 20",
-      fill: "currentColor",
-      "aria-hidden": "true",
-      ref: svgRef,
-      "aria-labelledby": titleId
-    }, props),
-    children: [title ? /* @__PURE__ */ jsx("title", {
-      id: titleId,
-      children: title
-    }) : null, /* @__PURE__ */ jsx("path", {
-      d: "M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
-    })]
-  });
-}
-const ForwardRef = react.exports.forwardRef(XMarkIcon);
-const XMarkIcon$1 = ForwardRef;
-var DefaultContext = {
-  color: void 0,
-  size: void 0,
-  className: void 0,
-  style: void 0,
-  attr: void 0
-};
-var IconContext = React.createContext && React.createContext(DefaultContext);
-var __assign = globalThis && globalThis.__assign || function() {
-  __assign = Object.assign || function(t2) {
-    for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
-      s2 = arguments[i2];
-      for (var p2 in s2)
-        if (Object.prototype.hasOwnProperty.call(s2, p2))
-          t2[p2] = s2[p2];
-    }
-    return t2;
-  };
-  return __assign.apply(this, arguments);
-};
-var __rest = globalThis && globalThis.__rest || function(s2, e3) {
-  var t2 = {};
-  for (var p2 in s2)
-    if (Object.prototype.hasOwnProperty.call(s2, p2) && e3.indexOf(p2) < 0)
-      t2[p2] = s2[p2];
-  if (s2 != null && typeof Object.getOwnPropertySymbols === "function")
-    for (var i2 = 0, p2 = Object.getOwnPropertySymbols(s2); i2 < p2.length; i2++) {
-      if (e3.indexOf(p2[i2]) < 0 && Object.prototype.propertyIsEnumerable.call(s2, p2[i2]))
-        t2[p2[i2]] = s2[p2[i2]];
-    }
-  return t2;
-};
-function Tree2Element(tree) {
-  return tree && tree.map(function(node, i2) {
-    return React.createElement(node.tag, __assign({
-      key: i2
-    }, node.attr), Tree2Element(node.child));
-  });
-}
-function GenIcon(data2) {
-  return function(props) {
-    return /* @__PURE__ */ jsx(IconBase, {
-      ...__assign({
-        attr: __assign({}, data2.attr)
-      }, props),
-      children: Tree2Element(data2.child)
-    });
-  };
-}
-function IconBase(props) {
-  var elem = function(conf) {
-    var attr = props.attr, size = props.size, title = props.title, svgProps = __rest(props, ["attr", "size", "title"]);
-    var computedSize = size || conf.size || "1em";
-    var className;
-    if (conf.className)
-      className = conf.className;
-    if (props.className)
-      className = (className ? className + " " : "") + props.className;
-    return /* @__PURE__ */ jsxs("svg", {
-      ...__assign({
-        stroke: "currentColor",
-        fill: "currentColor",
-        strokeWidth: "0"
-      }, conf.attr, attr, svgProps, {
-        className,
-        style: __assign(__assign({
-          color: props.color || conf.color
-        }, conf.style), props.style),
-        height: computedSize,
-        width: computedSize,
-        xmlns: "http://www.w3.org/2000/svg"
-      }),
-      children: [title && /* @__PURE__ */ jsx("title", {
-        children: title
-      }), props.children]
-    });
-  };
-  return IconContext !== void 0 ? /* @__PURE__ */ jsx(IconContext.Consumer, {
-    children: function(conf) {
-      return elem(conf);
-    }
-  }) : elem(DefaultContext);
-}
-function HiChevronDown(props) {
-  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z", "clipRule": "evenodd" } }] })(props);
-}
-function HiStar(props) {
-  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "d": "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" } }] })(props);
-}
-function HiX(props) {
-  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 20 20", "fill": "currentColor" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", "clipRule": "evenodd" } }] })(props);
-}
-function HiOutlineChevronDown(props) {
-  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M19 9l-7 7-7-7" } }] })(props);
-}
-function HiOutlineChevronLeft(props) {
-  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M15 19l-7-7 7-7" } }] })(props);
-}
-function HiOutlineChevronRight(props) {
-  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M9 5l7 7-7 7" } }] })(props);
-}
-function HiOutlineChevronUp(props) {
-  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M5 15l7-7 7 7" } }] })(props);
-}
-function HiOutlineX(props) {
-  return GenIcon({ "tag": "svg", "attr": { "fill": "none", "viewBox": "0 0 24 24", "stroke": "currentColor" }, "child": [{ "tag": "path", "attr": { "strokeLinecap": "round", "strokeLinejoin": "round", "strokeWidth": "2", "d": "M6 18L18 6M6 6l12 12" } }] })(props);
-}
-const excludeClassName = (props) => {
-  return exclude({
-    key: "className",
-    source: props
-  });
-};
-const exclude = ({ key, source }) => {
-  delete source[key];
-  return source;
-};
-const theme = {
-  accordion: {
-    base: "divide-y divide-gray-200 border-gray-200 dark:divide-gray-700 dark:border-gray-700",
-    content: {
-      base: "py-5 px-5 last:rounded-b-lg dark:bg-gray-900 first:rounded-t-lg"
-    },
-    flush: {
-      off: "rounded-lg border",
-      on: "border-b"
-    },
-    title: {
-      arrow: {
-        base: "h-6 w-6 shrink-0",
-        open: {
-          off: "",
-          on: "rotate-180"
-        }
-      },
-      base: "flex w-full items-center justify-between first:rounded-t-lg last:rounded-b-lg py-5 px-5 text-left font-medium text-gray-500 dark:text-gray-400",
-      flush: {
-        off: "hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:hover:bg-gray-800 dark:focus:ring-gray-800",
-        on: "!bg-transparent dark:!bg-transparent"
-      },
-      heading: "",
-      open: {
-        off: "",
-        on: "text-gray-900 bg-gray-100 dark:bg-gray-800 dark:text-white"
-      }
-    }
-  },
-  alert: {
-    base: "flex flex-col gap-2 p-4 text-sm",
-    borderAccent: "border-t-4",
-    closeButton: {
-      base: "-mx-1.5 -my-1.5 ml-auto inline-flex h-8 w-8 rounded-lg p-1.5 focus:ring-2",
-      color: {
-        info: "bg-blue-100 text-blue-500 hover:bg-blue-200 focus:ring-blue-400 dark:bg-blue-200 dark:text-blue-600 dark:hover:bg-blue-300",
-        gray: "bg-gray-100 text-gray-500 hover:bg-gray-200 focus:ring-gray-400 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
-        failure: "bg-red-100 text-red-500 hover:bg-red-200 focus:ring-red-400 dark:bg-red-200 dark:text-red-600 dark:hover:bg-red-300",
-        success: "bg-green-100 text-green-500 hover:bg-green-200 focus:ring-green-400 dark:bg-green-200 dark:text-green-600 dark:hover:bg-green-300",
-        warning: "bg-yellow-100 text-yellow-500 hover:bg-yellow-200 focus:ring-yellow-400 dark:bg-yellow-200 dark:text-yellow-600 dark:hover:bg-yellow-300"
-      }
-    },
-    color: {
-      info: "text-blue-700 bg-blue-100 border-blue-500 dark:bg-blue-200 dark:text-blue-800",
-      gray: "text-gray-700 bg-gray-100 border-gray-500 dark:bg-gray-700 dark:text-gray-300",
-      failure: "text-red-700 bg-red-100 border-red-500 dark:bg-red-200 dark:text-red-800",
-      success: "text-green-700 bg-green-100 border-green-500 dark:bg-green-200 dark:text-green-800",
-      warning: "text-yellow-700 bg-yellow-100 border-yellow-500 dark:bg-yellow-200 dark:text-yellow-800"
-    },
-    icon: "mr-3 inline h-5 w-5 flex-shrink-0",
-    rounded: "rounded-lg"
-  },
-  avatar: {
-    base: "flex items-center space-x-4",
-    bordered: "p-1 ring-2 ring-gray-300 dark:ring-gray-500",
-    img: {
-      off: "rounded relative overflow-hidden bg-gray-100 dark:bg-gray-600",
-      on: "rounded"
-    },
-    rounded: "!rounded-full",
-    size: {
-      xs: "w-6 h-6",
-      sm: "w-8 h-8",
-      md: "w-10 h-10",
-      lg: "w-20 h-20",
-      xl: "w-36 h-36"
-    },
-    stacked: "ring-2 ring-gray-300 dark:ring-gray-500",
-    status: {
-      away: "bg-yellow-400",
-      base: "absolute h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-800",
-      busy: "bg-red-400",
-      offline: "bg-gray-400",
-      online: "bg-green-400"
-    },
-    statusPosition: {
-      "bottom-left": "-bottom-1 -left-1",
-      "bottom-center": "-botton-1 center",
-      "bottom-right": "-bottom-1 -right-1",
-      "top-left": "-top-1 -left-1",
-      "top-center": "-top-1 center",
-      "top-right": "-top-1 -right-1",
-      "center-right": "center -right-1",
-      center: "center center",
-      "center-left": "center -left-1"
-    },
-    initials: {
-      text: "font-medium text-gray-600 dark:text-gray-300",
-      base: "inline-flex overflow-hidden relative justify-center items-center w-10 h-10 bg-gray-100 dark:bg-gray-600"
-    }
-  },
-  badge: {
-    base: "flex h-fit items-center gap-1 font-semibold",
-    color: {
-      info: "bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-800 group-hover:bg-blue-200 dark:group-hover:bg-blue-300",
-      gray: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-600",
-      failure: "bg-red-100 text-red-800 dark:bg-red-200 dark:text-red-900 group-hover:bg-red-200 dark:group-hover:bg-red-300",
-      success: "bg-green-100 text-green-800 dark:bg-green-200 dark:text-green-900 group-hover:bg-green-200 dark:group-hover:bg-green-300",
-      warning: "bg-yellow-100 text-yellow-800 dark:bg-yellow-200 dark:text-yellow-900 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-300",
-      indigo: "bg-indigo-100 text-indigo-800 dark:bg-indigo-200 dark:text-indigo-900 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-300",
-      purple: "bg-purple-100 text-purple-800 dark:bg-purple-200 dark:text-purple-900 group-hover:bg-purple-200 dark:group-hover:bg-purple-300",
-      pink: "bg-pink-100 text-pink-800 dark:bg-pink-200 dark:text-pink-900 group-hover:bg-pink-200 dark:group-hover:bg-pink-300"
-    },
-    href: "group",
-    icon: {
-      off: "rounded px-2 py-0.5",
-      on: "rounded-full p-1.5",
-      size: {
-        xs: "w-3 h-3",
-        sm: "w-3.5 h-3.5"
-      }
-    },
-    size: {
-      xs: "p-1 text-xs",
-      sm: "p-1.5 text-sm"
-    }
-  },
-  breadcrumb: {
-    item: {
-      base: "group flex items-center",
-      chevron: "mx-1 h-6 w-6 text-gray-400 group-first:hidden md:mx-2",
-      href: {
-        off: "flex items-center text-sm font-medium text-gray-500 dark:text-gray-400",
-        on: "flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-      },
-      icon: "mr-2 h-4 w-4"
-    },
-    list: "flex items-center"
-  },
-  button: {
-    base: "w-full group flex h-min items-center justify-center p-0.5 text-center font-medium focus:z-10",
-    color: {
-      dark: "text-white bg-gray-800 border border-transparent hover:bg-gray-900 focus:ring-4 focus:ring-gray-300 disabled:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-800 dark:border-gray-700 dark:disabled:hover:bg-gray-800",
-      failure: "text-white bg-red-700 border border-transparent hover:bg-red-800 focus:ring-4 focus:ring-red-300 disabled:hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 dark:disabled:hover:bg-red-600",
-      gray: "text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 disabled:hover:bg-white focus:ring-blue-700 focus:text-blue-700 dark:bg-transparent dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 focus:ring-2 dark:disabled:hover:bg-gray-800",
-      info: "text-white bg-blue-700 border border-transparent hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 disabled:hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 dark:disabled:hover:bg-blue-600",
-      light: "text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 disabled:hover:bg-white dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700",
-      purple: "text-white bg-purple-700 border border-transparent hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 disabled:hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 dark:disabled:hover:bg-purple-600",
-      success: "text-white bg-green-700 border border-transparent hover:bg-green-800 focus:ring-4 focus:ring-green-300 disabled:hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 dark:disabled:hover:bg-green-600",
-      warning: "text-white bg-yellow-400 border border-transparent hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 disabled:hover:bg-yellow-400 dark:focus:ring-yellow-900 dark:disabled:hover:bg-yellow-400"
-    },
-    disabled: "cursor-not-allowed opacity-50",
-    gradient: {
-      cyan: "text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800",
-      failure: "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800",
-      info: "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 ",
-      lime: "text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:ring-lime-300 dark:focus:ring-lime-800",
-      pink: "text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-800",
-      purple: "text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800",
-      success: "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800",
-      teal: "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-800"
-    },
-    gradientDuoTone: {
-      cyanToBlue: "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800",
-      greenToBlue: "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800",
-      pinkToOrange: "text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:ring-pink-200 dark:focus:ring-pink-800",
-      purpleToBlue: "text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800",
-      purpleToPink: "text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:ring-purple-200 dark:focus:ring-purple-800",
-      redToYellow: "text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-4 focus:ring-red-100 dark:focus:ring-red-400",
-      tealToLime: "text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l hover:from-teal-200 hover:to-lime-200 hover:!text-gray-900 focus:ring-4 focus:ring-lime-200 dark:focus:ring-teal-700"
-    },
-    inner: {
-      base: "flex items-center",
-      position: {
-        none: "",
-        start: "rounded-r-none",
-        middle: "!rounded-none",
-        end: "rounded-l-none"
-      },
-      outline: "border border-transparent"
-    },
-    label: "ml-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-200 text-xs font-semibold text-blue-800",
-    outline: {
-      color: {
-        gray: "border border-gray-900 dark:border-white",
-        default: "border-0",
-        light: ""
-      },
-      off: "",
-      on: "bg-white text-gray-900 transition-all duration-75 ease-in group-hover:bg-opacity-0 group-hover:text-inherit dark:bg-gray-900 dark:text-white",
-      pill: {
-        off: "rounded-md",
-        on: "rounded-full"
-      }
-    },
-    pill: {
-      off: "rounded-lg",
-      on: "rounded-full"
-    },
-    size: {
-      xs: "text-xs px-2 py-1",
-      sm: "text-sm px-3 py-1.5",
-      md: "text-sm px-4 py-2",
-      lg: "text-base px-5 py-2.5",
-      xl: "text-base px-6 py-3"
-    }
-  },
-  buttonGroup: {
-    base: "inline-flex",
-    position: {
-      none: "focus:!ring-2",
-      start: "rounded-r-none",
-      middle: "!rounded-none border-l-0 pl-0",
-      end: "rounded-l-none border-l-0 pl-0"
-    }
-  },
-  card: {
-    base: "flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800",
-    children: "flex h-full flex-col justify-center gap-4 p-6",
-    horizontal: {
-      off: "flex-col",
-      on: "flex-col md:max-w-xl md:flex-row"
-    },
-    href: "hover:bg-gray-100 dark:hover:bg-gray-700",
-    img: {
-      base: "",
-      horizontal: {
-        off: "rounded-t-lg",
-        on: "h-96 w-full rounded-t-lg object-cover md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
-      }
-    }
-  },
-  carousel: {
-    base: "relative h-full w-full",
-    indicators: {
-      active: {
-        off: "bg-white/50 hover:bg-white dark:bg-gray-800/50 dark:hover:bg-gray-800",
-        on: "bg-white dark:bg-gray-800"
-      },
-      base: "h-3 w-3 rounded-full",
-      wrapper: "absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3"
-    },
-    item: {
-      base: "absolute top-1/2 left-1/2 block w-full -translate-x-1/2 -translate-y-1/2",
-      wrapper: "w-full flex-shrink-0 transform cursor-grab snap-center"
-    },
-    control: {
-      base: "inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10",
-      icon: "h-5 w-5 text-white dark:text-gray-800 sm:h-6 sm:w-6"
-    },
-    leftControl: "absolute top-0 left-0 flex h-full items-center justify-center px-4 focus:outline-none",
-    rightControl: "absolute top-0 right-0 flex h-full items-center justify-center px-4 focus:outline-none",
-    scrollContainer: {
-      base: "flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-lg",
-      snap: "snap-x"
-    }
-  },
-  darkThemeToggle: {
-    base: "rounded-lg p-2.5 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700",
-    icon: "h-5 w-5"
-  },
-  dropdown: {
-    floating: {
-      target: "w-fit",
-      base: "z-10 w-fit rounded divide-y divide-gray-100 shadow",
-      animation: "transition-opacity",
-      hidden: "invisible opacity-0",
-      style: {
-        dark: "bg-gray-900 text-white dark:bg-gray-700",
-        light: "border border-gray-200 bg-white text-gray-900",
-        auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
-      },
-      header: "block py-2 px-4 text-sm text-gray-700 dark:text-gray-200",
-      content: "py-1 text-sm text-gray-700 dark:text-gray-200",
-      arrow: {
-        base: "absolute z-10 h-2 w-2 rotate-45",
-        style: {
-          dark: "bg-gray-900 dark:bg-gray-700",
-          light: "bg-white",
-          auto: "bg-white dark:bg-gray-700"
-        },
-        placement: "-4px"
-      },
-      item: {
-        base: "flex items-center justify-start py-2 px-4 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white",
-        icon: "mr-2 h-4 w-4"
-      },
-      divider: "my-1 h-px bg-gray-100 dark:bg-gray-600"
-    },
-    arrowIcon: "ml-2 h-4 w-4",
-    inlineWrapper: "flex items-center",
-    content: "py-1"
-  },
-  footer: {
-    base: "w-full rounded-lg bg-white shadow dark:bg-gray-800 md:flex md:items-center md:justify-between",
-    container: "w-full p-6",
-    bgDark: "bg-gray-800",
-    groupLink: {
-      base: "flex flex-wrap text-sm text-gray-500 dark:text-white",
-      link: {
-        base: "last:mr-0 md:mr-6",
-        href: "hover:underline"
-      },
-      col: "flex-col space-y-4"
-    },
-    icon: {
-      base: "text-gray-500 dark:hover:text-white",
-      size: "h-5 w-5"
-    },
-    title: {
-      base: "mb-6 text-sm font-semibold uppercase text-gray-500 dark:text-white"
-    },
-    divider: {
-      base: "w-full my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8"
-    },
-    copyright: {
-      base: "text-sm text-gray-500 dark:text-gray-400 sm:text-center",
-      href: "ml-1 hover:underline",
-      span: "ml-1"
-    },
-    brand: {
-      base: "mb-4 flex items-center sm:mb-0",
-      img: "mr-3 h-8",
-      span: "self-center whitespace-nowrap text-2xl font-semibold text-gray-800 dark:text-white"
-    }
-  },
-  formControls: {
-    helperText: {
-      base: "mt-2 text-sm",
-      colors: {
-        gray: "text-gray-500 dark:text-gray-400",
-        info: "text-blue-700 dark:text-blue-800",
-        success: "text-green-600 dark:text-green-500",
-        failure: "text-red-600 dark:text-red-500",
-        warning: "text-yellow-500 dark:text-yellow-600"
-      }
-    },
-    label: {
-      base: "text-sm font-medium",
-      colors: {
-        default: "text-gray-900 dark:text-gray-300",
-        info: "text-blue-500 dark:text-blue-600",
-        failure: "text-red-700 dark:text-red-500",
-        warning: "text-yellow-500 dark:text-yellow-600",
-        success: "text-green-700 dark:text-green-500"
-      },
-      disabled: "opacity-50"
-    },
-    radio: {
-      base: "h-4 w-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:bg-blue-600 dark:focus:ring-blue-600"
-    },
-    checkbox: {
-      base: "h-4 w-4 rounded border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-    },
-    textInput: {
-      base: "flex",
-      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
-      field: {
-        base: "relative w-full",
-        icon: {
-          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-          svg: "h-5 w-5 text-gray-500 dark:text-gray-400"
-        },
-        input: {
-          base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
-          sizes: {
-            sm: "p-2 sm:text-xs",
-            md: "p-2.5 text-sm",
-            lg: "sm:text-md p-4"
-          },
-          colors: {
-            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
-            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
-            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
-          },
-          withIcon: {
-            on: "pl-10",
-            off: ""
-          },
-          withAddon: {
-            on: "rounded-r-lg",
-            off: "rounded-lg"
-          },
-          withShadow: {
-            on: "shadow-sm dark:shadow-sm-light",
-            off: ""
-          }
-        }
-      }
-    },
-    fileInput: {
-      base: "flex",
-      field: {
-        base: "relative w-full",
-        input: {
-          base: "rounded-lg block w-full border disabled:cursor-not-allowed disabled:opacity-50",
-          sizes: {
-            sm: "sm:text-xs",
-            md: "text-sm",
-            lg: "sm:text-md"
-          },
-          colors: {
-            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
-            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
-            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
-          }
-        }
-      }
-    },
-    toggleSwitch: {
-      base: "group relative flex items-center rounded-lg focus:outline-none",
-      active: {
-        on: "cursor-pointer",
-        off: "cursor-not-allowed opacity-50"
-      },
-      toggle: {
-        base: "toggle-bg h-6 w-11 rounded-full border group-focus:ring-4 group-focus:ring-blue-500/25",
-        checked: {
-          on: "border-blue-700 bg-blue-700 after:translate-x-full after:border-white",
-          off: "border-gray-200 bg-gray-200 dark:border-gray-600 dark:bg-gray-700"
-        }
-      },
-      label: "ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-    },
-    textarea: {
-      base: "block w-full rounded-lg border disabled:cursor-not-allowed disabled:opacity-50",
-      colors: {
-        gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-        info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-        failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
-        warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
-        success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
-      },
-      withShadow: {
-        on: "shadow-sm dark:shadow-sm-light",
-        off: ""
-      }
-    },
-    select: {
-      base: "flex",
-      addon: "inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400",
-      field: {
-        base: "relative w-full",
-        icon: {
-          base: "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
-          svg: "h-5 w-5 text-gray-500 dark:text-gray-400"
-        },
-        select: {
-          base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
-          withIcon: {
-            on: "pl-10",
-            off: ""
-          },
-          withAddon: {
-            on: "rounded-r-lg",
-            off: "rounded-lg"
-          },
-          withShadow: {
-            on: "shadow-sm dark:shadow-sm-light",
-            off: ""
-          },
-          sizes: {
-            sm: "p-2 sm:text-xs",
-            md: "p-2.5 text-sm",
-            lg: "sm:text-md p-4"
-          },
-          colors: {
-            gray: "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            info: "border-blue-500 bg-blue-50 text-blue-900 placeholder-blue-700 focus:border-blue-500 focus:ring-blue-500 dark:border-blue-400 dark:bg-blue-100 dark:focus:border-blue-500 dark:focus:ring-blue-500",
-            failure: "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500",
-            warning: "border-yellow-500 bg-yellow-50 text-yellow-900 placeholder-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-400 dark:bg-yellow-100 dark:focus:border-yellow-500 dark:focus:ring-yellow-500",
-            success: "border-green-500 bg-green-50 text-green-900 placeholder-green-700 focus:border-green-500 focus:ring-green-500 dark:border-green-400 dark:bg-green-100 dark:focus:border-green-500 dark:focus:ring-green-500"
-          }
-        }
-      }
-    }
-  },
-  listGroup: {
-    base: "list-none rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white",
-    item: {
-      active: {
-        off: "hover:bg-gray-100 hover:text-blue-700 focus:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:text-white dark:focus:ring-gray-500",
-        on: "bg-blue-700 text-white dark:bg-gray-800"
-      },
-      base: "flex w-full cursor-pointer border-b border-gray-200 py-2 px-4 first:rounded-t-lg last:rounded-b-lg last:border-b-0 dark:border-gray-600",
-      href: {
-        off: "",
-        on: ""
-      },
-      icon: "mr-2 h-4 w-4 fill-current"
-    }
-  },
-  modal: {
-    base: "fixed top-0 right-0 left-0 z-50 h-modal overflow-y-auto overflow-x-hidden md:inset-0 md:h-full",
-    show: {
-      on: "flex bg-gray-900 bg-opacity-50 dark:bg-opacity-80",
-      off: "hidden"
-    },
-    content: {
-      base: "relative h-full w-full p-4 md:h-auto",
-      inner: "relative rounded-lg bg-white shadow dark:bg-gray-700"
-    },
-    body: {
-      base: "p-6",
-      popup: "pt-0"
-    },
-    header: {
-      base: "flex items-start justify-between rounded-t dark:border-gray-600 border-b p-5",
-      popup: "!p-2 !border-b-0",
-      title: "text-xl font-medium text-gray-900 dark:text-white",
-      close: {
-        base: "ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white",
-        icon: "h-5 w-5"
-      }
-    },
-    footer: {
-      base: "flex items-center space-x-2 rounded-b border-gray-200 p-6 dark:border-gray-600",
-      popup: "border-t"
-    },
-    sizes: {
-      sm: "max-w-sm",
-      md: "max-w-md",
-      lg: "max-w-lg",
-      xl: "max-w-xl",
-      "2xl": "max-w-2xl",
-      "3xl": "max-w-3xl",
-      "4xl": "max-w-4xl",
-      "5xl": "max-w-5xl",
-      "6xl": "max-w-6xl",
-      "7xl": "max-w-7xl"
-    },
-    positions: {
-      "top-left": "items-start justify-start",
-      "top-center": "items-start justify-center",
-      "top-right": "items-start justify-end",
-      "center-left": "items-center justify-start",
-      center: "items-center justify-center",
-      "center-right": "items-center justify-end",
-      "bottom-right": "items-end justify-end",
-      "bottom-center": "items-end justify-center",
-      "bottom-left": "items-end justify-start"
-    }
-  },
-  navbar: {
-    base: "border-gray-200 bg-white px-2 py-2.5 dark:border-gray-700 dark:bg-gray-800 sm:px-4",
-    rounded: {
-      on: "rounded",
-      off: ""
-    },
-    bordered: {
-      on: "border",
-      off: ""
-    },
-    inner: {
-      base: "mx-auto flex flex-wrap items-center justify-between",
-      fluid: {
-        on: "",
-        off: "container"
-      }
-    },
-    brand: "flex items-center",
-    collapse: {
-      base: "w-full md:block md:w-auto",
-      list: "mt-4 flex flex-col md:mt-0 md:flex-row md:space-x-8 md:text-sm md:font-medium",
-      hidden: {
-        on: "hidden",
-        off: ""
-      }
-    },
-    link: {
-      base: "block py-2 pr-4 pl-3 md:p-0",
-      active: {
-        on: "bg-blue-700 text-white dark:text-white md:bg-transparent md:text-blue-700",
-        off: "border-b border-gray-100  text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:border-0 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent md:dark:hover:text-white"
-      },
-      disabled: {
-        on: "text-gray-400 hover:cursor-not-allowed dark:text-gray-600",
-        off: ""
-      }
-    },
-    toggle: {
-      base: "inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden",
-      icon: "h-6 w-6 shrink-0"
-    }
-  },
-  rating: {
-    base: "flex items-center",
-    star: {
-      sizes: {
-        sm: "w-5 h-5",
-        md: "w-7 h-7",
-        lg: "w-10 h-10"
-      },
-      filled: "text-yellow-400",
-      empty: "text-gray-300 dark:text-gray-500"
-    },
-    advanced: {
-      base: "flex items-center",
-      label: "text-sm font-medium text-blue-600 dark:text-blue-500",
-      progress: {
-        base: "mx-4 h-5 w-2/4 rounded bg-gray-200 dark:bg-gray-700",
-        fill: "h-5 rounded bg-yellow-400",
-        label: "text-sm font-medium text-blue-600 dark:text-blue-500"
-      }
-    }
-  },
-  pagination: {
-    base: "",
-    layout: {
-      table: {
-        base: "text-sm text-gray-700 dark:text-gray-400",
-        span: "font-semibold text-gray-900 dark:text-white"
-      }
-    },
-    pages: {
-      base: "xs:mt-0 mt-2 inline-flex items-center -space-x-px",
-      showIcon: "inline-flex",
-      previous: {
-        base: "ml-0 rounded-l-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
-        icon: "h-5 w-5"
-      },
-      next: {
-        base: "rounded-r-lg border border-gray-300 bg-white py-2 px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
-        icon: "h-5 w-5"
-      },
-      selector: {
-        base: "w-12 border border-gray-300 bg-white py-2 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white",
-        active: "bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-      }
-    }
-  },
-  sidebar: {
-    base: "h-full",
-    inner: "h-full overflow-y-auto overflow-x-hidden rounded bg-white py-4 px-3 dark:bg-gray-800",
-    collapsed: {
-      on: "w-16",
-      off: "w-64"
-    },
-    collapse: {
-      button: "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700",
-      icon: {
-        base: "h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
-        open: {
-          off: "",
-          on: "text-gray-900"
-        }
-      },
-      label: {
-        base: "ml-3 flex-1 whitespace-nowrap text-left",
-        icon: "h-6 w-6"
-      },
-      list: "space-y-2 py-2"
-    },
-    cta: {
-      base: "mt-6 rounded-lg p-4",
-      color: {
-        blue: "bg-blue-50 dark:bg-blue-900",
-        dark: "bg-dark-50 dark:bg-dark-900",
-        failure: "bg-red-50 dark:bg-red-900",
-        gray: "bg-alternative-50 dark:bg-alternative-900",
-        green: "bg-green-50 dark:bg-green-900",
-        light: "bg-light-50 dark:bg-light-900",
-        red: "bg-red-50 dark:bg-red-900",
-        purple: "bg-purple-50 dark:bg-purple-900",
-        success: "bg-green-50 dark:bg-green-900",
-        yellow: "bg-yellow-50 dark:bg-yellow-900",
-        warning: "bg-yellow-50 dark:bg-yellow-900"
-      }
-    },
-    item: {
-      base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700",
-      active: "bg-gray-100 dark:bg-gray-700",
-      collapsed: {
-        insideCollapse: "group w-full pl-8 transition duration-75",
-        noIcon: "font-bold"
-      },
-      content: {
-        base: "px-3 flex-1 whitespace-nowrap"
-      },
-      icon: {
-        base: "h-6 w-6 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white",
-        active: "text-gray-700 dark:text-gray-100"
-      }
-    },
-    items: "",
-    itemGroup: "mt-4 space-y-2 border-t border-gray-200 pt-4 first:mt-0 first:border-t-0 first:pt-0 dark:border-gray-700",
-    logo: {
-      base: "mb-5 flex items-center pl-2.5",
-      collapsed: {
-        on: "hidden",
-        off: "self-center whitespace-nowrap text-xl font-semibold dark:text-white"
-      },
-      img: "mr-3 h-6 sm:h-7"
-    }
-  },
-  progress: {
-    base: "w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700",
-    label: "mb-1 flex justify-between font-medium dark:text-white",
-    bar: "flex items-center justify-center rounded-full text-center font-medium leading-none text-blue-100",
-    color: {
-      dark: "bg-gray-600 dark:bg-gray-300",
-      blue: "bg-blue-600",
-      red: "bg-red-600 dark:bg-red-500",
-      green: "bg-green-600 dark:bg-green-500",
-      yellow: "bg-yellow-400",
-      indigo: "bg-indigo-600 dark:bg-indigo-500",
-      purple: "bg-purple-600 dark:bg-purple-500"
-    },
-    size: {
-      sm: "h-1.5",
-      md: "h-2.5",
-      lg: "h-4",
-      xl: "h-6"
-    }
-  },
-  spinner: {
-    base: "inline animate-spin text-gray-200",
-    color: {
-      failure: "fill-red-600",
-      gray: "fill-gray-600",
-      info: "fill-blue-600",
-      pink: "fill-pink-600",
-      purple: "fill-purple-600",
-      success: "fill-green-500",
-      warning: "fill-yellow-400"
-    },
-    light: {
-      off: {
-        base: "dark:text-gray-600",
-        color: {
-          failure: "",
-          gray: "dark:fill-gray-300",
-          info: "",
-          pink: "",
-          purple: "",
-          success: "",
-          warning: ""
-        }
-      },
-      on: {
-        base: "",
-        color: {
-          failure: "",
-          gray: "",
-          info: "",
-          pink: "",
-          purple: "",
-          success: "",
-          warning: ""
-        }
-      }
-    },
-    size: {
-      xs: "w-3 h-3",
-      sm: "w-4 h-4",
-      md: "w-6 h-6",
-      lg: "w-8 h-8",
-      xl: "w-10 h-10"
-    }
-  },
-  tab: {
-    base: "flex flex-col gap-2",
-    tablist: {
-      base: "flex text-center",
-      styles: {
-        default: "flex-wrap border-b border-gray-200 dark:border-gray-700",
-        underline: "flex-wrap -mb-px border-b border-gray-200 dark:border-gray-700",
-        pills: "flex-wrap font-medium text-sm text-gray-500 dark:text-gray-400",
-        fullWidth: "hidden text-sm font-medium rounded-lg divide-x divide-gray-200 shadow sm:flex dark:divide-gray-700 dark:text-gray-400"
-      },
-      tabitem: {
-        base: "flex items-center justify-center p-4 text-sm font-medium first:ml-0 disabled:cursor-not-allowed disabled:text-gray-400 disabled:dark:text-gray-500",
-        styles: {
-          default: {
-            base: "rounded-t-lg",
-            active: {
-              on: "bg-gray-100 text-blue-600 dark:bg-gray-800 dark:text-blue-500",
-              off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800  dark:hover:text-gray-300"
-            }
-          },
-          underline: {
-            base: "rounded-t-lg",
-            active: {
-              on: "text-blue-600 rounded-t-lg border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500",
-              off: "border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
-            }
-          },
-          pills: {
-            base: "",
-            active: {
-              on: "rounded-lg bg-blue-600 text-white",
-              off: "rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white"
-            }
-          },
-          fullWidth: {
-            base: "ml-2 first:ml-0 w-full first:rounded-l-lg last:rounded-r-lg",
-            active: {
-              on: "inline-block p-4 w-full text-gray-900 bg-gray-100 focus:ring-4 focus:ring-blue-300 active focus:outline-none dark:bg-gray-700 dark:text-white",
-              off: "bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
-            }
-          }
-        },
-        icon: "mr-2 h-5 w-5"
-      }
-    },
-    tabpanel: "p-4"
-  },
-  toast: {
-    base: "flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400",
-    closed: "opacity-0 ease-out",
-    removed: "hidden",
-    toggle: {
-      base: "-mx-1.5 -my-1.5 ml-auto inline-flex h-8 w-8 rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white",
-      icon: "h-5 w-5 shrink-0"
-    }
-  },
-  tooltip: {
-    target: "w-fit",
-    base: "absolute inline-block z-10 rounded-lg py-2 px-3 text-sm font-medium shadow-sm",
-    animation: "transition-opacity",
-    hidden: "invisible opacity-0",
-    style: {
-      dark: "bg-gray-900 text-white dark:bg-gray-700",
-      light: "border border-gray-200 bg-white text-gray-900",
-      auto: "border border-gray-200 bg-white text-gray-900 dark:border-none dark:bg-gray-700 dark:text-white"
-    },
-    content: "relative z-20",
-    arrow: {
-      base: "absolute z-10 h-2 w-2 rotate-45",
-      style: {
-        dark: "bg-gray-900 dark:bg-gray-700",
-        light: "bg-white",
-        auto: "bg-white dark:bg-gray-700"
-      },
-      placement: "-4px"
-    }
-  }
-};
-const ThemeContext = react.exports.createContext({
-  theme
-});
-function useTheme() {
-  return react.exports.useContext(ThemeContext);
-}
-const AccordionPanelContext = react.exports.createContext(void 0);
-function useAccordionContext() {
-  const context = react.exports.useContext(AccordionPanelContext);
-  if (!context) {
-    throw new Error("useAccordionContext should be used within the AccordionPanelContext provider!");
-  }
-  return context;
-}
-const AccordionContent = ({ children, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const { isOpen } = useAccordionContext();
-  const theme2 = useTheme().theme.accordion.content;
-  return jsx("div", { className: theme2.base, "data-testid": "flowbite-accordion-content", hidden: !isOpen, ...theirProps, children });
-};
-const AccordionPanel = ({ children, ...props }) => {
-  const { alwaysOpen } = props;
-  const [isOpen, setOpen] = react.exports.useState(props.isOpen);
-  const provider2 = alwaysOpen ? {
-    ...props,
-    isOpen,
-    setOpen: () => setOpen(!isOpen)
-  } : props;
-  return jsx(AccordionPanelContext.Provider, { value: provider2, children });
-};
-const AccordionTitle = ({ as: Heading = "h2", children, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const { arrowIcon: ArrowIcon, flush, isOpen, setOpen } = useAccordionContext();
-  const theme2 = useTheme().theme.accordion.title;
-  const onClick = () => typeof setOpen !== "undefined" && setOpen();
-  return jsxs("button", { className: classNames(theme2.base, theme2.flush[flush ? "on" : "off"], theme2.open[isOpen ? "on" : "off"]), onClick, type: "button", ...theirProps, children: [jsx(Heading, { className: theme2.heading, "data-testid": "flowbite-accordion-heading", children }), ArrowIcon && jsx(ArrowIcon, { "aria-hidden": true, className: classNames(theme2.arrow.base, theme2.arrow.open[isOpen ? "on" : "off"]), "data-testid": "flowbite-accordion-arrow" })] });
-};
-const AccordionComponent = ({ alwaysOpen = false, arrowIcon = HiChevronDown, children, flush = false, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const [isOpen, setOpen] = react.exports.useState(0);
-  const panels = react.exports.useMemo(() => react.exports.Children.map(children, (child, i2) => react.exports.cloneElement(child, { alwaysOpen, arrowIcon, flush, isOpen: isOpen === i2, setOpen: () => setOpen(i2) })), [alwaysOpen, arrowIcon, children, flush, isOpen]);
-  const theme2 = useTheme().theme.accordion;
-  return jsx("div", { className: classNames(theme2.base, theme2.flush[flush ? "on" : "off"]), "data-testid": "flowbite-accordion", ...theirProps, children: panels });
-};
-AccordionComponent.displayName = "Accordion";
-AccordionPanel.displayName = "Accordion.Panel";
-AccordionTitle.displayName = "Accordion.Title";
-AccordionContent.displayName = "Accordion.Content";
-Object.assign(AccordionComponent, {
-  Panel: AccordionPanel,
-  Title: AccordionTitle,
-  Content: AccordionContent
-});
-const AvatarGroup = ({ children }) => {
-  return jsx("div", { "data-testid": "avatar-group-element", className: "mb-5 flex -space-x-4", children });
-};
-AvatarGroup.displayName = "Avatar.Group";
-const AvatarGroupCounter = ({ total, href }) => {
-  return jsxs("a", { className: "relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white ring-2 ring-gray-300 hover:bg-gray-600  dark:ring-gray-500 ", href, children: ["+", total] });
-};
-AvatarGroupCounter.displayName = "Avatar.GroupCounter";
-const AvatarComponent = ({ alt = "", bordered = false, children, img, rounded = false, size = "md", stacked = false, status, statusPosition = "top-left", placeholderInitials = "", ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.avatar;
-  return jsxs("div", { className: theme2.base, "data-testid": "flowbite-avatar", ...theirProps, children: [jsxs("div", { className: "relative", children: [img ? jsx("img", { alt, className: classNames(bordered && theme2.bordered, rounded && theme2.rounded, stacked && theme2.stacked, theme2.img.on, theme2.size[size]), "data-testid": "flowbite-avatar-img", src: img }) : placeholderInitials ? jsx("div", { className: classNames(theme2.img.off, theme2.initials.base, rounded && theme2.rounded, stacked && theme2.stacked, bordered && theme2.bordered), children: jsx("span", { className: classNames(theme2.initials.text), "data-testid": "flowbite-avatar-initials-placeholder", children: placeholderInitials }) }) : jsx("div", { className: classNames(bordered && theme2.bordered, rounded && theme2.rounded, stacked && theme2.stacked, theme2.img.off, theme2.size[size]), "data-testid": "flowbite-avatar-img", children: jsx("svg", { className: "absolute -bottom-1 h-auto w-auto text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", children: jsx("path", { fillRule: "evenodd", d: "M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z", clipRule: "evenodd" }) }) }), status && jsx("span", { className: classNames(theme2.status.base, theme2.status[status], theme2.statusPosition[statusPosition]) })] }), children && jsx("div", { children })] });
-};
-AvatarComponent.displayName = "Avatar";
-Object.assign(AvatarComponent, {
-  Group: AvatarGroup,
-  Counter: AvatarGroupCounter
-});
-const Badge = ({ children, color: color2 = "info", href, icon: Icon, size = "xs", ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.badge;
-  const Content = () => jsxs("span", { className: classNames(theme2.base, theme2.color[color2], theme2.icon[Icon ? "on" : "off"], theme2.size[size]), "data-testid": "flowbite-badge", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon.size[size], "data-testid": "flowbite-badge-icon" }), children && jsx("span", { children })] });
-  return href ? jsx("a", { className: theme2.href, href, children: jsx(Content, {}) }) : jsx(Content, {});
-};
-const BreadcrumbItem = ({ children, href, icon: Icon, ...props }) => {
-  const isLink = typeof href !== "undefined";
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.breadcrumb.item;
-  const Component = isLink ? "a" : "span";
-  return jsxs("li", { className: theme2.base, ...theirProps, children: [jsx(HiOutlineChevronRight, { "aria-hidden": true, className: theme2.chevron, "data-testid": "flowbite-breadcrumb-separator" }), jsxs(Component, { className: theme2.href[isLink ? "on" : "off"], "data-testid": "flowbite-breadcrumb-item", href, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon }), children] })] });
-};
-BreadcrumbItem.displayName = "Breadcrumb.Item";
-const BreadcrumbComponent = ({ children, ...props }) => {
-  const theme2 = useTheme().theme.breadcrumb;
-  return jsx("nav", { "aria-label": "Breadcrumb", ...props, children: jsx("ol", { className: theme2.list, children }) });
-};
-BreadcrumbComponent.displayName = "Breadcrumb";
-Object.assign(BreadcrumbComponent, { Item: BreadcrumbItem });
-const ButtonGroup = ({ children, outline, pill, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const items = react.exports.useMemo(() => react.exports.Children.map(children, (child, index2) => react.exports.cloneElement(child, {
-    outline,
-    pill,
-    positionInGroup: index2 === 0 ? "start" : index2 === children.length - 1 ? "end" : "middle"
-  })), [children, outline, pill]);
-  const theme2 = useTheme().theme.buttonGroup;
-  return jsx("div", { className: theme2.base, role: "group", ...theirProps, children: items });
-};
-ButtonGroup.displayName = "Button.Group";
-const ButtonComponent = react.exports.forwardRef(({ children, color: color2 = "info", disabled = false, gradientDuoTone, gradientMonochrome, href, label, outline = false, pill = false, positionInGroup = "none", size = "md", ...props }, ref) => {
-  var _a2;
-  const isLink = typeof href !== "undefined";
-  const theirProps = excludeClassName(props);
-  const { buttonGroup: groupTheme, button: theme2 } = useTheme().theme;
-  const Component = isLink ? "a" : "button";
-  return jsx(Component, { className: classNames(disabled && theme2.disabled, !gradientDuoTone && !gradientMonochrome && theme2.color[color2], gradientDuoTone && !gradientMonochrome && theme2.gradientDuoTone[gradientDuoTone], !gradientDuoTone && gradientMonochrome && theme2.gradient[gradientMonochrome], groupTheme.position[positionInGroup], outline && ((_a2 = theme2.outline.color[color2]) != null ? _a2 : theme2.outline.color.default), theme2.base, theme2.pill[pill ? "on" : "off"]), disabled, href, type: isLink ? void 0 : "button", ref, ...theirProps, children: jsx("span", { className: classNames(theme2.inner.base, theme2.inner.position[positionInGroup], theme2.outline[outline ? "on" : "off"], theme2.outline.pill[outline && pill ? "on" : "off"], theme2.size[size], outline && !theme2.outline.color[color2] && theme2.inner.outline), children: jsxs(Fragment, { children: [typeof children !== "undefined" && children, typeof label !== "undefined" && jsx("span", { className: theme2.label, "data-testid": "flowbite-button-label", children: label })] }) }) });
-});
-ButtonComponent.displayName = "Button";
-const Button = Object.assign(ButtonComponent, {
-  Group: ButtonGroup
-});
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-var n = function(t2, e3) {
-  return (n = Object.setPrototypeOf || {
-    __proto__: []
-  } instanceof Array && function(t3, e4) {
-    t3.__proto__ = e4;
-  } || function(t3, e4) {
-    for (var n2 in e4)
-      e4.hasOwnProperty(n2) && (t3[n2] = e4[n2]);
-  })(t2, e3);
-};
-var o, r, i = (function(t2) {
-  /*!
-    Copyright (c) 2017 Jed Watson.
-    Licensed under the MIT License (MIT), see
-    http://jedwatson.github.io/classnames
-  */
-  !function() {
-    var e3 = {}.hasOwnProperty;
-    function n2() {
-      for (var t3 = [], o2 = 0; o2 < arguments.length; o2++) {
-        var r2 = arguments[o2];
-        if (r2) {
-          var i2 = typeof r2;
-          if ("string" === i2 || "number" === i2)
-            t3.push(r2);
-          else if (Array.isArray(r2) && r2.length) {
-            var s2 = n2.apply(null, r2);
-            s2 && t3.push(s2);
-          } else if ("object" === i2)
-            for (var l2 in r2)
-              e3.call(r2, l2) && r2[l2] && t3.push(l2);
-        }
-      }
-      return t3.join(" ");
-    }
-    t2.exports ? (n2.default = n2, t2.exports = n2) : window.classNames = n2;
-  }();
-}(r = {
-  path: o,
-  exports: {},
-  require: function(t2, e3) {
-    return function() {
-      throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");
-    }(null == e3 && r.path);
-  }
-}, r.exports), r.exports);
-function s(t2, e3, n2) {
-  var o2, r2, i2, s2, l2;
-  function a2() {
-    var c3 = Date.now() - s2;
-    c3 < e3 && c3 >= 0 ? o2 = setTimeout(a2, e3 - c3) : (o2 = null, n2 || (l2 = t2.apply(i2, r2), i2 = r2 = null));
-  }
-  null == e3 && (e3 = 100);
-  var c2 = function() {
-    i2 = this, r2 = arguments, s2 = Date.now();
-    var c3 = n2 && !o2;
-    return o2 || (o2 = setTimeout(a2, e3)), c3 && (l2 = t2.apply(i2, r2), i2 = r2 = null), l2;
-  };
-  return c2.clear = function() {
-    o2 && (clearTimeout(o2), o2 = null);
-  }, c2.flush = function() {
-    o2 && (l2 = t2.apply(i2, r2), i2 = r2 = null, clearTimeout(o2), o2 = null);
-  }, c2;
-}
-s.debounce = s;
-var l = s;
-!function(t2, e3) {
-  void 0 === e3 && (e3 = {});
-  var n2 = e3.insertAt;
-  if (t2 && "undefined" != typeof document) {
-    var o2 = document.head || document.getElementsByTagName("head")[0], r2 = document.createElement("style");
-    r2.type = "text/css", "top" === n2 && o2.firstChild ? o2.insertBefore(r2, o2.firstChild) : o2.appendChild(r2), r2.styleSheet ? r2.styleSheet.cssText = t2 : r2.appendChild(document.createTextNode(t2));
-  }
-}(".indiana-scroll-container {\n  overflow: auto; }\n  .indiana-scroll-container--dragging {\n    scroll-behavior: auto !important; }\n    .indiana-scroll-container--dragging > * {\n      pointer-events: none;\n      cursor: -webkit-grab;\n      cursor: grab; }\n  .indiana-scroll-container--hide-scrollbars {\n    overflow: hidden;\n    overflow: -moz-scrollbars-none;\n    -ms-overflow-style: none;\n    scrollbar-width: none; }\n    .indiana-scroll-container--hide-scrollbars::-webkit-scrollbar {\n      display: none !important;\n      height: 0 !important;\n      width: 0 !important;\n      background: transparent !important;\n      -webkit-appearance: none !important; }\n  .indiana-scroll-container--native-scroll {\n    overflow: auto; }\n\n.indiana-dragging {\n  cursor: -webkit-grab;\n  cursor: grab; }\n");
-var a, c = (a = "indiana-scroll-container", function(t2, e3) {
-  if (!t2)
-    return a;
-  var n2;
-  "string" == typeof t2 ? n2 = t2 : e3 = t2;
-  var o2 = a;
-  return n2 && (o2 += "__" + n2), o2 + (e3 ? Object.keys(e3).reduce(function(t3, n3) {
-    var r2 = e3[n3];
-    return r2 && (t3 += " " + ("boolean" == typeof r2 ? o2 + "--" + n3 : o2 + "--" + n3 + "_" + r2)), t3;
-  }, "") : "");
-});
-(function(e3) {
-  function o2(n2) {
-    var o3 = e3.call(this, n2) || this;
-    return o3.onEndScroll = function() {
-      o3.scrolling = false, !o3.pressed && o3.started && o3.processEnd();
-    }, o3.onScroll = function(t2) {
-      var e4 = o3.container.current;
-      e4.scrollLeft === o3.scrollLeft && e4.scrollTop === o3.scrollTop || (o3.scrolling = true, o3.processScroll(t2), o3.onEndScroll());
-    }, o3.onTouchStart = function(t2) {
-      var e4 = o3.props.nativeMobileScroll;
-      if (o3.isDraggable(t2.target))
-        if (o3.internal = true, e4 && o3.scrolling)
-          o3.pressed = true;
-        else {
-          var n3 = t2.touches[0];
-          o3.processClick(t2, n3.clientX, n3.clientY), !e4 && o3.props.stopPropagation && t2.stopPropagation();
-        }
-    }, o3.onTouchEnd = function(t2) {
-      var e4 = o3.props.nativeMobileScroll;
-      o3.pressed && (!o3.started || o3.scrolling && e4 ? o3.pressed = false : o3.processEnd(), o3.forceUpdate());
-    }, o3.onTouchMove = function(t2) {
-      var e4 = o3.props.nativeMobileScroll;
-      if (o3.pressed && (!e4 || !o3.isMobile)) {
-        var n3 = t2.touches[0];
-        n3 && o3.processMove(t2, n3.clientX, n3.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation();
-      }
-    }, o3.onMouseDown = function(t2) {
-      o3.isDraggable(t2.target) && o3.isScrollable() && (o3.internal = true, -1 !== o3.props.buttons.indexOf(t2.button) && (o3.processClick(t2, t2.clientX, t2.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation()));
-    }, o3.onMouseMove = function(t2) {
-      o3.pressed && (o3.processMove(t2, t2.clientX, t2.clientY), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation());
-    }, o3.onMouseUp = function(t2) {
-      o3.pressed && (o3.started ? o3.processEnd() : (o3.internal = false, o3.pressed = false, o3.forceUpdate(), o3.props.onClick && o3.props.onClick(t2)), t2.preventDefault(), o3.props.stopPropagation && t2.stopPropagation());
-    }, o3.container = React.createRef(), o3.onEndScroll = l(o3.onEndScroll, 300), o3.scrolling = false, o3.started = false, o3.pressed = false, o3.internal = false, o3.getRef = o3.getRef.bind(o3), o3;
-  }
-  return function(t2, e4) {
-    function o3() {
-      this.constructor = t2;
-    }
-    n(t2, e4), t2.prototype = null === e4 ? Object.create(e4) : (o3.prototype = e4.prototype, new o3());
-  }(o2, e3), o2.prototype.componentDidMount = function() {
-    var t2 = this.props.nativeMobileScroll, e4 = this.container.current;
-    window.addEventListener("mouseup", this.onMouseUp), window.addEventListener("mousemove", this.onMouseMove), window.addEventListener("touchmove", this.onTouchMove, {
-      passive: false
-    }), window.addEventListener("touchend", this.onTouchEnd), e4.addEventListener("touchstart", this.onTouchStart, {
-      passive: false
-    }), e4.addEventListener("mousedown", this.onMouseDown, {
-      passive: false
-    }), t2 && (this.isMobile = this.isMobileDevice(), this.isMobile && this.forceUpdate());
-  }, o2.prototype.componentWillUnmount = function() {
-    window.removeEventListener("mouseup", this.onMouseUp), window.removeEventListener("mousemove", this.onMouseMove), window.removeEventListener("touchmove", this.onTouchMove), window.removeEventListener("touchend", this.onTouchEnd);
-  }, o2.prototype.getElement = function() {
-    return this.container.current;
-  }, o2.prototype.isMobileDevice = function() {
-    return void 0 !== window.orientation || -1 !== navigator.userAgent.indexOf("IEMobile");
-  }, o2.prototype.isDraggable = function(t2) {
-    var e4 = this.props.ignoreElements;
-    if (e4) {
-      var n2 = t2.closest(e4);
-      return null === n2 || n2.contains(this.getElement());
-    }
-    return true;
-  }, o2.prototype.isScrollable = function() {
-    var t2 = this.container.current;
-    return t2 && (t2.scrollWidth > t2.clientWidth || t2.scrollHeight > t2.clientHeight);
-  }, o2.prototype.processClick = function(t2, e4, n2) {
-    var o3 = this.container.current;
-    this.scrollLeft = o3.scrollLeft, this.scrollTop = o3.scrollTop, this.clientX = e4, this.clientY = n2, this.pressed = true;
-  }, o2.prototype.processStart = function(t2) {
-    void 0 === t2 && (t2 = true);
-    var e4 = this.props.onStartScroll;
-    this.started = true, t2 && document.body.classList.add("indiana-dragging"), e4 && e4({
-      external: !this.internal
-    }), this.forceUpdate();
-  }, o2.prototype.processScroll = function(t2) {
-    if (this.started) {
-      var e4 = this.props.onScroll;
-      e4 && e4({
-        external: !this.internal
-      });
-    } else
-      this.processStart(false);
-  }, o2.prototype.processMove = function(t2, e4, n2) {
-    var o3 = this.props, r2 = o3.horizontal, i2 = o3.vertical, s2 = o3.activationDistance, l2 = o3.onScroll, a2 = this.container.current;
-    this.started ? (r2 && (a2.scrollLeft -= e4 - this.clientX), i2 && (a2.scrollTop -= n2 - this.clientY), l2 && l2({
-      external: !this.internal
-    }), this.clientX = e4, this.clientY = n2, this.scrollLeft = a2.scrollLeft, this.scrollTop = a2.scrollTop) : (r2 && Math.abs(e4 - this.clientX) > s2 || i2 && Math.abs(n2 - this.clientY) > s2) && (this.clientX = e4, this.clientY = n2, this.processStart());
-  }, o2.prototype.processEnd = function() {
-    var t2 = this.props.onEndScroll;
-    this.container.current && t2 && t2({
-      external: !this.internal
-    }), this.pressed = false, this.started = false, this.scrolling = false, this.internal = false, document.body.classList.remove("indiana-dragging"), this.forceUpdate();
-  }, o2.prototype.getRef = function(t2) {
-    [this.container, this.props.innerRef].forEach(function(e4) {
-      e4 && ("function" == typeof e4 ? e4(t2) : e4.current = t2);
-    });
-  }, o2.prototype.render = function() {
-    var e4 = this.props, n2 = e4.children, o3 = e4.draggingClassName, r2 = e4.className, s2 = e4.style, l2 = e4.hideScrollbars, a2 = e4.component;
-    return React.createElement(a2, {
-      className: i(r2, this.pressed && o3, c({
-        dragging: this.pressed,
-        "hide-scrollbars": l2,
-        "native-scroll": this.isMobile
-      })),
-      style: s2,
-      ref: this.getRef,
-      onScroll: this.onScroll
-    }, n2);
-  }, o2.defaultProps = {
-    nativeMobileScroll: true,
-    hideScrollbars: true,
-    activationDistance: 10,
-    vertical: true,
-    horizontal: true,
-    stopPropagation: false,
-    style: {},
-    component: "div",
-    buttons: [0]
-  }, o2;
-})(react.exports.PureComponent);
-function uuid() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c2) {
-    const r2 = Math.random() * 16 | 0, v2 = c2 == "x" ? r2 : r2 & 3 | 8;
-    return v2.toString(16);
-  });
-}
-function getSide(placement) {
-  return placement.split("-")[0];
-}
-function getAlignment(placement) {
-  return placement.split("-")[1];
-}
-function getMainAxisFromPlacement(placement) {
-  return ["top", "bottom"].includes(getSide(placement)) ? "x" : "y";
-}
-function getLengthFromAxis(axis) {
-  return axis === "y" ? "height" : "width";
-}
-function computeCoordsFromPlacement(_ref, placement, rtl) {
-  let {
-    reference,
-    floating
-  } = _ref;
-  const commonX = reference.x + reference.width / 2 - floating.width / 2;
-  const commonY = reference.y + reference.height / 2 - floating.height / 2;
-  const mainAxis = getMainAxisFromPlacement(placement);
-  const length = getLengthFromAxis(mainAxis);
-  const commonAlign = reference[length] / 2 - floating[length] / 2;
-  const side = getSide(placement);
-  const isVertical = mainAxis === "x";
-  let coords;
-  switch (side) {
-    case "top":
-      coords = {
-        x: commonX,
-        y: reference.y - floating.height
-      };
-      break;
-    case "bottom":
-      coords = {
-        x: commonX,
-        y: reference.y + reference.height
-      };
-      break;
-    case "right":
-      coords = {
-        x: reference.x + reference.width,
-        y: commonY
-      };
-      break;
-    case "left":
-      coords = {
-        x: reference.x - floating.width,
-        y: commonY
-      };
-      break;
-    default:
-      coords = {
-        x: reference.x,
-        y: reference.y
-      };
-  }
-  switch (getAlignment(placement)) {
-    case "start":
-      coords[mainAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
-      break;
-    case "end":
-      coords[mainAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
-      break;
-  }
-  return coords;
-}
-const computePosition$1 = async (reference, floating, config) => {
-  const {
-    placement = "bottom",
-    strategy = "absolute",
-    middleware = [],
-    platform: platform2
-  } = config;
-  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(floating));
-  let rects = await platform2.getElementRects({
-    reference,
-    floating,
-    strategy
-  });
-  let {
-    x: x2,
-    y: y2
-  } = computeCoordsFromPlacement(rects, placement, rtl);
-  let statefulPlacement = placement;
-  let middlewareData = {};
-  let resetCount = 0;
-  for (let i2 = 0; i2 < middleware.length; i2++) {
-    const {
-      name,
-      fn
-    } = middleware[i2];
-    const {
-      x: nextX,
-      y: nextY,
-      data: data2,
-      reset
-    } = await fn({
-      x: x2,
-      y: y2,
-      initialPlacement: placement,
-      placement: statefulPlacement,
-      strategy,
-      middlewareData,
-      rects,
-      platform: platform2,
-      elements: {
-        reference,
-        floating
-      }
-    });
-    x2 = nextX != null ? nextX : x2;
-    y2 = nextY != null ? nextY : y2;
-    middlewareData = {
-      ...middlewareData,
-      [name]: {
-        ...middlewareData[name],
-        ...data2
-      }
-    };
-    if (reset && resetCount <= 50) {
-      resetCount++;
-      if (typeof reset === "object") {
-        if (reset.placement) {
-          statefulPlacement = reset.placement;
-        }
-        if (reset.rects) {
-          rects = reset.rects === true ? await platform2.getElementRects({
-            reference,
-            floating,
-            strategy
-          }) : reset.rects;
-        }
-        ({
-          x: x2,
-          y: y2
-        } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
-      }
-      i2 = -1;
-      continue;
-    }
-  }
-  return {
-    x: x2,
-    y: y2,
-    placement: statefulPlacement,
-    strategy,
-    middlewareData
-  };
-};
-function expandPaddingObject(padding) {
-  return {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    ...padding
-  };
-}
-function getSideObjectFromPadding(padding) {
-  return typeof padding !== "number" ? expandPaddingObject(padding) : {
-    top: padding,
-    right: padding,
-    bottom: padding,
-    left: padding
-  };
-}
-function rectToClientRect(rect) {
-  return {
-    ...rect,
-    top: rect.y,
-    left: rect.x,
-    right: rect.x + rect.width,
-    bottom: rect.y + rect.height
-  };
-}
-async function detectOverflow(middlewareArguments, options) {
-  var _await$platform$isEle;
-  if (options === void 0) {
-    options = {};
-  }
-  const {
-    x: x2,
-    y: y2,
-    platform: platform2,
-    rects,
-    elements,
-    strategy
-  } = middlewareArguments;
-  const {
-    boundary = "clippingAncestors",
-    rootBoundary = "viewport",
-    elementContext = "floating",
-    altBoundary = false,
-    padding = 0
-  } = options;
-  const paddingObject = getSideObjectFromPadding(padding);
-  const altContext = elementContext === "floating" ? "reference" : "floating";
-  const element = elements[altBoundary ? altContext : elementContext];
-  const clippingClientRect = rectToClientRect(await platform2.getClippingRect({
-    element: ((_await$platform$isEle = await (platform2.isElement == null ? void 0 : platform2.isElement(element))) != null ? _await$platform$isEle : true) ? element : element.contextElement || await (platform2.getDocumentElement == null ? void 0 : platform2.getDocumentElement(elements.floating)),
-    boundary,
-    rootBoundary,
-    strategy
-  }));
-  const elementClientRect = rectToClientRect(platform2.convertOffsetParentRelativeRectToViewportRelativeRect ? await platform2.convertOffsetParentRelativeRectToViewportRelativeRect({
-    rect: elementContext === "floating" ? {
-      ...rects.floating,
-      x: x2,
-      y: y2
-    } : rects.reference,
-    offsetParent: await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(elements.floating)),
-    strategy
-  }) : rects[elementContext]);
-  return {
-    top: clippingClientRect.top - elementClientRect.top + paddingObject.top,
-    bottom: elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom,
-    left: clippingClientRect.left - elementClientRect.left + paddingObject.left,
-    right: elementClientRect.right - clippingClientRect.right + paddingObject.right
-  };
-}
-const min$1 = Math.min;
-const max$1 = Math.max;
-function within(min$1$1, value, max$1$1) {
-  return max$1(min$1$1, min$1(value, max$1$1));
-}
-const arrow = (options) => ({
-  name: "arrow",
-  options,
-  async fn(middlewareArguments) {
-    const {
-      element,
-      padding = 0
-    } = options != null ? options : {};
-    const {
-      x: x2,
-      y: y2,
-      placement,
-      rects,
-      platform: platform2
-    } = middlewareArguments;
-    if (element == null) {
-      return {};
-    }
-    const paddingObject = getSideObjectFromPadding(padding);
-    const coords = {
-      x: x2,
-      y: y2
-    };
-    const axis = getMainAxisFromPlacement(placement);
-    const alignment = getAlignment(placement);
-    const length = getLengthFromAxis(axis);
-    const arrowDimensions = await platform2.getDimensions(element);
-    const minProp = axis === "y" ? "top" : "left";
-    const maxProp = axis === "y" ? "bottom" : "right";
-    const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
-    const startDiff = coords[axis] - rects.reference[axis];
-    const arrowOffsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element));
-    let clientSize = arrowOffsetParent ? axis === "y" ? arrowOffsetParent.clientHeight || 0 : arrowOffsetParent.clientWidth || 0 : 0;
-    if (clientSize === 0) {
-      clientSize = rects.floating[length];
-    }
-    const centerToReference = endDiff / 2 - startDiff / 2;
-    const min2 = paddingObject[minProp];
-    const max2 = clientSize - arrowDimensions[length] - paddingObject[maxProp];
-    const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-    const offset2 = within(min2, center, max2);
-    const alignmentPadding = alignment === "start" ? paddingObject[minProp] : paddingObject[maxProp];
-    const shouldAddOffset = alignmentPadding > 0 && center !== offset2 && rects.reference[length] <= rects.floating[length];
-    const alignmentOffset = shouldAddOffset ? center < min2 ? min2 - center : max2 - center : 0;
-    return {
-      [axis]: coords[axis] - alignmentOffset,
-      data: {
-        [axis]: offset2,
-        centerOffset: center - offset2
-      }
-    };
-  }
-});
-const hash$1 = {
-  left: "right",
-  right: "left",
-  bottom: "top",
-  top: "bottom"
-};
-function getOppositePlacement(placement) {
-  return placement.replace(/left|right|bottom|top/g, (matched) => hash$1[matched]);
-}
-function getAlignmentSides(placement, rects, rtl) {
-  if (rtl === void 0) {
-    rtl = false;
-  }
-  const alignment = getAlignment(placement);
-  const mainAxis = getMainAxisFromPlacement(placement);
-  const length = getLengthFromAxis(mainAxis);
-  let mainAlignmentSide = mainAxis === "x" ? alignment === (rtl ? "end" : "start") ? "right" : "left" : alignment === "start" ? "bottom" : "top";
-  if (rects.reference[length] > rects.floating[length]) {
-    mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
-  }
-  return {
-    main: mainAlignmentSide,
-    cross: getOppositePlacement(mainAlignmentSide)
-  };
-}
-const hash = {
-  start: "end",
-  end: "start"
-};
-function getOppositeAlignmentPlacement(placement) {
-  return placement.replace(/start|end/g, (matched) => hash[matched]);
-}
-const sides = ["top", "right", "bottom", "left"];
-const allPlacements = /* @__PURE__ */ sides.reduce((acc, side) => acc.concat(side, side + "-start", side + "-end"), []);
-function getPlacementList(alignment, autoAlignment, allowedPlacements) {
-  const allowedPlacementsSortedByAlignment = alignment ? [...allowedPlacements.filter((placement) => getAlignment(placement) === alignment), ...allowedPlacements.filter((placement) => getAlignment(placement) !== alignment)] : allowedPlacements.filter((placement) => getSide(placement) === placement);
-  return allowedPlacementsSortedByAlignment.filter((placement) => {
-    if (alignment) {
-      return getAlignment(placement) === alignment || (autoAlignment ? getOppositeAlignmentPlacement(placement) !== placement : false);
-    }
-    return true;
-  });
-}
-const autoPlacement = function(options) {
-  if (options === void 0) {
-    options = {};
-  }
-  return {
-    name: "autoPlacement",
-    options,
-    async fn(middlewareArguments) {
-      var _middlewareData$autoP, _middlewareData$autoP2, _middlewareData$autoP3, _middlewareData$autoP4, _placementsSortedByLe;
-      const {
-        x: x2,
-        y: y2,
-        rects,
-        middlewareData,
-        placement,
-        platform: platform2,
-        elements
-      } = middlewareArguments;
-      const {
-        alignment = null,
-        allowedPlacements = allPlacements,
-        autoAlignment = true,
-        ...detectOverflowOptions
-      } = options;
-      const placements = getPlacementList(alignment, autoAlignment, allowedPlacements);
-      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
-      const currentIndex = (_middlewareData$autoP = (_middlewareData$autoP2 = middlewareData.autoPlacement) == null ? void 0 : _middlewareData$autoP2.index) != null ? _middlewareData$autoP : 0;
-      const currentPlacement = placements[currentIndex];
-      if (currentPlacement == null) {
-        return {};
-      }
-      const {
-        main,
-        cross
-      } = getAlignmentSides(currentPlacement, rects, await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)));
-      if (placement !== currentPlacement) {
-        return {
-          x: x2,
-          y: y2,
-          reset: {
-            placement: placements[0]
-          }
-        };
-      }
-      const currentOverflows = [overflow[getSide(currentPlacement)], overflow[main], overflow[cross]];
-      const allOverflows = [...(_middlewareData$autoP3 = (_middlewareData$autoP4 = middlewareData.autoPlacement) == null ? void 0 : _middlewareData$autoP4.overflows) != null ? _middlewareData$autoP3 : [], {
-        placement: currentPlacement,
-        overflows: currentOverflows
-      }];
-      const nextPlacement = placements[currentIndex + 1];
-      if (nextPlacement) {
-        return {
-          data: {
-            index: currentIndex + 1,
-            overflows: allOverflows
-          },
-          reset: {
-            placement: nextPlacement
-          }
-        };
-      }
-      const placementsSortedByLeastOverflow = allOverflows.slice().sort((a2, b2) => a2.overflows[0] - b2.overflows[0]);
-      const placementThatFitsOnAllSides = (_placementsSortedByLe = placementsSortedByLeastOverflow.find((_ref) => {
-        let {
-          overflows
-        } = _ref;
-        return overflows.every((overflow2) => overflow2 <= 0);
-      })) == null ? void 0 : _placementsSortedByLe.placement;
-      const resetPlacement = placementThatFitsOnAllSides != null ? placementThatFitsOnAllSides : placementsSortedByLeastOverflow[0].placement;
-      if (resetPlacement !== placement) {
-        return {
-          data: {
-            index: currentIndex + 1,
-            overflows: allOverflows
-          },
-          reset: {
-            placement: resetPlacement
-          }
-        };
-      }
-      return {};
-    }
-  };
-};
-function getExpandedPlacements(placement) {
-  const oppositePlacement = getOppositePlacement(placement);
-  return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
-}
-const flip = function(options) {
-  if (options === void 0) {
-    options = {};
-  }
-  return {
-    name: "flip",
-    options,
-    async fn(middlewareArguments) {
-      var _middlewareData$flip;
-      const {
-        placement,
-        middlewareData,
-        rects,
-        initialPlacement,
-        platform: platform2,
-        elements
-      } = middlewareArguments;
-      const {
-        mainAxis: checkMainAxis = true,
-        crossAxis: checkCrossAxis = true,
-        fallbackPlacements: specifiedFallbackPlacements,
-        fallbackStrategy = "bestFit",
-        flipAlignment = true,
-        ...detectOverflowOptions
-      } = options;
-      const side = getSide(placement);
-      const isBasePlacement = side === initialPlacement;
-      const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
-      const placements = [initialPlacement, ...fallbackPlacements];
-      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
-      const overflows = [];
-      let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
-      if (checkMainAxis) {
-        overflows.push(overflow[side]);
-      }
-      if (checkCrossAxis) {
-        const {
-          main,
-          cross
-        } = getAlignmentSides(placement, rects, await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)));
-        overflows.push(overflow[main], overflow[cross]);
-      }
-      overflowsData = [...overflowsData, {
-        placement,
-        overflows
-      }];
-      if (!overflows.every((side2) => side2 <= 0)) {
-        var _middlewareData$flip$, _middlewareData$flip2;
-        const nextIndex = ((_middlewareData$flip$ = (_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) != null ? _middlewareData$flip$ : 0) + 1;
-        const nextPlacement = placements[nextIndex];
-        if (nextPlacement) {
-          return {
-            data: {
-              index: nextIndex,
-              overflows: overflowsData
-            },
-            reset: {
-              placement: nextPlacement
-            }
-          };
-        }
-        let resetPlacement = "bottom";
-        switch (fallbackStrategy) {
-          case "bestFit": {
-            var _overflowsData$map$so;
-            const placement2 = (_overflowsData$map$so = overflowsData.map((d2) => [d2, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$map$so[0].placement;
-            if (placement2) {
-              resetPlacement = placement2;
-            }
-            break;
-          }
-          case "initialPlacement":
-            resetPlacement = initialPlacement;
-            break;
-        }
-        if (placement !== resetPlacement) {
-          return {
-            reset: {
-              placement: resetPlacement
-            }
-          };
-        }
-      }
-      return {};
-    }
-  };
-};
-async function convertValueToCoords(middlewareArguments, value) {
-  const {
-    placement,
-    platform: platform2,
-    elements
-  } = middlewareArguments;
-  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
-  const side = getSide(placement);
-  const alignment = getAlignment(placement);
-  const isVertical = getMainAxisFromPlacement(placement) === "x";
-  const mainAxisMulti = ["left", "top"].includes(side) ? -1 : 1;
-  const crossAxisMulti = rtl && isVertical ? -1 : 1;
-  const rawValue = typeof value === "function" ? value(middlewareArguments) : value;
-  let {
-    mainAxis,
-    crossAxis,
-    alignmentAxis
-  } = typeof rawValue === "number" ? {
-    mainAxis: rawValue,
-    crossAxis: 0,
-    alignmentAxis: null
-  } : {
-    mainAxis: 0,
-    crossAxis: 0,
-    alignmentAxis: null,
-    ...rawValue
-  };
-  if (alignment && typeof alignmentAxis === "number") {
-    crossAxis = alignment === "end" ? alignmentAxis * -1 : alignmentAxis;
-  }
-  return isVertical ? {
-    x: crossAxis * crossAxisMulti,
-    y: mainAxis * mainAxisMulti
-  } : {
-    x: mainAxis * mainAxisMulti,
-    y: crossAxis * crossAxisMulti
-  };
-}
-const offset = function(value) {
-  if (value === void 0) {
-    value = 0;
-  }
-  return {
-    name: "offset",
-    options: value,
-    async fn(middlewareArguments) {
-      const {
-        x: x2,
-        y: y2
-      } = middlewareArguments;
-      const diffCoords = await convertValueToCoords(middlewareArguments, value);
-      return {
-        x: x2 + diffCoords.x,
-        y: y2 + diffCoords.y,
-        data: diffCoords
-      };
-    }
-  };
-};
-function getCrossAxis(axis) {
-  return axis === "x" ? "y" : "x";
-}
-const shift = function(options) {
-  if (options === void 0) {
-    options = {};
-  }
-  return {
-    name: "shift",
-    options,
-    async fn(middlewareArguments) {
-      const {
-        x: x2,
-        y: y2,
-        placement
-      } = middlewareArguments;
-      const {
-        mainAxis: checkMainAxis = true,
-        crossAxis: checkCrossAxis = false,
-        limiter = {
-          fn: (_ref) => {
-            let {
-              x: x3,
-              y: y3
-            } = _ref;
-            return {
-              x: x3,
-              y: y3
-            };
-          }
-        },
-        ...detectOverflowOptions
-      } = options;
-      const coords = {
-        x: x2,
-        y: y2
-      };
-      const overflow = await detectOverflow(middlewareArguments, detectOverflowOptions);
-      const mainAxis = getMainAxisFromPlacement(getSide(placement));
-      const crossAxis = getCrossAxis(mainAxis);
-      let mainAxisCoord = coords[mainAxis];
-      let crossAxisCoord = coords[crossAxis];
-      if (checkMainAxis) {
-        const minSide = mainAxis === "y" ? "top" : "left";
-        const maxSide = mainAxis === "y" ? "bottom" : "right";
-        const min2 = mainAxisCoord + overflow[minSide];
-        const max2 = mainAxisCoord - overflow[maxSide];
-        mainAxisCoord = within(min2, mainAxisCoord, max2);
-      }
-      if (checkCrossAxis) {
-        const minSide = crossAxis === "y" ? "top" : "left";
-        const maxSide = crossAxis === "y" ? "bottom" : "right";
-        const min2 = crossAxisCoord + overflow[minSide];
-        const max2 = crossAxisCoord - overflow[maxSide];
-        crossAxisCoord = within(min2, crossAxisCoord, max2);
-      }
-      const limitedCoords = limiter.fn({
-        ...middlewareArguments,
-        [mainAxis]: mainAxisCoord,
-        [crossAxis]: crossAxisCoord
-      });
-      return {
-        ...limitedCoords,
-        data: {
-          x: limitedCoords.x - x2,
-          y: limitedCoords.y - y2
-        }
-      };
-    }
-  };
-};
-function isWindow(value) {
-  return value && value.document && value.location && value.alert && value.setInterval;
-}
-function getWindow$1(node) {
-  if (node == null) {
-    return window;
-  }
-  if (!isWindow(node)) {
-    const ownerDocument = node.ownerDocument;
-    return ownerDocument ? ownerDocument.defaultView || window : window;
-  }
-  return node;
-}
-function getComputedStyle$1(element) {
-  return getWindow$1(element).getComputedStyle(element);
-}
-function getNodeName(node) {
-  return isWindow(node) ? "" : node ? (node.nodeName || "").toLowerCase() : "";
-}
-function getUAString() {
-  const uaData = navigator.userAgentData;
-  if (uaData != null && uaData.brands) {
-    return uaData.brands.map((item) => item.brand + "/" + item.version).join(" ");
-  }
-  return navigator.userAgent;
-}
-function isHTMLElement$1(value) {
-  return value instanceof getWindow$1(value).HTMLElement;
-}
-function isElement$1(value) {
-  return value instanceof getWindow$1(value).Element;
-}
-function isNode(value) {
-  return value instanceof getWindow$1(value).Node;
-}
-function isShadowRoot(node) {
-  if (typeof ShadowRoot === "undefined") {
-    return false;
-  }
-  const OwnElement = getWindow$1(node).ShadowRoot;
-  return node instanceof OwnElement || node instanceof ShadowRoot;
-}
-function isOverflowElement(element) {
-  const {
-    overflow,
-    overflowX,
-    overflowY,
-    display
-  } = getComputedStyle$1(element);
-  return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
-}
-function isTableElement(element) {
-  return ["table", "td", "th"].includes(getNodeName(element));
-}
-function isContainingBlock(element) {
-  const isFirefox = /firefox/i.test(getUAString());
-  const css = getComputedStyle$1(element);
-  return css.transform !== "none" || css.perspective !== "none" || isFirefox && css.willChange === "filter" || isFirefox && (css.filter ? css.filter !== "none" : false) || ["transform", "perspective"].some((value) => css.willChange.includes(value)) || ["paint", "layout", "strict", "content"].some(
-    (value) => {
-      const contain = css.contain;
-      return contain != null ? contain.includes(value) : false;
-    }
-  );
-}
-function isLayoutViewport() {
-  return !/^((?!chrome|android).)*safari/i.test(getUAString());
-}
-function isLastTraversableNode(node) {
-  return ["html", "body", "#document"].includes(getNodeName(node));
-}
-const min = Math.min;
-const max = Math.max;
-const round = Math.round;
-function getBoundingClientRect(element, includeScale, isFixedStrategy) {
-  var _win$visualViewport$o, _win$visualViewport, _win$visualViewport$o2, _win$visualViewport2;
-  if (includeScale === void 0) {
-    includeScale = false;
-  }
-  if (isFixedStrategy === void 0) {
-    isFixedStrategy = false;
-  }
-  const clientRect = element.getBoundingClientRect();
-  let scaleX = 1;
-  let scaleY = 1;
-  if (includeScale && isHTMLElement$1(element)) {
-    scaleX = element.offsetWidth > 0 ? round(clientRect.width) / element.offsetWidth || 1 : 1;
-    scaleY = element.offsetHeight > 0 ? round(clientRect.height) / element.offsetHeight || 1 : 1;
-  }
-  const win = isElement$1(element) ? getWindow$1(element) : window;
-  const addVisualOffsets = !isLayoutViewport() && isFixedStrategy;
-  const x2 = (clientRect.left + (addVisualOffsets ? (_win$visualViewport$o = (_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) != null ? _win$visualViewport$o : 0 : 0)) / scaleX;
-  const y2 = (clientRect.top + (addVisualOffsets ? (_win$visualViewport$o2 = (_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) != null ? _win$visualViewport$o2 : 0 : 0)) / scaleY;
-  const width = clientRect.width / scaleX;
-  const height = clientRect.height / scaleY;
-  return {
-    width,
-    height,
-    top: y2,
-    right: x2 + width,
-    bottom: y2 + height,
-    left: x2,
-    x: x2,
-    y: y2
-  };
-}
-function getDocumentElement(node) {
-  return ((isNode(node) ? node.ownerDocument : node.document) || window.document).documentElement;
-}
-function getNodeScroll(element) {
-  if (isElement$1(element)) {
-    return {
-      scrollLeft: element.scrollLeft,
-      scrollTop: element.scrollTop
-    };
-  }
-  return {
-    scrollLeft: element.pageXOffset,
-    scrollTop: element.pageYOffset
-  };
-}
-function getWindowScrollBarX(element) {
-  return getBoundingClientRect(getDocumentElement(element)).left + getNodeScroll(element).scrollLeft;
-}
-function isScaled(element) {
-  const rect = getBoundingClientRect(element);
-  return round(rect.width) !== element.offsetWidth || round(rect.height) !== element.offsetHeight;
-}
-function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
-  const isOffsetParentAnElement = isHTMLElement$1(offsetParent);
-  const documentElement = getDocumentElement(offsetParent);
-  const rect = getBoundingClientRect(
-    element,
-    isOffsetParentAnElement && isScaled(offsetParent),
-    strategy === "fixed"
-  );
-  let scroll = {
-    scrollLeft: 0,
-    scrollTop: 0
-  };
-  const offsets = {
-    x: 0,
-    y: 0
-  };
-  if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== "fixed") {
-    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
-      scroll = getNodeScroll(offsetParent);
-    }
-    if (isHTMLElement$1(offsetParent)) {
-      const offsetRect = getBoundingClientRect(offsetParent, true);
-      offsets.x = offsetRect.x + offsetParent.clientLeft;
-      offsets.y = offsetRect.y + offsetParent.clientTop;
-    } else if (documentElement) {
-      offsets.x = getWindowScrollBarX(documentElement);
-    }
-  }
-  return {
-    x: rect.left + scroll.scrollLeft - offsets.x,
-    y: rect.top + scroll.scrollTop - offsets.y,
-    width: rect.width,
-    height: rect.height
-  };
-}
-function getParentNode(node) {
-  if (getNodeName(node) === "html") {
-    return node;
-  }
-  return node.assignedSlot || node.parentNode || (isShadowRoot(node) ? node.host : null) || getDocumentElement(node);
-}
-function getTrueOffsetParent(element) {
-  if (!isHTMLElement$1(element) || getComputedStyle$1(element).position === "fixed") {
-    return null;
-  }
-  return element.offsetParent;
-}
-function getContainingBlock(element) {
-  let currentNode = getParentNode(element);
-  if (isShadowRoot(currentNode)) {
-    currentNode = currentNode.host;
-  }
-  while (isHTMLElement$1(currentNode) && !isLastTraversableNode(currentNode)) {
-    if (isContainingBlock(currentNode)) {
-      return currentNode;
-    } else {
-      const parent = currentNode.parentNode;
-      currentNode = isShadowRoot(parent) ? parent.host : parent;
-    }
-  }
-  return null;
-}
-function getOffsetParent(element) {
-  const window2 = getWindow$1(element);
-  let offsetParent = getTrueOffsetParent(element);
-  while (offsetParent && isTableElement(offsetParent) && getComputedStyle$1(offsetParent).position === "static") {
-    offsetParent = getTrueOffsetParent(offsetParent);
-  }
-  if (offsetParent && (getNodeName(offsetParent) === "html" || getNodeName(offsetParent) === "body" && getComputedStyle$1(offsetParent).position === "static" && !isContainingBlock(offsetParent))) {
-    return window2;
-  }
-  return offsetParent || getContainingBlock(element) || window2;
-}
-function getDimensions(element) {
-  if (isHTMLElement$1(element)) {
-    return {
-      width: element.offsetWidth,
-      height: element.offsetHeight
-    };
-  }
-  const rect = getBoundingClientRect(element);
-  return {
-    width: rect.width,
-    height: rect.height
-  };
-}
-function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
-  let {
-    rect,
-    offsetParent,
-    strategy
-  } = _ref;
-  const isOffsetParentAnElement = isHTMLElement$1(offsetParent);
-  const documentElement = getDocumentElement(offsetParent);
-  if (offsetParent === documentElement) {
-    return rect;
-  }
-  let scroll = {
-    scrollLeft: 0,
-    scrollTop: 0
-  };
-  const offsets = {
-    x: 0,
-    y: 0
-  };
-  if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== "fixed") {
-    if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) {
-      scroll = getNodeScroll(offsetParent);
-    }
-    if (isHTMLElement$1(offsetParent)) {
-      const offsetRect = getBoundingClientRect(offsetParent, true);
-      offsets.x = offsetRect.x + offsetParent.clientLeft;
-      offsets.y = offsetRect.y + offsetParent.clientTop;
-    }
-  }
-  return {
-    ...rect,
-    x: rect.x - scroll.scrollLeft + offsets.x,
-    y: rect.y - scroll.scrollTop + offsets.y
-  };
-}
-function getViewportRect(element, strategy) {
-  const win = getWindow$1(element);
-  const html = getDocumentElement(element);
-  const visualViewport = win.visualViewport;
-  let width = html.clientWidth;
-  let height = html.clientHeight;
-  let x2 = 0;
-  let y2 = 0;
-  if (visualViewport) {
-    width = visualViewport.width;
-    height = visualViewport.height;
-    const layoutViewport = isLayoutViewport();
-    if (layoutViewport || !layoutViewport && strategy === "fixed") {
-      x2 = visualViewport.offsetLeft;
-      y2 = visualViewport.offsetTop;
-    }
-  }
-  return {
-    width,
-    height,
-    x: x2,
-    y: y2
-  };
-}
-function getDocumentRect(element) {
-  var _element$ownerDocumen;
-  const html = getDocumentElement(element);
-  const scroll = getNodeScroll(element);
-  const body = (_element$ownerDocumen = element.ownerDocument) == null ? void 0 : _element$ownerDocumen.body;
-  const width = max(html.scrollWidth, html.clientWidth, body ? body.scrollWidth : 0, body ? body.clientWidth : 0);
-  const height = max(html.scrollHeight, html.clientHeight, body ? body.scrollHeight : 0, body ? body.clientHeight : 0);
-  let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
-  const y2 = -scroll.scrollTop;
-  if (getComputedStyle$1(body || html).direction === "rtl") {
-    x2 += max(html.clientWidth, body ? body.clientWidth : 0) - width;
-  }
-  return {
-    width,
-    height,
-    x: x2,
-    y: y2
-  };
-}
-function getNearestOverflowAncestor(node) {
-  const parentNode = getParentNode(node);
-  if (isLastTraversableNode(parentNode)) {
-    return node.ownerDocument.body;
-  }
-  if (isHTMLElement$1(parentNode) && isOverflowElement(parentNode)) {
-    return parentNode;
-  }
-  return getNearestOverflowAncestor(parentNode);
-}
-function getOverflowAncestors(node, list) {
-  var _node$ownerDocument;
-  if (list === void 0) {
-    list = [];
-  }
-  const scrollableAncestor = getNearestOverflowAncestor(node);
-  const isBody = scrollableAncestor === ((_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.body);
-  const win = getWindow$1(scrollableAncestor);
-  const target = isBody ? [win].concat(win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : []) : scrollableAncestor;
-  const updatedList = list.concat(target);
-  return isBody ? updatedList : updatedList.concat(getOverflowAncestors(target));
-}
-function contains(parent, child) {
-  const rootNode = child.getRootNode == null ? void 0 : child.getRootNode();
-  if (parent.contains(child)) {
-    return true;
-  } else if (rootNode && isShadowRoot(rootNode)) {
-    let next = child;
-    do {
-      if (next && parent === next) {
-        return true;
-      }
-      next = next.parentNode || next.host;
-    } while (next);
-  }
-  return false;
-}
-function getNearestParentCapableOfEscapingClipping(element, clippingAncestors) {
-  let currentNode = element;
-  while (currentNode && !isLastTraversableNode(currentNode) && !clippingAncestors.includes(currentNode)) {
-    if (isElement$1(currentNode) && ["absolute", "fixed"].includes(getComputedStyle$1(currentNode).position)) {
-      break;
-    }
-    const parentNode = getParentNode(currentNode);
-    currentNode = isShadowRoot(parentNode) ? parentNode.host : parentNode;
-  }
-  return currentNode;
-}
-function getInnerBoundingClientRect(element, strategy) {
-  const clientRect = getBoundingClientRect(element, false, strategy === "fixed");
-  const top = clientRect.top + element.clientTop;
-  const left = clientRect.left + element.clientLeft;
-  return {
-    top,
-    left,
-    x: left,
-    y: top,
-    right: left + element.clientWidth,
-    bottom: top + element.clientHeight,
-    width: element.clientWidth,
-    height: element.clientHeight
-  };
-}
-function getClientRectFromClippingAncestor(element, clippingParent, strategy) {
-  if (clippingParent === "viewport") {
-    return rectToClientRect(getViewportRect(element, strategy));
-  }
-  if (isElement$1(clippingParent)) {
-    return getInnerBoundingClientRect(clippingParent, strategy);
-  }
-  return rectToClientRect(getDocumentRect(getDocumentElement(element)));
-}
-function getClippingAncestors(element) {
-  const clippingAncestors = getOverflowAncestors(element);
-  const nearestEscapableParent = getNearestParentCapableOfEscapingClipping(element, clippingAncestors);
-  let clipperElement = null;
-  if (nearestEscapableParent && isHTMLElement$1(nearestEscapableParent)) {
-    const offsetParent = getOffsetParent(nearestEscapableParent);
-    if (isOverflowElement(nearestEscapableParent)) {
-      clipperElement = nearestEscapableParent;
-    } else if (isHTMLElement$1(offsetParent)) {
-      clipperElement = offsetParent;
-    }
-  }
-  if (!isElement$1(clipperElement)) {
-    return [];
-  }
-  return clippingAncestors.filter((clippingAncestors2) => clipperElement && isElement$1(clippingAncestors2) && contains(clippingAncestors2, clipperElement) && getNodeName(clippingAncestors2) !== "body");
-}
-function getClippingRect(_ref) {
-  let {
-    element,
-    boundary,
-    rootBoundary,
-    strategy
-  } = _ref;
-  const mainClippingAncestors = boundary === "clippingAncestors" ? getClippingAncestors(element) : [].concat(boundary);
-  const clippingAncestors = [...mainClippingAncestors, rootBoundary];
-  const firstClippingAncestor = clippingAncestors[0];
-  const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
-    const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
-    accRect.top = max(rect.top, accRect.top);
-    accRect.right = min(rect.right, accRect.right);
-    accRect.bottom = min(rect.bottom, accRect.bottom);
-    accRect.left = max(rect.left, accRect.left);
-    return accRect;
-  }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
-  return {
-    width: clippingRect.right - clippingRect.left,
-    height: clippingRect.bottom - clippingRect.top,
-    x: clippingRect.left,
-    y: clippingRect.top
-  };
-}
-const platform = {
-  getClippingRect,
-  convertOffsetParentRelativeRectToViewportRelativeRect,
-  isElement: isElement$1,
-  getDimensions,
-  getOffsetParent,
-  getDocumentElement,
-  getElementRects: (_ref) => {
-    let {
-      reference,
-      floating,
-      strategy
-    } = _ref;
-    return {
-      reference: getRectRelativeToOffsetParent(reference, getOffsetParent(floating), strategy),
-      floating: {
-        ...getDimensions(floating),
-        x: 0,
-        y: 0
-      }
-    };
-  },
-  getClientRects: (element) => Array.from(element.getClientRects()),
-  isRTL: (element) => getComputedStyle$1(element).direction === "rtl"
-};
-function autoUpdate(reference, floating, update, options) {
-  if (options === void 0) {
-    options = {};
-  }
-  const {
-    ancestorScroll: _ancestorScroll = true,
-    ancestorResize = true,
-    elementResize = true,
-    animationFrame = false
-  } = options;
-  const ancestorScroll = _ancestorScroll && !animationFrame;
-  const ancestors = ancestorScroll || ancestorResize ? [...isElement$1(reference) ? getOverflowAncestors(reference) : reference.contextElement ? getOverflowAncestors(reference.contextElement) : [], ...getOverflowAncestors(floating)] : [];
-  ancestors.forEach((ancestor) => {
-    ancestorScroll && ancestor.addEventListener("scroll", update, {
-      passive: true
-    });
-    ancestorResize && ancestor.addEventListener("resize", update);
-  });
-  let observer = null;
-  if (elementResize) {
-    let initialUpdate = true;
-    observer = new ResizeObserver(() => {
-      if (!initialUpdate) {
-        update();
-      }
-      initialUpdate = false;
-    });
-    isElement$1(reference) && !animationFrame && observer.observe(reference);
-    if (!isElement$1(reference) && reference.contextElement && !animationFrame) {
-      observer.observe(reference.contextElement);
-    }
-    observer.observe(floating);
-  }
-  let frameId;
-  let prevRefRect = animationFrame ? getBoundingClientRect(reference) : null;
-  if (animationFrame) {
-    frameLoop();
-  }
-  function frameLoop() {
-    const nextRefRect = getBoundingClientRect(reference);
-    if (prevRefRect && (nextRefRect.x !== prevRefRect.x || nextRefRect.y !== prevRefRect.y || nextRefRect.width !== prevRefRect.width || nextRefRect.height !== prevRefRect.height)) {
-      update();
-    }
-    prevRefRect = nextRefRect;
-    frameId = requestAnimationFrame(frameLoop);
-  }
-  update();
-  return () => {
-    var _observer;
-    ancestors.forEach((ancestor) => {
-      ancestorScroll && ancestor.removeEventListener("scroll", update);
-      ancestorResize && ancestor.removeEventListener("resize", update);
-    });
-    (_observer = observer) == null ? void 0 : _observer.disconnect();
-    observer = null;
-    if (animationFrame) {
-      cancelAnimationFrame(frameId);
-    }
-  };
-}
-const computePosition = (reference, floating, options) => computePosition$1(reference, floating, {
-  platform,
-  ...options
-});
-var index$1 = typeof document !== "undefined" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function deepEqual(a2, b2) {
-  if (a2 === b2) {
-    return true;
-  }
-  if (typeof a2 !== typeof b2) {
-    return false;
-  }
-  if (typeof a2 === "function" && a2.toString() === b2.toString()) {
-    return true;
-  }
-  let length, i2, keys;
-  if (a2 && b2 && typeof a2 == "object") {
-    if (Array.isArray(a2)) {
-      length = a2.length;
-      if (length != b2.length)
-        return false;
-      for (i2 = length; i2-- !== 0; ) {
-        if (!deepEqual(a2[i2], b2[i2])) {
-          return false;
-        }
-      }
-      return true;
-    }
-    keys = Object.keys(a2);
-    length = keys.length;
-    if (length !== Object.keys(b2).length) {
-      return false;
-    }
-    for (i2 = length; i2-- !== 0; ) {
-      if (!Object.prototype.hasOwnProperty.call(b2, keys[i2])) {
-        return false;
-      }
-    }
-    for (i2 = length; i2-- !== 0; ) {
-      const key = keys[i2];
-      if (key === "_owner" && a2.$$typeof) {
-        continue;
-      }
-      if (!deepEqual(a2[key], b2[key])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return a2 !== a2 && b2 !== b2;
-}
-function useLatestRef$1(value) {
-  const ref = react.exports.useRef(value);
-  index$1(() => {
-    ref.current = value;
-  });
-  return ref;
-}
-function useFloating$1(_temp) {
-  let {
-    middleware,
-    placement = "bottom",
-    strategy = "absolute",
-    whileElementsMounted
-  } = _temp === void 0 ? {} : _temp;
-  const [data2, setData] = react.exports.useState({
-    x: null,
-    y: null,
-    strategy,
-    placement,
-    middlewareData: {}
-  });
-  const [latestMiddleware, setLatestMiddleware] = react.exports.useState(middleware);
-  if (!deepEqual(latestMiddleware == null ? void 0 : latestMiddleware.map((_ref) => {
-    let {
-      name,
-      options
-    } = _ref;
-    return {
-      name,
-      options
-    };
-  }), middleware == null ? void 0 : middleware.map((_ref2) => {
-    let {
-      name,
-      options
-    } = _ref2;
-    return {
-      name,
-      options
-    };
-  }))) {
-    setLatestMiddleware(middleware);
-  }
-  const reference = react.exports.useRef(null);
-  const floating = react.exports.useRef(null);
-  const cleanupRef = react.exports.useRef(null);
-  const dataRef = react.exports.useRef(data2);
-  const whileElementsMountedRef = useLatestRef$1(whileElementsMounted);
-  const update = react.exports.useCallback(() => {
-    if (!reference.current || !floating.current) {
-      return;
-    }
-    computePosition(reference.current, floating.current, {
-      middleware: latestMiddleware,
-      placement,
-      strategy
-    }).then((data3) => {
-      if (isMountedRef.current && !deepEqual(dataRef.current, data3)) {
-        dataRef.current = data3;
-        reactDom.exports.flushSync(() => {
-          setData(data3);
-        });
-      }
-    });
-  }, [latestMiddleware, placement, strategy]);
-  index$1(() => {
-    if (isMountedRef.current) {
-      update();
-    }
-  }, [update]);
-  const isMountedRef = react.exports.useRef(false);
-  index$1(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-  const runElementMountCallback = react.exports.useCallback(() => {
-    if (typeof cleanupRef.current === "function") {
-      cleanupRef.current();
-      cleanupRef.current = null;
-    }
-    if (reference.current && floating.current) {
-      if (whileElementsMountedRef.current) {
-        const cleanupFn = whileElementsMountedRef.current(reference.current, floating.current, update);
-        cleanupRef.current = cleanupFn;
-      } else {
-        update();
-      }
-    }
-  }, [update, whileElementsMountedRef]);
-  const setReference = react.exports.useCallback((node) => {
-    reference.current = node;
-    runElementMountCallback();
-  }, [runElementMountCallback]);
-  const setFloating = react.exports.useCallback((node) => {
-    floating.current = node;
-    runElementMountCallback();
-  }, [runElementMountCallback]);
-  const refs = react.exports.useMemo(() => ({
-    reference,
-    floating
-  }), []);
-  return react.exports.useMemo(() => ({
-    ...data2,
-    update,
-    refs,
-    reference: setReference,
-    floating: setFloating
-  }), [data2, update, refs, setReference, setFloating]);
-}
-var index = typeof document !== "undefined" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function createPubSub() {
-  const map2 = /* @__PURE__ */ new Map();
-  return {
-    emit(event, data2) {
-      var _map$get;
-      (_map$get = map2.get(event)) == null ? void 0 : _map$get.forEach((handler) => handler(data2));
-    },
-    on(event, listener) {
-      map2.set(event, [...map2.get(event) || [], listener]);
-    },
-    off(event, listener) {
-      map2.set(event, (map2.get(event) || []).filter((l2) => l2 !== listener));
-    }
-  };
-}
-let serverHandoffComplete = false;
-let count = 0;
-const genId = () => "floating-ui-" + count++;
-function useFloatingId() {
-  const [id2, setId] = react.exports.useState(() => serverHandoffComplete ? genId() : void 0);
-  index(() => {
-    if (id2 == null) {
-      setId(genId());
-    }
-  }, []);
-  react.exports.useEffect(() => {
-    if (!serverHandoffComplete) {
-      serverHandoffComplete = true;
-    }
-  }, []);
-  return id2;
-}
-const useReactId = React$1[/* @__PURE__ */ "useId".toString()];
-const useId = useReactId != null ? useReactId : useFloatingId;
-const FloatingNodeContext = /* @__PURE__ */ react.exports.createContext(null);
-const FloatingTreeContext = /* @__PURE__ */ react.exports.createContext(null);
-const useFloatingParentNodeId = () => {
-  var _React$useContext$id, _React$useContext;
-  return (_React$useContext$id = (_React$useContext = react.exports.useContext(FloatingNodeContext)) == null ? void 0 : _React$useContext.id) != null ? _React$useContext$id : null;
-};
-const useFloatingTree = () => react.exports.useContext(FloatingTreeContext);
-function getDocument(floating) {
-  var _floating$ownerDocume;
-  return (_floating$ownerDocume = floating == null ? void 0 : floating.ownerDocument) != null ? _floating$ownerDocume : document;
-}
-function getWindow(value) {
-  var _getDocument$defaultV;
-  return (_getDocument$defaultV = getDocument(value).defaultView) != null ? _getDocument$defaultV : window;
-}
-function isElement(value) {
-  return value ? value instanceof getWindow(value).Element : false;
-}
-function isHTMLElement(value) {
-  return value ? value instanceof getWindow(value).HTMLElement : false;
-}
-const useInsertionEffect = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
-function useEvent(callback) {
-  const ref = react.exports.useRef(() => {
-  });
-  if (useInsertionEffect) {
-    useInsertionEffect(() => {
-      ref.current = callback;
-    });
-  } else {
-    ref.current = callback;
-  }
-  return react.exports.useCallback(function() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-    return ref.current == null ? void 0 : ref.current(...args);
-  }, []);
-}
-function useFloating(_temp) {
-  let {
-    open = false,
-    onOpenChange: unstable_onOpenChange,
-    whileElementsMounted,
-    placement,
-    middleware,
-    strategy,
-    nodeId
-  } = _temp === void 0 ? {} : _temp;
-  const [domReference, setDomReference] = react.exports.useState(null);
-  const tree = useFloatingTree();
-  const domReferenceRef = react.exports.useRef(null);
-  const dataRef = react.exports.useRef({});
-  const events = react.exports.useState(() => createPubSub())[0];
-  const position = useFloating$1({
-    placement,
-    middleware,
-    strategy,
-    whileElementsMounted
-  });
-  const onOpenChange = useEvent(unstable_onOpenChange);
-  const refs = react.exports.useMemo(() => ({
-    ...position.refs,
-    domReference: domReferenceRef
-  }), [position.refs]);
-  const context = react.exports.useMemo(() => ({
-    ...position,
-    refs,
-    dataRef,
-    nodeId,
-    events,
-    open,
-    onOpenChange,
-    _: {
-      domReference
-    }
-  }), [position, nodeId, events, open, onOpenChange, refs, domReference]);
-  index(() => {
-    const node = tree == null ? void 0 : tree.nodesRef.current.find((node2) => node2.id === nodeId);
-    if (node) {
-      node.context = context;
-    }
-  });
-  const {
-    reference
-  } = position;
-  const setReference = react.exports.useCallback((node) => {
-    if (isElement(node) || node === null) {
-      context.refs.domReference.current = node;
-      setDomReference(node);
-    }
-    reference(node);
-  }, [reference, context.refs]);
-  return react.exports.useMemo(() => ({
-    ...position,
-    context,
-    refs,
-    reference: setReference
-  }), [position, refs, context, setReference]);
-}
-function mergeProps(userProps, propsList, elementKey) {
-  const map2 = /* @__PURE__ */ new Map();
-  return {
-    ...elementKey === "floating" && {
-      tabIndex: -1
-    },
-    ...userProps,
-    ...propsList.map((value) => value ? value[elementKey] : null).concat(userProps).reduce((acc, props) => {
-      if (!props) {
-        return acc;
-      }
-      Object.entries(props).forEach((_ref) => {
-        let [key, value] = _ref;
-        if (key.indexOf("on") === 0) {
-          if (!map2.has(key)) {
-            map2.set(key, []);
-          }
-          if (typeof value === "function") {
-            var _map$get;
-            (_map$get = map2.get(key)) == null ? void 0 : _map$get.push(value);
-            acc[key] = function() {
-              var _map$get2;
-              for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-              }
-              (_map$get2 = map2.get(key)) == null ? void 0 : _map$get2.forEach((fn) => fn(...args));
-            };
-          }
-        } else {
-          acc[key] = value;
-        }
-      });
-      return acc;
-    }, {})
-  };
-}
-const useInteractions = function(propsList) {
-  if (propsList === void 0) {
-    propsList = [];
-  }
-  return {
-    getReferenceProps: (userProps) => mergeProps(userProps, propsList, "reference"),
-    getFloatingProps: (userProps) => mergeProps(userProps, propsList, "floating"),
-    getItemProps: (userProps) => mergeProps(userProps, propsList, "item")
-  };
-};
-const TYPEABLE_SELECTOR = "input:not([type='hidden']):not([disabled]),[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
-function isTypeableElement(element) {
-  return isHTMLElement(element) && element.matches(TYPEABLE_SELECTOR);
-}
-function useLatestRef(value) {
-  const ref = react.exports.useRef(value);
-  index(() => {
-    ref.current = value;
-  });
-  return ref;
-}
-function usePrevious(value) {
-  const ref = react.exports.useRef();
-  index(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-}
-function getDelay(value, prop, pointerType) {
-  if (pointerType && pointerType !== "mouse") {
-    return 0;
-  }
-  if (typeof value === "number") {
-    return value;
-  }
-  return value == null ? void 0 : value[prop];
-}
-const useHover = function(context, _temp) {
-  let {
-    enabled = true,
-    delay: delay2 = 0,
-    handleClose = null,
-    mouseOnly = false,
-    restMs = 0,
-    move = true
-  } = _temp === void 0 ? {} : _temp;
-  const {
-    open,
-    onOpenChange,
-    dataRef,
-    events,
-    refs,
-    _: _2
-  } = context;
-  const tree = useFloatingTree();
-  const parentId = useFloatingParentNodeId();
-  const handleCloseRef = useLatestRef(handleClose);
-  const delayRef = useLatestRef(delay2);
-  const previousOpen = usePrevious(open);
-  const pointerTypeRef = react.exports.useRef();
-  const timeoutRef = react.exports.useRef();
-  const handlerRef = react.exports.useRef();
-  const restTimeoutRef = react.exports.useRef();
-  const blockMouseMoveRef = react.exports.useRef(true);
-  const performedPointerEventsMutationRef = react.exports.useRef(false);
-  const isHoverOpen = react.exports.useCallback(() => {
-    var _dataRef$current$open;
-    const type = (_dataRef$current$open = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open.type;
-    return (type == null ? void 0 : type.includes("mouse")) && type !== "mousedown";
-  }, [dataRef]);
-  react.exports.useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    function onDismiss() {
-      clearTimeout(timeoutRef.current);
-      clearTimeout(restTimeoutRef.current);
-      blockMouseMoveRef.current = true;
-    }
-    events.on("dismiss", onDismiss);
-    return () => {
-      events.off("dismiss", onDismiss);
-    };
-  }, [enabled, events, refs]);
-  react.exports.useEffect(() => {
-    if (!enabled || !handleCloseRef.current) {
-      return;
-    }
-    function onLeave() {
-      if (isHoverOpen()) {
-        onOpenChange(false);
-      }
-    }
-    const html = getDocument(refs.floating.current).documentElement;
-    html.addEventListener("mouseleave", onLeave);
-    return () => {
-      html.removeEventListener("mouseleave", onLeave);
-    };
-  }, [refs, onOpenChange, enabled, handleCloseRef, dataRef, isHoverOpen]);
-  const closeWithDelay = react.exports.useCallback(function(runElseBranch) {
-    if (runElseBranch === void 0) {
-      runElseBranch = true;
-    }
-    const closeDelay = getDelay(delayRef.current, "close", pointerTypeRef.current);
-    if (closeDelay && !handlerRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => onOpenChange(false), closeDelay);
-    } else if (runElseBranch) {
-      clearTimeout(timeoutRef.current);
-      onOpenChange(false);
-    }
-  }, [delayRef, onOpenChange]);
-  const cleanupPointerMoveHandler = react.exports.useCallback(() => {
-    if (handlerRef.current) {
-      getDocument(refs.floating.current).removeEventListener("pointermove", handlerRef.current);
-      handlerRef.current = void 0;
-    }
-  }, [refs]);
-  const clearPointerEvents = react.exports.useCallback(() => {
-    getDocument(refs.floating.current).body.style.pointerEvents = "";
-    performedPointerEventsMutationRef.current = false;
-  }, [refs]);
-  react.exports.useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    function isClickLikeOpenEvent() {
-      return dataRef.current.openEvent ? ["click", "mousedown"].includes(dataRef.current.openEvent.type) : false;
-    }
-    function onMouseEnter(event) {
-      clearTimeout(timeoutRef.current);
-      blockMouseMoveRef.current = false;
-      if (mouseOnly && pointerTypeRef.current !== "mouse" || restMs > 0 && getDelay(delayRef.current, "open") === 0) {
-        return;
-      }
-      dataRef.current.openEvent = event;
-      const openDelay = getDelay(delayRef.current, "open", pointerTypeRef.current);
-      if (openDelay) {
-        timeoutRef.current = setTimeout(() => {
-          onOpenChange(true);
-        }, openDelay);
-      } else {
-        onOpenChange(true);
-      }
-    }
-    function onMouseLeave(event) {
-      if (isClickLikeOpenEvent()) {
-        return;
-      }
-      const doc = getDocument(refs.floating.current);
-      clearTimeout(restTimeoutRef.current);
-      if (handleCloseRef.current) {
-        clearTimeout(timeoutRef.current);
-        handlerRef.current && doc.removeEventListener("pointermove", handlerRef.current);
-        handlerRef.current = handleCloseRef.current({
-          ...context,
-          tree,
-          x: event.clientX,
-          y: event.clientY,
-          onClose() {
-            clearPointerEvents();
-            cleanupPointerMoveHandler();
-            closeWithDelay();
-          }
-        });
-        doc.addEventListener("pointermove", handlerRef.current);
-        return;
-      }
-      closeWithDelay();
-    }
-    function onScrollMouseLeave(event) {
-      if (isClickLikeOpenEvent()) {
-        return;
-      }
-      handleCloseRef.current == null ? void 0 : handleCloseRef.current({
-        ...context,
-        tree,
-        x: event.clientX,
-        y: event.clientY,
-        leave: true,
-        onClose() {
-          clearPointerEvents();
-          cleanupPointerMoveHandler();
-          closeWithDelay();
-        }
-      })(event);
-    }
-    const floating = refs.floating.current;
-    const reference = refs.domReference.current;
-    if (isElement(reference)) {
-      open && reference.addEventListener("mouseleave", onScrollMouseLeave);
-      floating == null ? void 0 : floating.addEventListener("mouseleave", onScrollMouseLeave);
-      move && reference.addEventListener("mousemove", onMouseEnter, {
-        once: true
-      });
-      reference.addEventListener("mouseenter", onMouseEnter);
-      reference.addEventListener("mouseleave", onMouseLeave);
-      return () => {
-        open && reference.removeEventListener("mouseleave", onScrollMouseLeave);
-        floating == null ? void 0 : floating.removeEventListener("mouseleave", onScrollMouseLeave);
-        move && reference.removeEventListener("mousemove", onMouseEnter);
-        reference.removeEventListener("mouseenter", onMouseEnter);
-        reference.removeEventListener("mouseleave", onMouseLeave);
-      };
-    }
-  }, [
-    _2.domReference,
-    enabled,
-    context,
-    mouseOnly,
-    restMs,
-    move,
-    closeWithDelay,
-    cleanupPointerMoveHandler,
-    clearPointerEvents,
-    onOpenChange,
-    open,
-    tree,
-    refs,
-    delayRef,
-    handleCloseRef,
-    dataRef
-  ]);
-  index(() => {
-    if (!enabled) {
-      return;
-    }
-    if (open && handleCloseRef.current && handleCloseRef.current.__options.blockPointerEvents && isHoverOpen()) {
-      getDocument(refs.floating.current).body.style.pointerEvents = "none";
-      performedPointerEventsMutationRef.current = true;
-      const reference = refs.domReference.current;
-      const floating = refs.floating.current;
-      if (isElement(reference) && floating) {
-        var _tree$nodesRef$curren, _tree$nodesRef$curren2;
-        const parentFloating = tree == null ? void 0 : (_tree$nodesRef$curren = tree.nodesRef.current.find((node) => node.id === parentId)) == null ? void 0 : (_tree$nodesRef$curren2 = _tree$nodesRef$curren.context) == null ? void 0 : _tree$nodesRef$curren2.refs.floating.current;
-        if (parentFloating) {
-          parentFloating.style.pointerEvents = "";
-        }
-        reference.style.pointerEvents = "auto";
-        floating.style.pointerEvents = "auto";
-        return () => {
-          reference.style.pointerEvents = "";
-          floating.style.pointerEvents = "";
-        };
-      }
-    }
-  }, [enabled, open, parentId, refs, tree, handleCloseRef, dataRef, isHoverOpen]);
-  index(() => {
-    if (previousOpen && !open) {
-      pointerTypeRef.current = void 0;
-      cleanupPointerMoveHandler();
-      clearPointerEvents();
-    }
-  });
-  react.exports.useEffect(() => {
-    return () => {
-      cleanupPointerMoveHandler();
-      clearTimeout(timeoutRef.current);
-      clearTimeout(restTimeoutRef.current);
-      if (performedPointerEventsMutationRef.current) {
-        clearPointerEvents();
-      }
-    };
-  }, [enabled, cleanupPointerMoveHandler, clearPointerEvents]);
-  if (!enabled) {
-    return {};
-  }
-  function setPointerRef(event) {
-    pointerTypeRef.current = event.pointerType;
-  }
-  return {
-    reference: {
-      onPointerDown: setPointerRef,
-      onPointerEnter: setPointerRef,
-      onMouseMove() {
-        if (open || restMs === 0) {
-          return;
-        }
-        clearTimeout(restTimeoutRef.current);
-        restTimeoutRef.current = setTimeout(() => {
-          if (!blockMouseMoveRef.current) {
-            onOpenChange(true);
-          }
-        }, restMs);
-      }
-    },
-    floating: {
-      onMouseEnter() {
-        clearTimeout(timeoutRef.current);
-      },
-      onMouseLeave() {
-        closeWithDelay(false);
-      }
-    }
-  };
-};
-const useRole = function(_ref, _temp) {
-  let {
-    open
-  } = _ref;
-  let {
-    enabled = true,
-    role = "dialog"
-  } = _temp === void 0 ? {} : _temp;
-  const rootId = useId();
-  const referenceId = useId();
-  const floatingProps = {
-    id: rootId,
-    role
-  };
-  if (!enabled) {
-    return {};
-  }
-  if (role === "tooltip") {
-    return {
-      reference: {
-        "aria-describedby": open ? rootId : void 0
-      },
-      floating: floatingProps
-    };
-  }
-  return {
-    reference: {
-      "aria-expanded": open ? "true" : "false",
-      "aria-haspopup": role === "alertdialog" ? "dialog" : role,
-      "aria-controls": open ? rootId : void 0,
-      ...role === "listbox" && {
-        role: "combobox"
-      },
-      ...role === "menu" && {
-        id: referenceId
-      }
-    },
-    floating: {
-      ...floatingProps,
-      ...role === "menu" && {
-        "aria-labelledby": referenceId
-      }
-    }
-  };
-};
-function isButtonTarget(event) {
-  return isHTMLElement(event.target) && event.target.tagName === "BUTTON";
-}
-const useClick = function(_ref, _temp) {
-  let {
-    open,
-    onOpenChange,
-    dataRef,
-    refs
-  } = _ref;
-  let {
-    enabled = true,
-    pointerDown = false,
-    toggle = true,
-    ignoreMouse = false,
-    keyboardHandlers = true
-  } = _temp === void 0 ? {} : _temp;
-  const pointerTypeRef = react.exports.useRef();
-  function isSpaceIgnored() {
-    return isTypeableElement(refs.domReference.current);
-  }
-  if (!enabled) {
-    return {};
-  }
-  return {
-    reference: {
-      onPointerDown(event) {
-        pointerTypeRef.current = event.pointerType;
-      },
-      onMouseDown(event) {
-        if (event.button !== 0) {
-          return;
-        }
-        if (pointerTypeRef.current === "mouse" && ignoreMouse) {
-          return;
-        }
-        if (!pointerDown) {
-          return;
-        }
-        if (open) {
-          if (toggle && (dataRef.current.openEvent ? dataRef.current.openEvent.type === "mousedown" : true)) {
-            onOpenChange(false);
-          }
-        } else {
-          onOpenChange(true);
-        }
-        dataRef.current.openEvent = event.nativeEvent;
-      },
-      onClick(event) {
-        if (pointerDown && pointerTypeRef.current) {
-          pointerTypeRef.current = void 0;
-          return;
-        }
-        if (pointerTypeRef.current === "mouse" && ignoreMouse) {
-          return;
-        }
-        if (open) {
-          if (toggle && (dataRef.current.openEvent ? dataRef.current.openEvent.type === "click" : true)) {
-            onOpenChange(false);
-          }
-        } else {
-          onOpenChange(true);
-        }
-        dataRef.current.openEvent = event.nativeEvent;
-      },
-      onKeyDown(event) {
-        pointerTypeRef.current = void 0;
-        if (!keyboardHandlers) {
-          return;
-        }
-        if (isButtonTarget(event)) {
-          return;
-        }
-        if (event.key === " " && !isSpaceIgnored()) {
-          event.preventDefault();
-        }
-        if (event.key === "Enter") {
-          if (open) {
-            if (toggle) {
-              onOpenChange(false);
-            }
-          } else {
-            onOpenChange(true);
-          }
-        }
-      },
-      onKeyUp(event) {
-        if (!keyboardHandlers) {
-          return;
-        }
-        if (isButtonTarget(event) || isSpaceIgnored()) {
-          return;
-        }
-        if (event.key === " ") {
-          if (open) {
-            if (toggle) {
-              onOpenChange(false);
-            }
-          } else {
-            onOpenChange(true);
-          }
-        }
-      }
-    }
-  };
-};
-const useFocus = function(_ref, _temp) {
-  let {
-    open,
-    onOpenChange,
-    dataRef,
-    refs,
-    events
-  } = _ref;
-  let {
-    enabled = true,
-    keyboardOnly = true
-  } = _temp === void 0 ? {} : _temp;
-  const pointerTypeRef = react.exports.useRef("");
-  const blockFocusRef = react.exports.useRef(false);
-  const timeoutRef = react.exports.useRef();
-  react.exports.useEffect(() => {
-    var _doc$defaultView;
-    if (!enabled) {
-      return;
-    }
-    const doc = getDocument(refs.floating.current);
-    const win = (_doc$defaultView = doc.defaultView) != null ? _doc$defaultView : window;
-    function onBlur() {
-      if (!open && isHTMLElement(refs.domReference.current)) {
-        refs.domReference.current.blur();
-      }
-    }
-    win.addEventListener("blur", onBlur);
-    return () => {
-      win.removeEventListener("blur", onBlur);
-    };
-  }, [refs, open, enabled]);
-  react.exports.useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    function onDismiss() {
-      blockFocusRef.current = true;
-    }
-    events.on("dismiss", onDismiss);
-    return () => {
-      events.off("dismiss", onDismiss);
-    };
-  }, [events, enabled]);
-  react.exports.useEffect(() => {
-    return () => {
-      clearTimeout(timeoutRef.current);
-    };
-  }, []);
-  if (!enabled) {
-    return {};
-  }
-  return {
-    reference: {
-      onPointerDown(_ref2) {
-        let {
-          pointerType
-        } = _ref2;
-        pointerTypeRef.current = pointerType;
-        blockFocusRef.current = !!(pointerType && keyboardOnly);
-      },
-      onPointerLeave() {
-        blockFocusRef.current = false;
-      },
-      onFocus(event) {
-        var _dataRef$current$open, _refs$domReference$cu, _dataRef$current$open2;
-        if (blockFocusRef.current) {
-          return;
-        }
-        if (event.type === "focus" && ((_dataRef$current$open = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open.type) === "mousedown" && (_refs$domReference$cu = refs.domReference.current) != null && _refs$domReference$cu.contains((_dataRef$current$open2 = dataRef.current.openEvent) == null ? void 0 : _dataRef$current$open2.target)) {
-          return;
-        }
-        dataRef.current.openEvent = event.nativeEvent;
-        onOpenChange(true);
-      },
-      onBlur(event) {
-        const target = event.relatedTarget;
-        timeoutRef.current = setTimeout(() => {
-          var _refs$floating$curren, _refs$domReference$cu2;
-          if ((_refs$floating$curren = refs.floating.current) != null && _refs$floating$curren.contains(target) || (_refs$domReference$cu2 = refs.domReference.current) != null && _refs$domReference$cu2.contains(target)) {
-            return;
-          }
-          blockFocusRef.current = false;
-          onOpenChange(false);
-        });
-      }
-    }
-  };
-};
-const getMiddleware = ({ arrowRef, placement }) => {
-  const middleware = [];
-  middleware.push(offset(8));
-  middleware.push(placement === "auto" ? autoPlacement() : flip());
-  middleware.push(shift({ padding: 8 }));
-  if (arrowRef.current) {
-    middleware.push(arrow({ element: arrowRef.current }));
-  }
-  return middleware;
-};
-const getPlacement = ({ placement }) => {
-  return placement === "auto" ? void 0 : placement;
-};
-const getArrowPlacement = ({ placement }) => {
-  return {
-    top: "bottom",
-    right: "left",
-    bottom: "top",
-    left: "right"
-  }[placement.split("-")[0]];
-};
-const Floating = ({ children, content, theme: theme2, animation = "duration-300", arrow: arrow2 = true, placement = "top", style = "dark", trigger = "hover", closeRequestKey, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const arrowRef = react.exports.useRef(null);
-  const [open, setOpen] = react.exports.useState(false);
-  const floatingTooltip = useFloating({
-    middleware: getMiddleware({ arrowRef, placement }),
-    onOpenChange: setOpen,
-    open,
-    placement: getPlacement({ placement })
-  });
-  const { context, floating, middlewareData: { arrow: { x: arrowX, y: arrowY } = {} }, reference, refs, strategy, update, x: x2, y: y2 } = floatingTooltip;
-  const { getFloatingProps, getReferenceProps } = useInteractions([
-    useClick(context, { enabled: trigger === "click" }),
-    useFocus(context),
-    useHover(context, { enabled: trigger === "hover" }),
-    useRole(context, { role: "tooltip" })
-  ]);
-  react.exports.useEffect(() => {
-    if (refs.reference.current && refs.floating.current && open) {
-      return autoUpdate(refs.reference.current, refs.floating.current, update);
-    }
-  }, [open, refs.floating, refs.reference, update]);
-  react.exports.useEffect(() => {
-    if (closeRequestKey !== void 0)
-      setOpen(false);
-  }, [closeRequestKey]);
-  return jsxs(Fragment, { children: [jsx("div", { className: theme2.target, ...getReferenceProps({ ref: reference }), "data-testid": "flowbite-tooltip-target", children }), jsxs("div", { "data-testid": "flowbite-tooltip", ...getFloatingProps({
-    className: classNames(theme2.base, animation && `${theme2.animation} ${animation}`, !open && theme2.hidden, theme2.style[style]),
-    ref: floating,
-    style: {
-      position: strategy,
-      top: y2 != null ? y2 : " ",
-      left: x2 != null ? x2 : " "
-    },
-    ...theirProps
-  }), children: [jsx("div", { className: theme2.content, children: content }), arrow2 && jsx("div", { className: classNames(theme2.arrow.base, {
-    [theme2.arrow.style.dark]: style === "dark",
-    [theme2.arrow.style.light]: style === "light",
-    [theme2.arrow.style.auto]: style === "auto"
-  }), "data-testid": "flowbite-tooltip-arrow", ref: arrowRef, style: {
-    top: arrowY != null ? arrowY : " ",
-    left: arrowX != null ? arrowX : " ",
-    right: " ",
-    bottom: " ",
-    [getArrowPlacement({ placement: floatingTooltip.placement })]: theme2.arrow.placement
-  }, children: "\xA0" })] })] });
-};
-const DropdownDivider = () => {
-  const theme2 = useTheme().theme.dropdown.floating.divider;
-  return jsx("div", { className: theme2 });
-};
-const DropdownHeader = ({ children, ...props }) => {
-  const theme2 = useTheme().theme.dropdown.floating.header;
-  const theirProps = excludeClassName(props);
-  return jsxs(Fragment, { children: [jsx("div", { className: theme2, ...theirProps, children }), jsx(DropdownDivider, {})] });
-};
-const DropdownItem = ({ children, onClick, icon: Icon }) => {
-  const theme2 = useTheme().theme.dropdown.floating.item;
-  return jsxs("li", { className: theme2.base, onClick, children: [Icon && jsx(Icon, { className: theme2.icon }), children] });
-};
-const icons = {
-  top: HiOutlineChevronUp,
-  right: HiOutlineChevronRight,
-  bottom: HiOutlineChevronDown,
-  left: HiOutlineChevronLeft
-};
-const DropdownComponent = ({ children, ...props }) => {
-  const theme2 = useTheme().theme.dropdown;
-  const theirProps = excludeClassName(props);
-  const { placement = props.inline ? "bottom-start" : "bottom", trigger = "click", label, inline, floatingArrow = false, arrowIcon = true, ...buttonProps } = theirProps;
-  const Icon = react.exports.useMemo(() => {
-    var _a2;
-    const [p2] = placement.split("-");
-    return (_a2 = icons[p2]) != null ? _a2 : HiOutlineChevronDown;
-  }, [placement]);
-  const [closeRequestKey, setCloseRequestKey] = react.exports.useState(void 0);
-  const attachCloseListener = (node) => {
-    if (!React.isValidElement(node))
-      return node;
-    if (node.type === DropdownItem)
-      return React.cloneElement(node, {
-        onClick: () => {
-          var _a2, _b;
-          (_b = (_a2 = node.props).onClick) == null ? void 0 : _b.call(_a2);
-          setCloseRequestKey(uuid());
-        }
-      });
-    if (node.props.children && typeof node.props.children === "object") {
-      return React.cloneElement(node, { children: react.exports.Children.map(node.props.children, attachCloseListener) });
-    }
-    return node;
-  };
-  const content = react.exports.useMemo(() => jsx("ul", { className: theme2.content, children: react.exports.Children.map(children, attachCloseListener) }), [children, theme2]);
-  const TriggerWrapper = ({ children: children2 }) => inline ? jsx("button", { className: theme2.inlineWrapper, children: children2 }) : jsx(Button, { ...buttonProps, children: children2 });
-  return jsx(Floating, { content, style: "auto", animation: "duration-100", placement, arrow: floatingArrow, trigger, theme: theme2.floating, closeRequestKey, children: jsxs(TriggerWrapper, { children: [label, arrowIcon && jsx(Icon, { className: theme2.arrowIcon })] }) });
-};
-DropdownComponent.displayName = "Dropdown";
-DropdownItem.displayName = "Dropdown.Item";
-DropdownHeader.displayName = "Dropdown.Header";
-DropdownDivider.displayName = "Dropdown.Divider";
-Object.assign(DropdownComponent, {
-  Item: DropdownItem,
-  Header: DropdownHeader,
-  Divider: DropdownDivider
-});
-const FooterBrand = ({ alt, children, href, name, src }) => {
-  const theme2 = useTheme().theme.footer.brand;
-  return jsx("div", { children: href ? jsxs("a", { "data-testid": "flowbite-footer-brand", href, className: theme2.base, children: [jsx("img", { alt, src, className: theme2.img }), jsx("span", { "data-testid": "flowbite-footer-brand-span", className: theme2.span, children: name }), children] }) : jsx("img", { alt, "data-testid": "flowbite-footer-brand", src, className: theme2.img }) });
-};
-const FooterCopyright = ({ href, by, year }) => {
-  const theme2 = useTheme().theme.footer.copyright;
-  return jsx("div", { children: jsxs("span", { className: theme2.base, "data-testid": "flowbite-footer-copyright", children: ["\xA9 ", year, href ? jsx("a", { href, className: theme2.href, children: by }) : jsx("span", { "data-testid": "flowbite-footer-copyright-span", className: theme2.span, children: by })] }) });
-};
-const FooterDivider = () => {
-  const theme2 = useTheme().theme.footer.divider;
-  return jsx("hr", { "data-testid": "footer-divider", className: theme2.base });
-};
-const FooterIcon = ({ href, ariaLabel, icon: Icon }) => {
-  const theme2 = useTheme().theme.footer.icon;
-  return jsx("div", { children: href ? jsx("a", { "aria-label": ariaLabel, "data-testid": "flowbite-footer-icon", href, className: theme2.base, children: jsx(Icon, { className: theme2.size }) }) : jsx(Icon, { "data-testid": "flowbite-footer-icon", className: theme2.size }) });
-};
-const FooterLink = ({ children, href }) => {
-  const theme2 = useTheme().theme.footer.groupLink.link;
-  return jsx("li", { className: theme2.base, children: jsx("a", { href, className: theme2.href, children }) });
-};
-const FooterLinkGroup = ({ children, col = false }) => {
-  const theme2 = useTheme().theme.footer.groupLink;
-  return jsx("ul", { "data-testid": "footer-groupLink", className: classNames(theme2.base, col && theme2.col), children });
-};
-const FooterTitle = ({ title }) => {
-  const theme2 = useTheme().theme.footer.title;
-  return jsx("h2", { "data-testid": "flowbite-footer-title", className: theme2.base, children: title });
-};
-const FooterComponent = ({ children, bgDark = false, container = false }) => {
-  const theme2 = useTheme().theme.footer;
-  return jsx("footer", { "data-testid": "flowbite-footer", className: classNames(theme2.base, bgDark && theme2.bgDark, container && theme2.container), children });
-};
-FooterComponent.displayName = "Footer";
-FooterCopyright.displayName = "Footer.Copyright";
-FooterLink.displayName = "Footer.Link";
-FooterBrand.displayName = "Footer.Brand";
-FooterLinkGroup.displayName = "Footer.LinkGroup";
-FooterIcon.displayName = "Footer.Icon";
-FooterTitle.displayName = "Footer.Title";
-FooterDivider.displayName = "Footer.Divider";
-Object.assign(FooterComponent, {
-  Copyright: FooterCopyright,
-  Link: FooterLink,
-  LinkGroup: FooterLinkGroup,
-  Brand: FooterBrand,
-  Icon: FooterIcon,
-  Title: FooterTitle,
-  Divider: FooterDivider
-});
-const Checkbox = react.exports.forwardRef((props, ref) => {
-  const theme2 = useTheme().theme.formControls.checkbox;
-  const theirProps = excludeClassName(props);
-  return jsx("input", { ref, className: theme2.base, type: "checkbox", ...theirProps });
-});
-Checkbox.displayName = "Checkbox";
-const HelperText = ({ value, children, color: color2 = "default", ...props }) => {
-  var _a2;
-  const theme2 = useTheme().theme.formControls.helperText;
-  const theirProps = excludeClassName(props);
-  return jsx("p", { className: classNames(theme2.base, theme2.colors[color2]), ...theirProps, children: (_a2 = value != null ? value : children) != null ? _a2 : "" });
-};
-const FileInput = react.exports.forwardRef(({ sizing = "md", helperText, color: color2 = "gray", ...props }, ref) => {
-  const theme2 = useTheme().theme.formControls.fileInput;
-  const theirProps = excludeClassName(props);
-  return jsxs(Fragment, { children: [jsx("div", { className: theme2.base, children: jsx("div", { className: theme2.field.base, children: jsx("input", { className: classNames(theme2.field.input.base, theme2.field.input.colors[color2], theme2.field.input.sizes[sizing]), ...theirProps, type: "file", ref }) }) }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
-});
-FileInput.displayName = "FileInput";
-const Radio = react.exports.forwardRef((props, ref) => {
-  const theme2 = useTheme().theme.formControls.radio;
-  const theirProps = excludeClassName(props);
-  return jsx("input", { ref, className: theme2.base, type: "radio", ...theirProps });
-});
-Radio.displayName = "Radio";
-const Select = react.exports.forwardRef(({ children, sizing = "md", shadow, helperText, addon, icon: Icon, color: color2 = "gray", ...props }, ref) => {
-  const theme2 = useTheme().theme.formControls.select;
-  const theirProps = excludeClassName(props);
-  return jsxs("div", { className: theme2.base, children: [addon && jsx("span", { className: theme2.addon, children: addon }), jsxs("div", { className: theme2.field.base, children: [Icon && jsx("div", { className: theme2.field.icon.base, children: jsx(Icon, { className: theme2.field.icon.svg }) }), jsx("select", { className: classNames(theme2.field.select.base, theme2.field.select.colors[color2], theme2.field.select.withIcon[Icon ? "on" : "off"], theme2.field.select.withAddon[addon ? "on" : "off"], theme2.field.select.withShadow[shadow ? "on" : "off"], theme2.field.select.sizes[sizing]), ...theirProps, ref, children }), helperText && jsx(HelperText, { color: color2, children: helperText })] })] });
-});
-Select.displayName = "Select";
-const Textarea = react.exports.forwardRef(({ shadow, helperText, color: color2 = "gray", ...props }, ref) => {
-  const theme2 = useTheme().theme.formControls.textarea;
-  const theirProps = excludeClassName(props);
-  return jsxs(Fragment, { children: [jsx("textarea", { ref, className: classNames(theme2.base, theme2.colors[color2], theme2.withShadow[shadow ? "on" : "off"]), ...theirProps }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
-});
-Textarea.displayName = "Textarea";
-const TextInput = react.exports.forwardRef(({ sizing = "md", shadow, helperText, addon, icon: Icon, color: color2 = "gray", ...props }, ref) => {
-  const theme2 = useTheme().theme.formControls.textInput;
-  const theirProps = excludeClassName(props);
-  return jsxs(Fragment, { children: [jsxs("div", { className: theme2.base, children: [addon && jsx("span", { className: theme2.addon, children: addon }), jsxs("div", { className: theme2.field.base, children: [Icon && jsx("div", { className: theme2.field.icon.base, children: jsx(Icon, { className: theme2.field.icon.svg }) }), jsx("input", { className: classNames(theme2.field.input.base, theme2.field.input.colors[color2], theme2.field.input.withIcon[Icon ? "on" : "off"], theme2.field.input.withAddon[addon ? "on" : "off"], theme2.field.input.withShadow[shadow ? "on" : "off"], theme2.field.input.sizes[sizing]), ...theirProps, ref })] })] }), helperText && jsx(HelperText, { color: color2, children: helperText })] });
-});
-TextInput.displayName = "TextInput";
-const ListGroupItem = ({ active: isActive, children, href, icon: Icon, onClick, ...props }) => {
-  const isLink = typeof href !== "undefined";
-  const Component = isLink ? "a" : "button";
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.listGroup.item;
-  return jsx("li", { children: jsxs(Component, { className: classNames(theme2.active[isActive ? "on" : "off"], theme2.base, theme2.href[isLink ? "on" : "off"]), href, onClick, type: isLink ? void 0 : "button", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: theme2.icon, "data-testid": "flowbite-list-group-item-icon" }), children] }) });
-};
-const ListGroupComponent = ({ children, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.listGroup.base;
-  return jsx("ul", { className: theme2, ...theirProps, children });
-};
-ListGroupComponent.displayName = "ListGroup";
-ListGroupItem.displayName = "ListGroup.Item";
-Object.assign(ListGroupComponent, { Item: ListGroupItem });
-const ModalContext = react.exports.createContext(void 0);
-function useModalContext() {
-  const context = react.exports.useContext(ModalContext);
-  if (!context) {
-    throw new Error("useModalContext should be used within the ModalContext provider!");
-  }
-  return context;
-}
-const ModalBody = ({ children, ...props }) => {
-  const { popup } = useModalContext();
-  const theme2 = useTheme().theme.modal.body;
-  const theirProps = excludeClassName(props);
-  return jsx("div", { className: classNames(theme2.base, {
-    [theme2.popup]: popup
-  }), ...theirProps, children });
-};
-const ModalFooter = ({ children, ...props }) => {
-  const { popup } = useModalContext();
-  const theme2 = useTheme().theme.modal.footer;
-  const theirProps = excludeClassName(props);
-  return jsx("div", { className: classNames(theme2.base, {
-    [theme2.popup]: !popup
-  }), ...theirProps, children });
-};
-const ModalHeader = ({ children, ...props }) => {
-  const { popup, onClose } = useModalContext();
-  const theme2 = useTheme().theme.modal.header;
-  const theirProps = excludeClassName(props);
-  return jsxs("div", { className: classNames(theme2.base, {
-    [theme2.popup]: popup
-  }), ...theirProps, children: [jsx("h3", { className: theme2.title, children }), jsx("button", { "aria-label": "Close", className: theme2.close.base, type: "button", onClick: onClose, children: jsx(HiOutlineX, { "aria-hidden": true, className: theme2.close.icon }) })] });
-};
-const ModalComponent = ({ children, show, root: root2, popup, size = "2xl", position = "center", onClose, ...props }) => {
-  const [parent, setParent] = react.exports.useState(root2);
-  const [container, setContainer] = react.exports.useState();
-  const theme2 = useTheme().theme.modal;
-  const theirProps = excludeClassName(props);
-  react.exports.useEffect(() => {
-    if (!parent)
-      setParent(document.body);
-    if (!container)
-      setContainer(document.createElement("div"));
-  }, []);
-  react.exports.useEffect(() => {
-    if (!container || !parent || !show) {
-      return;
-    }
-    parent.appendChild(container);
-    return () => {
-      if (container) {
-        parent.removeChild(container);
-      }
-    };
-  }, [container, parent, show]);
-  return container ? reactDom.exports.createPortal(jsx(ModalContext.Provider, { value: { popup, onClose }, children: jsx("div", { "aria-hidden": !show, className: classNames(theme2.base, theme2.positions[position], show ? theme2.show.on : theme2.show.off), "data-testid": "modal", role: "dialog", ...theirProps, children: jsx("div", { className: classNames(theme2.content.base, theme2.sizes[size]), children: jsx("div", { className: theme2.content.inner, children }) }) }) }), container) : null;
-};
-ModalComponent.displayName = "Modal";
-ModalHeader.displayName = "Modal.Header";
-ModalBody.displayName = "Modal.Body";
-ModalFooter.displayName = "Modal.Footer";
-Object.assign(ModalComponent, { Header: ModalHeader, Body: ModalBody, Footer: ModalFooter });
-const NavbarBrand = ({ children, href, ...props }) => {
-  const theme2 = useTheme().theme.navbar;
-  const theirProps = excludeClassName(props);
-  return jsx("a", { href, className: theme2.brand, ...theirProps, children });
-};
-const NavbarContext = react.exports.createContext(void 0);
-function useNavbarContext() {
-  const context = react.exports.useContext(NavbarContext);
-  if (!context) {
-    throw new Error("useNavBarContext should be used within the NavbarContext provider!");
-  }
-  return context;
-}
-const NavbarCollapse = ({ children, ...props }) => {
-  const { isOpen } = useNavbarContext();
-  const theme2 = useTheme().theme.navbar.collapse;
-  const theirProps = excludeClassName(props);
-  return jsx("div", { className: classNames(theme2.base, theme2.hidden[!isOpen ? "on" : "off"]), "data-testid": "flowbite-navbar-collapse", ...theirProps, children: jsx("ul", { className: theme2.list, children }) });
-};
-const NavbarLink = ({ active, disabled, href, children, ...props }) => {
-  const theme2 = useTheme().theme.navbar.link;
-  const theirProps = excludeClassName(props);
-  return jsx("li", { children: jsx("a", { href, className: classNames(theme2.base, {
-    [theme2.active.on]: active,
-    [theme2.active.off]: !active && !disabled
-  }, theme2.disabled[disabled ? "on" : "off"]), ...theirProps, children }) });
-};
-function GoThreeBars(props) {
-  return GenIcon({ "tag": "svg", "attr": { "viewBox": "0 0 12 16" }, "child": [{ "tag": "path", "attr": { "fillRule": "evenodd", "d": "M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z" } }] })(props);
-}
-const NavbarToggle = ({ barIcon: BarIcon = GoThreeBars, ...props }) => {
-  const { isOpen, setIsOpen } = useNavbarContext();
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-  const theme2 = useTheme().theme.navbar.toggle;
-  const theirProps = excludeClassName(props);
-  return jsxs("button", { className: theme2.base, "data-testid": "flowbite-navbar-toggle", onClick: handleClick, ...theirProps, children: [jsx("span", { className: "sr-only", children: "Open main menu" }), jsx(BarIcon, { className: theme2.icon })] });
-};
-const NavbarComponent = ({ children, menuOpen, fluid = false, rounded, border, ...props }) => {
-  const [isOpen, setIsOpen] = react.exports.useState(menuOpen);
-  const theme2 = useTheme().theme.navbar;
-  const theirProps = excludeClassName(props);
-  return jsx(NavbarContext.Provider, { value: { isOpen, setIsOpen }, children: jsx("nav", { className: classNames(theme2.base, theme2.bordered[border ? "on" : "off"], theme2.rounded[rounded ? "on" : "off"]), ...theirProps, children: jsx("div", { className: classNames(theme2.inner.base, theme2.inner.fluid[fluid ? "on" : "off"]), children }) }) });
-};
-NavbarComponent.displayName = "Navbar";
-NavbarBrand.displayName = "Navbar.Brand";
-NavbarCollapse.displayName = "Navbar.Collapse";
-NavbarLink.displayName = "Navbar.Link";
-NavbarToggle.displayName = "Navbar.Toggle";
-Object.assign(NavbarComponent, {
-  Brand: NavbarBrand,
-  Collapse: NavbarCollapse,
-  Link: NavbarLink,
-  Toggle: NavbarToggle
-});
-const RatingAdvanced = ({ percentFilled = 0, children, ...props }) => {
-  const theme2 = useTheme().theme.rating.advanced;
-  const theirProps = excludeClassName(props);
-  return jsxs("div", { className: theme2.base, ...theirProps, children: [jsx("span", { className: theme2.label, children }), jsx("div", { className: theme2.progress.base, children: jsx("div", { className: theme2.progress.fill, "data-testid": "flowbite-rating-fill", style: { width: `${percentFilled}%` } }) }), jsx("span", { className: theme2.progress.label, children: `${percentFilled}%` })] });
-};
-const RatingContext = react.exports.createContext(void 0);
-function useRatingContext() {
-  const context = react.exports.useContext(RatingContext);
-  if (!context) {
-    throw new Error("useRatingContext should be used within the RatingContext provider!");
-  }
-  return context;
-}
-const RatingStar = ({ filled = true, starIcon: Icon = HiStar }) => {
-  const { size = "sm" } = useRatingContext();
-  const theme2 = useTheme().theme.rating.star;
-  return jsx(Icon, { className: classNames(theme2.sizes[size], theme2[filled ? "filled" : "empty"]), "data-testid": "flowbite-rating-star" });
-};
-const RatingComponent = ({ children, size = "sm", ...props }) => {
-  const theme2 = useTheme().theme.rating;
-  const theirProps = excludeClassName(props);
-  return jsx(RatingContext.Provider, { value: { size }, children: jsx("div", { className: theme2.base, ...theirProps, children }) });
-};
-RatingComponent.displayName = "Rating";
-RatingStar.displayName = "Rating.Star";
-RatingAdvanced.displayName = "Rating.Advanced";
-Object.assign(RatingComponent, {
-  Star: RatingStar,
-  Advanced: RatingAdvanced
-});
-const Tooltip = ({ animation = "duration-300", arrow: arrow2 = true, children, content, placement = "top", style = "dark", trigger = "hover", ...props }) => {
-  const theme2 = useTheme().theme.tooltip;
-  const theirProps = excludeClassName(props);
-  return jsx(Floating, { content, style, animation, placement, arrow: arrow2, trigger, theme: theme2, ...theirProps, children });
-};
-const SidebarContext = react.exports.createContext(void 0);
-function useSidebarContext() {
-  const context = react.exports.useContext(SidebarContext);
-  if (!context) {
-    throw new Error("useSidebarContext should be used within the SidebarContext provider!");
-  }
-  return context;
-}
-const SidebarItemContext = react.exports.createContext(void 0);
-function useSidebarItemContext() {
-  const context = react.exports.useContext(SidebarItemContext);
-  if (!context) {
-    throw new Error("useSidebarItemContext should be used within the SidebarItemContext provider!");
-  }
-  return context;
-}
-const SidebarCollapse = ({ children, icon: Icon, label, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const id2 = react.exports.useId();
-  const { isCollapsed } = useSidebarContext();
-  const [isOpen, setOpen] = react.exports.useState(false);
-  const theme2 = useTheme().theme.sidebar.collapse;
-  const Wrapper = ({ children: children2 }) => jsx("li", { children: isCollapsed ? jsx(Tooltip, { content: label, placement: "right", children: children2 }) : children2 });
-  return jsxs(Wrapper, { children: [jsxs("button", { className: theme2.button, id: `flowbite-sidebar-collapse-${id2}`, onClick: () => setOpen(!isOpen), type: "button", ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: classNames(theme2.icon.base, theme2.icon.open[isOpen ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), isCollapsed ? jsx("span", { className: "sr-only", children: label }) : jsxs(Fragment, { children: [jsx("span", { className: theme2.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: label }), jsx(HiChevronDown, { "aria-hidden": true, className: theme2.label.icon })] })] }), jsx("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${id2}`, className: theme2.list, hidden: !isOpen, children: jsx(SidebarItemContext.Provider, { value: { isInsideCollapse: true }, children }) })] });
-};
-SidebarCollapse.displayName = "Sidebar.Collapse";
-const SidebarCTA = ({ children, color: color2 = "info", ...props }) => {
-  const theirProps = excludeClassName(props);
-  const { isCollapsed } = useSidebarContext();
-  const theme2 = useTheme().theme.sidebar.cta;
-  return jsx("div", { className: classNames(theme2.base, theme2.color[color2]), "data-testid": "sidebar-cta", hidden: isCollapsed, ...theirProps, children });
-};
-SidebarCTA.displayName = "Sidebar.CTA";
-const SidebarItem = ({ as: Component = "a", children, icon: Icon, active: isActive, label, labelColor = "info", ...props }) => {
-  var _a2;
-  const theirProps = excludeClassName(props);
-  const id2 = react.exports.useId();
-  const { isCollapsed } = useSidebarContext();
-  const { isInsideCollapse } = useSidebarItemContext();
-  const theme2 = useTheme().theme.sidebar.item;
-  const ListItem = ({ children: wrapperChildren }) => jsx("li", { children: isCollapsed ? jsx(Tooltip, { content: jsx(TooltipContent, { children }), placement: "right", children: wrapperChildren }) : wrapperChildren });
-  const TooltipContent = ({ children: children2 }) => jsx(Children, { children: children2 });
-  const Children = ({ children: children2 }) => jsx("span", { className: classNames(theme2.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${id2}`, children: children2 });
-  return jsx(ListItem, { children: jsxs(Component, { "aria-labelledby": `flowbite-sidebar-item-${id2}`, className: classNames(theme2.base, isActive && theme2.active, !isCollapsed && isInsideCollapse && theme2.collapsed.insideCollapse), ...theirProps, children: [Icon && jsx(Icon, { "aria-hidden": true, className: classNames(theme2.icon.base, isActive && theme2.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), isCollapsed && !Icon && jsx("span", { className: theme2.collapsed.noIcon, children: (_a2 = children.charAt(0).toLocaleUpperCase()) != null ? _a2 : "?" }), !isCollapsed && jsx(Children, { children }), !isCollapsed && label && jsx(Badge, { color: labelColor, "data-testid": "flowbite-sidebar-label", hidden: isCollapsed, children: label })] }) });
-};
-SidebarItem.displayName = "Sidebar.Item";
-const SidebarItemGroup = ({ children, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.sidebar.itemGroup;
-  return jsx("ul", { className: theme2, "data-testid": "flowbite-sidebar-item-group", ...theirProps, children: jsx(SidebarItemContext.Provider, { value: { isInsideCollapse: false }, children }) });
-};
-SidebarItemGroup.displayName = "Sidebar.ItemGroup";
-const SidebarItems = ({ children, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.sidebar.items;
-  return jsx("div", { className: theme2, "data-testid": "flowbite-sidebar-items", ...theirProps, children });
-};
-SidebarItems.displayName = "Sidebar.Items";
-const SidebarLogo = ({ children, href, img, imgAlt = "", ...props }) => {
-  const theirProps = excludeClassName(props);
-  const id2 = react.exports.useId();
-  const { isCollapsed } = useSidebarContext();
-  const theme2 = useTheme().theme.sidebar.logo;
-  return jsxs("a", { "aria-labelledby": `flowbite-sidebar-logo-${id2}`, className: theme2.base, href, ...theirProps, children: [jsx("img", { alt: imgAlt, className: theme2.img, src: img }), jsx("span", { className: theme2.collapsed[isCollapsed ? "on" : "off"], id: `flowbite-sidebar-logo-${id2}`, children })] });
-};
-SidebarLogo.displayName = "Sidebar.Logo";
-const SidebarComponent = ({ children, collapseBehavior = "collapse", collapsed: isCollapsed = false, ...props }) => {
-  const theirProps = excludeClassName(props);
-  const theme2 = useTheme().theme.sidebar;
-  return jsx(SidebarContext.Provider, { value: { isCollapsed }, children: jsx("aside", { "aria-label": "Sidebar", className: classNames(theme2.base, theme2.collapsed[isCollapsed ? "on" : "off"]), hidden: isCollapsed && collapseBehavior === "hide", ...theirProps, children: jsx("div", { className: theme2.inner, children }) }) });
-};
-SidebarComponent.displayName = "Sidebar";
-Object.assign(SidebarComponent, {
-  Collapse: SidebarCollapse,
-  CTA: SidebarCTA,
-  Item: SidebarItem,
-  Items: SidebarItems,
-  ItemGroup: SidebarItemGroup,
-  Logo: SidebarLogo
-});
-const TableBody = ({ children, ...props }) => {
-  return jsx("tbody", { ...props, children });
-};
-const TableCell = ({ children, className, ...props }) => {
-  return jsx("td", { className: classNames("px-6 py-4", className), ...props, children });
-};
-const TableContext = react.exports.createContext(void 0);
-function useTableContext() {
-  const context = react.exports.useContext(TableContext);
-  if (!context) {
-    throw new Error("useTableContext should be used within the TableContext provider!");
-  }
-  return context;
-}
-const TableHead = ({ children, className, ...props }) => {
-  return jsx("thead", { className: classNames("bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400", className), ...props, children: jsx("tr", { children }) });
-};
-const TableHeadCell = ({ children, className, ...props }) => {
-  return jsx("th", { className: classNames("px-6 py-3", className), ...props, children });
-};
-const TableRow = ({ children, className, ...props }) => {
-  const { striped, hoverable } = useTableContext();
-  return jsx("tr", { "data-testid": "table-row-element", className: classNames({
-    "odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700": striped,
-    "hover:bg-gray-50 dark:hover:bg-gray-600": hoverable
-  }, className), ...props, children });
-};
-const TableComponent = ({ children, striped, hoverable, className, ...props }) => {
-  return jsx("div", { "data-testid": "table-element", className: "relative overflow-x-auto shadow-md sm:rounded-lg", children: jsx(TableContext.Provider, { value: { striped, hoverable }, children: jsx("table", { className: classNames("w-full text-left text-sm text-gray-500 dark:text-gray-400", className), ...props, children }) }) });
-};
-TableComponent.displayName = "Table";
-TableHead.displayName = "Table.Head";
-TableBody.displayName = "Table.Body";
-TableRow.displayName = "Table.Row";
-TableCell.displayName = "Table.Cell";
-TableHeadCell.displayName = "Table.HeadCell";
-Object.assign(TableComponent, {
-  Head: TableHead,
-  Body: TableBody,
-  Row: TableRow,
-  Cell: TableCell,
-  HeadCell: TableHeadCell
-});
-const TimelineBody = ({ children, className, ...props }) => {
-  return jsx("p", { className: classNames("mb-4 text-base font-normal text-gray-500 dark:text-gray-400", className), ...props, children });
-};
-const TimelineContext = react.exports.createContext(void 0);
-function useTimelineContext() {
-  const context = react.exports.useContext(TimelineContext);
-  if (!context) {
-    throw new Error("useTimelineContext should be used within the TimelineContext providor!");
-  }
-  return context;
-}
-const TimelineContent = ({ children, className, ...props }) => {
-  const { horizontal } = useTimelineContext();
-  return jsx("div", { "data-testid": "timeline-content", className: classNames({ "mt-3 sm:pr-8": horizontal }, className), ...props, children });
-};
-const TimelineItem = ({ children, className, ...props }) => {
-  const { horizontal } = useTimelineContext();
-  return jsx("li", { "data-testid": "timeline-item", className: classNames({ "mb-10 ml-6": !horizontal, "relative mb-6 sm:mb-0": horizontal }, className), ...props, children });
-};
-const TimelinePoint = ({ children, className, icon: Icon, ...props }) => {
-  const { horizontal } = useTimelineContext();
-  return jsxs("div", { "data-testid": "timeline-point", className: classNames({ "flex items-center": horizontal }, className), ...props, children: [children, Icon ? jsx("span", { className: "absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-200 ring-8 ring-white dark:bg-blue-900 dark:ring-gray-900", children: jsx(Icon, { "aria-hidden": true, className: "h-3 w-3 text-blue-600 dark:text-blue-300" }) }) : jsx("div", { className: "absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-gray-200 dark:border-gray-900 dark:bg-gray-700" }), horizontal ? jsx("div", { className: "hidden h-0.5 w-full bg-gray-200 dark:bg-gray-700 sm:flex" }) : ""] });
-};
-const TimelineTime = ({ children, className, ...props }) => {
-  return jsx("time", { className: classNames("mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500", className), ...props, children });
-};
-const TimelineTitle = ({ children, className, as = "h3", ...props }) => {
-  const Tag = as;
-  return jsx(Tag, { className: classNames("text-lg font-semibold text-gray-900 dark:text-white", className), ...props, children });
-};
-const TimelineComponent = ({ children, horizontal }) => {
-  return jsx(TimelineContext.Provider, { value: { horizontal }, children: jsx("ol", { "data-testid": "timeline-component", className: classNames({
-    "relative border-l border-gray-200 dark:border-gray-700": !horizontal,
-    "items-center sm:flex": horizontal
-  }), children }) });
-};
-TimelineComponent.displayName = "Timeline";
-TimelineItem.displayName = "Timeline.Item";
-TimelinePoint.displayName = "Timeline.Point";
-TimelineContent.displayName = "Timeline.Content";
-TimelineTime.displayName = "Timeline.Time";
-TimelineTitle.displayName = "Timeline.Title";
-TimelineBody.displayName = "Timeline.Body";
-Object.assign(TimelineComponent, {
-  Item: TimelineItem,
-  Point: TimelinePoint,
-  Content: TimelineContent,
-  Time: TimelineTime,
-  Title: TimelineTitle,
-  Body: TimelineBody
-});
-const ToastContext = react.exports.createContext(void 0);
-function useToastContext() {
-  const context = react.exports.useContext(ToastContext);
-  if (!context) {
-    throw new Error("useToastContext should be used within the ToastContext provider!");
-  }
-  return context;
-}
-const ToastToggle = ({ xIcon: XIcon = HiX }) => {
-  const { duration, isClosed, isRemoved, setIsClosed, setIsRemoved } = useToastContext();
-  const theme2 = useTheme().theme.toast.toggle;
-  const handleClick = () => {
-    setIsClosed(!isClosed);
-    setTimeout(() => setIsRemoved(!isRemoved), duration);
-  };
-  return jsx("button", { "aria-label": "Close", onClick: handleClick, type: "button", className: theme2.base, children: jsx(XIcon, { className: theme2.icon }) });
-};
-const durationClasses = {
-  75: "duration-75",
-  100: "duration-100",
-  150: "duration-150",
-  200: "duration-200",
-  300: "duration-300",
-  500: "duration-500",
-  700: "duration-700",
-  1e3: "duration-1000"
-};
-const ToastComponent = ({ children, duration = 300, ...props }) => {
-  const [isClosed, setIsClosed] = react.exports.useState(false);
-  const [isRemoved, setIsRemoved] = react.exports.useState(false);
-  const theme2 = useTheme().theme.toast;
-  const theirProps = excludeClassName(props);
-  return jsx(ToastContext.Provider, { value: { duration, isClosed, isRemoved, setIsClosed, setIsRemoved }, children: jsx("div", { "data-testid": "flowbite-toast", className: classNames(theme2.base, durationClasses[duration], { [theme2.closed]: isClosed }, { [theme2.removed]: isRemoved }), ...theirProps, children }) });
-};
-ToastComponent.displayName = "Toast";
-ToastToggle.displayName = "Toast.Toggle";
-Object.assign(ToastComponent, {
-  Toggle: ToastToggle
-});
 function ascending(a2, b2) {
   return a2 == null || b2 == null ? NaN : a2 < b2 ? -1 : a2 > b2 ? 1 : a2 >= b2 ? 0 : NaN;
 }
@@ -68051,23 +68051,23 @@ function isWebSocket(val) {
 }
 export {
   getMainDefinition as $,
-  createColumnHelper as A,
+  ArrowLongRightIcon$3 as A,
   ArrowsUpDownIcon$1 as B,
   ChevronDownIcon$1 as C,
-  DateTime as D,
-  Link as E,
+  CogIcon$1 as D,
+  DateTime as E,
   Fragment as F,
-  ChevronUpIcon$1 as G,
-  ArrowDownIcon$1 as H,
-  ArrowLongLeftIcon$1 as I,
-  DocumentDuplicateIcon$1 as J,
-  ArrowLongRightIcon$1 as K,
+  Link as G,
+  ChevronUpIcon$1 as H,
+  InformationCircleIcon$1 as I,
+  ArrowDownIcon$1 as J,
+  ArrowLongLeftIcon$1 as K,
   Lo as L,
   MagnifyingGlassIcon$1 as M,
-  InformationCircleIcon$1 as N,
+  DocumentDuplicateIcon$1 as N,
   Oe$2 as O,
   linear as P,
-  ArrowLongRightIcon$3 as Q,
+  ArrowLongRightIcon$1 as Q,
   React as R,
   Slider as S,
   Tooltip as T,
@@ -68100,16 +68100,16 @@ export {
   getSortedRowModel as l,
   motion as m,
   jsx as n,
-  jsxs as o,
+  useQuery as o,
   pt as p,
   qe as q,
   react as r,
-  useQuery as s,
-  useSubscription as t,
+  useSubscription as s,
+  dist$2 as t,
   useAnimationControls as u,
-  dist$2 as v,
-  useMutation as w,
-  CogIcon$1 as x,
-  CheckCircleIcon$1 as y,
-  LockClosedIcon$1 as z
+  useMutation as v,
+  jsxs as w,
+  CheckCircleIcon$1 as x,
+  LockClosedIcon$1 as y,
+  createColumnHelper as z
 };

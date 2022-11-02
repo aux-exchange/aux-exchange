@@ -2394,11 +2394,15 @@ video {
   --tw-text-opacity: 1;
   color: rgb(203 213 225 / var(--tw-text-opacity));
 }
+.text-green-300 {
+  color: var(--green-300);
+}
 .text-red-300 {
   color: var(--red-300);
 }
-.text-green-300 {
-  color: var(--green-300);
+.text-orange-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 186 116 / var(--tw-text-opacity));
 }
 .underline {
   text-decoration-line: underline;

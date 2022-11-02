@@ -25,7 +25,7 @@ const brand = createPalletteValues('accent', colors.sky)
 const font = 'Lato'
 const linkEl = document.createElement('link')
 linkEl.setAttribute('rel', 'stylesheet')
-linkEl.setAttribute('href', `https://fonts.googleapis.com/css?family=${font}`)
+linkEl.setAttribute('href', `https://fonts.googleapis.com/css?family=${font}:wght@100;300;400;700;900`)
 document.head.appendChild(linkEl)
 document.title = "AUX"
 
