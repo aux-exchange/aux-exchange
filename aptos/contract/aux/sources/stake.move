@@ -13,6 +13,7 @@ module aux::stake {
     const E_INCENTIVE_NOT_FOUND: u64 = 1;
     const E_INTERNAL_ERROR: u64 = 2;
     const E_TEST_FAILURE: u64 = 3;
+    const E_UNIMPLEMENTED: u64 = 3;
 
     /*************/
     /* CONSTANTS */
@@ -134,13 +135,24 @@ module aux::stake {
     ///         - if new sender, create new position
     ///         - merge staked
     ///         - update total_staked
-    fun stake<S, R>(sender: &signer, amount: u64) acquires Incentive {
+    public fun stake<S, R>(sender: &signer, amount: u64) acquires Incentive {
+        assert!(exists<Incentive<S, R>>(@aux), E_INCENTIVE_NOT_FOUND);
         let incentive = borrow_global_mut<Incentive<S, R>>(@aux);
         let stake = coin::withdraw<S>(sender, amount);
-        // coin::merge(&mut incentive.stake, stake);
-        // incentive.total_staked = incentive.total_staked + amount;
         update_reward(incentive, true, signer::address_of(sender), stake);
         std::debug::print<u64>(&3);
+    }
+
+    /// - On claim:
+    ///     - For sender's reward position:
+    ///         - update reward
+    ///         - transfer unlocked reward of reward coin to sender
+    ///         - set unlocked reward to 0
+    ///         - update next_unlock_time
+    public fun claim<S, R>(_sender: &signer, _amount: u64) acquires Incentive {
+        assert!(exists<Incentive<S, R>>(@aux), E_INCENTIVE_NOT_FOUND);
+        let _incentive = borrow_global_mut<Incentive<S, R>>(@aux);
+        abort(E_UNIMPLEMENTED)
     }
 
     // struct StakingVault<phantom StakeCoin, phantom RewardCoin> {
