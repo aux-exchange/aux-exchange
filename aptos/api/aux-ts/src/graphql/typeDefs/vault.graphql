@@ -4,8 +4,8 @@ type Wallet {
 
 type Balance {
   coinInfo: CoinInfo!
-  balance: Float!
-  availableBalance: Float!
+  balance: String!
+  availableBalance: String!
 }
 
 type Deposit {

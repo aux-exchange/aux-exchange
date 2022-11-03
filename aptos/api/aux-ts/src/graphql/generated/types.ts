@@ -75,8 +75,8 @@ export type AddLiquidityInput = {
 
 export type Balance = {
   __typename?: 'Balance';
-  availableBalance: Scalars['Float'];
-  balance: Scalars['Float'];
+  availableBalance: Scalars['String'];
+  balance: Scalars['String'];
   coinInfo: CoinInfo;
 };
 
@@ -947,8 +947,8 @@ export interface AddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
 }
 
 export type BalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Balance'] = ResolversParentTypes['Balance']> = {
-  availableBalance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  availableBalance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
