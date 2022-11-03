@@ -126,7 +126,7 @@ pub async fn submit_transaction_with_much_gas(
     let tx = human_account.sign_with_transaction_builder(
         TransactionFactory::new(get_chain_id(rest_client).await)
             .payload(payload)
-            .max_gas_amount(100_000)
+            .max_gas_amount(500_000)
             .gas_unit_price(get_gas_estimate(rest_client).await),
     );
 
