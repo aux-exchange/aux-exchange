@@ -44,7 +44,7 @@ import "./__commonjsHelpers__.4516dc8a.js";
 const tailwind = "";
 const App$1 = "";
 const index$1 = "";
-var rt = { exports: {} }, Pe = {};
+var nt = { exports: {} }, Me = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -54,11 +54,11 @@ var rt = { exports: {} }, Pe = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var ar;
-function ta() {
-  if (ar)
-    return Pe;
-  ar = 1;
+var sr;
+function ra() {
+  if (sr)
+    return Me;
+  sr = 1;
   var e2 = React, t2 = Symbol.for("react.element"), n2 = Symbol.for("react.fragment"), r = Object.prototype.hasOwnProperty, o2 = e2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, i2 = { key: true, ref: true, __self: true, __source: true };
   function s2(c, l, u) {
     var g, h = {}, f = null, m = null;
@@ -70,13 +70,13 @@ function ta() {
         h[g] === void 0 && (h[g] = l[g]);
     return { $$typeof: t2, type: c, key: f, ref: m, props: h, _owner: o2.current };
   }
-  return Pe.Fragment = n2, Pe.jsx = s2, Pe.jsxs = s2, Pe;
+  return Me.Fragment = n2, Me.jsx = s2, Me.jsxs = s2, Me;
 }
 (function(e2) {
-  e2.exports = ta();
-})(rt);
-const J = rt.exports.Fragment, a = rt.exports.jsx, b = rt.exports.jsxs;
-function na({
+  e2.exports = ra();
+})(nt);
+const J = nt.exports.Fragment, a = nt.exports.jsx, b = nt.exports.jsxs;
+function oa({
   title: e2,
   titleId: t2,
   ...n2
@@ -100,8 +100,8 @@ function na({
     })]
   });
 }
-const oa = react.exports.forwardRef(na), aa = oa;
-function ia({
+const aa = react.exports.forwardRef(oa), ia = aa;
+function sa({
   title: e2,
   titleId: t2,
   ...n2
@@ -125,60 +125,60 @@ function ia({
     })]
   });
 }
-const sa = react.exports.forwardRef(ia), la = sa;
-function ca({}) {
-  return /* @__PURE__ */ b("div", {
-    role: "status",
-    className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
-    children: [/* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
-    }), /* @__PURE__ */ a("span", {
-      className: "sr-only",
-      children: "Loading..."
-    })]
-  });
-}
-function sr({}) {
-  return /* @__PURE__ */ b("div", {
-    role: "status",
-    className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
-    children: [/* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("div", {
-      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
-    }), /* @__PURE__ */ a("span", {
-      className: "sr-only",
-      children: "Loading..."
-    })]
-  });
-}
+const la = react.exports.forwardRef(sa), ca = la;
 function da({}) {
+  return /* @__PURE__ */ b("div", {
+    role: "status",
+    className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
+    children: [/* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-6 bg-primary-200 rounded-md dark:bg-primary-700"
+    }), /* @__PURE__ */ a("span", {
+      className: "sr-only",
+      children: "Loading..."
+    })]
+  });
+}
+function cr({}) {
+  return /* @__PURE__ */ b("div", {
+    role: "status",
+    className: "flex flex-col gap-2 p-4 w-full h-full animate-pulse overflow-hidden",
+    children: [/* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("div", {
+      className: "h-20 bg-primary-200 rounded-md dark:bg-primary-700 mb-4"
+    }), /* @__PURE__ */ a("span", {
+      className: "sr-only",
+      children: "Loading..."
+    })]
+  });
+}
+function ua({}) {
   return /* @__PURE__ */ b("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-gray-200 shadow animate-pulse md:p-6 dark:border-gray-700",
@@ -208,7 +208,7 @@ function da({}) {
     })]
   });
 }
-function ua({}) {
+function fa({}) {
   return /* @__PURE__ */ b("div", {
     role: "status",
     className: "p-4 max-w-sm rounded border border-primary-200 shadow animate-pulse md:p-6 dark:border-primary-700",
@@ -239,25 +239,25 @@ function ua({}) {
     })]
   });
 }
-function Or({
+function Mr({
   variant: e2
 }) {
   return (() => {
     switch (e2) {
       case "table":
-        return /* @__PURE__ */ a(ca, {});
-      case "list":
-        return /* @__PURE__ */ a(sr, {});
-      case "card":
         return /* @__PURE__ */ a(da, {});
-      case "tv":
+      case "list":
+        return /* @__PURE__ */ a(cr, {});
+      case "card":
         return /* @__PURE__ */ a(ua, {});
+      case "tv":
+        return /* @__PURE__ */ a(fa, {});
       default:
-        return /* @__PURE__ */ a(sr, {});
+        return /* @__PURE__ */ a(cr, {});
     }
   })();
 }
-function fa({
+function ga({
   title: e2,
   titleId: t2,
   ...n2
@@ -283,8 +283,8 @@ function fa({
     })]
   });
 }
-const ga = react.exports.forwardRef(fa), ha = ga;
-function ma({
+const ha = react.exports.forwardRef(ga), ma = ha;
+function pa({
   title: e2,
   titleId: t2,
   ...n2
@@ -310,8 +310,8 @@ function ma({
     })]
   });
 }
-const pa = react.exports.forwardRef(ma), ba = pa;
-function ya({
+const ba = react.exports.forwardRef(pa), ya = ba;
+function va({
   title: e2,
   titleId: t2,
   ...n2
@@ -337,8 +337,8 @@ function ya({
     })]
   });
 }
-const va = react.exports.forwardRef(ya), Pr = va;
-function wa({
+const wa = react.exports.forwardRef(va), Pr = wa;
+function xa({
   title: e2,
   titleId: t2,
   ...n2
@@ -364,8 +364,8 @@ function wa({
     })]
   });
 }
-const xa = react.exports.forwardRef(wa), ka = xa;
-function Ca({
+const Ca = react.exports.forwardRef(xa), ka = Ca;
+function Na({
   title: e2,
   titleId: t2,
   ...n2
@@ -391,8 +391,8 @@ function Ca({
     })]
   });
 }
-const Na = react.exports.forwardRef(Ca), Ea = Na;
-function Ra({
+const Ea = react.exports.forwardRef(Na), Ra = Ea;
+function Ta({
   title: e2,
   titleId: t2,
   ...n2
@@ -418,8 +418,8 @@ function Ra({
     })]
   });
 }
-const Ta = react.exports.forwardRef(Ra), Lr = Ta;
-function Sa({
+const Sa = react.exports.forwardRef(Ta), Lr = Sa;
+function Oa({
   title: e2,
   titleId: t2,
   ...n2
@@ -445,7 +445,7 @@ function Sa({
     })]
   });
 }
-const Oa = react.exports.forwardRef(Sa), Mr = Oa;
+const Ma = react.exports.forwardRef(Oa), Ar = Ma;
 function Pa({
   title: e2,
   titleId: t2,
@@ -473,7 +473,7 @@ function Pa({
   });
 }
 const La = react.exports.forwardRef(Pa), _r = La;
-function Ma({
+function Aa({
   title: e2,
   titleId: t2,
   ...n2
@@ -499,7 +499,7 @@ function Ma({
     })]
   });
 }
-const _a = react.exports.forwardRef(Ma), Ia = _a;
+const _a = react.exports.forwardRef(Aa), Ia = _a;
 function Ir({
   title: e2,
   message: t2,
@@ -522,7 +522,7 @@ function Ir({
       className: "w-10 h-10 text-green-400"
     }) : n2 === "warning" ? /* @__PURE__ */ a(Lr, {
       className: "w-10 h-10 text-orange-400"
-    }) : n2 === "info" ? /* @__PURE__ */ a(Mr, {
+    }) : n2 === "info" ? /* @__PURE__ */ a(Ar, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ b("div", {
       className: "flex flex-col justify-between ml-3 w-full",
@@ -539,7 +539,7 @@ function Ir({
     })]
   });
 }
-const Aa = ({
+const ja = ({
   children: e2,
   className: t2,
   id: n2,
@@ -548,7 +548,7 @@ const Aa = ({
   error: i2,
   onClick: s2
 }) => /* @__PURE__ */ a(J, {
-  children: o2 ? /* @__PURE__ */ a(Or, {
+  children: o2 ? /* @__PURE__ */ a(Mr, {
     variant: "card"
   }) : i2 ? /* @__PURE__ */ a(Ir, {
     title: "Error",
@@ -562,11 +562,11 @@ const Aa = ({
     children: e2
   })
 });
-function ja({
+function Fa({
   summary: e2,
   content: t2
 }) {
-  return /* @__PURE__ */ a(Aa, {
+  return /* @__PURE__ */ a(ja, {
     className: "w-full rounded-2xl",
     padding: 0,
     children: /* @__PURE__ */ a(Oe, {
@@ -575,7 +575,7 @@ function ja({
       }) => /* @__PURE__ */ b(J, {
         children: [/* @__PURE__ */ b(Oe.Button, {
           className: " flex w-full justify-between rounded-lg px-4 py-2 bg-transparent text-left text-sm font-medium text-accent-100 hover:bg-accent-700 focus:outline-none focus-visible:ring focus-visible:ring-accent-500 focus-visible:ring-opacity-75",
-          children: [e2, /* @__PURE__ */ a(aa, {
+          children: [e2, /* @__PURE__ */ a(ia, {
             className: `${n2 ? "" : "rotate-180 transform"} h-5 w-5 text-accent-500`
           })]
         }), /* @__PURE__ */ a(Oe.Panel, {
@@ -585,12 +585,12 @@ function ja({
     })
   });
 }
-function ul(e2) {
-  return /* @__PURE__ */ a(ja, {
+function g0(e2) {
+  return /* @__PURE__ */ a(Fa, {
     ...e2
   });
 }
-function fl({
+function h0({
   children: e2,
   triggerNode: t2
 }) {
@@ -618,7 +618,7 @@ function fl({
     })
   });
 }
-function ke(e2, t2) {
+function Ce(e2, t2) {
   if (Object.is(e2, t2))
     return true;
   if (typeof e2 != "object" || e2 === null || typeof t2 != "object" || t2 === null)
@@ -631,25 +631,25 @@ function ke(e2, t2) {
       return false;
   return true;
 }
-let Ve;
-const Fa = new Uint8Array(16);
+let Ue;
+const Da = new Uint8Array(16);
 function $a() {
-  if (!Ve && (Ve = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Ve))
+  if (!Ue && (Ue = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !Ue))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return Ve(Fa);
+  return Ue(Da);
 }
-const Z = [];
+const Y = [];
 for (let e2 = 0; e2 < 256; ++e2)
-  Z.push((e2 + 256).toString(16).slice(1));
-function Da(e2, t2 = 0) {
-  return (Z[e2[t2 + 0]] + Z[e2[t2 + 1]] + Z[e2[t2 + 2]] + Z[e2[t2 + 3]] + "-" + Z[e2[t2 + 4]] + Z[e2[t2 + 5]] + "-" + Z[e2[t2 + 6]] + Z[e2[t2 + 7]] + "-" + Z[e2[t2 + 8]] + Z[e2[t2 + 9]] + "-" + Z[e2[t2 + 10]] + Z[e2[t2 + 11]] + Z[e2[t2 + 12]] + Z[e2[t2 + 13]] + Z[e2[t2 + 14]] + Z[e2[t2 + 15]]).toLowerCase();
+  Y.push((e2 + 256).toString(16).slice(1));
+function Ba(e2, t2 = 0) {
+  return (Y[e2[t2 + 0]] + Y[e2[t2 + 1]] + Y[e2[t2 + 2]] + Y[e2[t2 + 3]] + "-" + Y[e2[t2 + 4]] + Y[e2[t2 + 5]] + "-" + Y[e2[t2 + 6]] + Y[e2[t2 + 7]] + "-" + Y[e2[t2 + 8]] + Y[e2[t2 + 9]] + "-" + Y[e2[t2 + 10]] + Y[e2[t2 + 11]] + Y[e2[t2 + 12]] + Y[e2[t2 + 13]] + Y[e2[t2 + 14]] + Y[e2[t2 + 15]]).toLowerCase();
 }
-const Ba = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), lr = {
-  randomUUID: Ba
+const Ha = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), dr = {
+  randomUUID: Ha
 };
 function za(e2, t2, n2) {
-  if (lr.randomUUID && !t2 && !e2)
-    return lr.randomUUID();
+  if (dr.randomUUID && !t2 && !e2)
+    return dr.randomUUID();
   e2 = e2 || {};
   const r = e2.random || (e2.rng || $a)();
   if (r[6] = r[6] & 15 | 64, r[8] = r[8] & 63 | 128, t2) {
@@ -658,10 +658,10 @@ function za(e2, t2, n2) {
       t2[n2 + o2] = r[o2];
     return t2;
   }
-  return Da(r);
+  return Ba(r);
 }
 var ie = /* @__PURE__ */ ((e2) => (e2.basic = "basic", e2.error = "error", e2.warning = "warning", e2.info = "info", e2.success = "success", e2))(ie || {});
-const bt = create((e2) => ({
+const yt = create((e2) => ({
   notifications: [],
   addNotification(t2) {
     return e2((n2) => ({
@@ -679,8 +679,8 @@ const bt = create((e2) => ({
     }));
   }
 }));
-function Ha() {
-  const e2 = bt((l) => l.notifications, ke), t2 = bt((l) => l.addNotification, ke), n2 = (l, u) => t2({
+function Ua() {
+  const e2 = yt((l) => l.notifications, Ce), t2 = yt((l) => l.addNotification, Ce), n2 = (l, u) => t2({
     title: u != null ? u : "Success",
     type: "success",
     message: l
@@ -702,7 +702,7 @@ function Ha() {
     message: l
   });
   return {
-    removeNotification: bt((l) => l.removeNotification, ke),
+    removeNotification: yt((l) => l.removeNotification, Ce),
     addNotification: t2,
     notifications: e2,
     addErrorNotification: r,
@@ -712,7 +712,7 @@ function Ha() {
     addBasicNotification: s2
   };
 }
-const Ue = create((e2) => ({
+const Ve = create((e2) => ({
   params: new URLSearchParams(window.location.search),
   setParams: (t2) => e2((n2) => ({
     params: new URLSearchParams(t2)
@@ -751,8 +751,8 @@ const Ue = create((e2) => ({
     };
   })
 }));
-function hl() {
-  const e2 = useNavigate(), t2 = useLocation(), n2 = Ue((s2) => s2.params, ke), r = Ue((s2) => s2.setParams, ke), o2 = Ue((s2) => s2.addParams, ke), i2 = Ue((s2) => s2.removeParams, ke);
+function p0() {
+  const e2 = useNavigate(), t2 = useLocation(), n2 = Ve((s2) => s2.params, Ce), r = Ve((s2) => s2.setParams, Ce), o2 = Ve((s2) => s2.addParams, Ce), i2 = Ve((s2) => s2.removeParams, Ce);
   return react.exports.useEffect(() => {
     const s2 = `${t2.pathname}?${new URLSearchParams(t2.search).toString()}`;
     `${t2.pathname}?${n2.toString()}` !== s2 && e2(`${t2.pathname}?${n2.toString()}`, {
@@ -765,14 +765,14 @@ function hl() {
     removeParams: i2
   };
 }
-function Ar(e2) {
+function jr(e2) {
   var t2, n2, r = "";
   if (typeof e2 == "string" || typeof e2 == "number")
     r += e2;
   else if (typeof e2 == "object")
     if (Array.isArray(e2))
       for (t2 = 0; t2 < e2.length; t2++)
-        e2[t2] && (n2 = Ar(e2[t2])) && (r && (r += " "), r += n2);
+        e2[t2] && (n2 = jr(e2[t2])) && (r && (r += " "), r += n2);
     else
       for (t2 in e2)
         e2[t2] && (r && (r += " "), r += t2);
@@ -780,11 +780,11 @@ function Ar(e2) {
 }
 function Va() {
   for (var e2, t2, n2 = 0, r = ""; n2 < arguments.length; )
-    (e2 = arguments[n2++]) && (t2 = Ar(e2)) && (r && (r += " "), r += t2);
+    (e2 = arguments[n2++]) && (t2 = jr(e2)) && (r && (r += " "), r += t2);
   return r;
 }
-const Ua = (e2) => typeof e2 == "boolean", Wa = (e2) => Ua(e2) ? String(e2) : e2, Ya = (e2, t2) => Object.entries(e2).every(([n2, r]) => t2[n2] === r);
-function Ga(e2) {
+const Za = (e2) => typeof e2 == "boolean", Wa = (e2) => Za(e2) ? String(e2) : e2, Ga = (e2, t2) => Object.entries(e2).every(([n2, r]) => t2[n2] === r);
+function Ya(e2) {
   return (t2, n2) => {
     const r = Object.entries(t2).reduce((c, [l, u]) => u === void 0 ? c : {
       ...c,
@@ -798,11 +798,11 @@ function Ga(e2) {
     }), s2 = e2.compoundVariants.reduce((c, {
       classes: l,
       ...u
-    }) => (Ya(u, o2) && l && c.push(l), c), []);
+    }) => (Ga(u, o2) && l && c.push(l), c), []);
     return Va([e2.base, i2, s2, n2]);
   };
 }
-const Za = Ga({
+const Xa = Ya({
   base: "text-white text-center bg-gradient-to-br from-primary-800 to-primary-900 border-2 rounded-full shadow-md align-middle hover:bg-gray-800 hover:cursor-pointer disabled:cursor-auto disabled:opacity-50",
   variants: {
     variant: {
@@ -824,7 +824,7 @@ const Za = Ga({
   },
   compoundVariants: []
 });
-function cr({
+function ur({
   className: e2,
   children: t2,
   variant: n2,
@@ -832,7 +832,7 @@ function cr({
   onClick: o2,
   disabled: i2
 }) {
-  const s2 = Za({
+  const s2 = Xa({
     size: r,
     variant: n2
   }, e2);
@@ -844,12 +844,12 @@ function cr({
     children: t2
   });
 }
-function ml() {
+function b0() {
   var h;
   const {
     removeNotification: e2,
     notifications: t2
-  } = Ha(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", c = {
+  } = Ua(), n2 = react.exports.useRef(t2[0]), r = useAnimationControls(), [o2, i2] = react.exports.useState(t2[0]), s2 = "flex items-start absolute bottom-8 right-8 bg-primary-800 w-[400px] h-auto p-4 text-cyan-700 z-50 opacity-0 border-l-4", c = {
     [ie.basic]: " border-l-secondary-400",
     [ie.error]: " border-l-red-400",
     [ie.success]: " border-l-green-400",
@@ -903,7 +903,7 @@ function ml() {
       className: "w-10 h-10 text-green-400"
     }) : (o2 == null ? void 0 : o2.type) === ie.warning ? /* @__PURE__ */ a(Lr, {
       className: "w-10 h-10 text-orange-400"
-    }) : (o2 == null ? void 0 : o2.type) === ie.info ? /* @__PURE__ */ a(Mr, {
+    }) : (o2 == null ? void 0 : o2.type) === ie.info ? /* @__PURE__ */ a(Ar, {
       className: "w-10 h-10 text-secondary-400"
     }) : null, /* @__PURE__ */ b("div", {
       className: "flex flex-col ml-3 w-full",
@@ -912,7 +912,7 @@ function ml() {
         children: [/* @__PURE__ */ a("div", {
           className: "mr-auto",
           children: o2 == null ? void 0 : o2.title
-        }), /* @__PURE__ */ a(cr, {
+        }), /* @__PURE__ */ a(ur, {
           size: "xs",
           variant: "basic",
           className: "border-0 bg-none",
@@ -925,14 +925,14 @@ function ml() {
         className: "text-white",
         children: o2 == null ? void 0 : o2.message
       }), /* @__PURE__ */ a("div", {
-        children: (h = o2 == null ? void 0 : o2.actions) == null ? void 0 : h.map((f, m) => /* @__PURE__ */ a(cr, {
+        children: (h = o2 == null ? void 0 : o2.actions) == null ? void 0 : h.map((f, m) => /* @__PURE__ */ a(ur, {
           ...f
         }, m))
       })]
     })]
   });
 }
-function pl({
+function y0({
   children: e2,
   className: t2,
   id: n2
@@ -944,7 +944,7 @@ function pl({
     children: e2
   });
 }
-function nt({
+function ot({
   children: e2,
   className: t2,
   htmlFor: n2
@@ -956,7 +956,7 @@ function nt({
     children: e2
   });
 }
-const Xa = ({
+const qa = ({
   size: e2
 }) => /* @__PURE__ */ b("svg", {
   width: e2,
@@ -974,7 +974,7 @@ const Xa = ({
     fill: "black",
     d: "M86.6 37.4h-9.9c-1.1 0-2.2-.5-3-1.3l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.4 3.9c-1.1 1.3-2.8 2-4.5 2H2.9C1.4 41.9.4 46.6 0 51.3h51.2c.9 0 1.8-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4H112c-.4-4.7-1.4-9.4-2.9-13.8H86.6zM53.8 65l-4-4.5c-1.2-1.3-3.1-1.4-4.5-.3l-.3.3-3.5 3.9c-1.1 1.3-2.7 2-4.4 2H.8c.9 4.8 2.5 9.5 4.6 14h25.5c.9 0 1.7-.4 2.4-1l4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1.1l4 4.5c.8.9 1.9 1.4 3 1.4h56.6c2.1-4.4 3.7-9.1 4.6-14H56.8c-1.2 0-2.3-.5-3-1.4zm19.6-43.6 4.8-5c.6-.6 1.4-1 2.3-1h.2c.9 0 1.8.4 2.4 1l4 4.5c.8.9 1.9 1.3 3 1.3h10.8c-18.8-24.8-54.1-29.7-79-11-4.1 3.1-7.8 6.8-11 11H71c1 .2 1.8-.2 2.4-.8zM34.7 94.2c-1.2 0-2.3-.5-3-1.3l-4-4.5c-1.2-1.3-3.2-1.4-4.5-.2l-.2.2-3.5 3.9c-1.1 1.3-2.7 2-4.4 2h-.2C36 116.9 71.7 118 94.4 96.7c.9-.8 1.7-1.7 2.6-2.6H34.7z"
   })]
-}), dr = ({
+}), fr = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -995,7 +995,7 @@ const Xa = ({
       d: "M23.189 14.02c.314-2.096-1.283-3.223-3.465-3.975l.708-2.84-1.728-.43-.69 2.765c-.454-.114-.92-.22-1.385-.326l.695-2.783L15.596 6l-.708 2.839c-.376-.086-.746-.17-1.104-.26l.002-.009-2.384-.595-.46 1.846s1.283.294 1.256.312c.7.175.826.638.805 1.006l-.806 3.235c.048.012.11.03.18.057l-.183-.045-1.13 4.532c-.086.212-.303.531-.793.41.018.025-1.256-.313-1.256-.313l-.858 1.978 2.25.561c.418.105.828.215 1.231.318l-.715 2.872 1.727.43.708-2.84c.472.127.93.245 1.378.357l-.706 2.828 1.728.43.715-2.866c2.948.558 5.164.333 6.097-2.333.752-2.146-.037-3.385-1.588-4.192 1.13-.26 1.98-1.003 2.207-2.538zm-3.95 5.538c-.533 2.147-4.148.986-5.32.695l.95-3.805c1.172.293 4.929.872 4.37 3.11zm.535-5.569c-.487 1.953-3.495.96-4.47.717l.86-3.45c.975.243 4.118.696 3.61 2.733z"
     })]
   })
-}), ur = ({
+}), Ze = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1074,7 +1074,7 @@ const Xa = ({
       })]
     })]
   })
-}), qa = ({
+}), vt = ({
   size: e2
 }) => /* @__PURE__ */ a("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1207,6 +1207,69 @@ const Xa = ({
 }), ei = ({
   size: e2
 }) => /* @__PURE__ */ b("svg", {
+  id: "Layer_1",
+  xmlns: "http://www.w3.org/2000/svg",
+  width: e2,
+  height: e2,
+  viewBox: "0 0 500 500",
+  children: [/* @__PURE__ */ b("defs", {
+    children: [/* @__PURE__ */ a("style", {
+      children: ".cls-1{fill:url(#linear-gradient);}.cls-2{fill:url(#linear-gradient-3);}.cls-3{fill:url(#linear-gradient-4);}.cls-4{fill:url(#linear-gradient-2);}"
+    }), /* @__PURE__ */ b("linearGradient", {
+      id: "linear-gradient",
+      x1: "188.61",
+      y1: "236.24",
+      x2: "311.3",
+      y2: "113.56",
+      gradientUnits: "userSpaceOnUse",
+      children: [/* @__PURE__ */ a("stop", {
+        offset: "0",
+        "stop-color": "blue"
+      }), /* @__PURE__ */ a("stop", {
+        offset: ".6",
+        "stop-color": "#8032ff"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "1",
+        "stop-color": "#d855ff"
+      })]
+    }), /* @__PURE__ */ a("linearGradient", {
+      id: "linear-gradient-2",
+      x1: "189.98",
+      y1: "285.71",
+      x2: "310.11",
+      y2: "165.58",
+      xlinkHref: "#linear-gradient"
+    }), /* @__PURE__ */ a("linearGradient", {
+      id: "linear-gradient-3",
+      x1: "204.4",
+      y1: "172.39",
+      x2: "295.48",
+      y2: "81.31",
+      xlinkHref: "#linear-gradient"
+    }), /* @__PURE__ */ a("linearGradient", {
+      id: "linear-gradient-4",
+      x1: "188.95",
+      y1: "373.25",
+      x2: "311.09",
+      y2: "251.12",
+      xlinkHref: "#linear-gradient"
+    })]
+  }), /* @__PURE__ */ a("path", {
+    className: "cls-1",
+    d: "M362.25,183.75c-.95-7.95-2.53-15.75-4.94-23.39-.57-1.8-1.27-2.35-3.14-2.34-20.43,.07-40.85,.03-61.28,.06-3.07,0-5.58-.98-7.59-3.35-2.41-2.83-4.9-5.6-7.39-8.35-2.82-3.11-6.87-3.18-9.76-.12-2.07,2.19-4.1,4.43-6.01,6.77-2.93,3.59-6.66,5.08-11.24,5.06-17.41-.06-34.82-.02-52.23-.02s-35.52,.02-53.28-.04c-1.47,0-2.06,.45-2.5,1.8-2.53,7.9-4.18,15.98-5.16,24.21-.2,1.65,.27,1.94,1.83,1.94,33.34-.05,66.69-.05,100.03-.01,2.58,0,4.59-.88,6.32-2.74,2.82-3.03,5.67-6.03,8.57-8.99,3.13-3.19,7.13-3.1,10.13,.19,2.5,2.75,4.97,5.52,7.4,8.34,1.92,2.23,4.28,3.2,7.21,3.19,27.03-.03,54.05-.04,81.08,.03,1.91,0,2.14-.59,1.94-2.24Z"
+  }), /* @__PURE__ */ a("path", {
+    className: "cls-4",
+    d: "M253.5,216.32c-3.67,0-6.5-1.13-8.8-3.97-2.08-2.56-4.34-4.97-6.54-7.42-3.22-3.6-7.26-3.59-10.51,.02-1.88,2.09-3.77,4.16-5.55,6.32-2.93,3.56-6.64,5.06-11.25,5.05-23.24-.08-46.49-.01-69.73-.08-1.7,0-1.94,.4-1.6,1.97,1.85,8.59,4.51,16.9,8.24,24.86,.4,.85,.69,1.48,1.89,1.48,16.64-.05,33.29-.03,49.93-.04,2.14,0,3.91-.82,5.39-2.4,2.93-3.12,5.91-6.2,8.92-9.24,3.35-3.38,7.2-3.24,10.42,.33,2.16,2.4,4.39,4.74,6.39,7.27,2.39,3.01,5.37,4.11,9.17,4.1,35.96-.07,71.91-.09,107.86,.05,3.1,.01,4.51-.91,5.63-3.69,3.2-7.94,5.94-15.98,7.47-24.63h-2.61c-34.9,0-69.8-.03-104.7,.04Z"
+  }), /* @__PURE__ */ a("path", {
+    className: "cls-2",
+    d: "M279.26,127.76c2.9,0,5.11-1.01,7.03-3.11,2.69-2.95,5.47-5.83,8.26-8.69,3.08-3.15,7.18-3.03,10.15,.26,2.58,2.86,5.12,5.76,7.68,8.65,1.68,1.89,3.8,2.84,6.31,2.85,7.02,.02,14.04,0,21.31,0-18.29-25.82-55.74-49.45-102.29-44.51-15.43,1.64-29.93,6.35-43.43,14.06-13.51,7.71-24.93,17.75-34.53,30.45,40.19,0,79.85-.02,119.51,.03Z"
+  }), /* @__PURE__ */ a("path", {
+    className: "cls-3",
+    d: "M290.86,272.28c-13.61-.02-27.23,0-40.84-.01-13.61,0-27.23,0-40.84,.01-3.57,0-6.37-1.04-8.65-3.83-2.21-2.71-4.58-5.31-6.95-7.89-2.93-3.19-7.03-3.15-9.92,.05-1.7,1.87-3.44,3.71-5.01,5.68-2.78,3.5-6.13,5.9-10.86,6,.98-.02,5.4,5.56,6.47,6.55,9.5,8.79,21.06,14.53,32.84,19.61,10.24,4.41,26.4,7.88,30.48,19.65,3.26,9.41,2.03,19.94-3.54,28.17-4.88,7.21-11.82,12.84-16.18,20.43-6.84,11.93-5.98,27.06,2.65,37.84,6.87,8.59,18.19,12.9,29.52,12.9,11.32,0,22.65-4.3,29.52-12.9,8.63-10.78,9.49-25.91,2.65-37.84-4.36-7.6-11.3-13.22-16.18-20.43-5.57-8.24-6.8-18.77-3.54-28.17,4.08-11.77,20.24-15.24,30.48-19.65,11.78-5.08,23.34-10.81,32.84-19.61,1.07-.99,6.47-6.55,6.47-6.55-4.74-.1-37.83,0-41.4,0Z"
+  })]
+}), ti = ({
+  size: e2
+}) => /* @__PURE__ */ b("svg", {
   width: e2,
   height: e2,
   viewBox: "0 0 510 510",
@@ -1224,7 +1287,7 @@ const Xa = ({
     d: "M304.903 59.8335C304.669 60.0192 303.691 61.4258 302.728 62.9593C292.436 79.3562 265.475 115.573 255.731 126.091C255.212 126.651 254.982 126.415 249.356 119.557C233.063 99.697 218.323 79.6886 208.226 63.726C205.147 58.8583 205.873 58.4236 180.902 80.0814C148.214 108.432 148.911 107.548 155.809 111.88C166.925 118.861 178.223 126.717 191.076 136.402C204.146 146.251 223.281 161.764 223.281 162.512C223.281 164.346 164.951 222.577 163.113 222.577C162.54 222.577 157.691 216.865 148.676 205.57C133.622 186.709 121.877 170.342 111.963 154.408C109.111 149.826 108.845 149.487 108.261 149.711C107.894 149.852 98.5034 159.945 91.957 167.233C63.0165 199.456 59.3262 204.506 63.0215 206.833C80.4551 217.813 108.324 238.491 124.931 252.769C127.395 254.887 127.728 254.334 120.331 260.398C99.7553 277.266 79.0772 292.423 61.8151 303.292C60.8409 303.905 60.007 304.601 59.9621 304.837C59.7382 306.016 91.3208 342.477 105.838 357.799C108.58 360.693 108.343 360.773 111.282 355.966C122.203 338.104 139.222 314.921 158.293 291.93C163.836 285.248 161.318 283.538 193.882 316.102C226.192 348.412 224.583 346.116 218.471 351.195C195.678 370.137 173.576 386.417 155.015 397.936C152.202 399.682 149.827 401.299 149.739 401.529C149.161 403.037 203.416 450.8 205.011 450.188C205.229 450.104 206.254 448.698 207.29 447.063C217.014 431.709 229.397 414.598 243.742 396.693C249 390.129 254.657 383.283 254.993 383.075C255.388 382.832 255.64 383.103 260.409 388.886C276.265 408.117 293.038 430.85 302.323 445.693C303.25 447.175 303.844 447.854 304.213 447.854C306.241 447.854 358.95 401.466 358.438 400.132C358.348 399.899 356.413 398.535 354.137 397.102C335.604 385.431 314.034 369.503 292.495 351.584C286.4 346.513 286.715 347.014 288.434 345.142C305.293 326.782 345.735 286.703 347.404 286.703C347.679 286.703 350.01 289.285 353.004 292.906C371.024 314.705 386.987 336.382 397.813 353.756C400.53 358.116 400.791 358.444 401.311 358.129C402.639 357.327 422.978 334.854 433.531 322.53C451.518 301.523 450.659 304.682 440.263 297.772C422.869 286.212 398.702 268.003 385.338 256.386C383.116 254.455 382.841 254.993 388.405 250.371C407.967 234.119 428.585 218.866 446.031 207.74C450.757 204.726 451.04 204.455 450.422 203.533C449.294 201.849 437.614 187.896 429.618 178.68C420.699 168.402 403.618 149.695 402.663 149.161C402.035 148.809 401.908 148.974 398.161 154.966C388.713 170.077 376.168 187.546 362.195 205.051C355.293 213.697 347.708 222.856 347.451 222.856C345.787 222.856 287.128 164.137 287.128 162.471C287.128 161.757 308.468 144.555 321.56 134.714C333.446 125.781 350.297 114.298 358.569 109.496C361.173 107.984 361.21 107.672 359.029 105.654C334.012 82.5093 306.1 58.8809 304.903 59.8335ZM261.533 134.125C267.441 141.003 278.114 153.046 283.462 158.869C287.014 162.736 287.248 162.002 280.645 167.677C274.187 173.227 264.048 182.206 259.036 186.815C254.951 190.57 255.514 190.51 252.268 187.542C246.922 182.654 234.397 171.567 229.332 167.238C223.048 161.867 222.98 163.309 229.875 155.732C235.659 149.377 246.195 137.403 251.833 130.779C255.588 126.367 254.565 126.014 261.533 134.125ZM263.07 197.617C272.393 206.31 302.476 236.349 310.823 245.3C314.255 248.98 317.625 252.581 318.312 253.302L319.562 254.614L317.076 257.324C303.785 271.819 278.692 297.049 262.521 312.178C258.572 315.873 255.373 318.983 255.412 319.089C255.579 319.541 272.02 334.231 280.785 341.76C287.403 347.445 287.384 346.135 280.954 353.198C274.656 360.118 265.747 370.225 259.943 377.037C255.576 382.16 255.364 382.38 255.01 382.16C254.888 382.085 252.188 378.988 249.011 375.278C243.154 368.441 232.482 356.402 227.089 350.55C223.474 346.627 223.465 347.055 227.235 343.856C235.907 336.497 255.065 319.415 255.065 319.041C255.065 318.942 251.332 315.361 246.77 311.083C242.208 306.805 231.565 296.402 223.12 287.964C209.161 274.019 204.122 268.834 194.18 258.185L190.87 254.64L194.459 250.815C213.053 231.001 230.406 213.631 250.883 194.337C255.76 189.741 254.161 189.31 263.07 197.617ZM168.102 229.059C173.294 235.101 181.87 244.793 187.318 250.775C191.249 255.092 191.082 254.456 188.902 256.795C183.977 262.084 170.908 276.864 165.479 283.288C162.92 286.315 163.144 286.256 161.145 284.425C152.644 276.629 140.691 266.041 132.459 259.011C126.654 254.054 126.402 255.482 134.271 248.748C141.427 242.623 153.553 231.868 159.155 226.676C163.449 222.696 162.391 222.415 168.102 229.059ZM350.975 226.386C356.648 231.614 368.764 242.357 375.874 248.465C379.679 251.732 382.752 254.558 382.705 254.745C382.658 254.931 379.42 257.83 375.51 261.187C368.027 267.611 359.316 275.321 352.09 281.918C346.834 286.717 348.198 287.035 341.728 279.506C335.885 272.708 328.745 264.648 323.171 258.556C321.284 256.494 319.773 254.713 319.813 254.6C319.854 254.487 322.477 251.533 325.641 248.035C331.996 241.012 340.548 231.282 344.566 226.506C347.695 222.785 347.08 222.797 350.975 226.386Z",
     fill: "white"
   })]
-}), ti = ({
+}), ri = ({
   size: e2
 }) => /* @__PURE__ */ b("svg", {
   width: e2,
@@ -1283,7 +1346,7 @@ const Xa = ({
       })
     })]
   })]
-}), ri = ({
+}), ni = ({
   size: e2
 }) => /* @__PURE__ */ b("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1298,7 +1361,7 @@ const Xa = ({
     fill: "#ff5f5f",
     d: "M526.27,576.86h0c158.66,0,287.28-128.62,287.28-287.28v-118.81s-287.28-104.47-287.28-104.47v510.56Z"
   })]
-}), ni = ({
+}), oi = ({
   size: e2
 }) => /* @__PURE__ */ b("svg", {
   xmlns: "http://www.w3.org/2000/svg",
@@ -1327,77 +1390,245 @@ const Xa = ({
       })]
     })
   })]
+}), ai = ({
+  size: e2
+}) => /* @__PURE__ */ b("svg", {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: e2,
+  height: e2,
+  viewBox: "0 0 90 90",
+  children: [/* @__PURE__ */ b("defs", {
+    children: [/* @__PURE__ */ a("style", {
+      children: ".cls-1{fill:url(#radial-gradient);}.cls-2{fill:#5c1411;}.cls-3{fill:#ffdd3b;}.cls-4{fill:#ffaf1a;}.cls-5{fill:#fbfaf9;}.cls-6{fill:#00d8f9;}.cls-7{fill:#16242c;}"
+    }), /* @__PURE__ */ b("radialGradient", {
+      id: "radial-gradient",
+      cx: "-0.72",
+      cy: "-408.43",
+      r: "57.24",
+      gradientTransform: "matrix(0.76, 0.65, -0.65, 0.76, -219.88, 326.31)",
+      gradientUnits: "userSpaceOnUse",
+      children: [/* @__PURE__ */ a("stop", {
+        offset: "0.07",
+        "stop-color": "#fff"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.37",
+        "stop-color": "#fdfdfd"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.53",
+        "stop-color": "#f5f5f5"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.66",
+        "stop-color": "#e7e7e7"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.77",
+        "stop-color": "#d4d4d4"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.87",
+        "stop-color": "#bbb"
+      }), /* @__PURE__ */ a("stop", {
+        offset: "0.94",
+        "stop-color": "#a3a3a3"
+      })]
+    })]
+  }), /* @__PURE__ */ a("g", {
+    id: "Layer_2",
+    "data-name": "Layer 2",
+    children: /* @__PURE__ */ b("g", {
+      id: "Layer_1-2",
+      "data-name": "Layer 1",
+      children: [/* @__PURE__ */ a("path", {
+        className: "cls-1",
+        d: "M76.56,68.55a37.9,37.9,0,1,1-4-53.45A37.9,37.9,0,0,1,76.56,68.55Z"
+      }), /* @__PURE__ */ a("circle", {
+        className: "cls-2",
+        cx: "45",
+        cy: "45",
+        r: "45"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-3",
+        d: "M86.85,44.79A41.79,41.79,0,1,1,45.58,2.9,41.87,41.87,0,0,1,86.85,44.79ZM73.34,65.66v0l0,0,.11-.13a19,19,0,0,0,2.92-4.69A17.48,17.48,0,0,0,78.58,56,39.87,39.87,0,0,0,80,50.14c1.43-1.38,2.83-2.79,4.29-4.14A2.08,2.08,0,0,0,85,43.46c-.73-1.87-1.41-3.77-2.1-5.66q-3-8.32-6.06-16.64A1.74,1.74,0,0,0,75,19.9a17,17,0,0,0-1.89,0c-.65.06-.91-.18-1.11-.81a5.57,5.57,0,0,0-6.13-4.17c-.7,0-1.4.11-2.1.17.16-.42-.22-.49-.44-.63a34.05,34.05,0,0,0-7.17-3.32A39.69,39.69,0,0,0,49,9.62a33.15,33.15,0,0,0-8.9.13,36.08,36.08,0,0,0-5.71,1.32,33.09,33.09,0,0,0-6.13,2.6c-.21.12-.48.17-.43.5-.31-.07-.62-.12-.92-.2a8.88,8.88,0,0,0-4-.37c-2.38.47-3.64,2.15-4.47,4.27-.27.67-.14,1.64-.78,1.95a5.66,5.66,0,0,1-2.15.08c-1.43,0-1.82.28-2.31,1.63C10.56,28.72,8,35.92,5.28,43.09A2.51,2.51,0,0,0,6,46.24c1.44,1.27,2.77,2.65,4.14,4A35.47,35.47,0,0,0,11.49,56c.33,1.14.82,2.22,1.23,3.33a15.16,15.16,0,0,0,1.22,2.16,31.18,31.18,0,0,0,3.2,5,47.82,47.82,0,0,0,4.05,4.26,37.71,37.71,0,0,0,9.47,6.26,32.43,32.43,0,0,0,7.53,2.35c.86.16,1.77.61,2.71.22l0,0,.12.12a22.79,22.79,0,0,1,2.64,2.37,1.79,1.79,0,0,0,2.79,0A31.68,31.68,0,0,1,49,79.75a.09.09,0,0,0,.08,0,.06.06,0,0,1,.07-.07,3.47,3.47,0,0,0,1.91-.12,33.66,33.66,0,0,0,6-1.54,35,35,0,0,0,7.55-3.83,35.4,35.4,0,0,0,6.94-6,6.1,6.1,0,0,0,1.59-2.28.07.07,0,0,1,.07-.06A.18.18,0,0,0,73.34,65.66Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-2",
+        d: "M10.17,50.23c-1.37-1.34-2.7-2.72-4.14-4a2.51,2.51,0,0,1-.75-3.15C8,35.92,10.56,28.72,13.2,21.53c.49-1.35.88-1.62,2.31-1.63a5.66,5.66,0,0,0,2.15-.08c.64-.31.51-1.28.78-1.95.83-2.12,2.09-3.8,4.47-4.27a8.88,8.88,0,0,1,4,.37c.3.08.61.13.92.2a.36.36,0,0,0,.1.11,22.41,22.41,0,0,1,7.75,5.3,1.19,1.19,0,0,0,.92.31c6,0,11.95,0,17.92,0a1.6,1.6,0,0,0,1.06-.37,25.22,25.22,0,0,1,5.08-3.25c1-.48,2.1-.7,3.11-1.17.7-.06,1.4-.14,2.1-.17A5.57,5.57,0,0,1,72,19.1c.2.63.46.87,1.11.81a17,17,0,0,1,1.89,0,1.74,1.74,0,0,1,1.83,1.26q3,8.32,6.06,16.64c.69,1.89,1.37,3.79,2.1,5.66A2.08,2.08,0,0,1,84.32,46c-1.46,1.35-2.86,2.76-4.29,4.14-.82.76-1.62,1.52-2.45,2.27a1.22,1.22,0,0,0-.41,1c0,.9,0,1.8,0,2.69a29.4,29.4,0,0,1-.76,4.66,19,19,0,0,1-2.92,4.69c-.08,0-.13,0-.11.13l0,0v0c-.08,0-.11,0-.08.09a.07.07,0,0,0-.07.06c-.79.66-1.56,1.37-2.38,2a35.15,35.15,0,0,1-13,5.83c-1.62.41-3.32.47-4.55,2s-2.8,2.61-4.07,4c0,0-.07,0-.07.06h-.06l0,.06a31.68,31.68,0,0,0-2.56,2.35,1.79,1.79,0,0,1-2.79,0A22.79,22.79,0,0,0,41,79.76q0-.14-.12-.12l0,0a1.8,1.8,0,0,0-.24-.35c-1.74-1.67-3.49-3.32-5.22-5a2.61,2.61,0,0,0-1.35-.64,51.06,51.06,0,0,1-10.58-3.49,18.42,18.42,0,0,1-9.76-9.76,19.15,19.15,0,0,1-1.51-7.24c0-.42.11-.89-.25-1.24C11.39,51.34,10.78,50.79,10.17,50.23Zm32.5,26.32c.59.54,1.2,1,1.75,1.61s.84.57,1.3,0a6.17,6.17,0,0,1,.79-.74.72.72,0,0,0,.59-.21c.58-.59,1.17-1.16,1.75-1.74.14-.14.29-.29.2-.51s-.31-.2-.5-.2H44.91a3.51,3.51,0,0,1-1.22-.08,6.46,6.46,0,0,0-2.43-.18.45.45,0,0,0-.49.5A5.11,5.11,0,0,0,42.67,76.55ZM11.15,46.47c.11.44.53.67.74,1.05.09.17.5.5.79.35a1,1,0,0,0,.5-1,5.42,5.42,0,0,1,.41-2c.49-1.55,1.17-3,1.79-4.56a26.6,26.6,0,0,1,2.37-4.32A4,4,0,0,0,18.08,33c-.23-1.25-.29-2.52-.43-3.76a49.67,49.67,0,0,1-.06-5.32c0-.28.11-.61-.26-.77a1.26,1.26,0,0,0-1.66.63,5.64,5.64,0,0,0-.43,1.95l-3,8.35C11.08,37.17,10,40.29,8.8,43.4a.83.83,0,0,0,.29,1.05C9.79,45.1,10.46,45.8,11.15,46.47Zm5.3,11.36A13.58,13.58,0,0,0,20.29,64a21.14,21.14,0,0,0,7.22,4.13c9.75,3.59,19.69,4.58,29.85,2.09a29.29,29.29,0,0,0,12-5.61c2.15-1.77,3.83-3.87,4.17-6.77a18.57,18.57,0,0,0,0-6.73A34.57,34.57,0,0,0,68.4,38.19,3,3,0,0,1,68,35.72a48.37,48.37,0,0,0,1.39-11.56,10.94,10.94,0,0,0-.83-4.48,2.14,2.14,0,0,0-2.18-1.39A10.26,10.26,0,0,0,63,19a23.29,23.29,0,0,0-7.84,5.46A2,2,0,0,1,52.8,25a24,24,0,0,0-15.8-.6,1.85,1.85,0,0,1-2.14-.63,26.71,26.71,0,0,0-3.66-3.55A13.69,13.69,0,0,0,24.6,17a2.16,2.16,0,0,0-2.68,1.45,13.24,13.24,0,0,0-1.13,5.32,52.38,52.38,0,0,0,.67,10.9A3,3,0,0,1,21,36.89a31.49,31.49,0,0,0-4.78,10.65A18.84,18.84,0,0,0,16.45,57.83ZM73.34,23.27c-.61-.09-.62.32-.6.77a50.49,50.49,0,0,1-1.07,10.62c-.14.79-.55,1.56,0,2.49a34,34,0,0,1,3.75,8c.32,1,.61,1.94.91,2.91.14.46.3.62.73.21,1.34-1.32,2.7-2.62,4.06-3.92a.65.65,0,0,0,.17-.82c-1.26-3.42-2.47-6.85-3.72-10.28-1.13-3.12-2.3-6.24-3.44-9.37A.75.75,0,0,0,73.34,23.27Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M63.73,15.1c-1,.47-2.11.69-3.11,1.17a25.22,25.22,0,0,0-5.08,3.25,1.6,1.6,0,0,1-1.06.37c-6,0-11.94,0-17.92,0a1.19,1.19,0,0,1-.92-.31,22.41,22.41,0,0,0-7.75-5.3.36.36,0,0,1-.1-.11c-.05-.33.22-.38.43-.5a33.09,33.09,0,0,1,6.13-2.6,36.08,36.08,0,0,1,5.71-1.32A33.15,33.15,0,0,1,49,9.62a39.69,39.69,0,0,1,7.16,1.53,34.05,34.05,0,0,1,7.17,3.32C63.51,14.61,63.89,14.68,63.73,15.1Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M10.17,50.23c.61.56,1.22,1.11,1.82,1.68.36.35.24.82.25,1.24a19.15,19.15,0,0,0,1.51,7.24,18.42,18.42,0,0,0,9.76,9.76,51.06,51.06,0,0,0,10.58,3.49,2.61,2.61,0,0,1,1.35.64c1.73,1.67,3.48,3.32,5.22,5a1.8,1.8,0,0,1,.24.35c-.94.39-1.85-.06-2.71-.22a32.43,32.43,0,0,1-7.53-2.35,37.71,37.71,0,0,1-9.47-6.26,47.82,47.82,0,0,1-4.05-4.26,31.18,31.18,0,0,1-3.2-5,15.16,15.16,0,0,1-1.22-2.16c-.41-1.11-.9-2.19-1.23-3.33A35.47,35.47,0,0,1,10.17,50.23Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M49.18,79.63c1.27-1.43,2.87-2.56,4.07-4s2.93-1.55,4.55-2a35.15,35.15,0,0,0,13-5.83c.82-.62,1.59-1.33,2.38-2a6.1,6.1,0,0,1-1.59,2.28,35.4,35.4,0,0,1-6.94,6A35,35,0,0,1,57.11,78a33.66,33.66,0,0,1-6,1.54A3.47,3.47,0,0,1,49.18,79.63Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M76.4,60.78a29.4,29.4,0,0,0,.76-4.66c0-.89,0-1.79,0-2.69a1.22,1.22,0,0,1,.41-1c.83-.75,1.63-1.51,2.45-2.27A39.87,39.87,0,0,1,78.58,56,17.48,17.48,0,0,1,76.4,60.78Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M73.37,65.6c0-.08,0-.12.11-.13Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M73.26,65.75c0-.08,0-.11.08-.09A.18.18,0,0,1,73.26,65.75Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M40.92,79.64q.13,0,.12.12Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M49,79.75l0-.06h.06S49.07,79.75,49,79.75Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-4",
+        d: "M16.45,57.83a18.84,18.84,0,0,1-.26-10.29A31.49,31.49,0,0,1,21,36.89a3,3,0,0,0,.49-2.26,52.38,52.38,0,0,1-.67-10.9,13.24,13.24,0,0,1,1.13-5.32A2.16,2.16,0,0,1,24.6,17a13.69,13.69,0,0,1,6.6,3.22,26.71,26.71,0,0,1,3.66,3.55,1.85,1.85,0,0,0,2.14.63,24,24,0,0,1,15.8.6,2,2,0,0,0,2.38-.52A23.29,23.29,0,0,1,63,19a10.26,10.26,0,0,1,3.34-.69,2.14,2.14,0,0,1,2.18,1.39,10.94,10.94,0,0,1,.83,4.48A48.37,48.37,0,0,1,68,35.72a3,3,0,0,0,.42,2.47,34.57,34.57,0,0,1,5.15,12.92,18.57,18.57,0,0,1,0,6.73.74.74,0,0,0-.56-.11c-2.27.2-4.54.4-6.81.62a12.68,12.68,0,0,1-2.54,0,20.64,20.64,0,0,1-5-1,21.82,21.82,0,0,1-4.15-2A27,27,0,0,0,52,53.81a16,16,0,0,0-7.09-1.54,14.85,14.85,0,0,0-9.29,2.66c-1,0-1.51.76-2.27,1.1,0,0,0,.14,0,.21a20,20,0,0,1-5.13,1.86c-2.95.62-5.89.21-8.82-.12A19.44,19.44,0,0,0,16.45,57.83Zm45.2-29.74c.22.54.75.77,1.1,1.18s.46.63.92.55c.53.54,1,1.08,1.6,1.59.25.23.61.48.73-.12a22.53,22.53,0,0,0,.55-6.44c-.1-1.11-.62-2.26-1.49-2.31a5.11,5.11,0,0,0-1.74.14A13,13,0,0,0,60,24.59c-.58.12-.89.61-1.22,1a.54.54,0,0,0,.21.81c.93.47,1.59,1.35,2.62,1.66ZM31.93,44.71a4.42,4.42,0,1,0,4.41,4.46A4.38,4.38,0,0,0,31.93,44.71Zm25,0a4.42,4.42,0,1,0,4.44,4.36A4.39,4.39,0,0,0,56.93,44.71ZM23.45,26.12a27.29,27.29,0,0,0,.25,3.61c0,.21,0,.5.19.59s.46-.15.61-.3a21.76,21.76,0,0,1,2.22-2,33.28,33.28,0,0,1,3.86-2.69c.52-.31.58-.67.12-1.09-.68-.61-1.32-1.28-2.05-1.83a5.9,5.9,0,0,0-2.39-1.15,1.76,1.76,0,0,0-2.32,1.29A9.14,9.14,0,0,0,23.45,26.12ZM55.2,39.5a4.42,4.42,0,0,0-4.15,2.69,2.41,2.41,0,0,0,.29,2.59c.76.68,1.49.22,2.2-.14,1.14-.56,2.27-1.15,3.42-1.71a1.45,1.45,0,0,0,.9-2A2.52,2.52,0,0,0,55.2,39.5Zm-21.7,0a3.49,3.49,0,0,0-2.26.83,1.37,1.37,0,0,0,.19,2.38c1.34.75,2.7,1.48,4.08,2.17a1.53,1.53,0,0,0,1.6,0,1.8,1.8,0,0,0,.69-1.74C37.65,41,35.41,39.62,33.5,39.51Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M16.45,57.83A19.44,19.44,0,0,1,19.4,58c2.93.33,5.87.74,8.82.12a20,20,0,0,0,5.13-1.86,3.77,3.77,0,0,0,2.3-1.31,14.85,14.85,0,0,1,9.29-2.66A16,16,0,0,1,52,53.81a27,27,0,0,1,2.46,1.51,21.82,21.82,0,0,0,4.15,2,20.64,20.64,0,0,0,5,1,12.68,12.68,0,0,0,2.54,0c2.27-.22,4.54-.42,6.81-.62a.74.74,0,0,1,.56.11c-.34,2.9-2,5-4.17,6.77a29.29,29.29,0,0,1-12,5.61c-10.16,2.49-20.1,1.5-29.85-2.09A21.14,21.14,0,0,1,20.29,64,13.58,13.58,0,0,1,16.45,57.83Zm28.61-3.68h0c-.8,0-1.6,0-2.4,0a1.19,1.19,0,0,0-1.28,1.29,3.56,3.56,0,0,0,1.73,3.39c.63.42.65.61.08,1.1a1.53,1.53,0,0,1-1.3.35,1.68,1.68,0,0,1-1.35-1.6,1.28,1.28,0,0,0-1.39-1.26A1.33,1.33,0,0,0,38,59a4,4,0,0,0,2.29,3.49,3.92,3.92,0,0,0,4.21-.3c.41-.28.67-.35,1.07,0a3.6,3.6,0,0,0,1.73.72,4.17,4.17,0,0,0,4.8-4A1.3,1.3,0,0,0,51,57.45a1.28,1.28,0,0,0-1.41,1.09,4.76,4.76,0,0,1-.11.64,1.59,1.59,0,0,1-2.74.58c-.3-.32-.35-.56.13-.83a3.51,3.51,0,0,0,1.87-3.31c0-1-.38-1.41-1.41-1.46C46.57,54.13,45.82,54.15,45.06,54.15Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-6",
+        d: "M73.34,23.27a.75.75,0,0,1,.84.56c1.14,3.13,2.31,6.25,3.44,9.37,1.25,3.43,2.46,6.86,3.72,10.28a.65.65,0,0,1-.17.82c-1.36,1.3-2.72,2.6-4.06,3.92-.43.41-.59.25-.73-.21-.3-1-.59-1.95-.91-2.91a34,34,0,0,0-3.75-8c-.6-.93-.19-1.7,0-2.49A50.49,50.49,0,0,0,72.74,24C72.72,23.59,72.73,23.18,73.34,23.27Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-6",
+        d: "M11.15,46.47c-.69-.67-1.36-1.37-2.06-2A.83.83,0,0,1,8.8,43.4c1.16-3.11,2.28-6.23,3.41-9.34l3-8.35A10,10,0,0,0,16,23.76c.19-.51.56-.45.94-.43s.38.38.37.66A59,59,0,0,0,18,34.53a1.54,1.54,0,0,1-.29,1.09,38.18,38.18,0,0,0-3.91,8,22.63,22.63,0,0,0-.9,3.22c-.15.75-.33.78-.94.26C11.67,46.88,11.51,46.54,11.15,46.47Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-6",
+        d: "M46.51,77.43a6.17,6.17,0,0,0-.79.74c-.46.56-.84.47-1.3,0s-1.16-1.07-1.75-1.61a6.12,6.12,0,0,0-1.14-1.19c-.12-.14-.36-.25-.26-.47s.3-.1.46-.08a47.9,47.9,0,0,0,6.34.15c.18,0,.42-.06.5.18s-.12.3-.23.42A24.82,24.82,0,0,0,46.51,77.43Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-7",
+        d: "M11.15,46.47c.36.07.52.41.77.62.61.52.79.49.94-.26a22.63,22.63,0,0,1,.9-3.22,38.18,38.18,0,0,1,3.91-8A1.54,1.54,0,0,0,18,34.53,59,59,0,0,1,17.34,24c0-.28.07-.63-.37-.66s-.75-.08-.94.43a10,10,0,0,1-.79,1.95,5.64,5.64,0,0,1,.43-1.95,1.26,1.26,0,0,1,1.66-.63c.37.16.26.49.26.77a49.67,49.67,0,0,0,.06,5.32c.14,1.24.2,2.51.43,3.76a4,4,0,0,1-.33,3.07,26.6,26.6,0,0,0-2.37,4.32c-.62,1.51-1.3,3-1.79,4.56a5.42,5.42,0,0,0-.41,2,1,1,0,0,1-.5,1c-.29.15-.7-.18-.79-.35C11.68,47.14,11.26,46.91,11.15,46.47Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-7",
+        d: "M46.51,77.43a24.82,24.82,0,0,1,1.83-1.87c.11-.12.29-.22.23-.42s-.32-.19-.5-.18a47.9,47.9,0,0,1-6.34-.15c-.16,0-.38-.1-.46.08s.14.33.26.47a6.12,6.12,0,0,1,1.14,1.19A5.11,5.11,0,0,1,40.77,75a.45.45,0,0,1,.49-.5,6.46,6.46,0,0,1,2.43.18,3.51,3.51,0,0,0,1.22.08h3.64c.19,0,.41,0,.5.2s-.06.37-.2.51c-.58.58-1.17,1.15-1.75,1.74A.72.72,0,0,1,46.51,77.43Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-2",
+        d: "M31.93,44.71a4.42,4.42,0,1,1-4.42,4.36A4.38,4.38,0,0,1,31.93,44.71ZM30.67,46a1.93,1.93,0,0,0-2,2,2,2,0,1,0,2-2Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-2",
+        d: "M56.93,44.71a4.42,4.42,0,1,1-4.4,4.39A4.39,4.39,0,0,1,56.93,44.71ZM55.75,46a1.92,1.92,0,0,0-2,2,2,2,0,0,0,2,2,2,2,0,0,0,2-2A1.94,1.94,0,0,0,55.75,46Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M23.45,26.12a9.14,9.14,0,0,1,.49-3.53,1.76,1.76,0,0,1,2.32-1.29,5.9,5.9,0,0,1,2.39,1.15c.73.55,1.37,1.22,2.05,1.83.46.42.4.78-.12,1.09a33.28,33.28,0,0,0-3.86,2.69,21.76,21.76,0,0,0-2.22,2c-.15.15-.34.41-.61.3s-.16-.38-.19-.59A27.29,27.29,0,0,1,23.45,26.12Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M60,24.59a13,13,0,0,1,3.3-1.91,5.11,5.11,0,0,1,1.74-.14c.87.05,1.39,1.2,1.49,2.31A22.53,22.53,0,0,1,66,31.29c-.12.6-.48.35-.73.12-.55-.51-1.07-1.05-1.6-1.59a4.91,4.91,0,0,0-2-1.73h0a2.83,2.83,0,0,0-.2-.28,19.46,19.46,0,0,0-2-1.49c-.44-.32-.62-.61,0-.95A1.08,1.08,0,0,0,60,24.59Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M55.2,39.5A2.52,2.52,0,0,1,57.86,41a1.45,1.45,0,0,1-.9,2c-1.15.56-2.28,1.15-3.42,1.71-.71.36-1.44.82-2.2.14a2.41,2.41,0,0,1-.29-2.59A4.42,4.42,0,0,1,55.2,39.5Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M33.5,39.51c1.91.11,4.15,1.51,4.3,3.67a1.8,1.8,0,0,1-.69,1.74,1.53,1.53,0,0,1-1.6,0c-1.38-.69-2.74-1.42-4.08-2.17a1.37,1.37,0,0,1-.19-2.38A3.49,3.49,0,0,1,33.5,39.51Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-3",
+        d: "M60,24.59a1.08,1.08,0,0,1-.6.77c-.63.34-.45.63,0,.95a19.46,19.46,0,0,1,2,1.49,2.83,2.83,0,0,1,.2.28c-1-.31-1.69-1.19-2.62-1.66a.54.54,0,0,1-.21-.81C59.13,25.2,59.44,24.71,60,24.59Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-3",
+        d: "M35.65,54.93a3.77,3.77,0,0,1-2.3,1.31c0-.07,0-.19,0-.21C34.14,55.69,34.69,54.88,35.65,54.93Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-3",
+        d: "M61.65,28.09a4.91,4.91,0,0,1,2,1.73c-.46.08-.68-.25-.92-.55S61.87,28.63,61.65,28.09Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-2",
+        d: "M45.06,54.15c.76,0,1.51,0,2.26,0,1,.05,1.38.44,1.41,1.46a3.51,3.51,0,0,1-1.87,3.31c-.48.27-.43.51-.13.83a1.59,1.59,0,0,0,2.74-.58,4.76,4.76,0,0,0,.11-.64A1.28,1.28,0,0,1,51,57.45a1.3,1.3,0,0,1,1.12,1.39,4.17,4.17,0,0,1-4.8,4,3.6,3.6,0,0,1-1.73-.72c-.4-.33-.66-.26-1.07,0a3.92,3.92,0,0,1-4.21.3A4,4,0,0,1,38,59a1.33,1.33,0,0,1,1.14-1.52,1.28,1.28,0,0,1,1.39,1.26,1.68,1.68,0,0,0,1.35,1.6,1.53,1.53,0,0,0,1.3-.35c.57-.49.55-.68-.08-1.1a3.56,3.56,0,0,1-1.73-3.39,1.19,1.19,0,0,1,1.28-1.29c.8,0,1.6,0,2.4,0Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M30.67,46a1.94,1.94,0,0,1,2,2,2,2,0,0,1-4,0A1.93,1.93,0,0,1,30.67,46Z"
+      }), /* @__PURE__ */ a("path", {
+        className: "cls-5",
+        d: "M55.75,46a1.94,1.94,0,0,1,2,2,2,2,0,0,1-2,2,2,2,0,0,1-2-2A1.92,1.92,0,0,1,55.75,46Z"
+      })]
+    })
+  })]
 });
-function oi({
+function ii({
   symbol: e2,
   size: t2
 }) {
-  switch (e2.toLowerCase()) {
-    case "apt":
-      return /* @__PURE__ */ a(Xa, {
-        size: t2
-      });
-    case "btc":
-      return /* @__PURE__ */ a(dr, {
-        size: t2
-      });
-    case "wbtc":
-      return /* @__PURE__ */ a(dr, {
-        size: t2
-      });
-    case "eth":
-      return /* @__PURE__ */ a(ur, {
-        size: t2
-      });
-    case "weth":
-      return /* @__PURE__ */ a(ur, {
-        size: t2
-      });
-    case "sol":
-      return /* @__PURE__ */ a(Ka, {
-        size: t2
-      });
-    case "usdt":
+  switch (e2) {
+    case "APT":
       return /* @__PURE__ */ a(qa, {
         size: t2
       });
-    case "usdc":
+    case "BTC":
+      return /* @__PURE__ */ a(fr, {
+        size: t2
+      });
+    case "WBTC":
+      return /* @__PURE__ */ a(fr, {
+        size: t2
+      });
+    case "ETH":
+      return /* @__PURE__ */ a(Ze, {
+        size: t2
+      });
+    case "WETH":
+      return /* @__PURE__ */ a(Ze, {
+        size: t2
+      });
+    case "zWETH":
+      return /* @__PURE__ */ a(Ze, {
+        size: t2
+      });
+    case "ceWETH":
+      return /* @__PURE__ */ a(Ze, {
+        size: t2
+      });
+    case "SOL":
+      return /* @__PURE__ */ a(Ka, {
+        size: t2
+      });
+    case "USDT":
+      return /* @__PURE__ */ a(vt, {
+        size: t2
+      });
+    case "zUSDT":
+      return /* @__PURE__ */ a(vt, {
+        size: t2
+      });
+    case "ceUSDT":
+      return /* @__PURE__ */ a(vt, {
+        size: t2
+      });
+    case "USDC":
       return /* @__PURE__ */ a(We, {
         size: t2
       });
-    case "usdcso":
+    case "USDCso":
       return /* @__PURE__ */ a(We, {
         size: t2
       });
-    case "usdc (eth)":
+    case "zUSDC":
       return /* @__PURE__ */ a(We, {
         size: t2
       });
-    case "usdc (sol)":
+    case "ceUSDC":
       return /* @__PURE__ */ a(We, {
         size: t2
       });
-    case "aux":
+    case "AUX":
       return /* @__PURE__ */ a(Ja, {
         size: t2
       });
-    case "martian":
-      return /* @__PURE__ */ a(ei, {
-        size: t2
-      });
-    case "tapt":
-      return /* @__PURE__ */ a(Qa, {
-        size: t2
-      });
-    case "usda":
-      return /* @__PURE__ */ a(ti, {
-        size: t2
-      });
-    case "petra":
+    case "USDA":
       return /* @__PURE__ */ a(ri, {
         size: t2
       });
-    case "mojo":
+    case "MOJO":
+      return /* @__PURE__ */ a(oi, {
+        size: t2
+      });
+    case "tAPT":
+      return /* @__PURE__ */ a(Qa, {
+        size: t2
+      });
+    case "stAPT":
+      return /* @__PURE__ */ a(ei, {
+        size: t2
+      });
+    case "APTOGE":
+      return /* @__PURE__ */ a(ai, {
+        size: t2
+      });
+    case "Martian":
+      return /* @__PURE__ */ a(ti, {
+        size: t2
+      });
+    case "Petra":
       return /* @__PURE__ */ a(ni, {
         size: t2
       });
@@ -1405,16 +1636,16 @@ function oi({
       return console.warn("No icon present for coin:", e2), null;
   }
 }
-function ai({
+function si({
   coin: e2,
   size: t2
 }) {
-  return e2 ? /* @__PURE__ */ a(oi, {
+  return e2 ? /* @__PURE__ */ a(ii, {
     symbol: e2,
     size: t2 != null ? t2 : 32
   }) : null;
 }
-function bl({
+function v0({
   coins: e2,
   size: t2 = 32
 }) {
@@ -1422,14 +1653,14 @@ function bl({
     className: "flex items-center -space-x-2",
     children: e2.map((n2, r) => /* @__PURE__ */ a("div", {
       className: "inline-block rounded-full drop-shadow-lg ring-2 ring-primary-200",
-      children: /* @__PURE__ */ a(ai, {
+      children: /* @__PURE__ */ a(si, {
         coin: n2,
         size: t2
       })
     }, `avatar-${n2}-${r}`))
   });
 }
-function yl({
+function w0({
   children: e2,
   className: t2,
   variant: n2,
@@ -1474,7 +1705,7 @@ function yl({
     children: e2
   });
 }
-function ii({
+function li({
   valueChange: e2,
   percentChange: t2,
   priceDirection: n2
@@ -1485,9 +1716,9 @@ function ii({
   })();
   return /* @__PURE__ */ b("div", {
     className: o2,
-    children: [n2 && n2 === "up" ? /* @__PURE__ */ a(ba, {
+    children: [n2 && n2 === "up" ? /* @__PURE__ */ a(ya, {
       className: "w-[14px] h-[14px] mr-1"
-    }) : n2 && n2 === "down" ? /* @__PURE__ */ a(ha, {
+    }) : n2 && n2 === "down" ? /* @__PURE__ */ a(ma, {
       className: "w-[14px] h-[14px] mr-1"
     }) : null, t2 !== void 0 && /* @__PURE__ */ b("div", {
       className: "mr-2",
@@ -1497,7 +1728,7 @@ function ii({
     })]
   });
 }
-function vl({
+function x0({
   title: e2,
   value: t2,
   valueChange: n2,
@@ -1523,19 +1754,19 @@ function vl({
   return /* @__PURE__ */ b("div", {
     className: g,
     onClick: c,
-    children: [/* @__PURE__ */ a(nt, {
+    children: [/* @__PURE__ */ a(ot, {
       children: e2
     }), /* @__PURE__ */ a("div", {
       className: "text-2xl",
       children: t2
-    }), r || n2 ? /* @__PURE__ */ a(ii, {
+    }), r || n2 ? /* @__PURE__ */ a(li, {
       percentChange: r,
       valueChange: n2,
       priceDirection: o2
     }) : null]
   });
 }
-var jr = { exports: {} };
+var Fr = { exports: {} };
 /*!
 	Copyright (c) 2018 Jed Watson.
 	Licensed under the MIT License (MIT), see
@@ -1570,15 +1801,15 @@ var jr = { exports: {} };
     }
     e2.exports ? (n2.default = n2, e2.exports = n2) : window.classNames = n2;
   })();
-})(jr);
-const T = jr.exports;
-var Fr = {
+})(Fr);
+const T = Fr.exports;
+var Dr = {
   color: void 0,
   size: void 0,
   className: void 0,
   style: void 0,
   attr: void 0
-}, fr = React.createContext && React.createContext(Fr), pe = globalThis && globalThis.__assign || function() {
+}, gr = React.createContext && React.createContext(Dr), pe = globalThis && globalThis.__assign || function() {
   return pe = Object.assign || function(e2) {
     for (var t2, n2 = 1, r = arguments.length; n2 < r; n2++) {
       t2 = arguments[n2];
@@ -1587,7 +1818,7 @@ var Fr = {
     }
     return e2;
   }, pe.apply(this, arguments);
-}, si = globalThis && globalThis.__rest || function(e2, t2) {
+}, ci = globalThis && globalThis.__rest || function(e2, t2) {
   var n2 = {};
   for (var r in e2)
     Object.prototype.hasOwnProperty.call(e2, r) && t2.indexOf(r) < 0 && (n2[r] = e2[r]);
@@ -1605,7 +1836,7 @@ function $r(e2) {
 }
 function ge(e2) {
   return function(t2) {
-    return /* @__PURE__ */ a(li, {
+    return /* @__PURE__ */ a(di, {
       ...pe({
         attr: pe({}, e2.attr)
       }, t2),
@@ -1613,9 +1844,9 @@ function ge(e2) {
     });
   };
 }
-function li(e2) {
+function di(e2) {
   var t2 = function(n2) {
-    var r = e2.attr, o2 = e2.size, i2 = e2.title, s2 = si(e2, ["attr", "size", "title"]), c = o2 || n2.size || "1em", l;
+    var r = e2.attr, o2 = e2.size, i2 = e2.title, s2 = ci(e2, ["attr", "size", "title"]), c = o2 || n2.size || "1em", l;
     return n2.className && (l = n2.className), e2.className && (l = (l ? l + " " : "") + e2.className), /* @__PURE__ */ b("svg", {
       ...pe({
         stroke: "currentColor",
@@ -1635,40 +1866,40 @@ function li(e2) {
       }), e2.children]
     });
   };
-  return fr !== void 0 ? /* @__PURE__ */ a(fr.Consumer, {
+  return gr !== void 0 ? /* @__PURE__ */ a(gr.Consumer, {
     children: function(n2) {
       return t2(n2);
     }
-  }) : t2(Fr);
-}
-function Dr(e2) {
-  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { fillRule: "evenodd", d: "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z", clipRule: "evenodd" } }] })(e2);
-}
-function ci(e2) {
-  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { d: "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" } }] })(e2);
-}
-function di(e2) {
-  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { fillRule: "evenodd", d: "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", clipRule: "evenodd" } }] })(e2);
+  }) : t2(Dr);
 }
 function Br(e2) {
-  return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M19 9l-7 7-7-7" } }] })(e2);
+  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { fillRule: "evenodd", d: "M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z", clipRule: "evenodd" } }] })(e2);
 }
 function ui(e2) {
+  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { d: "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" } }] })(e2);
+}
+function fi(e2) {
+  return ge({ tag: "svg", attr: { viewBox: "0 0 20 20", fill: "currentColor" }, child: [{ tag: "path", attr: { fillRule: "evenodd", d: "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", clipRule: "evenodd" } }] })(e2);
+}
+function Hr(e2) {
+  return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M19 9l-7 7-7-7" } }] })(e2);
+}
+function gi(e2) {
   return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M15 19l-7-7 7-7" } }] })(e2);
 }
 function zr(e2) {
   return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M9 5l7 7-7 7" } }] })(e2);
 }
-function fi(e2) {
+function hi(e2) {
   return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M5 15l7-7 7 7" } }] })(e2);
 }
-function gi(e2) {
+function mi(e2) {
   return ge({ tag: "svg", attr: { fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, child: [{ tag: "path", attr: { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M6 18L18 6M6 6l12 12" } }] })(e2);
 }
-const P = (e2) => hi({
+const M = (e2) => pi({
   key: "className",
   source: e2
-}), hi = ({ key: e2, source: t2 }) => (delete t2[e2], t2), mi = {
+}), pi = ({ key: e2, source: t2 }) => (delete t2[e2], t2), bi = {
   accordion: {
     base: "divide-y divide-gray-200 border-gray-200 dark:divide-gray-700 dark:border-gray-700",
     content: {
@@ -2500,21 +2731,21 @@ const P = (e2) => hi({
       placement: "-4px"
     }
   }
-}, pi = react.exports.createContext({
-  theme: mi
+}, yi = react.exports.createContext({
+  theme: bi
 });
 function R() {
-  return react.exports.useContext(pi);
+  return react.exports.useContext(yi);
 }
-const Hr = react.exports.createContext(void 0);
+const Ur = react.exports.createContext(void 0);
 function Vr() {
-  const e2 = react.exports.useContext(Hr);
+  const e2 = react.exports.useContext(Ur);
   if (!e2)
     throw new Error("useAccordionContext should be used within the AccordionPanelContext provider!");
   return e2;
 }
-const Ur = ({ children: e2, ...t2 }) => {
-  const n2 = P(t2), { isOpen: r } = Vr(), o2 = R().theme.accordion.content;
+const Zr = ({ children: e2, ...t2 }) => {
+  const n2 = M(t2), { isOpen: r } = Vr(), o2 = R().theme.accordion.content;
   return a("div", { className: o2.base, "data-testid": "flowbite-accordion-content", hidden: !r, ...n2, children: e2 });
 }, Wr = ({ children: e2, ...t2 }) => {
   const { alwaysOpen: n2 } = t2, [r, o2] = react.exports.useState(t2.isOpen), i2 = n2 ? {
@@ -2522,67 +2753,67 @@ const Ur = ({ children: e2, ...t2 }) => {
     isOpen: r,
     setOpen: () => o2(!r)
   } : t2;
-  return a(Hr.Provider, { value: i2, children: e2 });
-}, Yr = ({ as: e2 = "h2", children: t2, ...n2 }) => {
-  const r = P(n2), { arrowIcon: o2, flush: i2, isOpen: s2, setOpen: c } = Vr(), l = R().theme.accordion.title, u = () => typeof c < "u" && c();
+  return a(Ur.Provider, { value: i2, children: e2 });
+}, Gr = ({ as: e2 = "h2", children: t2, ...n2 }) => {
+  const r = M(n2), { arrowIcon: o2, flush: i2, isOpen: s2, setOpen: c } = Vr(), l = R().theme.accordion.title, u = () => typeof c < "u" && c();
   return b("button", { className: T(l.base, l.flush[i2 ? "on" : "off"], l.open[s2 ? "on" : "off"]), onClick: u, type: "button", ...r, children: [a(e2, { className: l.heading, "data-testid": "flowbite-accordion-heading", children: t2 }), o2 && a(o2, { "aria-hidden": true, className: T(l.arrow.base, l.arrow.open[s2 ? "on" : "off"]), "data-testid": "flowbite-accordion-arrow" })] });
-}, Gr = ({ alwaysOpen: e2 = false, arrowIcon: t2 = Dr, children: n2, flush: r = false, ...o2 }) => {
-  const i2 = P(o2), [s2, c] = react.exports.useState(0), l = react.exports.useMemo(() => react.exports.Children.map(n2, (g, h) => react.exports.cloneElement(g, { alwaysOpen: e2, arrowIcon: t2, flush: r, isOpen: s2 === h, setOpen: () => c(h) })), [e2, t2, n2, r, s2]), u = R().theme.accordion;
+}, Yr = ({ alwaysOpen: e2 = false, arrowIcon: t2 = Br, children: n2, flush: r = false, ...o2 }) => {
+  const i2 = M(o2), [s2, c] = react.exports.useState(0), l = react.exports.useMemo(() => react.exports.Children.map(n2, (g, h) => react.exports.cloneElement(g, { alwaysOpen: e2, arrowIcon: t2, flush: r, isOpen: s2 === h, setOpen: () => c(h) })), [e2, t2, n2, r, s2]), u = R().theme.accordion;
   return a("div", { className: T(u.base, u.flush[r ? "on" : "off"]), "data-testid": "flowbite-accordion", ...i2, children: l });
 };
-Gr.displayName = "Accordion";
+Yr.displayName = "Accordion";
 Wr.displayName = "Accordion.Panel";
-Yr.displayName = "Accordion.Title";
-Ur.displayName = "Accordion.Content";
-Object.assign(Gr, {
+Gr.displayName = "Accordion.Title";
+Zr.displayName = "Accordion.Content";
+Object.assign(Yr, {
   Panel: Wr,
-  Title: Yr,
-  Content: Ur
+  Title: Gr,
+  Content: Zr
 });
-const Zr = ({ children: e2 }) => a("div", { "data-testid": "avatar-group-element", className: "mb-5 flex -space-x-4", children: e2 });
-Zr.displayName = "Avatar.Group";
-const Xr = ({ total: e2, href: t2 }) => b("a", { className: "relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white ring-2 ring-gray-300 hover:bg-gray-600  dark:ring-gray-500 ", href: t2, children: ["+", e2] });
-Xr.displayName = "Avatar.GroupCounter";
+const Xr = ({ children: e2 }) => a("div", { "data-testid": "avatar-group-element", className: "mb-5 flex -space-x-4", children: e2 });
+Xr.displayName = "Avatar.Group";
+const qr = ({ total: e2, href: t2 }) => b("a", { className: "relative flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-xs font-medium text-white ring-2 ring-gray-300 hover:bg-gray-600  dark:ring-gray-500 ", href: t2, children: ["+", e2] });
+qr.displayName = "Avatar.GroupCounter";
 const Kr = ({ alt: e2 = "", bordered: t2 = false, children: n2, img: r, rounded: o2 = false, size: i2 = "md", stacked: s2 = false, status: c, statusPosition: l = "top-left", placeholderInitials: u = "", ...g }) => {
-  const h = P(g), f = R().theme.avatar;
+  const h = M(g), f = R().theme.avatar;
   return b("div", { className: f.base, "data-testid": "flowbite-avatar", ...h, children: [b("div", { className: "relative", children: [r ? a("img", { alt: e2, className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.on, f.size[i2]), "data-testid": "flowbite-avatar-img", src: r }) : u ? a("div", { className: T(f.img.off, f.initials.base, o2 && f.rounded, s2 && f.stacked, t2 && f.bordered), children: a("span", { className: T(f.initials.text), "data-testid": "flowbite-avatar-initials-placeholder", children: u }) }) : a("div", { className: T(t2 && f.bordered, o2 && f.rounded, s2 && f.stacked, f.img.off, f.size[i2]), "data-testid": "flowbite-avatar-img", children: a("svg", { className: "absolute -bottom-1 h-auto w-auto text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", children: a("path", { fillRule: "evenodd", d: "M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z", clipRule: "evenodd" }) }) }), c && a("span", { className: T(f.status.base, f.status[c], f.statusPosition[l]) })] }), n2 && a("div", { children: n2 })] });
 };
 Kr.displayName = "Avatar";
 Object.assign(Kr, {
-  Group: Zr,
-  Counter: Xr
+  Group: Xr,
+  Counter: qr
 });
-const bi = ({ children: e2, color: t2 = "info", href: n2, icon: r, size: o2 = "xs", ...i2 }) => {
-  const s2 = P(i2), c = R().theme.badge, l = () => b("span", { className: T(c.base, c.color[t2], c.icon[r ? "on" : "off"], c.size[o2]), "data-testid": "flowbite-badge", ...s2, children: [r && a(r, { "aria-hidden": true, className: c.icon.size[o2], "data-testid": "flowbite-badge-icon" }), e2 && a("span", { children: e2 })] });
+const vi = ({ children: e2, color: t2 = "info", href: n2, icon: r, size: o2 = "xs", ...i2 }) => {
+  const s2 = M(i2), c = R().theme.badge, l = () => b("span", { className: T(c.base, c.color[t2], c.icon[r ? "on" : "off"], c.size[o2]), "data-testid": "flowbite-badge", ...s2, children: [r && a(r, { "aria-hidden": true, className: c.icon.size[o2], "data-testid": "flowbite-badge-icon" }), e2 && a("span", { children: e2 })] });
   return n2 ? a("a", { className: c.href, href: n2, children: a(l, {}) }) : a(l, {});
-}, qr = ({ children: e2, href: t2, icon: n2, ...r }) => {
-  const o2 = typeof t2 < "u", i2 = P(r), s2 = R().theme.breadcrumb.item, c = o2 ? "a" : "span";
+}, Jr = ({ children: e2, href: t2, icon: n2, ...r }) => {
+  const o2 = typeof t2 < "u", i2 = M(r), s2 = R().theme.breadcrumb.item, c = o2 ? "a" : "span";
   return b("li", { className: s2.base, ...i2, children: [a(zr, { "aria-hidden": true, className: s2.chevron, "data-testid": "flowbite-breadcrumb-separator" }), b(c, { className: s2.href[o2 ? "on" : "off"], "data-testid": "flowbite-breadcrumb-item", href: t2, children: [n2 && a(n2, { "aria-hidden": true, className: s2.icon }), e2] })] });
 };
-qr.displayName = "Breadcrumb.Item";
-const Jr = ({ children: e2, ...t2 }) => {
+Jr.displayName = "Breadcrumb.Item";
+const Qr = ({ children: e2, ...t2 }) => {
   const n2 = R().theme.breadcrumb;
   return a("nav", { "aria-label": "Breadcrumb", ...t2, children: a("ol", { className: n2.list, children: e2 }) });
 };
-Jr.displayName = "Breadcrumb";
-Object.assign(Jr, { Item: qr });
-const Qr = ({ children: e2, outline: t2, pill: n2, ...r }) => {
-  const o2 = P(r), i2 = react.exports.useMemo(() => react.exports.Children.map(e2, (c, l) => react.exports.cloneElement(c, {
+Qr.displayName = "Breadcrumb";
+Object.assign(Qr, { Item: Jr });
+const en = ({ children: e2, outline: t2, pill: n2, ...r }) => {
+  const o2 = M(r), i2 = react.exports.useMemo(() => react.exports.Children.map(e2, (c, l) => react.exports.cloneElement(c, {
     outline: t2,
     pill: n2,
     positionInGroup: l === 0 ? "start" : l === e2.length - 1 ? "end" : "middle"
   })), [e2, t2, n2]), s2 = R().theme.buttonGroup;
   return a("div", { className: s2.base, role: "group", ...o2, children: i2 });
 };
-Qr.displayName = "Button.Group";
-const en = react.exports.forwardRef(({ children: e2, color: t2 = "info", disabled: n2 = false, gradientDuoTone: r, gradientMonochrome: o2, href: i2, label: s2, outline: c = false, pill: l = false, positionInGroup: u = "none", size: g = "md", ...h }, f) => {
+en.displayName = "Button.Group";
+const tn = react.exports.forwardRef(({ children: e2, color: t2 = "info", disabled: n2 = false, gradientDuoTone: r, gradientMonochrome: o2, href: i2, label: s2, outline: c = false, pill: l = false, positionInGroup: u = "none", size: g = "md", ...h }, f) => {
   var E;
-  const m = typeof i2 < "u", p = P(h), { buttonGroup: N, button: x } = R().theme;
+  const m = typeof i2 < "u", p = M(h), { buttonGroup: N, button: x } = R().theme;
   return a(m ? "a" : "button", { className: T(n2 && x.disabled, !r && !o2 && x.color[t2], r && !o2 && x.gradientDuoTone[r], !r && o2 && x.gradient[o2], N.position[u], c && ((E = x.outline.color[t2]) != null ? E : x.outline.color.default), x.base, x.pill[l ? "on" : "off"]), disabled: n2, href: i2, type: m ? void 0 : "button", ref: f, ...p, children: a("span", { className: T(x.inner.base, x.inner.position[u], x.outline[c ? "on" : "off"], x.outline.pill[c && l ? "on" : "off"], x.size[g], c && !x.outline.color[t2] && x.inner.outline), children: b(J, { children: [typeof e2 < "u" && e2, typeof s2 < "u" && a("span", { className: x.label, "data-testid": "flowbite-button-label", children: s2 })] }) }) });
 });
-en.displayName = "Button";
-const yi = Object.assign(en, {
-  Group: Qr
+tn.displayName = "Button";
+const wi = Object.assign(tn, {
+  Group: en
 });
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -2598,8 +2829,8 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-var tn = function(e2, t2) {
-  return (tn = Object.setPrototypeOf || {
+var rn = function(e2, t2) {
+  return (rn = Object.setPrototypeOf || {
     __proto__: []
   } instanceof Array && function(n2, r) {
     n2.__proto__ = r;
@@ -2607,7 +2838,7 @@ var tn = function(e2, t2) {
     for (var o2 in r)
       r.hasOwnProperty(o2) && (n2[o2] = r[o2]);
   })(e2, t2);
-}, vi, Ye, wi = (function(e2) {
+}, xi, Ge, Ci = (function(e2) {
   /*!
     Copyright (c) 2017 Jed Watson.
     Licensed under the MIT License (MIT), see
@@ -2634,16 +2865,16 @@ var tn = function(e2, t2) {
     }
     e2.exports ? (n2.default = n2, e2.exports = n2) : window.classNames = n2;
   })();
-}(Ye = {
-  path: vi,
+}(Ge = {
+  path: xi,
   exports: {},
   require: function(e2, t2) {
     return function() {
       throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");
-    }(t2 == null && Ye.path);
+    }(t2 == null && Ge.path);
   }
-}, Ye.exports), Ye.exports);
-function kt(e2, t2, n2) {
+}, Ge.exports), Ge.exports);
+function Nt(e2, t2, n2) {
   var r, o2, i2, s2, c;
   function l() {
     var g = Date.now() - s2;
@@ -2661,8 +2892,8 @@ function kt(e2, t2, n2) {
     r && (c = e2.apply(i2, o2), i2 = o2 = null, clearTimeout(r), r = null);
   }, u;
 }
-kt.debounce = kt;
-var xi = kt;
+Nt.debounce = Nt;
+var ki = Nt;
 (function(e2, t2) {
   t2 === void 0 && (t2 = {});
   var n2 = t2.insertAt;
@@ -2696,12 +2927,12 @@ var xi = kt;
   cursor: -webkit-grab;
   cursor: grab; }
 `);
-var yt, ki = (yt = "indiana-scroll-container", function(e2, t2) {
+var wt, Ni = (wt = "indiana-scroll-container", function(e2, t2) {
   if (!e2)
-    return yt;
+    return wt;
   var n2;
   typeof e2 == "string" ? n2 = e2 : t2 = e2;
-  var r = yt;
+  var r = wt;
   return n2 && (r += "__" + n2), r + (t2 ? Object.keys(t2).reduce(function(o2, i2) {
     var s2 = t2[i2];
     return s2 && (o2 += " " + (typeof s2 == "boolean" ? r + "--" + i2 : r + "--" + i2 + "_" + s2)), o2;
@@ -2739,13 +2970,13 @@ var yt, ki = (yt = "indiana-scroll-container", function(e2, t2) {
       r.pressed && (r.processMove(o2, o2.clientX, o2.clientY), o2.preventDefault(), r.props.stopPropagation && o2.stopPropagation());
     }, r.onMouseUp = function(o2) {
       r.pressed && (r.started ? r.processEnd() : (r.internal = false, r.pressed = false, r.forceUpdate(), r.props.onClick && r.props.onClick(o2)), o2.preventDefault(), r.props.stopPropagation && o2.stopPropagation());
-    }, r.container = React.createRef(), r.onEndScroll = xi(r.onEndScroll, 300), r.scrolling = false, r.started = false, r.pressed = false, r.internal = false, r.getRef = r.getRef.bind(r), r;
+    }, r.container = React.createRef(), r.onEndScroll = ki(r.onEndScroll, 300), r.scrolling = false, r.started = false, r.pressed = false, r.internal = false, r.getRef = r.getRef.bind(r), r;
   }
   return function(n2, r) {
     function o2() {
       this.constructor = n2;
     }
-    tn(n2, r), n2.prototype = r === null ? Object.create(r) : (o2.prototype = r.prototype, new o2());
+    rn(n2, r), n2.prototype = r === null ? Object.create(r) : (o2.prototype = r.prototype, new o2());
   }(t2, e2), t2.prototype.componentDidMount = function() {
     var n2 = this.props.nativeMobileScroll, r = this.container.current;
     window.addEventListener("mouseup", this.onMouseUp), window.addEventListener("mousemove", this.onMouseMove), window.addEventListener("touchmove", this.onTouchMove, {
@@ -2805,7 +3036,7 @@ var yt, ki = (yt = "indiana-scroll-container", function(e2, t2) {
   }, t2.prototype.render = function() {
     var n2 = this.props, r = n2.children, o2 = n2.draggingClassName, i2 = n2.className, s2 = n2.style, c = n2.hideScrollbars, l = n2.component;
     return React.createElement(l, {
-      className: wi(i2, this.pressed && o2, ki({
+      className: Ci(i2, this.pressed && o2, Ni({
         dragging: this.pressed,
         "hide-scrollbars": c,
         "native-scroll": this.isMobile
@@ -2826,7 +3057,7 @@ var yt, ki = (yt = "indiana-scroll-container", function(e2, t2) {
     buttons: [0]
   }, t2;
 })(react.exports.PureComponent);
-function Ci() {
+function Ei() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(e2) {
     const t2 = Math.random() * 16 | 0;
     return (e2 == "x" ? t2 : t2 & 3 | 8).toString(16);
@@ -2835,21 +3066,21 @@ function Ci() {
 function Ee(e2) {
   return e2.split("-")[0];
 }
-function Ce(e2) {
+function ke(e2) {
   return e2.split("-")[1];
 }
-function Ae(e2) {
+function Ie(e2) {
   return ["top", "bottom"].includes(Ee(e2)) ? "x" : "y";
 }
-function Ot(e2) {
+function Pt(e2) {
   return e2 === "y" ? "height" : "width";
 }
-function gr(e2, t2, n2) {
+function hr(e2, t2, n2) {
   let {
     reference: r,
     floating: o2
   } = e2;
-  const i2 = r.x + r.width / 2 - o2.width / 2, s2 = r.y + r.height / 2 - o2.height / 2, c = Ae(t2), l = Ot(c), u = r[l] / 2 - o2[l] / 2, g = Ee(t2), h = c === "x";
+  const i2 = r.x + r.width / 2 - o2.width / 2, s2 = r.y + r.height / 2 - o2.height / 2, c = Ie(t2), l = Pt(c), u = r[l] / 2 - o2[l] / 2, g = Ee(t2), h = c === "x";
   let f;
   switch (g) {
     case "top":
@@ -2882,7 +3113,7 @@ function gr(e2, t2, n2) {
         y: r.y
       };
   }
-  switch (Ce(t2)) {
+  switch (ke(t2)) {
     case "start":
       f[c] -= u * (n2 && h ? -1 : 1);
       break;
@@ -2892,7 +3123,7 @@ function gr(e2, t2, n2) {
   }
   return f;
 }
-const Ni = async (e2, t2, n2) => {
+const Ri = async (e2, t2, n2) => {
   const {
     placement: r = "bottom",
     strategy: o2 = "absolute",
@@ -2906,13 +3137,13 @@ const Ni = async (e2, t2, n2) => {
   }), {
     x: u,
     y: g
-  } = gr(l, r, c), h = r, f = {}, m = 0;
+  } = hr(l, r, c), h = r, f = {}, m = 0;
   for (let p = 0; p < i2.length; p++) {
     const {
       name: N,
       fn: x
     } = i2[p], {
-      x: C,
+      x: k,
       y: E,
       data: O,
       reset: v
@@ -2930,7 +3161,7 @@ const Ni = async (e2, t2, n2) => {
         floating: t2
       }
     });
-    if (u = C != null ? C : u, g = E != null ? E : g, f = {
+    if (u = k != null ? k : u, g = E != null ? E : g, f = {
       ...f,
       [N]: {
         ...f[N],
@@ -2944,7 +3175,7 @@ const Ni = async (e2, t2, n2) => {
       }) : v.rects), {
         x: u,
         y: g
-      } = gr(l, h, c)), p = -1;
+      } = hr(l, h, c)), p = -1;
       continue;
     }
   }
@@ -2956,7 +3187,7 @@ const Ni = async (e2, t2, n2) => {
     middlewareData: f
   };
 };
-function Ei(e2) {
+function Ti(e2) {
   return {
     top: 0,
     right: 0,
@@ -2965,15 +3196,15 @@ function Ei(e2) {
     ...e2
   };
 }
-function rn(e2) {
-  return typeof e2 != "number" ? Ei(e2) : {
+function nn(e2) {
+  return typeof e2 != "number" ? Ti(e2) : {
     top: e2,
     right: e2,
     bottom: e2,
     left: e2
   };
 }
-function Je(e2) {
+function Qe(e2) {
   return {
     ...e2,
     top: e2.y,
@@ -2982,7 +3213,7 @@ function Je(e2) {
     bottom: e2.y + e2.height
   };
 }
-async function Pt(e2, t2) {
+async function Lt(e2, t2) {
   var n2;
   t2 === void 0 && (t2 = {});
   const {
@@ -2998,12 +3229,12 @@ async function Pt(e2, t2) {
     elementContext: h = "floating",
     altBoundary: f = false,
     padding: m = 0
-  } = t2, p = rn(m), x = c[f ? h === "floating" ? "reference" : "floating" : h], C = Je(await i2.getClippingRect({
+  } = t2, p = nn(m), x = c[f ? h === "floating" ? "reference" : "floating" : h], k = Qe(await i2.getClippingRect({
     element: (n2 = await (i2.isElement == null ? void 0 : i2.isElement(x))) == null || n2 ? x : x.contextElement || await (i2.getDocumentElement == null ? void 0 : i2.getDocumentElement(c.floating)),
     boundary: u,
     rootBoundary: g,
     strategy: l
-  })), E = Je(i2.convertOffsetParentRelativeRectToViewportRelativeRect ? await i2.convertOffsetParentRelativeRectToViewportRelativeRect({
+  })), E = Qe(i2.convertOffsetParentRelativeRectToViewportRelativeRect ? await i2.convertOffsetParentRelativeRectToViewportRelativeRect({
     rect: h === "floating" ? {
       ...s2.floating,
       x: r,
@@ -3013,17 +3244,17 @@ async function Pt(e2, t2) {
     strategy: l
   }) : s2[h]);
   return {
-    top: C.top - E.top + p.top,
-    bottom: E.bottom - C.bottom + p.bottom,
-    left: C.left - E.left + p.left,
-    right: E.right - C.right + p.right
+    top: k.top - E.top + p.top,
+    bottom: E.bottom - k.bottom + p.bottom,
+    left: k.left - E.left + p.left,
+    right: E.right - k.right + p.right
   };
 }
-const Ri = Math.min, Ti = Math.max;
-function Ct(e2, t2, n2) {
-  return Ti(e2, Ri(t2, n2));
+const Si = Math.min, Oi = Math.max;
+function Et(e2, t2, n2) {
+  return Oi(e2, Si(t2, n2));
 }
-const Si = (e2) => ({
+const Mi = (e2) => ({
   name: "arrow",
   options: e2,
   async fn(t2) {
@@ -3039,51 +3270,51 @@ const Si = (e2) => ({
     } = t2;
     if (n2 == null)
       return {};
-    const u = rn(r), g = {
+    const u = nn(r), g = {
       x: o2,
       y: i2
-    }, h = Ae(s2), f = Ce(s2), m = Ot(h), p = await l.getDimensions(n2), N = h === "y" ? "top" : "left", x = h === "y" ? "bottom" : "right", C = c.reference[m] + c.reference[h] - g[h] - c.floating[m], E = g[h] - c.reference[h], O = await (l.getOffsetParent == null ? void 0 : l.getOffsetParent(n2));
+    }, h = Ie(s2), f = ke(s2), m = Pt(h), p = await l.getDimensions(n2), N = h === "y" ? "top" : "left", x = h === "y" ? "bottom" : "right", k = c.reference[m] + c.reference[h] - g[h] - c.floating[m], E = g[h] - c.reference[h], O = await (l.getOffsetParent == null ? void 0 : l.getOffsetParent(n2));
     let v = O ? h === "y" ? O.clientHeight || 0 : O.clientWidth || 0 : 0;
     v === 0 && (v = c.floating[m]);
-    const _ = C / 2 - E / 2, F = u[N], W = v - p[m] - u[x], B = v / 2 - p[m] / 2 + _, D = Ct(F, B, W), G = (f === "start" ? u[N] : u[x]) > 0 && B !== D && c.reference[m] <= c.floating[m] ? B < F ? F - B : W - B : 0;
+    const A = k / 2 - E / 2, F = u[N], Z = v - p[m] - u[x], B = v / 2 - p[m] / 2 + A, $ = Et(F, B, Z), G = (f === "start" ? u[N] : u[x]) > 0 && B !== $ && c.reference[m] <= c.floating[m] ? B < F ? F - B : Z - B : 0;
     return {
       [h]: g[h] - G,
       data: {
-        [h]: D,
-        centerOffset: B - D
+        [h]: $,
+        centerOffset: B - $
       }
     };
   }
-}), Oi = {
+}), Pi = {
   left: "right",
   right: "left",
   bottom: "top",
   top: "bottom"
 };
-function Qe(e2) {
-  return e2.replace(/left|right|bottom|top/g, (t2) => Oi[t2]);
+function et(e2) {
+  return e2.replace(/left|right|bottom|top/g, (t2) => Pi[t2]);
 }
-function nn(e2, t2, n2) {
+function on(e2, t2, n2) {
   n2 === void 0 && (n2 = false);
-  const r = Ce(e2), o2 = Ae(e2), i2 = Ot(o2);
+  const r = ke(e2), o2 = Ie(e2), i2 = Pt(o2);
   let s2 = o2 === "x" ? r === (n2 ? "end" : "start") ? "right" : "left" : r === "start" ? "bottom" : "top";
-  return t2.reference[i2] > t2.floating[i2] && (s2 = Qe(s2)), {
+  return t2.reference[i2] > t2.floating[i2] && (s2 = et(s2)), {
     main: s2,
-    cross: Qe(s2)
+    cross: et(s2)
   };
 }
-const Pi = {
+const Li = {
   start: "end",
   end: "start"
 };
-function Nt(e2) {
-  return e2.replace(/start|end/g, (t2) => Pi[t2]);
+function Rt(e2) {
+  return e2.replace(/start|end/g, (t2) => Li[t2]);
 }
-const Li = ["top", "right", "bottom", "left"], Mi = /* @__PURE__ */ Li.reduce((e2, t2) => e2.concat(t2, t2 + "-start", t2 + "-end"), []);
-function _i(e2, t2, n2) {
-  return (e2 ? [...n2.filter((o2) => Ce(o2) === e2), ...n2.filter((o2) => Ce(o2) !== e2)] : n2.filter((o2) => Ee(o2) === o2)).filter((o2) => e2 ? Ce(o2) === e2 || (t2 ? Nt(o2) !== o2 : false) : true);
+const Ai = ["top", "right", "bottom", "left"], _i = /* @__PURE__ */ Ai.reduce((e2, t2) => e2.concat(t2, t2 + "-start", t2 + "-end"), []);
+function Ii(e2, t2, n2) {
+  return (e2 ? [...n2.filter((o2) => ke(o2) === e2), ...n2.filter((o2) => ke(o2) !== e2)] : n2.filter((o2) => Ee(o2) === o2)).filter((o2) => e2 ? ke(o2) === e2 || (t2 ? Rt(o2) !== o2 : false) : true);
 }
-const Ii = function(e2) {
+const ji = function(e2) {
   return e2 === void 0 && (e2 = {}), {
     name: "autoPlacement",
     options: e2,
@@ -3099,17 +3330,17 @@ const Ii = function(e2) {
         elements: m
       } = t2, {
         alignment: p = null,
-        allowedPlacements: N = Mi,
+        allowedPlacements: N = _i,
         autoAlignment: x = true,
-        ...C
-      } = e2, E = _i(p, x, N), O = await Pt(t2, C), v = (n2 = (r = g.autoPlacement) == null ? void 0 : r.index) != null ? n2 : 0, _ = E[v];
-      if (_ == null)
+        ...k
+      } = e2, E = Ii(p, x, N), O = await Lt(t2, k), v = (n2 = (r = g.autoPlacement) == null ? void 0 : r.index) != null ? n2 : 0, A = E[v];
+      if (A == null)
         return {};
       const {
         main: F,
-        cross: W
-      } = nn(_, u, await (f.isRTL == null ? void 0 : f.isRTL(m.floating)));
-      if (h !== _)
+        cross: Z
+      } = on(A, u, await (f.isRTL == null ? void 0 : f.isRTL(m.floating)));
+      if (h !== A)
         return {
           x: c,
           y: l,
@@ -3117,43 +3348,43 @@ const Ii = function(e2) {
             placement: E[0]
           }
         };
-      const B = [O[Ee(_)], O[F], O[W]], D = [...(o2 = (i2 = g.autoPlacement) == null ? void 0 : i2.overflows) != null ? o2 : [], {
-        placement: _,
+      const B = [O[Ee(A)], O[F], O[Z]], $ = [...(o2 = (i2 = g.autoPlacement) == null ? void 0 : i2.overflows) != null ? o2 : [], {
+        placement: A,
         overflows: B
-      }], U = E[v + 1];
-      if (U)
+      }], V = E[v + 1];
+      if (V)
         return {
           data: {
             index: v + 1,
-            overflows: D
+            overflows: $
           },
           reset: {
-            placement: U
+            placement: V
           }
         };
-      const Y = D.slice().sort((L, j) => L.overflows[0] - j.overflows[0]), G = (s2 = Y.find((L) => {
+      const W = $.slice().sort((P, j) => P.overflows[0] - j.overflows[0]), G = (s2 = W.find((P) => {
         let {
           overflows: j
-        } = L;
+        } = P;
         return j.every((ee) => ee <= 0);
-      })) == null ? void 0 : s2.placement, H = G != null ? G : Y[0].placement;
-      return H !== h ? {
+      })) == null ? void 0 : s2.placement, z = G != null ? G : W[0].placement;
+      return z !== h ? {
         data: {
           index: v + 1,
-          overflows: D
+          overflows: $
         },
         reset: {
-          placement: H
+          placement: z
         }
       } : {};
     }
   };
 };
-function Ai(e2) {
-  const t2 = Qe(e2);
-  return [Nt(e2), t2, Nt(t2)];
+function Fi(e2) {
+  const t2 = et(e2);
+  return [Rt(e2), t2, Rt(t2)];
 }
-const ji = function(e2) {
+const Di = function(e2) {
   return e2 === void 0 && (e2 = {}), {
     name: "flip",
     options: e2,
@@ -3173,47 +3404,47 @@ const ji = function(e2) {
         fallbackStrategy: f = "bestFit",
         flipAlignment: m = true,
         ...p
-      } = e2, N = Ee(r), C = h || (N === s2 || !m ? [Qe(s2)] : Ai(s2)), E = [s2, ...C], O = await Pt(t2, p), v = [];
-      let _ = ((n2 = o2.flip) == null ? void 0 : n2.overflows) || [];
+      } = e2, N = Ee(r), k = h || (N === s2 || !m ? [et(s2)] : Fi(s2)), E = [s2, ...k], O = await Lt(t2, p), v = [];
+      let A = ((n2 = o2.flip) == null ? void 0 : n2.overflows) || [];
       if (u && v.push(O[N]), g) {
         const {
-          main: D,
-          cross: U
-        } = nn(r, i2, await (c.isRTL == null ? void 0 : c.isRTL(l.floating)));
-        v.push(O[D], O[U]);
+          main: $,
+          cross: V
+        } = on(r, i2, await (c.isRTL == null ? void 0 : c.isRTL(l.floating)));
+        v.push(O[$], O[V]);
       }
-      if (_ = [..._, {
+      if (A = [...A, {
         placement: r,
         overflows: v
-      }], !v.every((D) => D <= 0)) {
-        var F, W;
-        const D = ((F = (W = o2.flip) == null ? void 0 : W.index) != null ? F : 0) + 1, U = E[D];
-        if (U)
+      }], !v.every(($) => $ <= 0)) {
+        var F, Z;
+        const $ = ((F = (Z = o2.flip) == null ? void 0 : Z.index) != null ? F : 0) + 1, V = E[$];
+        if (V)
           return {
             data: {
-              index: D,
-              overflows: _
+              index: $,
+              overflows: A
             },
             reset: {
-              placement: U
+              placement: V
             }
           };
-        let Y = "bottom";
+        let W = "bottom";
         switch (f) {
           case "bestFit": {
             var B;
-            const G = (B = _.map((H) => [H, H.overflows.filter((L) => L > 0).reduce((L, j) => L + j, 0)]).sort((H, L) => H[1] - L[1])[0]) == null ? void 0 : B[0].placement;
-            G && (Y = G);
+            const G = (B = A.map((z) => [z, z.overflows.filter((P) => P > 0).reduce((P, j) => P + j, 0)]).sort((z, P) => z[1] - P[1])[0]) == null ? void 0 : B[0].placement;
+            G && (W = G);
             break;
           }
           case "initialPlacement":
-            Y = s2;
+            W = s2;
             break;
         }
-        if (r !== Y)
+        if (r !== W)
           return {
             reset: {
-              placement: Y
+              placement: W
             }
           };
       }
@@ -3221,12 +3452,12 @@ const ji = function(e2) {
     }
   };
 };
-async function Fi(e2, t2) {
+async function $i(e2, t2) {
   const {
     placement: n2,
     platform: r,
     elements: o2
-  } = e2, i2 = await (r.isRTL == null ? void 0 : r.isRTL(o2.floating)), s2 = Ee(n2), c = Ce(n2), l = Ae(n2) === "x", u = ["left", "top"].includes(s2) ? -1 : 1, g = i2 && l ? -1 : 1, h = typeof t2 == "function" ? t2(e2) : t2;
+  } = e2, i2 = await (r.isRTL == null ? void 0 : r.isRTL(o2.floating)), s2 = Ee(n2), c = ke(n2), l = Ie(n2) === "x", u = ["left", "top"].includes(s2) ? -1 : 1, g = i2 && l ? -1 : 1, h = typeof t2 == "function" ? t2(e2) : t2;
   let {
     mainAxis: f,
     crossAxis: m,
@@ -3249,7 +3480,7 @@ async function Fi(e2, t2) {
     y: m * g
   };
 }
-const $i = function(e2) {
+const Bi = function(e2) {
   return e2 === void 0 && (e2 = 0), {
     name: "offset",
     options: e2,
@@ -3257,7 +3488,7 @@ const $i = function(e2) {
       const {
         x: n2,
         y: r
-      } = t2, o2 = await Fi(t2, e2);
+      } = t2, o2 = await $i(t2, e2);
       return {
         x: n2 + o2.x,
         y: r + o2.y,
@@ -3266,10 +3497,10 @@ const $i = function(e2) {
     }
   };
 };
-function Di(e2) {
+function Hi(e2) {
   return e2 === "x" ? "y" : "x";
 }
-const Bi = function(e2) {
+const zi = function(e2) {
   return e2 === void 0 && (e2 = {}), {
     name: "shift",
     options: e2,
@@ -3284,11 +3515,11 @@ const Bi = function(e2) {
         limiter: c = {
           fn: (x) => {
             let {
-              x: C,
+              x: k,
               y: E
             } = x;
             return {
-              x: C,
+              x: k,
               y: E
             };
           }
@@ -3297,15 +3528,15 @@ const Bi = function(e2) {
       } = e2, u = {
         x: n2,
         y: r
-      }, g = await Pt(t2, l), h = Ae(Ee(o2)), f = Di(h);
+      }, g = await Lt(t2, l), h = Ie(Ee(o2)), f = Hi(h);
       let m = u[h], p = u[f];
       if (i2) {
-        const x = h === "y" ? "top" : "left", C = h === "y" ? "bottom" : "right", E = m + g[x], O = m - g[C];
-        m = Ct(E, m, O);
+        const x = h === "y" ? "top" : "left", k = h === "y" ? "bottom" : "right", E = m + g[x], O = m - g[k];
+        m = Et(E, m, O);
       }
       if (s2) {
-        const x = f === "y" ? "top" : "left", C = f === "y" ? "bottom" : "right", E = p + g[x], O = p - g[C];
-        p = Ct(E, p, O);
+        const x = f === "y" ? "top" : "left", k = f === "y" ? "bottom" : "right", E = p + g[x], O = p - g[k];
+        p = Et(E, p, O);
       }
       const N = c.fn({
         ...t2,
@@ -3322,13 +3553,13 @@ const Bi = function(e2) {
     }
   };
 };
-function on(e2) {
+function an(e2) {
   return e2 && e2.document && e2.location && e2.alert && e2.setInterval;
 }
 function he(e2) {
   if (e2 == null)
     return window;
-  if (!on(e2)) {
+  if (!an(e2)) {
     const t2 = e2.ownerDocument;
     return t2 && t2.defaultView || window;
   }
@@ -3338,9 +3569,9 @@ function be(e2) {
   return he(e2).getComputedStyle(e2);
 }
 function ye(e2) {
-  return on(e2) ? "" : e2 ? (e2.nodeName || "").toLowerCase() : "";
+  return an(e2) ? "" : e2 ? (e2.nodeName || "").toLowerCase() : "";
 }
-function an() {
+function sn() {
   const e2 = navigator.userAgentData;
   return e2 != null && e2.brands ? e2.brands.map((t2) => t2.brand + "/" + t2.version).join(" ") : navigator.userAgent;
 }
@@ -3350,10 +3581,10 @@ function oe(e2) {
 function le(e2) {
   return e2 instanceof he(e2).Element;
 }
-function zi(e2) {
+function Ui(e2) {
   return e2 instanceof he(e2).Node;
 }
-function Ie(e2) {
+function _e(e2) {
   if (typeof ShadowRoot > "u")
     return false;
   const t2 = he(e2).ShadowRoot;
@@ -3368,11 +3599,11 @@ function je(e2) {
   } = be(e2);
   return /auto|scroll|overlay|hidden/.test(t2 + r + n2) && !["inline", "contents"].includes(o2);
 }
-function Hi(e2) {
+function Vi(e2) {
   return ["table", "td", "th"].includes(ye(e2));
 }
-function sn(e2) {
-  const t2 = /firefox/i.test(an()), n2 = be(e2);
+function ln(e2) {
+  const t2 = /firefox/i.test(sn()), n2 = be(e2);
   return n2.transform !== "none" || n2.perspective !== "none" || t2 && n2.willChange === "filter" || t2 && (n2.filter ? n2.filter !== "none" : false) || ["transform", "perspective"].some((r) => n2.willChange.includes(r)) || ["paint", "layout", "strict", "content"].some(
     (r) => {
       const o2 = n2.contain;
@@ -3380,20 +3611,20 @@ function sn(e2) {
     }
   );
 }
-function ln() {
-  return !/^((?!chrome|android).)*safari/i.test(an());
+function cn() {
+  return !/^((?!chrome|android).)*safari/i.test(sn());
 }
-function Lt(e2) {
+function At(e2) {
   return ["html", "body", "#document"].includes(ye(e2));
 }
-const hr = Math.min, Me = Math.max, et = Math.round;
+const mr = Math.min, Le = Math.max, tt = Math.round;
 function fe(e2, t2, n2) {
   var r, o2, i2, s2;
   t2 === void 0 && (t2 = false), n2 === void 0 && (n2 = false);
   const c = e2.getBoundingClientRect();
   let l = 1, u = 1;
-  t2 && oe(e2) && (l = e2.offsetWidth > 0 && et(c.width) / e2.offsetWidth || 1, u = e2.offsetHeight > 0 && et(c.height) / e2.offsetHeight || 1);
-  const g = le(e2) ? he(e2) : window, h = !ln() && n2, f = (c.left + (h && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / l, m = (c.top + (h && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, p = c.width / l, N = c.height / u;
+  t2 && oe(e2) && (l = e2.offsetWidth > 0 && tt(c.width) / e2.offsetWidth || 1, u = e2.offsetHeight > 0 && tt(c.height) / e2.offsetHeight || 1);
+  const g = le(e2) ? he(e2) : window, h = !cn() && n2, f = (c.left + (h && (r = (o2 = g.visualViewport) == null ? void 0 : o2.offsetLeft) != null ? r : 0)) / l, m = (c.top + (h && (i2 = (s2 = g.visualViewport) == null ? void 0 : s2.offsetTop) != null ? i2 : 0)) / u, p = c.width / l, N = c.height / u;
   return {
     width: p,
     height: N,
@@ -3406,9 +3637,9 @@ function fe(e2, t2, n2) {
   };
 }
 function we(e2) {
-  return ((zi(e2) ? e2.ownerDocument : e2.document) || window.document).documentElement;
+  return ((Ui(e2) ? e2.ownerDocument : e2.document) || window.document).documentElement;
 }
-function ot(e2) {
+function at(e2) {
   return le(e2) ? {
     scrollLeft: e2.scrollLeft,
     scrollTop: e2.scrollTop
@@ -3417,17 +3648,17 @@ function ot(e2) {
     scrollTop: e2.pageYOffset
   };
 }
-function cn(e2) {
-  return fe(we(e2)).left + ot(e2).scrollLeft;
+function dn(e2) {
+  return fe(we(e2)).left + at(e2).scrollLeft;
 }
-function Vi(e2) {
+function Zi(e2) {
   const t2 = fe(e2);
-  return et(t2.width) !== e2.offsetWidth || et(t2.height) !== e2.offsetHeight;
+  return tt(t2.width) !== e2.offsetWidth || tt(t2.height) !== e2.offsetHeight;
 }
-function Ui(e2, t2, n2) {
+function Wi(e2, t2, n2) {
   const r = oe(t2), o2 = we(t2), i2 = fe(
     e2,
-    r && Vi(t2),
+    r && Zi(t2),
     n2 === "fixed"
   );
   let s2 = {
@@ -3439,11 +3670,11 @@ function Ui(e2, t2, n2) {
     y: 0
   };
   if (r || !r && n2 !== "fixed")
-    if ((ye(t2) !== "body" || je(o2)) && (s2 = ot(t2)), oe(t2)) {
+    if ((ye(t2) !== "body" || je(o2)) && (s2 = at(t2)), oe(t2)) {
       const l = fe(t2, true);
       c.x = l.x + t2.clientLeft, c.y = l.y + t2.clientTop;
     } else
-      o2 && (c.x = cn(o2));
+      o2 && (c.x = dn(o2));
   return {
     x: i2.left + s2.scrollLeft - c.x,
     y: i2.top + s2.scrollTop - c.y,
@@ -3451,32 +3682,32 @@ function Ui(e2, t2, n2) {
     height: i2.height
   };
 }
-function Mt(e2) {
-  return ye(e2) === "html" ? e2 : e2.assignedSlot || e2.parentNode || (Ie(e2) ? e2.host : null) || we(e2);
+function _t(e2) {
+  return ye(e2) === "html" ? e2 : e2.assignedSlot || e2.parentNode || (_e(e2) ? e2.host : null) || we(e2);
 }
-function mr(e2) {
+function pr(e2) {
   return !oe(e2) || be(e2).position === "fixed" ? null : e2.offsetParent;
 }
-function Wi(e2) {
-  let t2 = Mt(e2);
-  for (Ie(t2) && (t2 = t2.host); oe(t2) && !Lt(t2); ) {
-    if (sn(t2))
+function Gi(e2) {
+  let t2 = _t(e2);
+  for (_e(t2) && (t2 = t2.host); oe(t2) && !At(t2); ) {
+    if (ln(t2))
       return t2;
     {
       const n2 = t2.parentNode;
-      t2 = Ie(n2) ? n2.host : n2;
+      t2 = _e(n2) ? n2.host : n2;
     }
   }
   return null;
 }
-function Et(e2) {
+function Tt(e2) {
   const t2 = he(e2);
-  let n2 = mr(e2);
-  for (; n2 && Hi(n2) && be(n2).position === "static"; )
-    n2 = mr(n2);
-  return n2 && (ye(n2) === "html" || ye(n2) === "body" && be(n2).position === "static" && !sn(n2)) ? t2 : n2 || Wi(e2) || t2;
+  let n2 = pr(e2);
+  for (; n2 && Vi(n2) && be(n2).position === "static"; )
+    n2 = pr(n2);
+  return n2 && (ye(n2) === "html" || ye(n2) === "body" && be(n2).position === "static" && !ln(n2)) ? t2 : n2 || Gi(e2) || t2;
 }
-function pr(e2) {
+function br(e2) {
   if (oe(e2))
     return {
       width: e2.offsetWidth,
@@ -3505,7 +3736,7 @@ function Yi(e2) {
     x: 0,
     y: 0
   };
-  if ((o2 || !o2 && r !== "fixed") && ((ye(n2) !== "body" || je(i2)) && (s2 = ot(n2)), oe(n2))) {
+  if ((o2 || !o2 && r !== "fixed") && ((ye(n2) !== "body" || je(i2)) && (s2 = at(n2)), oe(n2))) {
     const l = fe(n2, true);
     c.x = l.x + n2.clientLeft, c.y = l.y + n2.clientTop;
   }
@@ -3515,12 +3746,12 @@ function Yi(e2) {
     y: t2.y - s2.scrollTop + c.y
   };
 }
-function Gi(e2, t2) {
+function Xi(e2, t2) {
   const n2 = he(e2), r = we(e2), o2 = n2.visualViewport;
   let i2 = r.clientWidth, s2 = r.clientHeight, c = 0, l = 0;
   if (o2) {
     i2 = o2.width, s2 = o2.height;
-    const u = ln();
+    const u = cn();
     (u || !u && t2 === "fixed") && (c = o2.offsetLeft, l = o2.offsetTop);
   }
   return {
@@ -3530,33 +3761,33 @@ function Gi(e2, t2) {
     y: l
   };
 }
-function Zi(e2) {
+function qi(e2) {
   var t2;
-  const n2 = we(e2), r = ot(e2), o2 = (t2 = e2.ownerDocument) == null ? void 0 : t2.body, i2 = Me(n2.scrollWidth, n2.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), s2 = Me(n2.scrollHeight, n2.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0);
-  let c = -r.scrollLeft + cn(e2);
+  const n2 = we(e2), r = at(e2), o2 = (t2 = e2.ownerDocument) == null ? void 0 : t2.body, i2 = Le(n2.scrollWidth, n2.clientWidth, o2 ? o2.scrollWidth : 0, o2 ? o2.clientWidth : 0), s2 = Le(n2.scrollHeight, n2.clientHeight, o2 ? o2.scrollHeight : 0, o2 ? o2.clientHeight : 0);
+  let c = -r.scrollLeft + dn(e2);
   const l = -r.scrollTop;
-  return be(o2 || n2).direction === "rtl" && (c += Me(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
+  return be(o2 || n2).direction === "rtl" && (c += Le(n2.clientWidth, o2 ? o2.clientWidth : 0) - i2), {
     width: i2,
     height: s2,
     x: c,
     y: l
   };
 }
-function dn(e2) {
-  const t2 = Mt(e2);
-  return Lt(t2) ? e2.ownerDocument.body : oe(t2) && je(t2) ? t2 : dn(t2);
+function un(e2) {
+  const t2 = _t(e2);
+  return At(t2) ? e2.ownerDocument.body : oe(t2) && je(t2) ? t2 : un(t2);
 }
-function _e(e2, t2) {
+function Ae(e2, t2) {
   var n2;
   t2 === void 0 && (t2 = []);
-  const r = dn(e2), o2 = r === ((n2 = e2.ownerDocument) == null ? void 0 : n2.body), i2 = he(r), s2 = o2 ? [i2].concat(i2.visualViewport || [], je(r) ? r : []) : r, c = t2.concat(s2);
-  return o2 ? c : c.concat(_e(s2));
+  const r = un(e2), o2 = r === ((n2 = e2.ownerDocument) == null ? void 0 : n2.body), i2 = he(r), s2 = o2 ? [i2].concat(i2.visualViewport || [], je(r) ? r : []) : r, c = t2.concat(s2);
+  return o2 ? c : c.concat(Ae(s2));
 }
-function Xi(e2, t2) {
+function Ki(e2, t2) {
   const n2 = t2.getRootNode == null ? void 0 : t2.getRootNode();
   if (e2.contains(t2))
     return true;
-  if (n2 && Ie(n2)) {
+  if (n2 && _e(n2)) {
     let r = t2;
     do {
       if (r && e2 === r)
@@ -3566,15 +3797,15 @@ function Xi(e2, t2) {
   }
   return false;
 }
-function Ki(e2, t2) {
+function Ji(e2, t2) {
   let n2 = e2;
-  for (; n2 && !Lt(n2) && !t2.includes(n2) && !(le(n2) && ["absolute", "fixed"].includes(be(n2).position)); ) {
-    const r = Mt(n2);
-    n2 = Ie(r) ? r.host : r;
+  for (; n2 && !At(n2) && !t2.includes(n2) && !(le(n2) && ["absolute", "fixed"].includes(be(n2).position)); ) {
+    const r = _t(n2);
+    n2 = _e(r) ? r.host : r;
   }
   return n2;
 }
-function qi(e2, t2) {
+function Qi(e2, t2) {
   const n2 = fe(e2, false, t2 === "fixed"), r = n2.top + e2.clientTop, o2 = n2.left + e2.clientLeft;
   return {
     top: r,
@@ -3587,29 +3818,29 @@ function qi(e2, t2) {
     height: e2.clientHeight
   };
 }
-function br(e2, t2, n2) {
-  return t2 === "viewport" ? Je(Gi(e2, n2)) : le(t2) ? qi(t2, n2) : Je(Zi(we(e2)));
+function yr(e2, t2, n2) {
+  return t2 === "viewport" ? Qe(Xi(e2, n2)) : le(t2) ? Qi(t2, n2) : Qe(qi(we(e2)));
 }
-function Ji(e2) {
-  const t2 = _e(e2), n2 = Ki(e2, t2);
+function es(e2) {
+  const t2 = Ae(e2), n2 = Ji(e2, t2);
   let r = null;
   if (n2 && oe(n2)) {
-    const o2 = Et(n2);
+    const o2 = Tt(n2);
     je(n2) ? r = n2 : oe(o2) && (r = o2);
   }
-  return le(r) ? t2.filter((o2) => r && le(o2) && Xi(o2, r) && ye(o2) !== "body") : [];
+  return le(r) ? t2.filter((o2) => r && le(o2) && Ki(o2, r) && ye(o2) !== "body") : [];
 }
-function Qi(e2) {
+function ts(e2) {
   let {
     element: t2,
     boundary: n2,
     rootBoundary: r,
     strategy: o2
   } = e2;
-  const s2 = [...n2 === "clippingAncestors" ? Ji(t2) : [].concat(n2), r], c = s2[0], l = s2.reduce((u, g) => {
-    const h = br(t2, g, o2);
-    return u.top = Me(h.top, u.top), u.right = hr(h.right, u.right), u.bottom = hr(h.bottom, u.bottom), u.left = Me(h.left, u.left), u;
-  }, br(t2, c, o2));
+  const s2 = [...n2 === "clippingAncestors" ? es(t2) : [].concat(n2), r], c = s2[0], l = s2.reduce((u, g) => {
+    const h = yr(t2, g, o2);
+    return u.top = Le(h.top, u.top), u.right = mr(h.right, u.right), u.bottom = mr(h.bottom, u.bottom), u.left = Le(h.left, u.left), u;
+  }, yr(t2, c, o2));
   return {
     width: l.right - l.left,
     height: l.bottom - l.top,
@@ -3617,12 +3848,12 @@ function Qi(e2) {
     y: l.top
   };
 }
-const es = {
-  getClippingRect: Qi,
+const rs = {
+  getClippingRect: ts,
   convertOffsetParentRelativeRectToViewportRelativeRect: Yi,
   isElement: le,
-  getDimensions: pr,
-  getOffsetParent: Et,
+  getDimensions: br,
+  getOffsetParent: Tt,
   getDocumentElement: we,
   getElementRects: (e2) => {
     let {
@@ -3631,9 +3862,9 @@ const es = {
       strategy: r
     } = e2;
     return {
-      reference: Ui(t2, Et(n2), r),
+      reference: Wi(t2, Tt(n2), r),
       floating: {
-        ...pr(n2),
+        ...br(n2),
         x: 0,
         y: 0
       }
@@ -3642,14 +3873,14 @@ const es = {
   getClientRects: (e2) => Array.from(e2.getClientRects()),
   isRTL: (e2) => be(e2).direction === "rtl"
 };
-function ts(e2, t2, n2, r) {
+function ns(e2, t2, n2, r) {
   r === void 0 && (r = {});
   const {
     ancestorScroll: o2 = true,
     ancestorResize: i2 = true,
     elementResize: s2 = true,
     animationFrame: c = false
-  } = r, l = o2 && !c, u = l || i2 ? [...le(e2) ? _e(e2) : e2.contextElement ? _e(e2.contextElement) : [], ..._e(t2)] : [];
+  } = r, l = o2 && !c, u = l || i2 ? [...le(e2) ? Ae(e2) : e2.contextElement ? Ae(e2.contextElement) : [], ...Ae(t2)] : [];
   u.forEach((p) => {
     l && p.addEventListener("scroll", n2, {
       passive: true
@@ -3675,12 +3906,12 @@ function ts(e2, t2, n2, r) {
     }), (p = g) == null || p.disconnect(), g = null, c && cancelAnimationFrame(h);
   };
 }
-const rs = (e2, t2, n2) => Ni(e2, t2, {
-  platform: es,
+const os = (e2, t2, n2) => Ri(e2, t2, {
+  platform: rs,
   ...n2
 });
-var Rt = typeof document < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function tt(e2, t2) {
+var St = typeof document < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
+function rt(e2, t2) {
   if (e2 === t2)
     return true;
   if (typeof e2 != typeof t2)
@@ -3693,7 +3924,7 @@ function tt(e2, t2) {
       if (n2 = e2.length, n2 != t2.length)
         return false;
       for (r = n2; r-- !== 0; )
-        if (!tt(e2[r], t2[r]))
+        if (!rt(e2[r], t2[r]))
           return false;
       return true;
     }
@@ -3704,20 +3935,20 @@ function tt(e2, t2) {
         return false;
     for (r = n2; r-- !== 0; ) {
       const i2 = o2[r];
-      if (!(i2 === "_owner" && e2.$$typeof) && !tt(e2[i2], t2[i2]))
+      if (!(i2 === "_owner" && e2.$$typeof) && !rt(e2[i2], t2[i2]))
         return false;
     }
     return true;
   }
   return e2 !== e2 && t2 !== t2;
 }
-function ns(e2) {
+function as(e2) {
   const t2 = react.exports.useRef(e2);
-  return Rt(() => {
+  return St(() => {
     t2.current = e2;
   }), t2;
 }
-function os(e2) {
+function is(e2) {
   let {
     middleware: t2,
     placement: n2 = "bottom",
@@ -3731,41 +3962,41 @@ function os(e2) {
     placement: n2,
     middlewareData: {}
   }), [c, l] = react.exports.useState(t2);
-  tt(c == null ? void 0 : c.map((v) => {
+  rt(c == null ? void 0 : c.map((v) => {
     let {
-      name: _,
+      name: A,
       options: F
     } = v;
     return {
-      name: _,
+      name: A,
       options: F
     };
   }), t2 == null ? void 0 : t2.map((v) => {
     let {
-      name: _,
+      name: A,
       options: F
     } = v;
     return {
-      name: _,
+      name: A,
       options: F
     };
   })) || l(t2);
-  const u = react.exports.useRef(null), g = react.exports.useRef(null), h = react.exports.useRef(null), f = react.exports.useRef(i2), m = ns(o2), p = react.exports.useCallback(() => {
-    !u.current || !g.current || rs(u.current, g.current, {
+  const u = react.exports.useRef(null), g = react.exports.useRef(null), h = react.exports.useRef(null), f = react.exports.useRef(i2), m = as(o2), p = react.exports.useCallback(() => {
+    !u.current || !g.current || os(u.current, g.current, {
       middleware: c,
       placement: n2,
       strategy: r
     }).then((v) => {
-      N.current && !tt(f.current, v) && (f.current = v, reactDom.exports.flushSync(() => {
+      N.current && !rt(f.current, v) && (f.current = v, reactDom.exports.flushSync(() => {
         s2(v);
       }));
     });
   }, [c, n2, r]);
-  Rt(() => {
+  St(() => {
     N.current && p();
   }, [p]);
   const N = react.exports.useRef(false);
-  Rt(() => (N.current = true, () => {
+  St(() => (N.current = true, () => {
     N.current = false;
   }), []);
   const x = react.exports.useCallback(() => {
@@ -3775,7 +4006,7 @@ function os(e2) {
         h.current = v;
       } else
         p();
-  }, [p, m]), C = react.exports.useCallback((v) => {
+  }, [p, m]), k = react.exports.useCallback((v) => {
     u.current = v, x();
   }, [x]), E = react.exports.useCallback((v) => {
     g.current = v, x();
@@ -3787,12 +4018,12 @@ function os(e2) {
     ...i2,
     update: p,
     refs: O,
-    reference: C,
+    reference: k,
     floating: E
-  }), [i2, p, O, C, E]);
+  }), [i2, p, O, k, E]);
 }
 var Se = typeof document < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function as() {
+function ss() {
   const e2 = /* @__PURE__ */ new Map();
   return {
     emit(t2, n2) {
@@ -3807,39 +4038,39 @@ function as() {
     }
   };
 }
-let vt = false, is = 0;
-const yr = () => "floating-ui-" + is++;
-function ss() {
-  const [e2, t2] = react.exports.useState(() => vt ? yr() : void 0);
+let xt = false, ls = 0;
+const vr = () => "floating-ui-" + ls++;
+function cs() {
+  const [e2, t2] = react.exports.useState(() => xt ? vr() : void 0);
   return Se(() => {
-    e2 == null && t2(yr());
+    e2 == null && t2(vr());
   }, []), react.exports.useEffect(() => {
-    vt || (vt = true);
+    xt || (xt = true);
   }, []), e2;
 }
-const vr = React$1[/* @__PURE__ */ "useId".toString()], wr = vr != null ? vr : ss, ls = /* @__PURE__ */ react.exports.createContext(null), cs = /* @__PURE__ */ react.exports.createContext(null), ds = () => {
+const wr = React$1[/* @__PURE__ */ "useId".toString()], xr = wr != null ? wr : cs, ds = /* @__PURE__ */ react.exports.createContext(null), us = /* @__PURE__ */ react.exports.createContext(null), fs = () => {
   var e2, t2;
-  return (e2 = (t2 = react.exports.useContext(ls)) == null ? void 0 : t2.id) != null ? e2 : null;
-}, un = () => react.exports.useContext(cs);
+  return (e2 = (t2 = react.exports.useContext(ds)) == null ? void 0 : t2.id) != null ? e2 : null;
+}, fn = () => react.exports.useContext(us);
 function xe(e2) {
   var t2;
   return (t2 = e2 == null ? void 0 : e2.ownerDocument) != null ? t2 : document;
 }
-function fn(e2) {
+function gn(e2) {
   var t2;
   return (t2 = xe(e2).defaultView) != null ? t2 : window;
 }
-function Tt(e2) {
-  return e2 ? e2 instanceof fn(e2).Element : false;
+function Ot(e2) {
+  return e2 ? e2 instanceof gn(e2).Element : false;
 }
-function _t(e2) {
-  return e2 ? e2 instanceof fn(e2).HTMLElement : false;
+function It(e2) {
+  return e2 ? e2 instanceof gn(e2).HTMLElement : false;
 }
-const xr = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
-function us(e2) {
+const Cr = React$1[/* @__PURE__ */ "useInsertionEffect".toString()];
+function gs(e2) {
   const t2 = react.exports.useRef(() => {
   });
-  return xr ? xr(() => {
+  return Cr ? Cr(() => {
     t2.current = e2;
   }) : t2.current = e2, react.exports.useCallback(function() {
     for (var n2 = arguments.length, r = new Array(n2), o2 = 0; o2 < n2; o2++)
@@ -3847,7 +4078,7 @@ function us(e2) {
     return t2.current == null ? void 0 : t2.current(...r);
   }, []);
 }
-function fs(e2) {
+function hs(e2) {
   let {
     open: t2 = false,
     onOpenChange: n2,
@@ -3857,15 +4088,15 @@ function fs(e2) {
     strategy: s2,
     nodeId: c
   } = e2 === void 0 ? {} : e2;
-  const [l, u] = react.exports.useState(null), g = un(), h = react.exports.useRef(null), f = react.exports.useRef({}), m = react.exports.useState(() => as())[0], p = os({
+  const [l, u] = react.exports.useState(null), g = fn(), h = react.exports.useRef(null), f = react.exports.useRef({}), m = react.exports.useState(() => ss())[0], p = is({
     placement: o2,
     middleware: i2,
     strategy: s2,
     whileElementsMounted: r
-  }), N = us(n2), x = react.exports.useMemo(() => ({
+  }), N = gs(n2), x = react.exports.useMemo(() => ({
     ...p.refs,
     domReference: h
-  }), [p.refs]), C = react.exports.useMemo(() => ({
+  }), [p.refs]), k = react.exports.useMemo(() => ({
     ...p,
     refs: x,
     dataRef: f,
@@ -3878,22 +4109,22 @@ function fs(e2) {
     }
   }), [p, c, m, t2, N, x, l]);
   Se(() => {
-    const v = g == null ? void 0 : g.nodesRef.current.find((_) => _.id === c);
-    v && (v.context = C);
+    const v = g == null ? void 0 : g.nodesRef.current.find((A) => A.id === c);
+    v && (v.context = k);
   });
   const {
     reference: E
   } = p, O = react.exports.useCallback((v) => {
-    (Tt(v) || v === null) && (C.refs.domReference.current = v, u(v)), E(v);
-  }, [E, C.refs]);
+    (Ot(v) || v === null) && (k.refs.domReference.current = v, u(v)), E(v);
+  }, [E, k.refs]);
   return react.exports.useMemo(() => ({
     ...p,
-    context: C,
+    context: k,
     refs: x,
     reference: O
-  }), [p, x, C, O]);
+  }), [p, x, k, O]);
 }
-function wt(e2, t2, n2) {
+function Ct(e2, t2, n2) {
   const r = /* @__PURE__ */ new Map();
   return {
     ...n2 === "floating" && {
@@ -3916,15 +4147,15 @@ function wt(e2, t2, n2) {
     }), o2), {})
   };
 }
-const gs = function(e2) {
+const ms = function(e2) {
   return e2 === void 0 && (e2 = []), {
-    getReferenceProps: (t2) => wt(t2, e2, "reference"),
-    getFloatingProps: (t2) => wt(t2, e2, "floating"),
-    getItemProps: (t2) => wt(t2, e2, "item")
+    getReferenceProps: (t2) => Ct(t2, e2, "reference"),
+    getFloatingProps: (t2) => Ct(t2, e2, "floating"),
+    getItemProps: (t2) => Ct(t2, e2, "item")
   };
-}, hs = "input:not([type='hidden']):not([disabled]),[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
-function ms(e2) {
-  return _t(e2) && e2.matches(hs);
+}, ps = "input:not([type='hidden']):not([disabled]),[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
+function bs(e2) {
+  return It(e2) && e2.matches(ps);
 }
 function kr(e2) {
   const t2 = react.exports.useRef(e2);
@@ -3932,16 +4163,16 @@ function kr(e2) {
     t2.current = e2;
   }), t2;
 }
-function ps(e2) {
+function ys(e2) {
   const t2 = react.exports.useRef();
   return Se(() => {
     t2.current = e2;
   }, [e2]), t2.current;
 }
-function xt(e2, t2, n2) {
+function kt(e2, t2, n2) {
   return n2 && n2 !== "mouse" ? 0 : typeof e2 == "number" ? e2 : e2 == null ? void 0 : e2[t2];
 }
-const bs = function(e2, t2) {
+const vs = function(e2, t2) {
   let {
     enabled: n2 = true,
     delay: r = 0,
@@ -3957,91 +4188,91 @@ const bs = function(e2, t2) {
     events: h,
     refs: f,
     _: m
-  } = e2, p = un(), N = ds(), x = kr(o2), C = kr(r), E = ps(l), O = react.exports.useRef(), v = react.exports.useRef(), _ = react.exports.useRef(), F = react.exports.useRef(), W = react.exports.useRef(true), B = react.exports.useRef(false), D = react.exports.useCallback(() => {
-    var L;
-    const j = (L = g.current.openEvent) == null ? void 0 : L.type;
+  } = e2, p = fn(), N = fs(), x = kr(o2), k = kr(r), E = ys(l), O = react.exports.useRef(), v = react.exports.useRef(), A = react.exports.useRef(), F = react.exports.useRef(), Z = react.exports.useRef(true), B = react.exports.useRef(false), $ = react.exports.useCallback(() => {
+    var P;
+    const j = (P = g.current.openEvent) == null ? void 0 : P.type;
     return (j == null ? void 0 : j.includes("mouse")) && j !== "mousedown";
   }, [g]);
   react.exports.useEffect(() => {
     if (!n2)
       return;
-    function L() {
-      clearTimeout(v.current), clearTimeout(F.current), W.current = true;
+    function P() {
+      clearTimeout(v.current), clearTimeout(F.current), Z.current = true;
     }
-    return h.on("dismiss", L), () => {
-      h.off("dismiss", L);
+    return h.on("dismiss", P), () => {
+      h.off("dismiss", P);
     };
   }, [n2, h, f]), react.exports.useEffect(() => {
     if (!n2 || !x.current)
       return;
-    function L() {
-      D() && u(false);
+    function P() {
+      $() && u(false);
     }
     const j = xe(f.floating.current).documentElement;
-    return j.addEventListener("mouseleave", L), () => {
-      j.removeEventListener("mouseleave", L);
+    return j.addEventListener("mouseleave", P), () => {
+      j.removeEventListener("mouseleave", P);
     };
-  }, [f, u, n2, x, g, D]);
-  const U = react.exports.useCallback(function(L) {
-    L === void 0 && (L = true);
-    const j = xt(C.current, "close", O.current);
-    j && !_.current ? (clearTimeout(v.current), v.current = setTimeout(() => u(false), j)) : L && (clearTimeout(v.current), u(false));
-  }, [C, u]), Y = react.exports.useCallback(() => {
-    _.current && (xe(f.floating.current).removeEventListener("pointermove", _.current), _.current = void 0);
+  }, [f, u, n2, x, g, $]);
+  const V = react.exports.useCallback(function(P) {
+    P === void 0 && (P = true);
+    const j = kt(k.current, "close", O.current);
+    j && !A.current ? (clearTimeout(v.current), v.current = setTimeout(() => u(false), j)) : P && (clearTimeout(v.current), u(false));
+  }, [k, u]), W = react.exports.useCallback(() => {
+    A.current && (xe(f.floating.current).removeEventListener("pointermove", A.current), A.current = void 0);
   }, [f]), G = react.exports.useCallback(() => {
     xe(f.floating.current).body.style.pointerEvents = "", B.current = false;
   }, [f]);
   if (react.exports.useEffect(() => {
     if (!n2)
       return;
-    function L() {
+    function P() {
       return g.current.openEvent ? ["click", "mousedown"].includes(g.current.openEvent.type) : false;
     }
     function j(re) {
-      if (clearTimeout(v.current), W.current = false, i2 && O.current !== "mouse" || s2 > 0 && xt(C.current, "open") === 0)
+      if (clearTimeout(v.current), Z.current = false, i2 && O.current !== "mouse" || s2 > 0 && kt(k.current, "open") === 0)
         return;
       g.current.openEvent = re;
-      const me = xt(C.current, "open", O.current);
+      const me = kt(k.current, "open", O.current);
       me ? v.current = setTimeout(() => {
         u(true);
       }, me) : u(true);
     }
     function ee(re) {
-      if (L())
+      if (P())
         return;
       const me = xe(f.floating.current);
       if (clearTimeout(F.current), x.current) {
-        clearTimeout(v.current), _.current && me.removeEventListener("pointermove", _.current), _.current = x.current({
+        clearTimeout(v.current), A.current && me.removeEventListener("pointermove", A.current), A.current = x.current({
           ...e2,
           tree: p,
           x: re.clientX,
           y: re.clientY,
           onClose() {
-            G(), Y(), U();
+            G(), W(), V();
           }
-        }), me.addEventListener("pointermove", _.current);
+        }), me.addEventListener("pointermove", A.current);
         return;
       }
-      U();
+      V();
     }
     function te(re) {
-      L() || x.current == null || x.current({
+      P() || x.current == null || x.current({
         ...e2,
         tree: p,
         x: re.clientX,
         y: re.clientY,
         leave: true,
         onClose() {
-          G(), Y(), U();
+          G(), W(), V();
         }
       })(re);
     }
-    const ae = f.floating.current, K = f.domReference.current;
-    if (Tt(K))
-      return l && K.addEventListener("mouseleave", te), ae == null || ae.addEventListener("mouseleave", te), c && K.addEventListener("mousemove", j, {
+    const ae = f.floating.current, q = f.domReference.current;
+    if (Ot(q))
+      return l && q.addEventListener("mouseleave", te), ae == null || ae.addEventListener("mouseleave", te), c && q.addEventListener("mousemove", j, {
         once: true
-      }), K.addEventListener("mouseenter", j), K.addEventListener("mouseleave", ee), () => {
-        l && K.removeEventListener("mouseleave", te), ae == null || ae.removeEventListener("mouseleave", te), c && K.removeEventListener("mousemove", j), K.removeEventListener("mouseenter", j), K.removeEventListener("mouseleave", ee);
+      }), q.addEventListener("mouseenter", j), q.addEventListener("mouseleave", ee), () => {
+        l && q.removeEventListener("mouseleave", te), ae == null || ae.removeEventListener("mouseleave", te), c && q.removeEventListener("mousemove", j), q.removeEventListener("mouseenter", j), q.removeEventListener("mouseleave", ee);
       };
   }, [
     m.domReference,
@@ -4050,44 +4281,44 @@ const bs = function(e2, t2) {
     i2,
     s2,
     c,
-    U,
-    Y,
+    V,
+    W,
     G,
     u,
     l,
     p,
     f,
-    C,
+    k,
     x,
     g
   ]), Se(() => {
-    if (!!n2 && l && x.current && x.current.__options.blockPointerEvents && D()) {
+    if (!!n2 && l && x.current && x.current.__options.blockPointerEvents && $()) {
       xe(f.floating.current).body.style.pointerEvents = "none", B.current = true;
       const ee = f.domReference.current, te = f.floating.current;
-      if (Tt(ee) && te) {
-        var L, j;
-        const ae = p == null || (L = p.nodesRef.current.find((K) => K.id === N)) == null || (j = L.context) == null ? void 0 : j.refs.floating.current;
+      if (Ot(ee) && te) {
+        var P, j;
+        const ae = p == null || (P = p.nodesRef.current.find((q) => q.id === N)) == null || (j = P.context) == null ? void 0 : j.refs.floating.current;
         return ae && (ae.style.pointerEvents = ""), ee.style.pointerEvents = "auto", te.style.pointerEvents = "auto", () => {
           ee.style.pointerEvents = "", te.style.pointerEvents = "";
         };
       }
     }
-  }, [n2, l, N, f, p, x, g, D]), Se(() => {
-    E && !l && (O.current = void 0, Y(), G());
+  }, [n2, l, N, f, p, x, g, $]), Se(() => {
+    E && !l && (O.current = void 0, W(), G());
   }), react.exports.useEffect(() => () => {
-    Y(), clearTimeout(v.current), clearTimeout(F.current), B.current && G();
-  }, [n2, Y, G]), !n2)
+    W(), clearTimeout(v.current), clearTimeout(F.current), B.current && G();
+  }, [n2, W, G]), !n2)
     return {};
-  function H(L) {
-    O.current = L.pointerType;
+  function z(P) {
+    O.current = P.pointerType;
   }
   return {
     reference: {
-      onPointerDown: H,
-      onPointerEnter: H,
+      onPointerDown: z,
+      onPointerEnter: z,
       onMouseMove() {
         l || s2 === 0 || (clearTimeout(F.current), F.current = setTimeout(() => {
-          W.current || u(true);
+          Z.current || u(true);
         }, s2));
       }
     },
@@ -4096,18 +4327,18 @@ const bs = function(e2, t2) {
         clearTimeout(v.current);
       },
       onMouseLeave() {
-        U(false);
+        V(false);
       }
     }
   };
-}, ys = function(e2, t2) {
+}, ws = function(e2, t2) {
   let {
     open: n2
   } = e2, {
     enabled: r = true,
     role: o2 = "dialog"
   } = t2 === void 0 ? {} : t2;
-  const i2 = wr(), s2 = wr(), c = {
+  const i2 = xr(), s2 = xr(), c = {
     id: i2,
     role: o2
   };
@@ -4136,10 +4367,10 @@ const bs = function(e2, t2) {
     }
   } : {};
 };
-function Cr(e2) {
-  return _t(e2.target) && e2.target.tagName === "BUTTON";
+function Nr(e2) {
+  return It(e2.target) && e2.target.tagName === "BUTTON";
 }
-const vs = function(e2, t2) {
+const xs = function(e2, t2) {
   let {
     open: n2,
     onOpenChange: r,
@@ -4154,7 +4385,7 @@ const vs = function(e2, t2) {
   } = t2 === void 0 ? {} : t2;
   const h = react.exports.useRef();
   function f() {
-    return ms(i2.domReference.current);
+    return bs(i2.domReference.current);
   }
   return s2 ? {
     reference: {
@@ -4172,14 +4403,14 @@ const vs = function(e2, t2) {
         h.current === "mouse" && u || (n2 ? l && (o2.current.openEvent ? o2.current.openEvent.type === "click" : true) && r(false) : r(true), o2.current.openEvent = m.nativeEvent);
       },
       onKeyDown(m) {
-        h.current = void 0, g && (Cr(m) || (m.key === " " && !f() && m.preventDefault(), m.key === "Enter" && (n2 ? l && r(false) : r(true))));
+        h.current = void 0, g && (Nr(m) || (m.key === " " && !f() && m.preventDefault(), m.key === "Enter" && (n2 ? l && r(false) : r(true))));
       },
       onKeyUp(m) {
-        !g || Cr(m) || f() || m.key === " " && (n2 ? l && r(false) : r(true));
+        !g || Nr(m) || f() || m.key === " " && (n2 ? l && r(false) : r(true));
       }
     }
   } : {};
-}, ws = function(e2, t2) {
+}, Cs = function(e2, t2) {
   let {
     open: n2,
     onOpenChange: r,
@@ -4197,7 +4428,7 @@ const vs = function(e2, t2) {
       return;
     const p = (f = xe(i2.floating.current).defaultView) != null ? f : window;
     function N() {
-      !n2 && _t(i2.domReference.current) && i2.domReference.current.blur();
+      !n2 && It(i2.domReference.current) && i2.domReference.current.blur();
     }
     return p.addEventListener("blur", N), () => {
       p.removeEventListener("blur", N);
@@ -4237,38 +4468,38 @@ const vs = function(e2, t2) {
       }
     }
   } : {};
-}, xs = ({ arrowRef: e2, placement: t2 }) => {
+}, ks = ({ arrowRef: e2, placement: t2 }) => {
   const n2 = [];
-  return n2.push($i(8)), n2.push(t2 === "auto" ? Ii() : ji()), n2.push(Bi({ padding: 8 })), e2.current && n2.push(Si({ element: e2.current })), n2;
-}, ks = ({ placement: e2 }) => e2 === "auto" ? void 0 : e2, Cs = ({ placement: e2 }) => ({
+  return n2.push(Bi(8)), n2.push(t2 === "auto" ? ji() : Di()), n2.push(zi({ padding: 8 })), e2.current && n2.push(Mi({ element: e2.current })), n2;
+}, Ns = ({ placement: e2 }) => e2 === "auto" ? void 0 : e2, Es = ({ placement: e2 }) => ({
   top: "bottom",
   right: "left",
   bottom: "top",
   left: "right"
-})[e2.split("-")[0]], gn = ({ children: e2, content: t2, theme: n2, animation: r = "duration-300", arrow: o2 = true, placement: i2 = "top", style: s2 = "dark", trigger: c = "hover", closeRequestKey: l, ...u }) => {
-  const g = P(u), h = react.exports.useRef(null), [f, m] = react.exports.useState(false), p = fs({
-    middleware: xs({ arrowRef: h, placement: i2 }),
+})[e2.split("-")[0]], hn = ({ children: e2, content: t2, theme: n2, animation: r = "duration-300", arrow: o2 = true, placement: i2 = "top", style: s2 = "dark", trigger: c = "hover", closeRequestKey: l, ...u }) => {
+  const g = M(u), h = react.exports.useRef(null), [f, m] = react.exports.useState(false), p = hs({
+    middleware: ks({ arrowRef: h, placement: i2 }),
     onOpenChange: m,
     open: f,
-    placement: ks({ placement: i2 })
-  }), { context: N, floating: x, middlewareData: { arrow: { x: C, y: E } = {} }, reference: O, refs: v, strategy: _, update: F, x: W, y: B } = p, { getFloatingProps: D, getReferenceProps: U } = gs([
-    vs(N, { enabled: c === "click" }),
-    ws(N),
-    bs(N, { enabled: c === "hover" }),
-    ys(N, { role: "tooltip" })
+    placement: Ns({ placement: i2 })
+  }), { context: N, floating: x, middlewareData: { arrow: { x: k, y: E } = {} }, reference: O, refs: v, strategy: A, update: F, x: Z, y: B } = p, { getFloatingProps: $, getReferenceProps: V } = ms([
+    xs(N, { enabled: c === "click" }),
+    Cs(N),
+    vs(N, { enabled: c === "hover" }),
+    ws(N, { role: "tooltip" })
   ]);
   return react.exports.useEffect(() => {
     if (v.reference.current && v.floating.current && f)
-      return ts(v.reference.current, v.floating.current, F);
+      return ns(v.reference.current, v.floating.current, F);
   }, [f, v.floating, v.reference, F]), react.exports.useEffect(() => {
     l !== void 0 && m(false);
-  }, [l]), b(J, { children: [a("div", { className: n2.target, ...U({ ref: O }), "data-testid": "flowbite-tooltip-target", children: e2 }), b("div", { "data-testid": "flowbite-tooltip", ...D({
+  }, [l]), b(J, { children: [a("div", { className: n2.target, ...V({ ref: O }), "data-testid": "flowbite-tooltip-target", children: e2 }), b("div", { "data-testid": "flowbite-tooltip", ...$({
     className: T(n2.base, r && `${n2.animation} ${r}`, !f && n2.hidden, n2.style[s2]),
     ref: x,
     style: {
-      position: _,
+      position: A,
       top: B != null ? B : " ",
-      left: W != null ? W : " "
+      left: Z != null ? Z : " "
     },
     ...g
   }), children: [a("div", { className: n2.content, children: t2 }), o2 && a("div", { className: T(n2.arrow.base, {
@@ -4277,157 +4508,157 @@ const vs = function(e2, t2) {
     [n2.arrow.style.auto]: s2 === "auto"
   }), "data-testid": "flowbite-tooltip-arrow", ref: h, style: {
     top: E != null ? E : " ",
-    left: C != null ? C : " ",
+    left: k != null ? k : " ",
     right: " ",
     bottom: " ",
-    [Cs({ placement: p.placement })]: n2.arrow.placement
+    [Es({ placement: p.placement })]: n2.arrow.placement
   }, children: "\xA0" })] })] });
-}, It = () => {
+}, jt = () => {
   const e2 = R().theme.dropdown.floating.divider;
   return a("div", { className: e2 });
-}, hn = ({ children: e2, ...t2 }) => {
-  const n2 = R().theme.dropdown.floating.header, r = P(t2);
-  return b(J, { children: [a("div", { className: n2, ...r, children: e2 }), a(It, {})] });
-}, At = ({ children: e2, onClick: t2, icon: n2 }) => {
+}, mn = ({ children: e2, ...t2 }) => {
+  const n2 = R().theme.dropdown.floating.header, r = M(t2);
+  return b(J, { children: [a("div", { className: n2, ...r, children: e2 }), a(jt, {})] });
+}, Ft = ({ children: e2, onClick: t2, icon: n2 }) => {
   const r = R().theme.dropdown.floating.item;
   return b("li", { className: r.base, onClick: t2, children: [n2 && a(n2, { className: r.icon }), e2] });
-}, Ns = {
-  top: fi,
+}, Rs = {
+  top: hi,
   right: zr,
-  bottom: Br,
-  left: ui
-}, mn = ({ children: e2, ...t2 }) => {
-  const n2 = R().theme.dropdown, r = P(t2), { placement: o2 = t2.inline ? "bottom-start" : "bottom", trigger: i2 = "click", label: s2, inline: c, floatingArrow: l = false, arrowIcon: u = true, ...g } = r, h = react.exports.useMemo(() => {
+  bottom: Hr,
+  left: gi
+}, pn = ({ children: e2, ...t2 }) => {
+  const n2 = R().theme.dropdown, r = M(t2), { placement: o2 = t2.inline ? "bottom-start" : "bottom", trigger: i2 = "click", label: s2, inline: c, floatingArrow: l = false, arrowIcon: u = true, ...g } = r, h = react.exports.useMemo(() => {
     var E;
-    const [C] = o2.split("-");
-    return (E = Ns[C]) != null ? E : Br;
-  }, [o2]), [f, m] = react.exports.useState(void 0), p = (C) => React.isValidElement(C) ? C.type === At ? React.cloneElement(C, {
+    const [k] = o2.split("-");
+    return (E = Rs[k]) != null ? E : Hr;
+  }, [o2]), [f, m] = react.exports.useState(void 0), p = (k) => React.isValidElement(k) ? k.type === Ft ? React.cloneElement(k, {
     onClick: () => {
       var E, O;
-      (O = (E = C.props).onClick) == null || O.call(E), m(Ci());
+      (O = (E = k.props).onClick) == null || O.call(E), m(Ei());
     }
-  }) : C.props.children && typeof C.props.children == "object" ? React.cloneElement(C, { children: react.exports.Children.map(C.props.children, p) }) : C : C, N = react.exports.useMemo(() => a("ul", { className: n2.content, children: react.exports.Children.map(e2, p) }), [e2, n2]), x = ({ children: C }) => c ? a("button", { className: n2.inlineWrapper, children: C }) : a(yi, { ...g, children: C });
-  return a(gn, { content: N, style: "auto", animation: "duration-100", placement: o2, arrow: l, trigger: i2, theme: n2.floating, closeRequestKey: f, children: b(x, { children: [s2, u && a(h, { className: n2.arrowIcon })] }) });
+  }) : k.props.children && typeof k.props.children == "object" ? React.cloneElement(k, { children: react.exports.Children.map(k.props.children, p) }) : k : k, N = react.exports.useMemo(() => a("ul", { className: n2.content, children: react.exports.Children.map(e2, p) }), [e2, n2]), x = ({ children: k }) => c ? a("button", { className: n2.inlineWrapper, children: k }) : a(wi, { ...g, children: k });
+  return a(hn, { content: N, style: "auto", animation: "duration-100", placement: o2, arrow: l, trigger: i2, theme: n2.floating, closeRequestKey: f, children: b(x, { children: [s2, u && a(h, { className: n2.arrowIcon })] }) });
 };
-mn.displayName = "Dropdown";
-At.displayName = "Dropdown.Item";
-hn.displayName = "Dropdown.Header";
-It.displayName = "Dropdown.Divider";
-Object.assign(mn, {
-  Item: At,
-  Header: hn,
-  Divider: It
+pn.displayName = "Dropdown";
+Ft.displayName = "Dropdown.Item";
+mn.displayName = "Dropdown.Header";
+jt.displayName = "Dropdown.Divider";
+Object.assign(pn, {
+  Item: Ft,
+  Header: mn,
+  Divider: jt
 });
-const pn = ({ alt: e2, children: t2, href: n2, name: r, src: o2 }) => {
+const bn = ({ alt: e2, children: t2, href: n2, name: r, src: o2 }) => {
   const i2 = R().theme.footer.brand;
   return a("div", { children: n2 ? b("a", { "data-testid": "flowbite-footer-brand", href: n2, className: i2.base, children: [a("img", { alt: e2, src: o2, className: i2.img }), a("span", { "data-testid": "flowbite-footer-brand-span", className: i2.span, children: r }), t2] }) : a("img", { alt: e2, "data-testid": "flowbite-footer-brand", src: o2, className: i2.img }) });
-}, bn = ({ href: e2, by: t2, year: n2 }) => {
+}, yn = ({ href: e2, by: t2, year: n2 }) => {
   const r = R().theme.footer.copyright;
   return a("div", { children: b("span", { className: r.base, "data-testid": "flowbite-footer-copyright", children: ["\xA9 ", n2, e2 ? a("a", { href: e2, className: r.href, children: t2 }) : a("span", { "data-testid": "flowbite-footer-copyright-span", className: r.span, children: t2 })] }) });
-}, yn = () => {
+}, vn = () => {
   const e2 = R().theme.footer.divider;
   return a("hr", { "data-testid": "footer-divider", className: e2.base });
-}, vn = ({ href: e2, ariaLabel: t2, icon: n2 }) => {
+}, wn = ({ href: e2, ariaLabel: t2, icon: n2 }) => {
   const r = R().theme.footer.icon;
   return a("div", { children: e2 ? a("a", { "aria-label": t2, "data-testid": "flowbite-footer-icon", href: e2, className: r.base, children: a(n2, { className: r.size }) }) : a(n2, { "data-testid": "flowbite-footer-icon", className: r.size }) });
-}, wn = ({ children: e2, href: t2 }) => {
+}, xn = ({ children: e2, href: t2 }) => {
   const n2 = R().theme.footer.groupLink.link;
   return a("li", { className: n2.base, children: a("a", { href: t2, className: n2.href, children: e2 }) });
-}, xn = ({ children: e2, col: t2 = false }) => {
+}, Cn = ({ children: e2, col: t2 = false }) => {
   const n2 = R().theme.footer.groupLink;
   return a("ul", { "data-testid": "footer-groupLink", className: T(n2.base, t2 && n2.col), children: e2 });
 }, kn = ({ title: e2 }) => {
   const t2 = R().theme.footer.title;
   return a("h2", { "data-testid": "flowbite-footer-title", className: t2.base, children: e2 });
-}, Cn = ({ children: e2, bgDark: t2 = false, container: n2 = false }) => {
+}, Nn = ({ children: e2, bgDark: t2 = false, container: n2 = false }) => {
   const r = R().theme.footer;
   return a("footer", { "data-testid": "flowbite-footer", className: T(r.base, t2 && r.bgDark, n2 && r.container), children: e2 });
 };
-Cn.displayName = "Footer";
-bn.displayName = "Footer.Copyright";
-wn.displayName = "Footer.Link";
-pn.displayName = "Footer.Brand";
-xn.displayName = "Footer.LinkGroup";
-vn.displayName = "Footer.Icon";
+Nn.displayName = "Footer";
+yn.displayName = "Footer.Copyright";
+xn.displayName = "Footer.Link";
+bn.displayName = "Footer.Brand";
+Cn.displayName = "Footer.LinkGroup";
+wn.displayName = "Footer.Icon";
 kn.displayName = "Footer.Title";
-yn.displayName = "Footer.Divider";
-Object.assign(Cn, {
-  Copyright: bn,
-  Link: wn,
-  LinkGroup: xn,
-  Brand: pn,
-  Icon: vn,
+vn.displayName = "Footer.Divider";
+Object.assign(Nn, {
+  Copyright: yn,
+  Link: xn,
+  LinkGroup: Cn,
+  Brand: bn,
+  Icon: wn,
   Title: kn,
-  Divider: yn
+  Divider: vn
 });
-const Es = react.exports.forwardRef((e2, t2) => {
-  const n2 = R().theme.formControls.checkbox, r = P(e2);
+const Ts = react.exports.forwardRef((e2, t2) => {
+  const n2 = R().theme.formControls.checkbox, r = M(e2);
   return a("input", { ref: t2, className: n2.base, type: "checkbox", ...r });
 });
-Es.displayName = "Checkbox";
-const at = ({ value: e2, children: t2, color: n2 = "default", ...r }) => {
+Ts.displayName = "Checkbox";
+const it = ({ value: e2, children: t2, color: n2 = "default", ...r }) => {
   var s2;
-  const o2 = R().theme.formControls.helperText, i2 = P(r);
+  const o2 = R().theme.formControls.helperText, i2 = M(r);
   return a("p", { className: T(o2.base, o2.colors[n2]), ...i2, children: (s2 = e2 != null ? e2 : t2) != null ? s2 : "" });
-}, Rs = react.exports.forwardRef(({ sizing: e2 = "md", helperText: t2, color: n2 = "gray", ...r }, o2) => {
-  const i2 = R().theme.formControls.fileInput, s2 = P(r);
-  return b(J, { children: [a("div", { className: i2.base, children: a("div", { className: i2.field.base, children: a("input", { className: T(i2.field.input.base, i2.field.input.colors[n2], i2.field.input.sizes[e2]), ...s2, type: "file", ref: o2 }) }) }), t2 && a(at, { color: n2, children: t2 })] });
+}, Ss = react.exports.forwardRef(({ sizing: e2 = "md", helperText: t2, color: n2 = "gray", ...r }, o2) => {
+  const i2 = R().theme.formControls.fileInput, s2 = M(r);
+  return b(J, { children: [a("div", { className: i2.base, children: a("div", { className: i2.field.base, children: a("input", { className: T(i2.field.input.base, i2.field.input.colors[n2], i2.field.input.sizes[e2]), ...s2, type: "file", ref: o2 }) }) }), t2 && a(it, { color: n2, children: t2 })] });
 });
-Rs.displayName = "FileInput";
-const Ts = react.exports.forwardRef((e2, t2) => {
-  const n2 = R().theme.formControls.radio, r = P(e2);
+Ss.displayName = "FileInput";
+const Os = react.exports.forwardRef((e2, t2) => {
+  const n2 = R().theme.formControls.radio, r = M(e2);
   return a("input", { ref: t2, className: n2.base, type: "radio", ...r });
 });
-Ts.displayName = "Radio";
-const Ss = react.exports.forwardRef(({ children: e2, sizing: t2 = "md", shadow: n2, helperText: r, addon: o2, icon: i2, color: s2 = "gray", ...c }, l) => {
-  const u = R().theme.formControls.select, g = P(c);
-  return b("div", { className: u.base, children: [o2 && a("span", { className: u.addon, children: o2 }), b("div", { className: u.field.base, children: [i2 && a("div", { className: u.field.icon.base, children: a(i2, { className: u.field.icon.svg }) }), a("select", { className: T(u.field.select.base, u.field.select.colors[s2], u.field.select.withIcon[i2 ? "on" : "off"], u.field.select.withAddon[o2 ? "on" : "off"], u.field.select.withShadow[n2 ? "on" : "off"], u.field.select.sizes[t2]), ...g, ref: l, children: e2 }), r && a(at, { color: s2, children: r })] })] });
+Os.displayName = "Radio";
+const Ms = react.exports.forwardRef(({ children: e2, sizing: t2 = "md", shadow: n2, helperText: r, addon: o2, icon: i2, color: s2 = "gray", ...c }, l) => {
+  const u = R().theme.formControls.select, g = M(c);
+  return b("div", { className: u.base, children: [o2 && a("span", { className: u.addon, children: o2 }), b("div", { className: u.field.base, children: [i2 && a("div", { className: u.field.icon.base, children: a(i2, { className: u.field.icon.svg }) }), a("select", { className: T(u.field.select.base, u.field.select.colors[s2], u.field.select.withIcon[i2 ? "on" : "off"], u.field.select.withAddon[o2 ? "on" : "off"], u.field.select.withShadow[n2 ? "on" : "off"], u.field.select.sizes[t2]), ...g, ref: l, children: e2 }), r && a(it, { color: s2, children: r })] })] });
 });
-Ss.displayName = "Select";
-const Os = react.exports.forwardRef(({ shadow: e2, helperText: t2, color: n2 = "gray", ...r }, o2) => {
-  const i2 = R().theme.formControls.textarea, s2 = P(r);
-  return b(J, { children: [a("textarea", { ref: o2, className: T(i2.base, i2.colors[n2], i2.withShadow[e2 ? "on" : "off"]), ...s2 }), t2 && a(at, { color: n2, children: t2 })] });
+Ms.displayName = "Select";
+const Ps = react.exports.forwardRef(({ shadow: e2, helperText: t2, color: n2 = "gray", ...r }, o2) => {
+  const i2 = R().theme.formControls.textarea, s2 = M(r);
+  return b(J, { children: [a("textarea", { ref: o2, className: T(i2.base, i2.colors[n2], i2.withShadow[e2 ? "on" : "off"]), ...s2 }), t2 && a(it, { color: n2, children: t2 })] });
 });
-Os.displayName = "Textarea";
-const Ps = react.exports.forwardRef(({ sizing: e2 = "md", shadow: t2, helperText: n2, addon: r, icon: o2, color: i2 = "gray", ...s2 }, c) => {
-  const l = R().theme.formControls.textInput, u = P(s2);
-  return b(J, { children: [b("div", { className: l.base, children: [r && a("span", { className: l.addon, children: r }), b("div", { className: l.field.base, children: [o2 && a("div", { className: l.field.icon.base, children: a(o2, { className: l.field.icon.svg }) }), a("input", { className: T(l.field.input.base, l.field.input.colors[i2], l.field.input.withIcon[o2 ? "on" : "off"], l.field.input.withAddon[r ? "on" : "off"], l.field.input.withShadow[t2 ? "on" : "off"], l.field.input.sizes[e2]), ...u, ref: c })] })] }), n2 && a(at, { color: i2, children: n2 })] });
+Ps.displayName = "Textarea";
+const Ls = react.exports.forwardRef(({ sizing: e2 = "md", shadow: t2, helperText: n2, addon: r, icon: o2, color: i2 = "gray", ...s2 }, c) => {
+  const l = R().theme.formControls.textInput, u = M(s2);
+  return b(J, { children: [b("div", { className: l.base, children: [r && a("span", { className: l.addon, children: r }), b("div", { className: l.field.base, children: [o2 && a("div", { className: l.field.icon.base, children: a(o2, { className: l.field.icon.svg }) }), a("input", { className: T(l.field.input.base, l.field.input.colors[i2], l.field.input.withIcon[o2 ? "on" : "off"], l.field.input.withAddon[r ? "on" : "off"], l.field.input.withShadow[t2 ? "on" : "off"], l.field.input.sizes[e2]), ...u, ref: c })] })] }), n2 && a(it, { color: i2, children: n2 })] });
 });
-Ps.displayName = "TextInput";
-const Nn = ({ active: e2, children: t2, href: n2, icon: r, onClick: o2, ...i2 }) => {
-  const s2 = typeof n2 < "u", c = s2 ? "a" : "button", l = P(i2), u = R().theme.listGroup.item;
+Ls.displayName = "TextInput";
+const En = ({ active: e2, children: t2, href: n2, icon: r, onClick: o2, ...i2 }) => {
+  const s2 = typeof n2 < "u", c = s2 ? "a" : "button", l = M(i2), u = R().theme.listGroup.item;
   return a("li", { children: b(c, { className: T(u.active[e2 ? "on" : "off"], u.base, u.href[s2 ? "on" : "off"]), href: n2, onClick: o2, type: s2 ? void 0 : "button", ...l, children: [r && a(r, { "aria-hidden": true, className: u.icon, "data-testid": "flowbite-list-group-item-icon" }), t2] }) });
-}, En = ({ children: e2, ...t2 }) => {
-  const n2 = P(t2), r = R().theme.listGroup.base;
+}, Rn = ({ children: e2, ...t2 }) => {
+  const n2 = M(t2), r = R().theme.listGroup.base;
   return a("ul", { className: r, ...n2, children: e2 });
 };
-En.displayName = "ListGroup";
-Nn.displayName = "ListGroup.Item";
-Object.assign(En, { Item: Nn });
-const Rn = react.exports.createContext(void 0);
-function jt() {
-  const e2 = react.exports.useContext(Rn);
+Rn.displayName = "ListGroup";
+En.displayName = "ListGroup.Item";
+Object.assign(Rn, { Item: En });
+const Tn = react.exports.createContext(void 0);
+function Dt() {
+  const e2 = react.exports.useContext(Tn);
   if (!e2)
     throw new Error("useModalContext should be used within the ModalContext provider!");
   return e2;
 }
-const Tn = ({ children: e2, ...t2 }) => {
-  const { popup: n2 } = jt(), r = R().theme.modal.body, o2 = P(t2);
+const Sn = ({ children: e2, ...t2 }) => {
+  const { popup: n2 } = Dt(), r = R().theme.modal.body, o2 = M(t2);
   return a("div", { className: T(r.base, {
     [r.popup]: n2
   }), ...o2, children: e2 });
-}, Sn = ({ children: e2, ...t2 }) => {
-  const { popup: n2 } = jt(), r = R().theme.modal.footer, o2 = P(t2);
+}, On = ({ children: e2, ...t2 }) => {
+  const { popup: n2 } = Dt(), r = R().theme.modal.footer, o2 = M(t2);
   return a("div", { className: T(r.base, {
     [r.popup]: !n2
   }), ...o2, children: e2 });
-}, On = ({ children: e2, ...t2 }) => {
-  const { popup: n2, onClose: r } = jt(), o2 = R().theme.modal.header, i2 = P(t2);
+}, Mn = ({ children: e2, ...t2 }) => {
+  const { popup: n2, onClose: r } = Dt(), o2 = R().theme.modal.header, i2 = M(t2);
   return b("div", { className: T(o2.base, {
     [o2.popup]: n2
-  }), ...i2, children: [a("h3", { className: o2.title, children: e2 }), a("button", { "aria-label": "Close", className: o2.close.base, type: "button", onClick: r, children: a(gi, { "aria-hidden": true, className: o2.close.icon }) })] });
+  }), ...i2, children: [a("h3", { className: o2.title, children: e2 }), a("button", { "aria-label": "Close", className: o2.close.base, type: "button", onClick: r, children: a(mi, { "aria-hidden": true, className: o2.close.icon }) })] });
 }, Pn = ({ children: e2, show: t2, root: n2, popup: r, size: o2 = "2xl", position: i2 = "center", onClose: s2, ...c }) => {
-  const [l, u] = react.exports.useState(n2), [g, h] = react.exports.useState(), f = R().theme.modal, m = P(c);
+  const [l, u] = react.exports.useState(n2), [g, h] = react.exports.useState(), f = R().theme.modal, m = M(c);
   return react.exports.useEffect(() => {
     l || u(document.body), g || h(document.createElement("div"));
   }, []), react.exports.useEffect(() => {
@@ -4435,216 +4666,216 @@ const Tn = ({ children: e2, ...t2 }) => {
       return l.appendChild(g), () => {
         g && l.removeChild(g);
       };
-  }, [g, l, t2]), g ? reactDom.exports.createPortal(a(Rn.Provider, { value: { popup: r, onClose: s2 }, children: a("div", { "aria-hidden": !t2, className: T(f.base, f.positions[i2], t2 ? f.show.on : f.show.off), "data-testid": "modal", role: "dialog", ...m, children: a("div", { className: T(f.content.base, f.sizes[o2]), children: a("div", { className: f.content.inner, children: e2 }) }) }) }), g) : null;
+  }, [g, l, t2]), g ? reactDom.exports.createPortal(a(Tn.Provider, { value: { popup: r, onClose: s2 }, children: a("div", { "aria-hidden": !t2, className: T(f.base, f.positions[i2], t2 ? f.show.on : f.show.off), "data-testid": "modal", role: "dialog", ...m, children: a("div", { className: T(f.content.base, f.sizes[o2]), children: a("div", { className: f.content.inner, children: e2 }) }) }) }), g) : null;
 };
 Pn.displayName = "Modal";
-On.displayName = "Modal.Header";
-Tn.displayName = "Modal.Body";
-Sn.displayName = "Modal.Footer";
-Object.assign(Pn, { Header: On, Body: Tn, Footer: Sn });
+Mn.displayName = "Modal.Header";
+Sn.displayName = "Modal.Body";
+On.displayName = "Modal.Footer";
+Object.assign(Pn, { Header: Mn, Body: Sn, Footer: On });
 const Ln = ({ children: e2, href: t2, ...n2 }) => {
-  const r = R().theme.navbar, o2 = P(n2);
+  const r = R().theme.navbar, o2 = M(n2);
   return a("a", { href: t2, className: r.brand, ...o2, children: e2 });
-}, Mn = react.exports.createContext(void 0);
+}, An = react.exports.createContext(void 0);
 function _n() {
-  const e2 = react.exports.useContext(Mn);
+  const e2 = react.exports.useContext(An);
   if (!e2)
     throw new Error("useNavBarContext should be used within the NavbarContext provider!");
   return e2;
 }
 const In = ({ children: e2, ...t2 }) => {
-  const { isOpen: n2 } = _n(), r = R().theme.navbar.collapse, o2 = P(t2);
+  const { isOpen: n2 } = _n(), r = R().theme.navbar.collapse, o2 = M(t2);
   return a("div", { className: T(r.base, r.hidden[n2 ? "off" : "on"]), "data-testid": "flowbite-navbar-collapse", ...o2, children: a("ul", { className: r.list, children: e2 }) });
-}, An = ({ active: e2, disabled: t2, href: n2, children: r, ...o2 }) => {
-  const i2 = R().theme.navbar.link, s2 = P(o2);
+}, jn = ({ active: e2, disabled: t2, href: n2, children: r, ...o2 }) => {
+  const i2 = R().theme.navbar.link, s2 = M(o2);
   return a("li", { children: a("a", { href: n2, className: T(i2.base, {
     [i2.active.on]: e2,
     [i2.active.off]: !e2 && !t2
   }, i2.disabled[t2 ? "on" : "off"]), ...s2, children: r }) });
 };
-function Ls(e2) {
+function As(e2) {
   return ge({ tag: "svg", attr: { viewBox: "0 0 12 16" }, child: [{ tag: "path", attr: { fillRule: "evenodd", d: "M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z" } }] })(e2);
 }
-const jn = ({ barIcon: e2 = Ls, ...t2 }) => {
+const Fn = ({ barIcon: e2 = As, ...t2 }) => {
   const { isOpen: n2, setIsOpen: r } = _n(), o2 = () => {
     r(!n2);
-  }, i2 = R().theme.navbar.toggle, s2 = P(t2);
+  }, i2 = R().theme.navbar.toggle, s2 = M(t2);
   return b("button", { className: i2.base, "data-testid": "flowbite-navbar-toggle", onClick: o2, ...s2, children: [a("span", { className: "sr-only", children: "Open main menu" }), a(e2, { className: i2.icon })] });
-}, Fn = ({ children: e2, menuOpen: t2, fluid: n2 = false, rounded: r, border: o2, ...i2 }) => {
-  const [s2, c] = react.exports.useState(t2), l = R().theme.navbar, u = P(i2);
-  return a(Mn.Provider, { value: { isOpen: s2, setIsOpen: c }, children: a("nav", { className: T(l.base, l.bordered[o2 ? "on" : "off"], l.rounded[r ? "on" : "off"]), ...u, children: a("div", { className: T(l.inner.base, l.inner.fluid[n2 ? "on" : "off"]), children: e2 }) }) });
+}, Dn = ({ children: e2, menuOpen: t2, fluid: n2 = false, rounded: r, border: o2, ...i2 }) => {
+  const [s2, c] = react.exports.useState(t2), l = R().theme.navbar, u = M(i2);
+  return a(An.Provider, { value: { isOpen: s2, setIsOpen: c }, children: a("nav", { className: T(l.base, l.bordered[o2 ? "on" : "off"], l.rounded[r ? "on" : "off"]), ...u, children: a("div", { className: T(l.inner.base, l.inner.fluid[n2 ? "on" : "off"]), children: e2 }) }) });
 };
-Fn.displayName = "Navbar";
+Dn.displayName = "Navbar";
 Ln.displayName = "Navbar.Brand";
 In.displayName = "Navbar.Collapse";
-An.displayName = "Navbar.Link";
-jn.displayName = "Navbar.Toggle";
-Object.assign(Fn, {
+jn.displayName = "Navbar.Link";
+Fn.displayName = "Navbar.Toggle";
+Object.assign(Dn, {
   Brand: Ln,
   Collapse: In,
-  Link: An,
-  Toggle: jn
+  Link: jn,
+  Toggle: Fn
 });
 const $n = ({ percentFilled: e2 = 0, children: t2, ...n2 }) => {
-  const r = R().theme.rating.advanced, o2 = P(n2);
+  const r = R().theme.rating.advanced, o2 = M(n2);
   return b("div", { className: r.base, ...o2, children: [a("span", { className: r.label, children: t2 }), a("div", { className: r.progress.base, children: a("div", { className: r.progress.fill, "data-testid": "flowbite-rating-fill", style: { width: `${e2}%` } }) }), a("span", { className: r.progress.label, children: `${e2}%` })] });
-}, Dn = react.exports.createContext(void 0);
-function Ms() {
-  const e2 = react.exports.useContext(Dn);
+}, Bn = react.exports.createContext(void 0);
+function _s() {
+  const e2 = react.exports.useContext(Bn);
   if (!e2)
     throw new Error("useRatingContext should be used within the RatingContext provider!");
   return e2;
 }
-const Bn = ({ filled: e2 = true, starIcon: t2 = ci }) => {
-  const { size: n2 = "sm" } = Ms(), r = R().theme.rating.star;
+const Hn = ({ filled: e2 = true, starIcon: t2 = ui }) => {
+  const { size: n2 = "sm" } = _s(), r = R().theme.rating.star;
   return a(t2, { className: T(r.sizes[n2], r[e2 ? "filled" : "empty"]), "data-testid": "flowbite-rating-star" });
 }, zn = ({ children: e2, size: t2 = "sm", ...n2 }) => {
-  const r = R().theme.rating, o2 = P(n2);
-  return a(Dn.Provider, { value: { size: t2 }, children: a("div", { className: r.base, ...o2, children: e2 }) });
+  const r = R().theme.rating, o2 = M(n2);
+  return a(Bn.Provider, { value: { size: t2 }, children: a("div", { className: r.base, ...o2, children: e2 }) });
 };
 zn.displayName = "Rating";
-Bn.displayName = "Rating.Star";
+Hn.displayName = "Rating.Star";
 $n.displayName = "Rating.Advanced";
 Object.assign(zn, {
-  Star: Bn,
+  Star: Hn,
   Advanced: $n
 });
-const Ft = ({ animation: e2 = "duration-300", arrow: t2 = true, children: n2, content: r, placement: o2 = "top", style: i2 = "dark", trigger: s2 = "hover", ...c }) => {
-  const l = R().theme.tooltip, u = P(c);
-  return a(gn, { content: r, style: i2, animation: e2, placement: o2, arrow: t2, trigger: s2, theme: l, ...u, children: n2 });
-}, Hn = react.exports.createContext(void 0);
-function it() {
-  const e2 = react.exports.useContext(Hn);
+const $t = ({ animation: e2 = "duration-300", arrow: t2 = true, children: n2, content: r, placement: o2 = "top", style: i2 = "dark", trigger: s2 = "hover", ...c }) => {
+  const l = R().theme.tooltip, u = M(c);
+  return a(hn, { content: r, style: i2, animation: e2, placement: o2, arrow: t2, trigger: s2, theme: l, ...u, children: n2 });
+}, Un = react.exports.createContext(void 0);
+function st() {
+  const e2 = react.exports.useContext(Un);
   if (!e2)
     throw new Error("useSidebarContext should be used within the SidebarContext provider!");
   return e2;
 }
-const $t = react.exports.createContext(void 0);
-function _s() {
-  const e2 = react.exports.useContext($t);
+const Bt = react.exports.createContext(void 0);
+function Is() {
+  const e2 = react.exports.useContext(Bt);
   if (!e2)
     throw new Error("useSidebarItemContext should be used within the SidebarItemContext provider!");
   return e2;
 }
 const Vn = ({ children: e2, icon: t2, label: n2, ...r }) => {
-  const o2 = P(r), i2 = react.exports.useId(), { isCollapsed: s2 } = it(), [c, l] = react.exports.useState(false), u = R().theme.sidebar.collapse;
-  return b(({ children: h }) => a("li", { children: s2 ? a(Ft, { content: n2, placement: "right", children: h }) : h }), { children: [b("button", { className: u.button, id: `flowbite-sidebar-collapse-${i2}`, onClick: () => l(!c), type: "button", ...o2, children: [t2 && a(t2, { "aria-hidden": true, className: T(u.icon.base, u.icon.open[c ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), s2 ? a("span", { className: "sr-only", children: n2 }) : b(J, { children: [a("span", { className: u.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: n2 }), a(Dr, { "aria-hidden": true, className: u.label.icon })] })] }), a("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${i2}`, className: u.list, hidden: !c, children: a($t.Provider, { value: { isInsideCollapse: true }, children: e2 }) })] });
+  const o2 = M(r), i2 = react.exports.useId(), { isCollapsed: s2 } = st(), [c, l] = react.exports.useState(false), u = R().theme.sidebar.collapse;
+  return b(({ children: h }) => a("li", { children: s2 ? a($t, { content: n2, placement: "right", children: h }) : h }), { children: [b("button", { className: u.button, id: `flowbite-sidebar-collapse-${i2}`, onClick: () => l(!c), type: "button", ...o2, children: [t2 && a(t2, { "aria-hidden": true, className: T(u.icon.base, u.icon.open[c ? "on" : "off"]), "data-testid": "flowbite-sidebar-collapse-icon" }), s2 ? a("span", { className: "sr-only", children: n2 }) : b(J, { children: [a("span", { className: u.label.base, "data-testid": "flowbite-sidebar-collapse-label", children: n2 }), a(Br, { "aria-hidden": true, className: u.label.icon })] })] }), a("ul", { "aria-labelledby": `flowbite-sidebar-collapse-${i2}`, className: u.list, hidden: !c, children: a(Bt.Provider, { value: { isInsideCollapse: true }, children: e2 }) })] });
 };
 Vn.displayName = "Sidebar.Collapse";
-const Un = ({ children: e2, color: t2 = "info", ...n2 }) => {
-  const r = P(n2), { isCollapsed: o2 } = it(), i2 = R().theme.sidebar.cta;
+const Zn = ({ children: e2, color: t2 = "info", ...n2 }) => {
+  const r = M(n2), { isCollapsed: o2 } = st(), i2 = R().theme.sidebar.cta;
   return a("div", { className: T(i2.base, i2.color[t2]), "data-testid": "sidebar-cta", hidden: o2, ...r, children: e2 });
 };
-Un.displayName = "Sidebar.CTA";
+Zn.displayName = "Sidebar.CTA";
 const Wn = ({ as: e2 = "a", children: t2, icon: n2, active: r, label: o2, labelColor: i2 = "info", ...s2 }) => {
   var N;
-  const c = P(s2), l = react.exports.useId(), { isCollapsed: u } = it(), { isInsideCollapse: g } = _s(), h = R().theme.sidebar.item, f = ({ children: x }) => a("li", { children: u ? a(Ft, { content: a(m, { children: t2 }), placement: "right", children: x }) : x }), m = ({ children: x }) => a(p, { children: x }), p = ({ children: x }) => a("span", { className: T(h.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${l}`, children: x });
-  return a(f, { children: b(e2, { "aria-labelledby": `flowbite-sidebar-item-${l}`, className: T(h.base, r && h.active, !u && g && h.collapsed.insideCollapse), ...c, children: [n2 && a(n2, { "aria-hidden": true, className: T(h.icon.base, r && h.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: h.collapsed.noIcon, children: (N = t2.charAt(0).toLocaleUpperCase()) != null ? N : "?" }), !u && a(p, { children: t2 }), !u && o2 && a(bi, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
+  const c = M(s2), l = react.exports.useId(), { isCollapsed: u } = st(), { isInsideCollapse: g } = Is(), h = R().theme.sidebar.item, f = ({ children: x }) => a("li", { children: u ? a($t, { content: a(m, { children: t2 }), placement: "right", children: x }) : x }), m = ({ children: x }) => a(p, { children: x }), p = ({ children: x }) => a("span", { className: T(h.content.base), "data-testid": "flowbite-sidebar-item-content", id: `flowbite-sidebar-item-${l}`, children: x });
+  return a(f, { children: b(e2, { "aria-labelledby": `flowbite-sidebar-item-${l}`, className: T(h.base, r && h.active, !u && g && h.collapsed.insideCollapse), ...c, children: [n2 && a(n2, { "aria-hidden": true, className: T(h.icon.base, r && h.icon.active), "data-testid": "flowbite-sidebar-item-icon" }), u && !n2 && a("span", { className: h.collapsed.noIcon, children: (N = t2.charAt(0).toLocaleUpperCase()) != null ? N : "?" }), !u && a(p, { children: t2 }), !u && o2 && a(vi, { color: i2, "data-testid": "flowbite-sidebar-label", hidden: u, children: o2 })] }) });
 };
 Wn.displayName = "Sidebar.Item";
-const Yn = ({ children: e2, ...t2 }) => {
-  const n2 = P(t2), r = R().theme.sidebar.itemGroup;
-  return a("ul", { className: r, "data-testid": "flowbite-sidebar-item-group", ...n2, children: a($t.Provider, { value: { isInsideCollapse: false }, children: e2 }) });
-};
-Yn.displayName = "Sidebar.ItemGroup";
 const Gn = ({ children: e2, ...t2 }) => {
-  const n2 = P(t2), r = R().theme.sidebar.items;
+  const n2 = M(t2), r = R().theme.sidebar.itemGroup;
+  return a("ul", { className: r, "data-testid": "flowbite-sidebar-item-group", ...n2, children: a(Bt.Provider, { value: { isInsideCollapse: false }, children: e2 }) });
+};
+Gn.displayName = "Sidebar.ItemGroup";
+const Yn = ({ children: e2, ...t2 }) => {
+  const n2 = M(t2), r = R().theme.sidebar.items;
   return a("div", { className: r, "data-testid": "flowbite-sidebar-items", ...n2, children: e2 });
 };
-Gn.displayName = "Sidebar.Items";
-const Zn = ({ children: e2, href: t2, img: n2, imgAlt: r = "", ...o2 }) => {
-  const i2 = P(o2), s2 = react.exports.useId(), { isCollapsed: c } = it(), l = R().theme.sidebar.logo;
+Yn.displayName = "Sidebar.Items";
+const Xn = ({ children: e2, href: t2, img: n2, imgAlt: r = "", ...o2 }) => {
+  const i2 = M(o2), s2 = react.exports.useId(), { isCollapsed: c } = st(), l = R().theme.sidebar.logo;
   return b("a", { "aria-labelledby": `flowbite-sidebar-logo-${s2}`, className: l.base, href: t2, ...i2, children: [a("img", { alt: r, className: l.img, src: n2 }), a("span", { className: l.collapsed[c ? "on" : "off"], id: `flowbite-sidebar-logo-${s2}`, children: e2 })] });
 };
-Zn.displayName = "Sidebar.Logo";
-const Xn = ({ children: e2, collapseBehavior: t2 = "collapse", collapsed: n2 = false, ...r }) => {
-  const o2 = P(r), i2 = R().theme.sidebar;
-  return a(Hn.Provider, { value: { isCollapsed: n2 }, children: a("aside", { "aria-label": "Sidebar", className: T(i2.base, i2.collapsed[n2 ? "on" : "off"]), hidden: n2 && t2 === "hide", ...o2, children: a("div", { className: i2.inner, children: e2 }) }) });
+Xn.displayName = "Sidebar.Logo";
+const qn = ({ children: e2, collapseBehavior: t2 = "collapse", collapsed: n2 = false, ...r }) => {
+  const o2 = M(r), i2 = R().theme.sidebar;
+  return a(Un.Provider, { value: { isCollapsed: n2 }, children: a("aside", { "aria-label": "Sidebar", className: T(i2.base, i2.collapsed[n2 ? "on" : "off"]), hidden: n2 && t2 === "hide", ...o2, children: a("div", { className: i2.inner, children: e2 }) }) });
 };
-Xn.displayName = "Sidebar";
-Object.assign(Xn, {
+qn.displayName = "Sidebar";
+Object.assign(qn, {
   Collapse: Vn,
-  CTA: Un,
+  CTA: Zn,
   Item: Wn,
-  Items: Gn,
-  ItemGroup: Yn,
-  Logo: Zn
+  Items: Yn,
+  ItemGroup: Gn,
+  Logo: Xn
 });
-const Kn = ({ children: e2, ...t2 }) => a("tbody", { ...t2, children: e2 }), qn = ({ children: e2, className: t2, ...n2 }) => a("td", { className: T("px-6 py-4", t2), ...n2, children: e2 }), Jn = react.exports.createContext(void 0);
-function Is() {
-  const e2 = react.exports.useContext(Jn);
+const Kn = ({ children: e2, ...t2 }) => a("tbody", { ...t2, children: e2 }), Jn = ({ children: e2, className: t2, ...n2 }) => a("td", { className: T("px-6 py-4", t2), ...n2, children: e2 }), Qn = react.exports.createContext(void 0);
+function js() {
+  const e2 = react.exports.useContext(Qn);
   if (!e2)
     throw new Error("useTableContext should be used within the TableContext provider!");
   return e2;
 }
-const Qn = ({ children: e2, className: t2, ...n2 }) => a("thead", { className: T("bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400", t2), ...n2, children: a("tr", { children: e2 }) }), eo = ({ children: e2, className: t2, ...n2 }) => a("th", { className: T("px-6 py-3", t2), ...n2, children: e2 }), to = ({ children: e2, className: t2, ...n2 }) => {
-  const { striped: r, hoverable: o2 } = Is();
+const eo = ({ children: e2, className: t2, ...n2 }) => a("thead", { className: T("bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400", t2), ...n2, children: a("tr", { children: e2 }) }), to = ({ children: e2, className: t2, ...n2 }) => a("th", { className: T("px-6 py-3", t2), ...n2, children: e2 }), ro = ({ children: e2, className: t2, ...n2 }) => {
+  const { striped: r, hoverable: o2 } = js();
   return a("tr", { "data-testid": "table-row-element", className: T({
     "odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700": r,
     "hover:bg-gray-50 dark:hover:bg-gray-600": o2
   }, t2), ...n2, children: e2 });
-}, ro = ({ children: e2, striped: t2, hoverable: n2, className: r, ...o2 }) => a("div", { "data-testid": "table-element", className: "relative overflow-x-auto shadow-md sm:rounded-lg", children: a(Jn.Provider, { value: { striped: t2, hoverable: n2 }, children: a("table", { className: T("w-full text-left text-sm text-gray-500 dark:text-gray-400", r), ...o2, children: e2 }) }) });
-ro.displayName = "Table";
-Qn.displayName = "Table.Head";
+}, no = ({ children: e2, striped: t2, hoverable: n2, className: r, ...o2 }) => a("div", { "data-testid": "table-element", className: "relative overflow-x-auto shadow-md sm:rounded-lg", children: a(Qn.Provider, { value: { striped: t2, hoverable: n2 }, children: a("table", { className: T("w-full text-left text-sm text-gray-500 dark:text-gray-400", r), ...o2, children: e2 }) }) });
+no.displayName = "Table";
+eo.displayName = "Table.Head";
 Kn.displayName = "Table.Body";
-to.displayName = "Table.Row";
-qn.displayName = "Table.Cell";
-eo.displayName = "Table.HeadCell";
-Object.assign(ro, {
-  Head: Qn,
+ro.displayName = "Table.Row";
+Jn.displayName = "Table.Cell";
+to.displayName = "Table.HeadCell";
+Object.assign(no, {
+  Head: eo,
   Body: Kn,
-  Row: to,
-  Cell: qn,
-  HeadCell: eo
+  Row: ro,
+  Cell: Jn,
+  HeadCell: to
 });
-const no = ({ children: e2, className: t2, ...n2 }) => a("p", { className: T("mb-4 text-base font-normal text-gray-500 dark:text-gray-400", t2), ...n2, children: e2 }), oo = react.exports.createContext(void 0);
-function Dt() {
-  const e2 = react.exports.useContext(oo);
+const oo = ({ children: e2, className: t2, ...n2 }) => a("p", { className: T("mb-4 text-base font-normal text-gray-500 dark:text-gray-400", t2), ...n2, children: e2 }), ao = react.exports.createContext(void 0);
+function Ht() {
+  const e2 = react.exports.useContext(ao);
   if (!e2)
     throw new Error("useTimelineContext should be used within the TimelineContext providor!");
   return e2;
 }
-const ao = ({ children: e2, className: t2, ...n2 }) => {
-  const { horizontal: r } = Dt();
+const io = ({ children: e2, className: t2, ...n2 }) => {
+  const { horizontal: r } = Ht();
   return a("div", { "data-testid": "timeline-content", className: T({ "mt-3 sm:pr-8": r }, t2), ...n2, children: e2 });
-}, io = ({ children: e2, className: t2, ...n2 }) => {
-  const { horizontal: r } = Dt();
+}, so = ({ children: e2, className: t2, ...n2 }) => {
+  const { horizontal: r } = Ht();
   return a("li", { "data-testid": "timeline-item", className: T({ "mb-10 ml-6": !r, "relative mb-6 sm:mb-0": r }, t2), ...n2, children: e2 });
-}, so = ({ children: e2, className: t2, icon: n2, ...r }) => {
-  const { horizontal: o2 } = Dt();
+}, lo = ({ children: e2, className: t2, icon: n2, ...r }) => {
+  const { horizontal: o2 } = Ht();
   return b("div", { "data-testid": "timeline-point", className: T({ "flex items-center": o2 }, t2), ...r, children: [e2, n2 ? a("span", { className: "absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-200 ring-8 ring-white dark:bg-blue-900 dark:ring-gray-900", children: a(n2, { "aria-hidden": true, className: "h-3 w-3 text-blue-600 dark:text-blue-300" }) }) : a("div", { className: "absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-gray-200 dark:border-gray-900 dark:bg-gray-700" }), o2 ? a("div", { className: "hidden h-0.5 w-full bg-gray-200 dark:bg-gray-700 sm:flex" }) : ""] });
-}, lo = ({ children: e2, className: t2, ...n2 }) => a("time", { className: T("mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500", t2), ...n2, children: e2 }), co = ({ children: e2, className: t2, as: n2 = "h3", ...r }) => a(n2, { className: T("text-lg font-semibold text-gray-900 dark:text-white", t2), ...r, children: e2 }), uo = ({ children: e2, horizontal: t2 }) => a(oo.Provider, { value: { horizontal: t2 }, children: a("ol", { "data-testid": "timeline-component", className: T({
+}, co = ({ children: e2, className: t2, ...n2 }) => a("time", { className: T("mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500", t2), ...n2, children: e2 }), uo = ({ children: e2, className: t2, as: n2 = "h3", ...r }) => a(n2, { className: T("text-lg font-semibold text-gray-900 dark:text-white", t2), ...r, children: e2 }), fo = ({ children: e2, horizontal: t2 }) => a(ao.Provider, { value: { horizontal: t2 }, children: a("ol", { "data-testid": "timeline-component", className: T({
   "relative border-l border-gray-200 dark:border-gray-700": !t2,
   "items-center sm:flex": t2
 }), children: e2 }) });
-uo.displayName = "Timeline";
-io.displayName = "Timeline.Item";
-so.displayName = "Timeline.Point";
-ao.displayName = "Timeline.Content";
-lo.displayName = "Timeline.Time";
-co.displayName = "Timeline.Title";
-no.displayName = "Timeline.Body";
-Object.assign(uo, {
-  Item: io,
-  Point: so,
-  Content: ao,
-  Time: lo,
-  Title: co,
-  Body: no
+fo.displayName = "Timeline";
+so.displayName = "Timeline.Item";
+lo.displayName = "Timeline.Point";
+io.displayName = "Timeline.Content";
+co.displayName = "Timeline.Time";
+uo.displayName = "Timeline.Title";
+oo.displayName = "Timeline.Body";
+Object.assign(fo, {
+  Item: so,
+  Point: lo,
+  Content: io,
+  Time: co,
+  Title: uo,
+  Body: oo
 });
-const fo = react.exports.createContext(void 0);
-function As() {
-  const e2 = react.exports.useContext(fo);
+const go = react.exports.createContext(void 0);
+function Fs() {
+  const e2 = react.exports.useContext(go);
   if (!e2)
     throw new Error("useToastContext should be used within the ToastContext provider!");
   return e2;
 }
-const go = ({ xIcon: e2 = di }) => {
-  const { duration: t2, isClosed: n2, isRemoved: r, setIsClosed: o2, setIsRemoved: i2 } = As(), s2 = R().theme.toast.toggle;
+const ho = ({ xIcon: e2 = fi }) => {
+  const { duration: t2, isClosed: n2, isRemoved: r, setIsClosed: o2, setIsRemoved: i2 } = Fs(), s2 = R().theme.toast.toggle;
   return a("button", { "aria-label": "Close", onClick: () => {
     o2(!n2), setTimeout(() => i2(!r), t2);
   }, type: "button", className: s2.base, children: a(e2, { className: s2.icon }) });
-}, js = {
+}, Ds = {
   75: "duration-75",
   100: "duration-100",
   150: "duration-150",
@@ -4653,16 +4884,16 @@ const go = ({ xIcon: e2 = di }) => {
   500: "duration-500",
   700: "duration-700",
   1e3: "duration-1000"
-}, ho = ({ children: e2, duration: t2 = 300, ...n2 }) => {
-  const [r, o2] = react.exports.useState(false), [i2, s2] = react.exports.useState(false), c = R().theme.toast, l = P(n2);
-  return a(fo.Provider, { value: { duration: t2, isClosed: r, isRemoved: i2, setIsClosed: o2, setIsRemoved: s2 }, children: a("div", { "data-testid": "flowbite-toast", className: T(c.base, js[t2], { [c.closed]: r }, { [c.removed]: i2 }), ...l, children: e2 }) });
+}, mo = ({ children: e2, duration: t2 = 300, ...n2 }) => {
+  const [r, o2] = react.exports.useState(false), [i2, s2] = react.exports.useState(false), c = R().theme.toast, l = M(n2);
+  return a(go.Provider, { value: { duration: t2, isClosed: r, isRemoved: i2, setIsClosed: o2, setIsRemoved: s2 }, children: a("div", { "data-testid": "flowbite-toast", className: T(c.base, Ds[t2], { [c.closed]: r }, { [c.removed]: i2 }), ...l, children: e2 }) });
 };
-ho.displayName = "Toast";
-go.displayName = "Toast.Toggle";
-Object.assign(ho, {
-  Toggle: go
+mo.displayName = "Toast";
+ho.displayName = "Toast.Toggle";
+Object.assign(mo, {
+  Toggle: ho
 });
-const mo = react.exports.memo(function({
+const po = react.exports.memo(function({
   tip: t2,
   children: n2
 }) {
@@ -4671,7 +4902,7 @@ const mo = react.exports.memo(function({
       cursor: "pointer",
       zIndex: 9
     },
-    children: /* @__PURE__ */ a(Ft, {
+    children: /* @__PURE__ */ a($t, {
       id: t2,
       content: /* @__PURE__ */ a("span", {
         className: "opacity-100 font-bold",
@@ -4687,7 +4918,7 @@ const mo = react.exports.memo(function({
           maxWidth: 24,
           pointerEvents: "none"
         },
-        children: /* @__PURE__ */ a(la, {
+        children: /* @__PURE__ */ a(ca, {
           fontSize: 32,
           color: "white"
         })
@@ -4695,7 +4926,7 @@ const mo = react.exports.memo(function({
     }, t2)
   });
 });
-function wl({
+function C0({
   value: e2,
   onChange: t2,
   name: n2,
@@ -4712,9 +4943,9 @@ function wl({
   const m = (() => `bg-primary-800 p-3 block w-full rounded-md outline-none border border-transparent focus:border-brand focus-visible:border-brand sm:text-sm ${i2 ? "pl-7" : ""} ${s2 ? "pr-12" : ""} ${l}`)();
   return /* @__PURE__ */ b("div", {
     className: c,
-    children: [o2 ? /* @__PURE__ */ b(nt, {
+    children: [o2 ? /* @__PURE__ */ b(ot, {
       htmlFor: n2,
-      children: [o2, g ? /* @__PURE__ */ a(mo, {
+      children: [o2, g ? /* @__PURE__ */ a(po, {
         tip: g
       }) : null]
     }) : null, /* @__PURE__ */ b("div", {
@@ -4738,10 +4969,10 @@ function wl({
     })]
   });
 }
-function Fs(...e2) {
+function $s(...e2) {
   return e2.filter(Boolean).join(" ");
 }
-function xl({
+function k0({
   options: e2,
   onChange: t2,
   label: n2,
@@ -4763,17 +4994,17 @@ function xl({
         className: `relative mt-1 w-56 ${o2}`,
         children: [n2 && /* @__PURE__ */ b("div", {
           className: "flex gap-3 items-end mb-1",
-          children: [/* @__PURE__ */ a(nt, {
+          children: [/* @__PURE__ */ a(ot, {
             className: "block",
             children: n2
-          }), s2 ? /* @__PURE__ */ a(mo, {
+          }), s2 ? /* @__PURE__ */ a(po, {
             tip: s2
           }) : null]
         }), /* @__PURE__ */ b(pt.Button, {
           className: h,
           children: [c.label, /* @__PURE__ */ a("span", {
             className: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3",
-            children: f ? /* @__PURE__ */ a(Ea, {
+            children: f ? /* @__PURE__ */ a(Ra, {
               className: "h-4 w-4 text-primary-400",
               "aria-hidden": "true"
             }) : /* @__PURE__ */ a(ka, {
@@ -4787,7 +5018,7 @@ function xl({
             value: m,
             className: ({
               active: p
-            }) => Fs(p ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
+            }) => $s(p ? "text-white bg-secondary-600" : "text-white", "relative cursor-pointer select-none py-2 pl-3 pr-9"),
             children: m.label
           }, m.label))
         })]
@@ -4795,7 +5026,7 @@ function xl({
     })
   });
 }
-function kl({
+function N0({
   enabled: e2,
   onChange: t2
 }) {
@@ -4838,7 +5069,7 @@ function kl({
     })
   });
 }
-function Cl({
+function E0({
   tabs: e2
 }) {
   const t2 = (r) => r === "buy" ? "border-b-green-500 text-green-400" : r === "sell" ? "border-b-red-500 text-red-400" : "border-b-secondary-500 text-secondary-400", n2 = (r, o2) => {
@@ -4860,7 +5091,7 @@ function Cl({
     }, r.label))
   });
 }
-function Nl({
+function R0({
   max: e2,
   min: t2,
   value: n2,
@@ -4889,7 +5120,7 @@ function Nl({
     })
   });
 }
-const El = react.exports.forwardRef(function({
+const T0 = react.exports.forwardRef(function({
   children: t2,
   trigger: n2
 }, r) {
@@ -4968,7 +5199,7 @@ const El = react.exports.forwardRef(function({
  *
  * @license MIT
  */
-function Ge(e2, t2, n2) {
+function Ye(e2, t2, n2) {
   let r = [], o2;
   return () => {
     let i2;
@@ -4992,12 +5223,12 @@ function Ge(e2, t2, n2) {
     return o2;
   };
 }
-const $s = (e2) => e2, Ds = (e2) => {
+const Bs = (e2) => e2, Hs = (e2) => {
   const t2 = Math.max(e2.startIndex - e2.overscan, 0), n2 = Math.min(e2.endIndex + e2.overscan, e2.count - 1), r = [];
   for (let o2 = t2; o2 <= n2; o2++)
     r.push(o2);
   return r;
-}, Bs = (e2, t2) => {
+}, zs = (e2, t2) => {
   const n2 = new ResizeObserver((r) => {
     var o2, i2;
     t2({
@@ -5009,13 +5240,13 @@ const $s = (e2) => e2, Ds = (e2) => {
     return t2(e2.scrollElement.getBoundingClientRect()), n2.observe(e2.scrollElement), () => {
       n2.unobserve(e2.scrollElement);
     };
-}, Nr = {
+}, Er = {
   element: ["scrollLeft", "scrollTop"],
   window: ["scrollX", "scrollY"]
-}, zs = (e2) => (t2, n2) => {
+}, Us = (e2) => (t2, n2) => {
   if (!t2.scrollElement)
     return;
-  const r = Nr[e2][0], o2 = Nr[e2][1];
+  const r = Er[e2][0], o2 = Er[e2][1];
   let i2 = t2.scrollElement[r], s2 = t2.scrollElement[o2];
   const c = () => {
     n2(t2.scrollElement[t2.options.horizontal ? r : o2]);
@@ -5031,14 +5262,14 @@ const $s = (e2) => e2, Ds = (e2) => {
   }), () => {
     t2.scrollElement.removeEventListener("scroll", l);
   };
-}, Hs = zs("element"), Vs = (e2, t2) => e2.getBoundingClientRect()[t2.options.horizontal ? "width" : "height"], Us = (e2, t2, n2) => {
+}, Vs = Us("element"), Zs = (e2, t2) => e2.getBoundingClientRect()[t2.options.horizontal ? "width" : "height"], Ws = (e2, t2, n2) => {
   var r;
   (r = n2.scrollElement) == null || r.scrollTo == null || r.scrollTo({
     [n2.options.horizontal ? "left" : "top"]: e2,
     behavior: t2 ? "smooth" : void 0
   });
 };
-class Ws {
+class Gs {
   constructor(t2) {
     var n2 = this;
     this.unsubs = [], this.scrollElement = null, this.measurementsCache = [], this.itemMeasurementsCache = {}, this.pendingMeasuredCacheIndexes = [], this.measureElementCache = {}, this.range = {
@@ -5057,12 +5288,12 @@ class Ws {
         scrollPaddingStart: 0,
         scrollPaddingEnd: 0,
         horizontal: false,
-        getItemKey: $s,
-        rangeExtractor: Ds,
+        getItemKey: Bs,
+        rangeExtractor: Hs,
         enableSmoothScroll: true,
         onChange: () => {
         },
-        measureElement: Vs,
+        measureElement: Zs,
         initialRect: {
           width: 0,
           height: 0
@@ -5083,7 +5314,7 @@ class Ws {
       })), this.unsubs.push(this.options.observeElementOffset(this, (o2) => {
         this.scrollOffset = o2, this.calculateRange();
       })));
-    }, this.getSize = () => this.scrollRect[this.options.horizontal ? "width" : "height"], this.getMeasurements = Ge(() => [this.options.count, this.options.paddingStart, this.options.getItemKey, this.itemMeasurementsCache], (r, o2, i2, s2) => {
+    }, this.getSize = () => this.scrollRect[this.options.horizontal ? "width" : "height"], this.getMeasurements = Ye(() => [this.options.count, this.options.paddingStart, this.options.getItemKey, this.itemMeasurementsCache], (r, o2, i2, s2) => {
       const c = this.pendingMeasuredCacheIndexes.length > 0 ? Math.min(...this.pendingMeasuredCacheIndexes) : 0;
       this.pendingMeasuredCacheIndexes = [];
       const l = this.measurementsCache.slice(0, c);
@@ -5101,8 +5332,8 @@ class Ws {
     }, {
       key: false,
       debug: () => this.options.debug
-    }), this.calculateRange = Ge(() => [this.getMeasurements(), this.getSize(), this.scrollOffset], (r, o2, i2) => {
-      const s2 = Gs({
+    }), this.calculateRange = Ye(() => [this.getMeasurements(), this.getSize(), this.scrollOffset], (r, o2, i2) => {
+      const s2 = Xs({
         measurements: r,
         outerSize: o2,
         scrollOffset: i2
@@ -5111,14 +5342,14 @@ class Ws {
     }, {
       key: false,
       debug: () => this.options.debug
-    }), this.getIndexes = Ge(() => [this.options.rangeExtractor, this.range, this.options.overscan, this.options.count], (r, o2, i2, s2) => r({
+    }), this.getIndexes = Ye(() => [this.options.rangeExtractor, this.range, this.options.overscan, this.options.count], (r, o2, i2, s2) => r({
       ...o2,
       overscan: i2,
       count: s2
     }), {
       key: false,
       debug: () => this.options.debug
-    }), this.getVirtualItems = Ge(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (r, o2, i2) => {
+    }), this.getVirtualItems = Ye(() => [this.getIndexes(), this.getMeasurements(), this.options.measureElement], (r, o2, i2) => {
       const s2 = (g) => (h) => {
         var f;
         const m = this.measurementsCache[g];
@@ -5209,7 +5440,7 @@ const Ys = (e2, t2, n2, r) => {
   }
   return e2 > 0 ? e2 - 1 : 0;
 };
-function Gs(e2) {
+function Xs(e2) {
   let {
     measurements: t2,
     outerSize: n2,
@@ -5224,25 +5455,25 @@ function Gs(e2) {
     endIndex: c
   };
 }
-const Zs = typeof window < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
-function Xs(e2) {
+const qs = typeof window < "u" ? react.exports.useLayoutEffect : react.exports.useEffect;
+function Ks(e2) {
   const t2 = react.exports.useReducer(() => ({}), {})[1], n2 = {
     ...e2,
     onChange: (o2) => {
       t2(), e2.onChange == null || e2.onChange(o2);
     }
-  }, [r] = react.exports.useState(() => new Ws(n2));
-  return r.setOptions(n2), react.exports.useEffect(() => r._didMount(), []), Zs(() => r._willUpdate()), r;
+  }, [r] = react.exports.useState(() => new Gs(n2));
+  return r.setOptions(n2), react.exports.useEffect(() => r._didMount(), []), qs(() => r._willUpdate()), r;
 }
-function Ks(e2) {
-  return Xs({
-    observeElementRect: Bs,
-    observeElementOffset: Hs,
-    scrollToFn: Us,
+function Js(e2) {
+  return Ks({
+    observeElementRect: zs,
+    observeElementOffset: Vs,
+    scrollToFn: Ws,
     ...e2
   });
 }
-function qs({
+function Qs({
   title: e2,
   titleId: t2,
   ...n2
@@ -5266,8 +5497,8 @@ function qs({
     })]
   });
 }
-const Js = react.exports.forwardRef(qs), Qs = Js;
-function el({
+const e0 = react.exports.forwardRef(Qs), t0 = e0;
+function r0({
   title: e2,
   titleId: t2,
   ...n2
@@ -5291,8 +5522,8 @@ function el({
     })]
   });
 }
-const tl = react.exports.forwardRef(el), rl = tl;
-function Rl({
+const n0 = react.exports.forwardRef(r0), o0 = n0;
+function S0({
   data: e2,
   columns: t2,
   customRowRender: n2,
@@ -5314,7 +5545,7 @@ function Rl({
     }
   }), f = react.exports.useRef(null), {
     rows: m
-  } = h.getRowModel(), p = Ks(r != null ? r : {
+  } = h.getRowModel(), p = Js(r != null ? r : {
     getScrollElement: () => f.current,
     count: m.length,
     estimateSize: () => m.length,
@@ -5322,12 +5553,12 @@ function Rl({
   }), {
     getVirtualItems: N,
     getTotalSize: x,
-    scrollToIndex: C
+    scrollToIndex: k
   } = p, E = N();
   return react.exports.useEffect(() => {
-    l && C(l);
-  }, [l, C]), x(), /* @__PURE__ */ a(J, {
-    children: i2 ? /* @__PURE__ */ a(Or, {
+    l && k(l);
+  }, [l, k]), x(), /* @__PURE__ */ a(J, {
+    children: i2 ? /* @__PURE__ */ a(Mr, {
       variant: "table"
     }) : s2 ? /* @__PURE__ */ a(Ir, {
       title: "Error",
@@ -5342,23 +5573,23 @@ function Rl({
           children: O.headers.map((v) => /* @__PURE__ */ a("th", {
             onClick: v.column.getToggleSortingHandler(),
             className: "border-b dark:border-primary-600 font-medium pr-2 pl-4 pt-3 pb-3 text-primary-400 dark:text-primary-200 text-left",
-            children: /* @__PURE__ */ b(nt, {
+            children: /* @__PURE__ */ b(ot, {
               className: "mb-0",
               children: [flexRender(v.column.columnDef.header, v.getContext()), v.column.getIsSorted() ? v.column.getIsSorted() === "desc" ? /* @__PURE__ */ a("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
-                children: /* @__PURE__ */ a(Qs, {})
+                children: /* @__PURE__ */ a(t0, {})
               }) : /* @__PURE__ */ a("span", {
                 className: "w-3 h-3 ml-3 text-brand inline-block",
-                children: /* @__PURE__ */ a(rl, {})
+                children: /* @__PURE__ */ a(o0, {})
               }) : null]
             })
           }, v.id))
         }, O.id))
       }), /* @__PURE__ */ a("tbody", {
         children: E.map((O) => {
-          var _;
+          var A;
           const v = m[O == null ? void 0 : O.index];
-          return v ? (_ = n2 == null ? void 0 : n2(v)) != null ? _ : /* @__PURE__ */ a("tr", {
+          return v ? (A = n2 == null ? void 0 : n2(v)) != null ? A : /* @__PURE__ */ a("tr", {
             children: v ? v.getVisibleCells().map((F) => /* @__PURE__ */ a("td", {
               className: "border-b border-primary-100 dark:border-primary-700 p-3 pl-4 text-primary-500 dark:text-primary-200 text-left",
               children: flexRender(F.column.columnDef.cell, F.getContext())
@@ -5409,11 +5640,11 @@ function SlippagePopoverView({
 }) {
   return /* @__PURE__ */ jsx("div", {
     className: "max-w-sm",
-    children: /* @__PURE__ */ jsx(fl, {
+    children: /* @__PURE__ */ jsx(h0, {
       triggerNode: trigger,
       children: /* @__PURE__ */ jsx("div", {
         className: "bg-slate-700 p-6 text-white max-w-sm rounded-xl drop-shadow-xl",
-        children: /* @__PURE__ */ jsx(wl, {
+        children: /* @__PURE__ */ jsx(C0, {
           placeholder: "0.00",
           type: "number",
           label: "Slippage Tolerance",
@@ -5715,7 +5946,7 @@ const CoinXYParamCtxProvider = ({
   const {
     params,
     setParams
-  } = hl();
+  } = p0();
   const coinsQuery = useCoins();
   const coins = (_b = (_a2 = coinsQuery.data) == null ? void 0 : _a2.coins) != null ? _b : [];
   const defaultCoinX = (_c = coins == null ? void 0 : coins[0]) == null ? void 0 : _c.coinType;
@@ -7280,7 +7511,7 @@ const TradeControlsProvider = function TradeControlProvider({
   const stepValid = getDecCount(parseFloat(cxAmount != null ? cxAmount : "")) <= getDecCount(step);
   const setPctFactory = (n2) => () => {
     if (quantX)
-      setCxAmount((quantX * n2).toString());
+      setCxAmount((Number(quantX) * n2).toString());
   };
   const set25 = setPctFactory(0.25);
   const set50 = setPctFactory(0.5);
@@ -7363,7 +7594,7 @@ const TradeControlsProvider = function TradeControlProvider({
   const {
     addSuccessNotification,
     addErrorNotification
-  } = Ha();
+  } = Ua();
   const submitTrade = async () => {
     var _a3, _b2;
     if (firstCoin && secondCoin && wallet.account && cxAmount && price) {
@@ -7407,7 +7638,7 @@ const TradeControlsProvider = function TradeControlProvider({
     set50,
     set75,
     setMax,
-    quantX,
+    quantX: Number(quantX),
     step,
     stepValid,
     pythRating,
@@ -7510,16 +7741,16 @@ const ConnectWalletView = function ConnectWalletView2({
   const modalRef = react.exports.useRef(null);
   const [options, setOptions] = react.exports.useState([]);
   const wallet = dist.useWallet();
-  const suggestedBadge = /* @__PURE__ */ jsx(yl, {
+  const suggestedBadge = /* @__PURE__ */ jsx(w0, {
     size: "xs",
     children: "Recommended"
   });
-  const connectedBadge = /* @__PURE__ */ jsx(yl, {
+  const connectedBadge = /* @__PURE__ */ jsx(w0, {
     size: "xs",
     variant: "success",
     children: "Connected"
   });
-  const detectedBadge = /* @__PURE__ */ jsx(yl, {
+  const detectedBadge = /* @__PURE__ */ jsx(w0, {
     size: "xs",
     variant: "basic",
     children: "Detected"
@@ -7592,7 +7823,7 @@ const ConnectWalletView = function ConnectWalletView2({
       addressResult += address.slice(address.length - 4, address.length);
       switch (walletType) {
         default:
-          return /* @__PURE__ */ jsxs(cr, {
+          return /* @__PURE__ */ jsxs(ur, {
             variant: "basic",
             size: "sm",
             className: "pl-2 mr-3 inline-flex items-center",
@@ -7613,10 +7844,10 @@ const ConnectWalletView = function ConnectWalletView2({
     return defaultTrigger;
   };
   return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(El, {
+    children: /* @__PURE__ */ jsx(T0, {
       trigger: renderTrigger(trigger, (_a2 = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _a2.adapter.name, (_e2 = (_d = (_c = (_b = wallet.wallet) == null ? void 0 : _b.adapter) == null ? void 0 : _c.publicAccount) == null ? void 0 : _d.address) != null ? _e2 : "", true, (_f = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _f.adapter.icon),
       ref: modalRef,
-      children: /* @__PURE__ */ jsxs(Aa, {
+      children: /* @__PURE__ */ jsxs(ja, {
         className: "h-[575px] max-w-[700px] mx-auto border border-primary-700 overflow-hidden",
         padding: 0,
         children: [/* @__PURE__ */ jsxs("div", {
@@ -7637,7 +7868,7 @@ const ConnectWalletView = function ConnectWalletView2({
               }), /* @__PURE__ */ jsx("span", {
                 className: "ml-2 mr-4",
                 children: (_j = (_i2 = wallet == null ? void 0 : wallet.wallet) == null ? void 0 : _i2.adapter.name) != null ? _j : "None"
-              }), /* @__PURE__ */ jsx(cr, {
+              }), /* @__PURE__ */ jsx(ur, {
                 size: "xs",
                 onClick: async () => await wallet.disconnect(),
                 children: "Disconnect"
@@ -7755,7 +7986,7 @@ function TradingForm() {
     secondCoin
   } = useCoinXYParamState();
   const appTitle = window.appTitle;
-  const connectWalletTrigger2 = /* @__PURE__ */ jsx(cr, {
+  const connectWalletTrigger2 = /* @__PURE__ */ jsx(ur, {
     onClick: submitTrade,
     size: "sm",
     className: "self-stretch w-full",
@@ -7773,13 +8004,13 @@ function TradingForm() {
     children: [/* @__PURE__ */ jsx(qe.Group, {
       onChange: setActiveTab,
       selectedIndex: activeTab,
-      children: /* @__PURE__ */ jsx(Cl, {
+      children: /* @__PURE__ */ jsx(E0, {
         tabs
       })
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-3 px-4",
       children: [/* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(wl, {
+        children: [/* @__PURE__ */ jsx(C0, {
           className: "w-full",
           value: priceInput,
           onChange: onChangePrice,
@@ -7793,7 +8024,7 @@ function TradingForm() {
           children: [secondCoin == null ? void 0 : secondCoin.symbol, " must be in increments of ", tick.toString()]
         })]
       }), /* @__PURE__ */ jsxs("div", {
-        children: [/* @__PURE__ */ jsx(wl, {
+        children: [/* @__PURE__ */ jsx(C0, {
           value: cxAmount,
           onChange: onChangeCxAmount,
           name: "coinx",
@@ -7808,22 +8039,22 @@ function TradingForm() {
           children: [firstCoin == null ? void 0 : firstCoin.symbol, " must be in increments of ", step.toString()]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex w-full gap-2 pt-2",
-          children: [/* @__PURE__ */ jsx(cr, {
+          children: [/* @__PURE__ */ jsx(ur, {
             size: "xs",
             variant: "basic",
             onClick: set25,
             children: "25%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             size: "xs",
             variant: "basic",
             onClick: set50,
             children: "50%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             size: "xs",
             variant: "basic",
             onClick: set75,
             children: "75%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             size: "xs",
             variant: "basic",
             onClick: setMax,
@@ -7834,7 +8065,7 @@ function TradingForm() {
         className: "grid gap-6 my-2 grid-row-2 grid-col-2",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(kl, {
+          children: [/* @__PURE__ */ jsx(N0, {
             enabled: ioc,
             onChange: onChangeIOC
           }), "Immediate Or Cancel", /* @__PURE__ */ jsx(OrderTip, {
@@ -7845,7 +8076,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(kl, {
+          children: [/* @__PURE__ */ jsx(N0, {
             enabled: post,
             onChange: onChangePost
           }), "Post", /* @__PURE__ */ jsx(OrderTip, {
@@ -7856,7 +8087,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(kl, {
+          children: [/* @__PURE__ */ jsx(N0, {
             enabled: fok,
             onChange: onChangeFok
           }), "Fill or Kill", /* @__PURE__ */ jsx(OrderTip, {
@@ -7867,7 +8098,7 @@ function TradingForm() {
           })]
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center justify-start gap-2",
-          children: [/* @__PURE__ */ jsx(kl, {
+          children: [/* @__PURE__ */ jsx(N0, {
             enabled: passiveJoin,
             onChange: onChangePassiveJoin
           }), "Passive Join", /* @__PURE__ */ jsx(OrderTip, {
@@ -7922,7 +8153,7 @@ function TradingForm() {
         })]
       }), !((_a2 = wallet == null ? void 0 : wallet.account) == null ? void 0 : _a2.address) ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
         trigger: connectWalletTrigger2
-      }) : !((_c = (_b = hasAccount.data) == null ? void 0 : _b.account) == null ? void 0 : _c.hasAuxAccount) ? /* @__PURE__ */ jsxs(cr, {
+      }) : !((_c = (_b = hasAccount.data) == null ? void 0 : _b.account) == null ? void 0 : _c.hasAuxAccount) ? /* @__PURE__ */ jsxs(ur, {
         disabled: !stepValid,
         onClick: () => navigate("/account"),
         size: "sm",
@@ -7930,7 +8161,7 @@ function TradingForm() {
         children: ["Create ", appTitle, " Account", " ", /* @__PURE__ */ jsx(ArrowLongRightIcon, {
           className: "w-4 h-4 ml-2 text-primary-300 group-hover:text-primary-900"
         })]
-      }) : /* @__PURE__ */ jsx(cr, {
+      }) : /* @__PURE__ */ jsx(ur, {
         disabled: !stepValid,
         onClick: submitTrade,
         size: "sm",
@@ -7966,11 +8197,11 @@ function SwapDetailsView({
   return /* @__PURE__ */ jsx("div", {
     id: "swap-details",
     className: "w-full mt-5",
-    children: /* @__PURE__ */ jsx(ul, {
+    children: /* @__PURE__ */ jsx(g0, {
       summary: /* @__PURE__ */ jsx("div", {
         children: "Swap Details"
       }),
-      content: /* @__PURE__ */ jsxs(Aa, {
+      content: /* @__PURE__ */ jsxs(ja, {
         className: "gap-2",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex justify-between mb-2",
@@ -8114,16 +8345,16 @@ function AppStatsView({
 }) {
   const appTitle = window.appTitle;
   return /* @__PURE__ */ jsx(Fragment, {
-    children: loading ? /* @__PURE__ */ jsxs(Aa, {
+    children: loading ? /* @__PURE__ */ jsxs(ja, {
       className: "w-auto self-start my-8 w-[500px]",
       padding: 0,
       children: [/* @__PURE__ */ jsxs("div", {
         className: "text-2xl p-4",
         children: [appTitle, " Stats"]
-      }), /* @__PURE__ */ jsx(Or, {
+      }), /* @__PURE__ */ jsx(Mr, {
         variant: "table"
       })]
-    }) : /* @__PURE__ */ jsxs(Aa, {
+    }) : /* @__PURE__ */ jsxs(ja, {
       className: "w-auto self-start my-8 w-[500px]",
       padding: 0,
       children: [/* @__PURE__ */ jsxs("div", {
@@ -8131,7 +8362,7 @@ function AppStatsView({
         children: [appTitle, " Stats"]
       }), /* @__PURE__ */ jsx("div", {
         className: "w-full p-4 border-b border-b-primary-700",
-        children: /* @__PURE__ */ jsx(vl, {
+        children: /* @__PURE__ */ jsx(x0, {
           title: "Total Value Locked",
           value: `${stats == null ? void 0 : stats.dollarTVL.toLocaleString("en-US", {
             style: "currency",
@@ -8146,7 +8377,7 @@ function AppStatsView({
           children: "Volume"
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center gap-2",
-          children: [/* @__PURE__ */ jsx(vl, {
+          children: [/* @__PURE__ */ jsx(x0, {
             title: "24H Volume",
             value: `${stats == null ? void 0 : stats.dollarVolume24H.toLocaleString("en-US", {
               style: "currency",
@@ -8154,7 +8385,7 @@ function AppStatsView({
             })}`,
             variant: "card",
             className: "w-full"
-          }), /* @__PURE__ */ jsx(vl, {
+          }), /* @__PURE__ */ jsx(x0, {
             title: "7D Volume",
             value: `${stats == null ? void 0 : stats.dollarVolume7D.toLocaleString("en-US", {
               style: "currency",
@@ -8171,14 +8402,14 @@ function AppStatsView({
           children: "Transactions"
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex gap-2",
-          children: [/* @__PURE__ */ jsx(vl, {
+          children: [/* @__PURE__ */ jsx(x0, {
             title: "24H Transactions ",
             value: `${stats == null ? void 0 : stats.transactions24H.toLocaleString("en-US", {
               maximumFractionDigits: 3
             })}`,
             variant: "card",
             className: "w-full"
-          }), /* @__PURE__ */ jsx(vl, {
+          }), /* @__PURE__ */ jsx(x0, {
             title: "7D Transactions ",
             value: `${stats == null ? void 0 : stats.transactions7D.toLocaleString("en-US", {
               maximumFractionDigits: 3
@@ -8194,14 +8425,14 @@ function AppStatsView({
           children: "Users"
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex items-center gap-2",
-          children: [/* @__PURE__ */ jsx(vl, {
+          children: [/* @__PURE__ */ jsx(x0, {
             title: "24H Users",
             value: `${stats == null ? void 0 : stats.users24H.toLocaleString("en-US", {
               maximumFractionDigits: 3
             })}`,
             variant: "card",
             className: "w-full"
-          }), /* @__PURE__ */ jsx(vl, {
+          }), /* @__PURE__ */ jsx(x0, {
             title: "7D Users",
             value: `${stats == null ? void 0 : stats.users7D.toLocaleString("en-US", {
               maximumFractionDigits: 3
@@ -8493,7 +8724,7 @@ function CoinListItem({
   return /* @__PURE__ */ jsxs(Lo.Option, {
     value: coinInfo,
     className: "h-[60px] w-full flex items-center space-x-4 bg-primary-800 cursor-pointer p-4 my-2 rounded-lg hover:cursor-pointer hover:bg-secondary-800 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50",
-    children: [/* @__PURE__ */ jsx(ai, {
+    children: [/* @__PURE__ */ jsx(si, {
       coin: coinInfo.symbol
     }), /* @__PURE__ */ jsx("p", {
       className: "text-xl font-medium text-primary-100",
@@ -8541,7 +8772,7 @@ function CoinSearchModalView({
     onCoinSelect(coin);
     (_a3 = modalRef.current) == null ? void 0 : _a3.closeModal();
   }, []);
-  return /* @__PURE__ */ jsx(El, {
+  return /* @__PURE__ */ jsx(T0, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx(ModalContents, {
@@ -8571,10 +8802,10 @@ function ModalContents({
     }, 200);
     return () => clearInterval(interval);
   }, []);
-  return /* @__PURE__ */ jsxs(Aa, {
+  return /* @__PURE__ */ jsxs(ja, {
     className: "min-w-[400px] max-w-[700px] mx-auto border border-slate-700 overflow-hidden",
     padding: 0,
-    children: [/* @__PURE__ */ jsx(pl, {
+    children: [/* @__PURE__ */ jsx(y0, {
       id: "headlessui-dialog-title-:rh:",
       className: "px-4 pt-4",
       children: "Select Token"
@@ -8629,7 +8860,7 @@ function CoinSelectButton({
     className,
     children: /* @__PURE__ */ jsxs("button", {
       className: "relative text-sm bg-primary-700 rounded-xl p-3 flex items-center min-h-[50px] min-w-[150px] hover:bg-primary-600",
-      children: [coin ? /* @__PURE__ */ jsx(ai, {
+      children: [coin ? /* @__PURE__ */ jsx(si, {
         coin: coin.symbol,
         size: 24
       }) : null, /* @__PURE__ */ jsx("span", {
@@ -8672,9 +8903,7 @@ function DepositInput({
       onCoinSelect
     }), /* @__PURE__ */ jsxs("span", {
       className: "absolute right-2 mt-1 font-semibold text-primary-400",
-      children: ["Wallet Balance:", " ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.symbol)) == null ? void 0 : _a2.balance.toLocaleString("en-US", {
-        maximumFractionDigits: coin == null ? void 0 : coin.decimals
-      })) != null ? _b : "-" : "-"]
+      children: ["Wallet Balance:", " ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.symbol)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
     })]
   });
 }
@@ -8701,12 +8930,12 @@ function CreatePoolView({
     value: "30"
   }];
   const value = (_a2 = options.find((o2) => o2.value === fee)) != null ? _a2 : void 0;
-  return /* @__PURE__ */ jsxs(Aa, {
+  return /* @__PURE__ */ jsxs(ja, {
     className: "w-[600px] mx-auto self-center border border-slate-700",
-    children: [/* @__PURE__ */ jsx(pl, {
+    children: [/* @__PURE__ */ jsx(y0, {
       className: "mb-4",
       children: "Create Pool"
-    }), /* @__PURE__ */ jsx(nt, {
+    }), /* @__PURE__ */ jsx(ot, {
       className: "mb-4 mt-4",
       children: "Deposit Amounts"
     }), /* @__PURE__ */ jsxs("div", {
@@ -8723,7 +8952,7 @@ function CreatePoolView({
         onCoinSelect: onSecondCoinSelect,
         onChange: handleChangeSecondCoinAu,
         value: secondCoinAu
-      }), /* @__PURE__ */ jsx(xl, {
+      }), /* @__PURE__ */ jsx(k0, {
         className: "min-w-full",
         label: "Fee Tier",
         toolTip: "When swapping, this fee is paid by the swapper to the liquidity providers in the pool. Higher fees can attract liquidity providers but may reduce swap volume. Lower fees may attract swap volume but reduce incentives for liquidity providers.",
@@ -8731,7 +8960,7 @@ function CreatePoolView({
         value,
         onChange: (e2) => setFee(e2)
       })]
-    }), /* @__PURE__ */ jsx(cr, {
+    }), /* @__PURE__ */ jsx(ur, {
       className: "mt-12 w-full",
       onClick: createPool,
       children: "Create Pool"
@@ -8771,7 +9000,7 @@ function CreatePoolContainer() {
   });
   const conversionIn = firstCoinAu * ((_i2 = (_h = (_g = coinSpotPrice.data) == null ? void 0 : _g.pool) == null ? void 0 : _h.priceX) != null ? _i2 : 0);
   const conversionOut = secondCoinAu * ((_l = (_k = (_j = coinSpotPrice.data) == null ? void 0 : _j.pool) == null ? void 0 : _k.priceY) != null ? _l : 0);
-  const notifications = Ha();
+  const notifications = Ua();
   async function createPoolHandler() {
     var _a3, _b2;
     if (firstCoin && secondCoin) {
@@ -9321,14 +9550,14 @@ function DepositView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = Ha();
-  return /* @__PURE__ */ jsx(El, {
+  const notifications = Ua();
+  return /* @__PURE__ */ jsx(T0, {
     ref: modalRef,
     trigger,
-    children: /* @__PURE__ */ jsxs(Aa, {
+    children: /* @__PURE__ */ jsxs(ja, {
       className: "w-[700px] mx-auto gap-4 flex flex-col",
       padding: 6,
-      children: [/* @__PURE__ */ jsx(pl, {
+      children: [/* @__PURE__ */ jsx(y0, {
         className: "mb-4",
         children: "Deposit"
       }), !coins.length && /* @__PURE__ */ jsx(Ir, {
@@ -9338,7 +9567,7 @@ function DepositView({
         className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(nt, {
+          children: [/* @__PURE__ */ jsx(ot, {
             className: "text-primary-300",
             children: "Enter Deposit Amount"
           }), /* @__PURE__ */ jsx("div", {
@@ -9366,7 +9595,7 @@ function DepositView({
             placeholder: "0.00"
           })]
         })]
-      }), /* @__PURE__ */ jsx(cr, {
+      }), /* @__PURE__ */ jsx(ur, {
         disabled: !coin || Number(balance) < amount,
         onClick: () => {
           if (coin)
@@ -9405,7 +9634,7 @@ function DepositContainer({
   return /* @__PURE__ */ jsx(DepositView, {
     coin,
     deposit,
-    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(cr, {
+    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(ur, {
       size: "sm",
       onClick: () => {
       },
@@ -9418,8 +9647,8 @@ function RegisterCoinList({
 }) {
   const wallet = dist.useWallet();
   const [registerCoin] = useMutation(RegisterCoinDocument);
-  const notifications = Ha();
-  const depositTrigger = /* @__PURE__ */ jsx(cr, {
+  const notifications = Ua();
+  const depositTrigger = /* @__PURE__ */ jsx(ur, {
     size: "xs",
     onClick: () => {
     },
@@ -9445,7 +9674,7 @@ function RegisterCoinList({
     className: "pt-3",
     children: coins == null ? void 0 : coins.map((c, idx) => /* @__PURE__ */ jsxs("div", {
       className: "flex flex-row items-center w-full p-3 my-2 bg-primary-800 rounded-lg",
-      children: [/* @__PURE__ */ jsx(ai, {
+      children: [/* @__PURE__ */ jsx(si, {
         coin: c.coinInfo.symbol
       }), /* @__PURE__ */ jsx("div", {
         className: "ml-2",
@@ -9455,13 +9684,13 @@ function RegisterCoinList({
         children: [/* @__PURE__ */ jsx(DepositContainer, {
           coin: c.coinInfo,
           trigger: depositTrigger
-        }), /* @__PURE__ */ jsx(yl, {
+        }), /* @__PURE__ */ jsx(w0, {
           size: "xs",
           variant: "success",
           className: "ml-auto",
           children: "Registered"
         })]
-      }) : /* @__PURE__ */ jsx(cr, {
+      }) : /* @__PURE__ */ jsx(ur, {
         size: "xs",
         onClick: async () => await handleRegister(c),
         className: "ml-auto",
@@ -9479,7 +9708,7 @@ function CreateAccountWizard({
   const navigate = useNavigate();
   const connectWallet = () => {
   };
-  const walletTrigger = /* @__PURE__ */ jsx(cr, {
+  const walletTrigger = /* @__PURE__ */ jsx(ur, {
     onClick: connectWallet,
     size: "sm",
     children: "Connect Your Wallet"
@@ -9487,7 +9716,7 @@ function CreateAccountWizard({
   const [createAuxAccount] = useMutation(CreateAuxAccountDocument);
   const hasAuxAccount = useHasAccount();
   const hasAccount = (_b = (_a2 = hasAuxAccount.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.hasAuxAccount;
-  const notifications = Ha();
+  const notifications = Ua();
   const registeredCoins = useRegisteredCoins();
   const coins = (_d = (_c = registeredCoins.data) == null ? void 0 : _c.account) == null ? void 0 : _d.registeredCoins;
   const [allCoinsRegistered, setAllCoinsRegistered] = react.exports.useState(false);
@@ -9514,7 +9743,7 @@ function CreateAccountWizard({
   };
   return /* @__PURE__ */ jsx("div", {
     className: "w-full min-h-full h-full my-12",
-    children: /* @__PURE__ */ jsxs(Aa, {
+    children: /* @__PURE__ */ jsxs(ja, {
       className: "flex flex-col items-stretch mx-auto gap-6 w-[800px] border border-primary-700",
       children: [
         /* @__PURE__ */ jsxs("div", {
@@ -9575,7 +9804,7 @@ function CreateAccountWizard({
             })
           }), /* @__PURE__ */ jsxs("div", {
             className: "text-slate-400 px-4 pb-4 flex flex-col gap-3",
-            children: ["Registering this on-chain account enables trading without approval dialogs.", /* @__PURE__ */ jsxs(cr, {
+            children: ["Registering this on-chain account enables trading without approval dialogs.", /* @__PURE__ */ jsxs(ur, {
               onClick: createAccount,
               size: "sm",
               className: "self-start",
@@ -9629,11 +9858,11 @@ function CreateAccountWizard({
         }),
         ((_i2 = wallet.account) == null ? void 0 : _i2.address) && hasAccount && /* @__PURE__ */ jsxs("div", {
           className: "flex flex-row gap-4",
-          children: [/* @__PURE__ */ jsx(cr, {
+          children: [/* @__PURE__ */ jsx(ur, {
             size: "sm",
             onClick: () => navigate("/trade"),
             children: "Start Trading"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             size: "sm",
             variant: "basic",
             onClick: () => navigate("/portfolio"),
@@ -9847,14 +10076,14 @@ function usePoolsTable() {
               className: "flex py-3",
               children: [/* @__PURE__ */ jsx("div", {
                 className: "flex items-center",
-                children: /* @__PURE__ */ jsx(bl, {
+                children: /* @__PURE__ */ jsx(v0, {
                   coins: [(_b2 = (_a4 = rowValues == null ? void 0 : rowValues.coinInfoX) == null ? void 0 : _a4.symbol) != null ? _b2 : "", (_d = (_c = rowValues == null ? void 0 : rowValues.coinInfoY) == null ? void 0 : _c.symbol) != null ? _d : ""].filter(Boolean),
                   size: 32
                 })
               }), /* @__PURE__ */ jsx("div", {
                 className: "self-center ml-4 mr-2 md:text-lg sm:text-sm",
                 children: `${(_e2 = rowValues.coinInfoX) == null ? void 0 : _e2.name} / ${(_f = rowValues.coinInfoY) == null ? void 0 : _f.name}`
-              }), rowValues.featuredStatus !== "NONE" ? /* @__PURE__ */ jsx(yl, {
+              }), rowValues.featuredStatus !== "NONE" ? /* @__PURE__ */ jsx(w0, {
                 variant: "success",
                 size: "sm",
                 className: "self-center",
@@ -9930,7 +10159,7 @@ function PoolsTable({
     return globalFilter && globalFilter.length > 1 ? (_c = (_b = (_a3 = p.coinInfoX.name.toLowerCase().match(globalFilter.toLowerCase())) != null ? _a3 : p.coinInfoY.name.toLowerCase().match(globalFilter.toLowerCase())) != null ? _b : p.coinInfoX.symbol.toLowerCase().match(globalFilter.toLowerCase())) != null ? _c : p.coinInfoY.symbol.toLowerCase().match(globalFilter.toLowerCase()) : true;
   });
   return /* @__PURE__ */ jsx(Fragment, {
-    children: /* @__PURE__ */ jsx(Rl, {
+    children: /* @__PURE__ */ jsx(S0, {
       loading: poolsTableProps.loading,
       error: poolsTableProps.error,
       noData: poolsTableProps.noData,
@@ -9962,7 +10191,7 @@ function SwapPanel({
     className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex justify-between flex-auto flex-col gap-2",
-      children: [/* @__PURE__ */ jsx(nt, {
+      children: [/* @__PURE__ */ jsx(ot, {
         className: "text-primary-300",
         children: title
       }), /* @__PURE__ */ jsx("div", {
@@ -9978,9 +10207,7 @@ function SwapPanel({
       className: "flex justify-between flex-auto flex-col gap-4",
       children: [/* @__PURE__ */ jsxs("div", {
         className: "text-sm text-right",
-        children: ["Wallet Balance:", " ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a2.balance.toLocaleString("en-US", {
-          maximumFractionDigits: 3
-        })) != null ? _b : "-" : "-"]
+        children: ["Wallet Balance:", " ", (coin == null ? void 0 : coin.coinType) ? (_b = (_a2 = findBalance(coin == null ? void 0 : coin.coinType)) == null ? void 0 : _a2.balance) != null ? _b : "-" : "-"]
       }), /* @__PURE__ */ jsx("input", {
         disabled: !!disabled,
         inputMode: "decimal",
@@ -10027,9 +10254,9 @@ function SwapFormView({
 }) {
   var _a2, _b, _c, _d, _e2, _f, _g, _h, _i2, _j, _k, _l, _m, _n2, _o;
   const wallet = dist.useWallet();
-  return /* @__PURE__ */ jsxs(Aa, {
+  return /* @__PURE__ */ jsxs(ja, {
     className: "w-[700px] mx-auto self-center justify-self-center border border-primary-700",
-    children: [/* @__PURE__ */ jsxs(pl, {
+    children: [/* @__PURE__ */ jsxs(y0, {
       className: "mb-4 flex justify-between",
       children: [/* @__PURE__ */ jsx("span", {
         children: "Swap"
@@ -10070,13 +10297,13 @@ function SwapFormView({
       className: "mt-6 text-red-300 text-left w-full",
       children: helperText
     }) : null, !wallet ? /* @__PURE__ */ jsx(ConnectWalletContainer, {
-      trigger: /* @__PURE__ */ jsx(cr, {
+      trigger: /* @__PURE__ */ jsx(ur, {
         className: "mt-6 min-w-full",
         onClick: () => {
         },
         children: "Connect Wallet To Swap"
       })
-    }) : /* @__PURE__ */ jsx(cr, {
+    }) : /* @__PURE__ */ jsx(ur, {
       disabled: loading || !!helperText,
       className: "mt-6 min-w-full",
       onClick: handleSwap,
@@ -10583,7 +10810,7 @@ function SwapFormContainer({}) {
     coins
   } = useCoinXYParamState();
   const wallet = dist.useWallet();
-  const notifications = Ha();
+  const notifications = Ua();
   const [valueIn, setValueIn] = react.exports.useState("1");
   const [valueOut, setValueOut] = react.exports.useState("1");
   const slippageCtx = useSlippage();
@@ -10716,8 +10943,8 @@ function SwapFormContainer({}) {
   });
 }
 function SwapModalView({}) {
-  return /* @__PURE__ */ jsx(El, {
-    trigger: /* @__PURE__ */ jsx(cr, {
+  return /* @__PURE__ */ jsx(T0, {
+    trigger: /* @__PURE__ */ jsx(ur, {
       size: "sm",
       onClick: () => {
       },
@@ -10736,7 +10963,7 @@ function RegisterCoinModalView({
 }) {
   const [registerCoin] = useMutation(RegisterCoinDocument);
   const wallet = dist.useWallet();
-  const notifications = Ha();
+  const notifications = Ua();
   const [registered, setRegistered] = react.exports.useState(/* @__PURE__ */ new Map());
   const clearRegistered = (_coins) => {
     const state = /* @__PURE__ */ new Map();
@@ -10781,14 +11008,14 @@ function RegisterCoinModalView({
       (_a2 = modalRef.current) == null ? void 0 : _a2.closeModal();
     }).catch(() => notifications.addErrorNotification("Failed to execute swap."));
   };
-  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(El, {
+  return !coins || !coins.length ? null : /* @__PURE__ */ jsx(T0, {
     trigger,
     ref: modalRef,
     children: /* @__PURE__ */ jsx("div", {
       className: "w-full flex justify-center items-center",
-      children: /* @__PURE__ */ jsxs(Aa, {
+      children: /* @__PURE__ */ jsxs(ja, {
         className: "flex flex-col gap-4 w-[600px] max-w-[600px] border border-primary-700",
-        children: [/* @__PURE__ */ jsx(pl, {
+        children: [/* @__PURE__ */ jsx(y0, {
           children: /* @__PURE__ */ jsx("span", {
             className: "font-bold",
             children: "Coin Registration"
@@ -10798,20 +11025,20 @@ function RegisterCoinModalView({
           children: "Please register your coin(s) to transact within the DEX."
         }), coins.map((c) => c && /* @__PURE__ */ jsxs("div", {
           className: " flex gap-4 items-center font-semibold text-xl bg-primary-800 p-4 rounded-lg text-primary-300",
-          children: [/* @__PURE__ */ jsx(ai, {
+          children: [/* @__PURE__ */ jsx(si, {
             coin: c == null ? void 0 : c.symbol
-          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(yl, {
+          }), c == null ? void 0 : c.symbol, registered.get(c == null ? void 0 : c.symbol) ? /* @__PURE__ */ jsx(w0, {
             size: "sm",
             variant: "success",
             className: "ml-auto",
             children: "Registered"
-          }) : /* @__PURE__ */ jsxs(cr, {
+          }) : /* @__PURE__ */ jsxs(ur, {
             size: "sm",
             className: "ml-auto",
             onClick: async () => await handleRegister(c),
             children: ["Register ", c == null ? void 0 : c.symbol]
           })]
-        })), allRegistered ? /* @__PURE__ */ jsx(cr, {
+        })), allRegistered ? /* @__PURE__ */ jsx(ur, {
           onClick: submitSwap,
           children: "Submit Swap"
         }) : null]
@@ -10838,7 +11065,7 @@ function NetworkToggle() {
   const currentNetwork = networkOptions.find((n2) => location.origin === n2.value);
   const onNetworkChange = (e2) => location.assign(`${e2.value}${location.pathname}`);
   return /* @__PURE__ */ jsx(Fragment, {
-    children: currentNetwork && /* @__PURE__ */ jsx(xl, {
+    children: currentNetwork && /* @__PURE__ */ jsx(k0, {
       label: "",
       className: "w-[120px] mt-0 mr-3 bg-slate-900",
       inputClass: "rounded-full border-2 border-slate-600 py-2",
@@ -11069,7 +11296,7 @@ function NoTradeHistory() {
 }
 function TradeTable({}) {
   const [tradeTableProps, tradeTableRef] = useTradeHistoryTable();
-  return /* @__PURE__ */ jsx(Rl, {
+  return /* @__PURE__ */ jsx(S0, {
     loading: tradeTableProps.loading,
     error: tradeTableProps.error,
     noData: tradeTableProps.noData,
@@ -11103,7 +11330,7 @@ function usePoolPositionsTable() {
           return /* @__PURE__ */ jsxs(Link, {
             to: poolUrl,
             className: "flex items-center gap-3 py-2",
-            children: [/* @__PURE__ */ jsx(bl, {
+            children: [/* @__PURE__ */ jsx(v0, {
               size: 32,
               coins: [(_a4 = rowValues.coinInfoX) == null ? void 0 : _a4.symbol, (_b3 = rowValues.coinInfoY) == null ? void 0 : _b3.symbol]
             }), value]
@@ -11147,7 +11374,7 @@ function NoPositions() {
       children: [/* @__PURE__ */ jsx("div", {
         className: "text-lg",
         children: "You have not added liquidity to any pools."
-      }), /* @__PURE__ */ jsx(cr, {
+      }), /* @__PURE__ */ jsx(ur, {
         size: "sm",
         onClick: () => navigate("/pools"),
         children: "Browse Pools"
@@ -11157,7 +11384,7 @@ function NoPositions() {
 }
 function PoolPositionsTable({}) {
   const [poolPositionsTableProps] = usePoolPositionsTable();
-  return /* @__PURE__ */ jsx(Rl, {
+  return /* @__PURE__ */ jsx(S0, {
     loading: poolPositionsTableProps.loading,
     error: poolPositionsTableProps.error,
     noData: poolPositionsTableProps.noData,
@@ -11173,14 +11400,14 @@ function useBalancesTable() {
   const balancesQuery = useBalances();
   const tableRef = react.exports.useRef(null);
   const balances = (_b = (_a2 = balancesQuery.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.balances;
-  const depositTrigger = /* @__PURE__ */ jsx(cr, {
+  const depositTrigger = /* @__PURE__ */ jsx(ur, {
     size: "xs",
     variant: "buy",
     onClick: () => {
     },
     children: "Deposit"
   });
-  const withdrawTrigger = /* @__PURE__ */ jsx(cr, {
+  const withdrawTrigger = /* @__PURE__ */ jsx(ur, {
     size: "xs",
     variant: "sell",
     onClick: () => {
@@ -11201,7 +11428,7 @@ function useBalancesTable() {
           const coinInfo = cell.getValue();
           return /* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-3 w-[280px]",
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: coinInfo == null ? void 0 : coinInfo.symbol,
               size: 32
             }), coinInfo == null ? void 0 : coinInfo.symbol]
@@ -11257,7 +11484,7 @@ function useBalancesTable() {
   return [tableProps, tableRef];
 }
 function NoBalances$1() {
-  const depositTrigger = /* @__PURE__ */ jsx(cr, {
+  const depositTrigger = /* @__PURE__ */ jsx(ur, {
     size: "xs",
     onClick: () => {
     },
@@ -11422,7 +11649,7 @@ function useWalletBalancesTable() {
           const coinInfo = cell.getValue();
           return /* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-3 w-[280px] max-w-[280px]",
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: coinInfo == null ? void 0 : coinInfo.symbol,
               size: 32
             }), coinInfo == null ? void 0 : coinInfo.symbol]
@@ -11476,7 +11703,7 @@ function BalancesTable({
   variant
 }) {
   const [balanceTableProps] = variant && variant === "wallet" ? useWalletBalancesTable() : useBalancesTable();
-  return /* @__PURE__ */ jsx(Rl, {
+  return /* @__PURE__ */ jsx(S0, {
     loading: balanceTableProps.loading,
     error: balanceTableProps.error,
     noData: balanceTableProps.noData,
@@ -11731,7 +11958,7 @@ const marketCol = columnHelper.accessor("market", {
     return /* @__PURE__ */ jsxs(Link, {
       to: "/trade",
       className: "flex items-center gap-3 py-2",
-      children: [rowValues.baseCoinInfo && rowValues.quoteCoinInfo ? /* @__PURE__ */ jsx(bl, {
+      children: [rowValues.baseCoinInfo && rowValues.quoteCoinInfo ? /* @__PURE__ */ jsx(v0, {
         size: 20,
         coins: [(_a2 = rowValues.baseCoinInfo) == null ? void 0 : _a2.symbol, (_b = rowValues.quoteCoinInfo) == null ? void 0 : _b.symbol]
       }) : null, value]
@@ -11769,7 +11996,7 @@ const orderStatusCol = columnHelper.accessor("orderStatus", {
     const value = cell.getValue();
     if (value) {
       const variant = getBadgeVariant(value);
-      return /* @__PURE__ */ jsx(yl, {
+      return /* @__PURE__ */ jsx(w0, {
         size: "xs",
         variant,
         children: value
@@ -11908,7 +12135,7 @@ function NoOpenOrders() {
       children: [/* @__PURE__ */ jsx("div", {
         className: "text-lg",
         children: "You have no open orders. Submit one and it will show up here."
-      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(cr, {
+      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(ur, {
         size: "sm",
         onClick: () => navigate("/trade"),
         children: "Start Trading"
@@ -11926,7 +12153,7 @@ function NoOrderHistory() {
       children: [/* @__PURE__ */ jsx("div", {
         className: "text-lg",
         children: "No past orders. Once an order completes it will show up here."
-      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(cr, {
+      }), location.pathname !== "/trade" && /* @__PURE__ */ jsx(ur, {
         size: "sm",
         onClick: () => navigate("/trade"),
         children: "Start Trading"
@@ -11939,7 +12166,7 @@ function OrdersTable({
   market
 }) {
   const [orderTableProps] = variant && variant === "open" ? useOpenOrdersTable() : useOrderHistoryTable();
-  return /* @__PURE__ */ jsx(Rl, {
+  return /* @__PURE__ */ jsx(S0, {
     noData: orderTableProps.noData,
     loading: orderTableProps.loading,
     columns: orderTableProps.columns,
@@ -12039,19 +12266,19 @@ function WithdrawalView({
     if (currentCoin)
       setBalance(currentCoin.availableBalance.toString());
   }, [coin, fullBalances]);
-  const notifications = Ha();
-  return /* @__PURE__ */ jsx(El, {
+  const notifications = Ua();
+  return /* @__PURE__ */ jsx(T0, {
     ref: modalRef,
-    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(cr, {
+    trigger: trigger != null ? trigger : /* @__PURE__ */ jsx(ur, {
       size: "sm",
       onClick: () => {
       },
       children: "Withdraw"
     }),
-    children: /* @__PURE__ */ jsxs(Aa, {
+    children: /* @__PURE__ */ jsxs(ja, {
       className: "w-[700px] mx-auto gap-4 flex flex-col",
       padding: 6,
-      children: [/* @__PURE__ */ jsx(pl, {
+      children: [/* @__PURE__ */ jsx(y0, {
         className: "mb-4",
         children: "Withdraw"
       }), !coins.length && /* @__PURE__ */ jsx(Ir, {
@@ -12061,7 +12288,7 @@ function WithdrawalView({
         className: "rounded-xl p-6 flex bg-primary-800 shadow-md justify-between text-white font-bold",
         children: [/* @__PURE__ */ jsxs("div", {
           className: "flex justify-between flex-auto flex-col gap-2",
-          children: [/* @__PURE__ */ jsx(nt, {
+          children: [/* @__PURE__ */ jsx(ot, {
             className: "text-primary-300",
             children: "Enter Withdrawal Amount"
           }), /* @__PURE__ */ jsx("div", {
@@ -12089,7 +12316,7 @@ function WithdrawalView({
             placeholder: "0.00"
           })]
         })]
-      }), /* @__PURE__ */ jsx(cr, {
+      }), /* @__PURE__ */ jsx(ur, {
         disabled: !coin || Number(balance) < amount,
         onClick: async () => {
           var _a3, _b2, _c2;
@@ -12141,7 +12368,7 @@ function WithdrawalContainer({
     coin,
     trigger: trigger ? /* @__PURE__ */ jsx(Fragment, {
       children: trigger
-    }) : /* @__PURE__ */ jsx(cr, {
+    }) : /* @__PURE__ */ jsx(ur, {
       size: "sm",
       onClick: () => {
       },
@@ -12166,7 +12393,7 @@ function MarketListItem({
     onClick: onMarketSelectHandler,
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex shrink-0 items-center justify-center",
-      children: [/* @__PURE__ */ jsx(bl, {
+      children: [/* @__PURE__ */ jsx(v0, {
         coins: [market == null ? void 0 : market.baseCoinInfo.symbol, market == null ? void 0 : market.quoteCoinInfo.symbol].filter(Boolean),
         size: 32
       }), /* @__PURE__ */ jsxs("div", {
@@ -13135,7 +13362,7 @@ function MarketSelector({
         return /* @__PURE__ */ jsxs(Fragment, {
           children: [/* @__PURE__ */ jsxs(mt.Button, {
             className: `${open ? "" : "hover:bg-primary-700"} ${baseButtonClasses}`,
-            children: [selectedMarket ? /* @__PURE__ */ jsx(bl, {
+            children: [selectedMarket ? /* @__PURE__ */ jsx(v0, {
               coins: [(_a3 = selectedMarket == null ? void 0 : selectedMarket.baseCoinInfo) == null ? void 0 : _a3.symbol, (_b2 = selectedMarket == null ? void 0 : selectedMarket.quoteCoinInfo) == null ? void 0 : _b2.symbol],
               size: 32
             }) : null, /* @__PURE__ */ jsx("div", {
@@ -13164,7 +13391,7 @@ function MarketSelector({
                   className: "relative grid bg-primary-800",
                   children: [/* @__PURE__ */ jsx("div", {
                     className: "px-4 pt-4 pb-4 border-b border-b-primary-700",
-                    children: /* @__PURE__ */ jsx(wl, {
+                    children: /* @__PURE__ */ jsx(C0, {
                       value: searchQuery,
                       name: "marketSearch",
                       placeholder: "Search Markets",
@@ -13548,15 +13775,15 @@ function PoolsEventTableView({
 }) {
   return /* @__PURE__ */ jsx("div", {
     className: "flex flex-col gap-4 items-center w-full mt-10",
-    children: /* @__PURE__ */ jsxs(Aa, {
+    children: /* @__PURE__ */ jsxs(ja, {
       className: "max-w-[1200px] w-full max-h-full overflow-auto px-0",
       children: [/* @__PURE__ */ jsxs("div", {
         className: "flex justify-between mb-2 px-6",
-        children: [/* @__PURE__ */ jsx(pl, {
+        children: [/* @__PURE__ */ jsx(y0, {
           children: "Transactions"
         }), /* @__PURE__ */ jsx("div", {
           className: "flex gap-2 mb-4",
-          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(cr, {
+          children: actionButtonProps.map((props) => /* @__PURE__ */ jsx(ur, {
             className: props.className,
             onClick: props.onClick,
             size: "xs",
@@ -13564,7 +13791,7 @@ function PoolsEventTableView({
             children: props.children
           }, props.children))
         })]
-      }), /* @__PURE__ */ jsx(Rl, {
+      }), /* @__PURE__ */ jsx(S0, {
         ...tableProps
       })]
     })
@@ -13696,15 +13923,15 @@ function PoolsEventTableContainer() {
             const isSwap = rowType.match("Swap");
             const isAdd = rowType.match("Add");
             const isRemove = rowType.match("Remove");
-            const action = isSwap ? /* @__PURE__ */ jsxs(yl, {
+            const action = isSwap ? /* @__PURE__ */ jsxs(w0, {
               className: "text-center !bg-transparent  !text-accent-400",
               size: "xs",
               children: [cell.getValue(), " Total LP Unchanged"]
-            }) : isAdd ? /* @__PURE__ */ jsxs(yl, {
+            }) : isAdd ? /* @__PURE__ */ jsxs(w0, {
               className: "text-center !bg-transparent !text-green-400",
               size: "xs",
               children: [cell.getValue(), " LP Minted"]
-            }) : isRemove ? /* @__PURE__ */ jsxs(yl, {
+            }) : isRemove ? /* @__PURE__ */ jsxs(w0, {
               className: "text-center !bg-transparent  !text-red-400",
               size: "xs",
               children: [cell.getValue(), " LP Burned"]
@@ -13747,15 +13974,15 @@ function PoolsEventTableContainer() {
         const isSwap = rowType.match("Swap");
         const isAdd = rowType.match("Add");
         const isRemove = rowType.match("Remove");
-        const action = isSwap ? /* @__PURE__ */ jsxs(yl, {
+        const action = isSwap ? /* @__PURE__ */ jsxs(w0, {
           className: "whitespace-nowrap text-center !bg-transparent border border-accent-200  !text-accent-200",
           size: "xs",
           children: ["Swap ", rowValues.symbolIn, " for ", rowValues.symbolOut]
-        }) : isAdd ? /* @__PURE__ */ jsxs(yl, {
+        }) : isAdd ? /* @__PURE__ */ jsxs(w0, {
           className: "whitespace-nowrap text-center !bg-transparent  border border-green-200 !text-green-200",
           size: "xs",
           children: ["Add ", rowValues.symbolIn, " and ", rowValues.symbolOut]
-        }) : isRemove ? /* @__PURE__ */ jsxs(yl, {
+        }) : isRemove ? /* @__PURE__ */ jsxs(w0, {
           className: "whitespace-nowrap text-center !bg-transparent border border-red-200  !text-red-200",
           size: "xs",
           children: ["Remove ", rowValues.symbolIn, " and ", rowValues.symbolOut]
@@ -13810,12 +14037,12 @@ function AddLiquidityView({
   firstCoinAu,
   secondCoinAu
 }) {
-  return /* @__PURE__ */ jsxs(Aa, {
+  return /* @__PURE__ */ jsxs(ja, {
     className: "w-[600px] mx-auto self-center border border-slate-700",
-    children: [/* @__PURE__ */ jsx(pl, {
+    children: [/* @__PURE__ */ jsx(y0, {
       className: "mb-4",
       children: "Add Liquidity"
-    }), /* @__PURE__ */ jsx(nt, {
+    }), /* @__PURE__ */ jsx(ot, {
       className: "mb-4 mt-4",
       children: "Deposit Amounts"
     }), /* @__PURE__ */ jsxs("div", {
@@ -13833,7 +14060,7 @@ function AddLiquidityView({
         onChange: handleChangeSecondCoinAu,
         value: secondCoinAu
       })]
-    }), /* @__PURE__ */ jsx(cr, {
+    }), /* @__PURE__ */ jsx(ur, {
       className: "mt-12 w-full",
       onClick: addLiquidity,
       children: "Add Liquidity"
@@ -13872,7 +14099,7 @@ function AddLiquidityContainer({}) {
   }, !firstCoin);
   const conversionIn = firstCoinAu * ((_i2 = (_h = (_g = coinSpotPrice.data) == null ? void 0 : _g.pool) == null ? void 0 : _h.priceX) != null ? _i2 : 0);
   const conversionOut = secondCoinAu * ((_l = (_k = (_j = coinSpotPrice.data) == null ? void 0 : _j.pool) == null ? void 0 : _k.priceY) != null ? _l : 0);
-  const notifications = Ha();
+  const notifications = Ua();
   async function addLiquidityHandler() {
     var _a3, _b2;
     return await addLiquidity({
@@ -14245,17 +14472,17 @@ function RemoveLiquidityView({
   notFoundMsg
 }) {
   var _a2;
-  return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(Aa, {
+  return !firstCoin && !secondCoin ? /* @__PURE__ */ jsxs(ja, {
     className: "flex flex-col gap-8 w-[600px] mx-auto self-center",
-    children: [notFoundMsg, /* @__PURE__ */ jsx(cr, {
+    children: [notFoundMsg, /* @__PURE__ */ jsx(ur, {
       onClick: goBackToPools,
       children: "Back to pools"
     })]
-  }) : /* @__PURE__ */ jsxs(Aa, {
+  }) : /* @__PURE__ */ jsxs(ja, {
     className: "flex flex-col w-[600px] gap-8 mx-auto self-center border border-slate-700 ",
     children: [/* @__PURE__ */ jsxs("div", {
       className: "flex justify-between items-center",
-      children: [/* @__PURE__ */ jsx(pl, {
+      children: [/* @__PURE__ */ jsx(y0, {
         children: "Remove Liquidity"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex text-xs text-slate-300",
@@ -14271,7 +14498,7 @@ function RemoveLiquidityView({
         })]
       })]
     }), /* @__PURE__ */ jsxs("div", {
-      children: [/* @__PURE__ */ jsx(nt, {
+      children: [/* @__PURE__ */ jsx(ot, {
         className: "mb-3 text-center",
         children: "Available For Withdrawal"
       }), /* @__PURE__ */ jsx("div", {
@@ -14280,12 +14507,12 @@ function RemoveLiquidityView({
           className: "flex flex-row gap-6",
           children: [/* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2",
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), firstCoinAmount]
           }), /* @__PURE__ */ jsxs("div", {
             className: "flex items-center gap-2 w-full justify-center",
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), secondCoinAmount]
           })]
@@ -14304,7 +14531,7 @@ function RemoveLiquidityView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-4",
-      children: [/* @__PURE__ */ jsx(nt, {
+      children: [/* @__PURE__ */ jsx(ot, {
         children: "Amount To Withdraw"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex flex-row justify-between",
@@ -14313,22 +14540,22 @@ function RemoveLiquidityView({
           children: `${pctVal}%`
         }), /* @__PURE__ */ jsxs("div", {
           className: "flex justify-start items-center gap-2",
-          children: [/* @__PURE__ */ jsx(cr, {
+          children: [/* @__PURE__ */ jsx(ur, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(25),
             children: "25%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(50),
             children: "50%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(75),
             children: "75%"
-          }), /* @__PURE__ */ jsx(cr, {
+          }), /* @__PURE__ */ jsx(ur, {
             variant: "basic",
             size: "xs",
             onClick: () => setPctVal(100),
@@ -14337,7 +14564,7 @@ function RemoveLiquidityView({
         })]
       }), /* @__PURE__ */ jsx("div", {
         className: "px-2",
-        children: /* @__PURE__ */ jsx(Nl, {
+        children: /* @__PURE__ */ jsx(R0, {
           value: pctVal,
           onChange: setPctVal,
           min: 0,
@@ -14357,14 +14584,14 @@ function RemoveLiquidityView({
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex flex-col gap-4 pb-6 items-center",
-      children: [/* @__PURE__ */ jsx(nt, {
+      children: [/* @__PURE__ */ jsx(ot, {
         children: "Amount To Receive"
       }), /* @__PURE__ */ jsxs("div", {
         className: "flex flex-row gap-6",
         children: [/* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (firstCoin == null ? void 0 : firstCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: firstCoin == null ? void 0 : firstCoin.symbol
             }), " ", firstCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -14373,7 +14600,7 @@ function RemoveLiquidityView({
         }), /* @__PURE__ */ jsx("div", {
           className: "flex items-center gap-2",
           children: (secondCoin == null ? void 0 : secondCoin.symbol) ? /* @__PURE__ */ jsxs(Fragment, {
-            children: [/* @__PURE__ */ jsx(ai, {
+            children: [/* @__PURE__ */ jsx(si, {
               coin: secondCoin == null ? void 0 : secondCoin.symbol
             }), " ", secondCoinAmount * (pctVal / 100)]
           }) : /* @__PURE__ */ jsx(Fragment, {
@@ -14381,7 +14608,7 @@ function RemoveLiquidityView({
           })
         })]
       })]
-    }), /* @__PURE__ */ jsx(cr, {
+    }), /* @__PURE__ */ jsx(ur, {
       onClick: handleRemoveLiquidity,
       children: "Remove Liquidity"
     })]
@@ -14397,7 +14624,7 @@ function RemoveLiquidityContainer() {
     secondCoin
   } = useCoinXYParamState();
   const notFoundMsg = `Cannot find coins for types ${firstCoin == null ? void 0 : firstCoin.symbol} and ${secondCoin == null ? void 0 : secondCoin.symbol}`;
-  const notifications = Ha();
+  const notifications = Ua();
   const poolQuery = useQuery(RlPoolPositionDocument, {
     variables: {
       poolInput: {
@@ -14476,7 +14703,7 @@ function PoolView({
   var _a2, _b;
   const [isAddOpen, setAddOpen] = react.exports.useState(false);
   const [isRemoveOpen, setRemoveOpen] = react.exports.useState(false);
-  const notifications = Ha();
+  const notifications = Ua();
   const copyX = () => {
     (pool == null ? void 0 : pool.coinInfoX.coinType) && navigator.clipboard.writeText(pool == null ? void 0 : pool.coinInfoX.coinType);
     notifications.addSuccessNotification(`Coin Address copied to clipboard: 
@@ -14519,7 +14746,7 @@ function PoolView({
             })]
           }), /* @__PURE__ */ jsx("div", {
             className: "mx-12 translate-y-[-10px]",
-            children: /* @__PURE__ */ jsx(bl, {
+            children: /* @__PURE__ */ jsx(v0, {
               coins: [pool == null ? void 0 : pool.coinInfoX.symbol, pool == null ? void 0 : pool.coinInfoY.symbol].filter(Boolean),
               size: 48
             })
@@ -14544,31 +14771,31 @@ function PoolView({
       })
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex ",
-      children: [/* @__PURE__ */ jsx(vl, {
+      children: [/* @__PURE__ */ jsx(x0, {
         className: "text-center",
         title: `${pool == null ? void 0 : pool.coinInfoX.name} Locked`,
         value: (_a2 = pool == null ? void 0 : pool.amountX.toLocaleString("en-US", {
           maximumFractionDigits: pool == null ? void 0 : pool.coinInfoX.decimals
         })) != null ? _a2 : "-"
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         className: "text-center",
         title: `${pool == null ? void 0 : pool.coinInfoY.name} Locked`,
         value: (_b = pool == null ? void 0 : pool.amountY.toLocaleString("en-US", {
           maximumFractionDigits: pool == null ? void 0 : pool.coinInfoY.decimals
         })) != null ? _b : "-"
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         className: "text-center",
         title: "Fee Percent",
         value: (pool == null ? void 0 : pool.feePercent) ? `${pool.feePercent}%` : "-"
       })]
     }), /* @__PURE__ */ jsxs("div", {
       className: "flex gap-4 mt-6",
-      children: [/* @__PURE__ */ jsx(cr, {
+      children: [/* @__PURE__ */ jsx(ur, {
         onClick: () => setAddOpen(true),
         variant: "buy",
         size: "sm",
         children: "Add"
-      }), /* @__PURE__ */ jsx(cr, {
+      }), /* @__PURE__ */ jsx(ur, {
         onClick: () => setRemoveOpen(true),
         variant: "sell",
         size: "sm",
@@ -14700,14 +14927,14 @@ function PortfolioView({
             children: "My Portfolio"
           }), ((_b = (_a2 = hasAccount.data) == null ? void 0 : _a2.account) == null ? void 0 : _b.hasAuxAccount) ? /* @__PURE__ */ jsxs("div", {
             className: "items-end flex gap-3",
-            children: [/* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {}), /* @__PURE__ */ jsx(cr, {
+            children: [/* @__PURE__ */ jsx(DepositContainer, {}), /* @__PURE__ */ jsx(WithdrawalContainer, {}), /* @__PURE__ */ jsx(ur, {
               onClick: () => navigate("/account"),
               size: "sm",
               children: "Account Settings"
             })]
           }) : /* @__PURE__ */ jsx("div", {
             className: "items-end flex gap-3",
-            children: /* @__PURE__ */ jsxs(cr, {
+            children: /* @__PURE__ */ jsxs(ur, {
               onClick: () => navigate("/account"),
               size: "sm",
               className: "flex flex-row items-center",
@@ -14717,11 +14944,11 @@ function PortfolioView({
             })
           })]
         })
-      }), /* @__PURE__ */ jsxs(Aa, {
+      }), /* @__PURE__ */ jsxs(ja, {
         className: "sm:col-span-6",
-        children: [/* @__PURE__ */ jsx(pl, {
+        children: [/* @__PURE__ */ jsx(y0, {
           className: "inline-flex items-center gap-3",
-          children: /* @__PURE__ */ jsx(yl, {
+          children: /* @__PURE__ */ jsx(w0, {
             variant: "dark",
             size: "sm",
             children: "Coming Soon"
@@ -14810,11 +15037,11 @@ function PortfolioView({
             className: "w-full h-40 bg-gray-200 rounded-t-lg dark:bg-gray-700"
           })]
         })]
-      }), /* @__PURE__ */ jsx(Aa, {
+      }), /* @__PURE__ */ jsx(ja, {
         className: "sm:col-span-6",
         padding: 0,
         children: /* @__PURE__ */ jsxs(qe.Group, {
-          children: [/* @__PURE__ */ jsx(Cl, {
+          children: [/* @__PURE__ */ jsx(E0, {
             tabs: [
               {
                 label: "Balances"
@@ -14833,7 +15060,7 @@ function PortfolioView({
             children: [/* @__PURE__ */ jsxs(qe.Panel, {
               children: [!((_d = (_c = hasAccount.data) == null ? void 0 : _c.account) == null ? void 0 : _d.hasAuxAccount) ? /* @__PURE__ */ jsx(CreateAccountAd, {}) : /* @__PURE__ */ jsxs("div", {
                 className: "pt-4",
-                children: [/* @__PURE__ */ jsxs(pl, {
+                children: [/* @__PURE__ */ jsxs(y0, {
                   className: "flex items-center px-4",
                   children: [appTitle, " Account Balances", /* @__PURE__ */ jsx(Tooltip, {
                     content: /* @__PURE__ */ jsx("span", {
@@ -14859,7 +15086,7 @@ function PortfolioView({
                 }), /* @__PURE__ */ jsx(BalancesTable, {})]
               }), /* @__PURE__ */ jsxs("div", {
                 className: "pt-4",
-                children: [/* @__PURE__ */ jsxs(pl, {
+                children: [/* @__PURE__ */ jsxs(y0, {
                   className: "flex items-center px-4",
                   children: ["Wallet Balances", /* @__PURE__ */ jsx(Tooltip, {
                     content: /* @__PURE__ */ jsx("span", {
@@ -14901,7 +15128,7 @@ function PortfolioView({
     })
   });
 }
-const connectWalletTrigger$1 = /* @__PURE__ */ jsx(cr, {
+const connectWalletTrigger$1 = /* @__PURE__ */ jsx(ur, {
   size: "sm",
   onClick: () => {
   },
@@ -14924,10 +15151,10 @@ function NoWalletUI$1() {
 function CreateAccountAd() {
   const navigate = useNavigate();
   const appTitle = window.appTitle;
-  return /* @__PURE__ */ jsxs(Aa, {
+  return /* @__PURE__ */ jsxs(ja, {
     padding: 4,
     className: "flex items-center w-full font-medium justify-center mx-auto gap-3 border-b border-b-primary-700 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end text-sm text-center text-primary-100 rounded-none",
-    children: ["Unleash the power to trade on the ", appTitle, " central limit order book.", /* @__PURE__ */ jsxs(cr, {
+    children: ["Unleash the power to trade on the ", appTitle, " central limit order book.", /* @__PURE__ */ jsxs(ur, {
       variant: "basic",
       size: "xs",
       onClick: () => navigate("/account"),
@@ -15245,7 +15472,7 @@ function MarketTradesView() {
     children: /* @__PURE__ */ jsx("div", {
       ref: tableRef,
       className: "overflow-auto h-full max-h-full",
-      children: /* @__PURE__ */ jsx(Rl, {
+      children: /* @__PURE__ */ jsx(S0, {
         ...props
       })
     })
@@ -15434,7 +15661,7 @@ function OrderTable({
     }
   };
   return /* @__PURE__ */ jsx(Fragment, {
-    children: loading ? /* @__PURE__ */ jsx(Or, {
+    children: loading ? /* @__PURE__ */ jsx(Mr, {
       variant: "table"
     }) : error ? /* @__PURE__ */ jsx(Ir, {
       title: "Error",
@@ -15446,13 +15673,13 @@ function OrderTable({
       children: [/* @__PURE__ */ jsx("div", {
         ref: askTableRef,
         className: "relative overflow-y-auto max-h-full",
-        children: /* @__PURE__ */ jsx(Rl, {
+        children: /* @__PURE__ */ jsx(S0, {
           ...askOrderTableProps
         })
       }), /* @__PURE__ */ jsx("div", {
         ref: bidTableRef,
         className: "relative overflow-y-auto max-h-full",
-        children: /* @__PURE__ */ jsx(Rl, {
+        children: /* @__PURE__ */ jsx(S0, {
           ...bidOrderTableProps
         })
       })]
@@ -16051,23 +16278,23 @@ function TradeView({}) {
         children: /* @__PURE__ */ jsx(MarketSelector, {
           onSelectMarket
         })
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         title: "Last Trade Price",
         value: lastTradePrice != null ? lastTradePrice : "-",
         className: "mx-1 ml-1"
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         title: "24hr High",
         value: (_j = (_i2 = (_h = (_g = high24.data) == null ? void 0 : _g.high24h) == null ? void 0 : _h.high) == null ? void 0 : _i2.toLocaleString("en-US", {
           maximumFractionDigits: 3
         })) != null ? _j : "-",
         className: "mx-1"
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         title: "24hr Low",
         value: (_n2 = (_m = (_l = (_k = low24.data) == null ? void 0 : _k.low24h) == null ? void 0 : _l.low) == null ? void 0 : _m.toLocaleString("en-US", {
           maximumFractionDigits: 3
         })) != null ? _n2 : "-",
         className: "mx-1"
-      }), /* @__PURE__ */ jsx(vl, {
+      }), /* @__PURE__ */ jsx(x0, {
         title: "24hr Volume",
         value: (_r2 = (_q = (_p = (_o = vol24.data) == null ? void 0 : _o.volume24h) == null ? void 0 : _p.volume) == null ? void 0 : _q.toLocaleString("en-US", {
           maximumFractionDigits: 3
@@ -16082,7 +16309,7 @@ function TradeView({}) {
       children: [/* @__PURE__ */ jsx(qe.Group, {
         selectedIndex: marketEventTab,
         onChange: setMarketEventTab,
-        children: /* @__PURE__ */ jsx(Cl, {
+        children: /* @__PURE__ */ jsx(E0, {
           tabs: marketEventTabs
         })
       }), marketEventTab === 0 ? /* @__PURE__ */ jsx(OrderBookContainer, {
@@ -16111,7 +16338,7 @@ function TradeView({}) {
       children: [/* @__PURE__ */ jsx(qe.Group, {
         selectedIndex: orderTableTab,
         onChange: setOrderTableTab,
-        children: /* @__PURE__ */ jsx(Cl, {
+        children: /* @__PURE__ */ jsx(E0, {
           tabs: orderTableTabs
         })
       }), /* @__PURE__ */ jsxs("div", {
@@ -16124,7 +16351,7 @@ function TradeView({}) {
     })]
   });
 }
-const connectWalletTrigger = /* @__PURE__ */ jsx(cr, {
+const connectWalletTrigger = /* @__PURE__ */ jsx(ur, {
   size: "sm",
   onClick: () => {
   },
@@ -16154,7 +16381,7 @@ function NoAccountUI() {
       children: [/* @__PURE__ */ jsxs("div", {
         className: "text-xl",
         children: ["Create an ", appTitle, " Account to start trading."]
-      }), /* @__PURE__ */ jsxs(cr, {
+      }), /* @__PURE__ */ jsxs(ur, {
         variant: "basic",
         size: "sm",
         onClick: () => navigate("/account"),
@@ -16344,7 +16571,7 @@ function PoolsView({}) {
           className: "text-4xl",
           children: "Pools"
         })
-      }), /* @__PURE__ */ jsx(wl, {
+      }), /* @__PURE__ */ jsx(C0, {
         value: searchQuery,
         name: "marketSearch",
         placeholder: "Search Pools",
@@ -16357,13 +16584,13 @@ function PoolsView({}) {
           height: 20
         }),
         onChange: onSearchChange
-      }), /* @__PURE__ */ jsx(cr, {
+      }), /* @__PURE__ */ jsx(ur, {
         size: "md",
         onClick: () => navigate("/create-pool"),
         className: "text-sm",
         children: "Create Pool"
       })]
-    }), /* @__PURE__ */ jsx(Aa, {
+    }), /* @__PURE__ */ jsx(ja, {
       className: "max-w-full w-full rounded-xl border border-primary-700 overflow-auto",
       padding: 0,
       children: /* @__PURE__ */ jsx(PoolsTable, {
@@ -16433,7 +16660,7 @@ function Header({}) {
   const connectWallet = () => {
   };
   const appTitle = window.appTitle;
-  const connectEl = /* @__PURE__ */ jsx(cr, {
+  const connectEl = /* @__PURE__ */ jsx(ur, {
     className: "my-auto mx-3",
     size: "sm",
     onClick: connectWallet,
@@ -16496,7 +16723,7 @@ function App() {
         children: /* @__PURE__ */ jsx(BrowserRouter, {
           children: /* @__PURE__ */ jsxs("div", {
             className: "flex flex-col h-full w-full",
-            children: [/* @__PURE__ */ jsx(ml, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
+            children: [/* @__PURE__ */ jsx(b0, {}), /* @__PURE__ */ jsx(Header, {}), BLACK_LIST.includes(country) ? /* @__PURE__ */ jsxs("div", {
               id: "bgcontainer",
               className: " bg-cover flex flex-auto p-relative overflow-auto z-10 bg-gradient-to-br from-brand-gradient-start via-brand-gradient-mid to-brand-gradient-end max-w-[100vw] items-center justify-center text-white",
               children: ["Sorry we do not support ", country, " at this time."]
