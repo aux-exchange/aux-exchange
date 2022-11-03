@@ -1,0 +1,34 @@
+#[test_only]
+module aux::math_2pool_test {
+    use aux::math_2pool::{calculate_d, calculate_x_0, calculate_x_0_non_decreasing_d};
+
+{{range .Tests}}    #[test]
+    fun test_calculate_d_{{.Id}}() {
+       // test
+        let x0: u128 = {{.X0}};
+        let x1: u128 = {{.X1}};
+        let expected_d: u128 = {{.D}};
+        let d = calculate_d(x0, x1, 15);
+        assert!(d == expected_d, 1);
+    }
+{{end}}
+{{range .Tests}}    #[test]
+    fun test_calculate_x_0_{{.Id}}() {
+        // test
+        let x0: u128 = {{.X0}};
+        let d: u128 = {{.D}};
+        let expected_x1: u128 = {{.ExpectedX1}};
+        let x1 = calculate_x_0(x0, 15, d);
+        assert!(x1 == expected_x1, 1);
+}
+{{end}}
+{{range .Tests}}    #[test]
+    fun test_calculate_x_0_non_decreasing_{{.Id}}() {
+      // test
+        let x0: u128 = {{.X0}};
+        let d: u128 = {{.D}};
+        let expected_x1: u128 = {{.X1}};
+        let x1 = calculate_x_0_non_decreasing_d(x0, 15, d);
+        assert!(x1 == expected_x1, 1);
+    }
+{{end}}}

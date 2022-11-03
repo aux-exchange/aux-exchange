@@ -98,13 +98,25 @@ $$
 D^\ast = D - \frac{{f\left(D\right)}}{df/dD} =D -  \frac{An^n\sum x_i + D_t - An^nD - \frac{D^{n+1}}{n^n\prod_i x_i}}{1 - An^n - \left(n+1\right)\frac{D^n}{n^n\prod_i x_i}} = \frac{\frac{nD^{n+1}}{n^n\prod_i x_i} + An^n\sum_i x_i}{An^n - 1 +\left(n+1\right)\frac{D^n}{n^n\prod_i x_i}}
 $$
 
-In curve's implementation, the value $D_p = \frac{D^{n+1}}{n^n\prod_i x_i}$ is calculated as follows
+## Revisiting Parameter $A$
 
-- set initial $D_p = D$.
-- iterate through each $x_i$.
-  $$
-  D_p = \frac{D_p\times D}{nx_i}
-  $$
+When $A \rightarrow \infty$, the invariant is the constant sum
+
+$$
+D\equiv \sum_i x_i
+$$
+
+When $A \rightarrow 0$, the invariant is the constant product one
+
+$$
+D^\ast = \frac{nD^{n+1}}{\left(n+1\right)D^n-n^n\prod_i x_i}
+$$
+
+which has a fixed point at
+
+$$
+D^n=n^n\prod_i x_i
+$$
 
 ## Add Liquidity
 
@@ -125,7 +137,7 @@ $$
 Therefore the next iteration of $x_i$, $x_i^\ast$
 
 $$
-x_i^\ast = x_i - \frac{f\left(x_i\right)}{df/dx_i} = \frac{An^nx_i^2+\frac{D^n+1}{n^n\prod_{j\neq i}x_j}}{An^n\sum_{j\neq i}x_j + 2An^nx_i +D - An^nD}
+x_i^\ast = x_i - \frac{f\left(x_i\right)}{df/dx_i} = \frac{An^nx_i^2+\frac{D^{n+1}}{n^n\prod_{j\neq i}x_j}}{An^n\sum_{j\neq i}x_j + 2An^nx_i +D - An^nD}
 $$
 
 Let $C=\frac{D^{n+1}}{An^nn^n\prod_{j\neq i}x_j}$, $B=\sum_{j\neq i}x_j + \frac{D}{An^n}$
@@ -133,3 +145,54 @@ Let $C=\frac{D^{n+1}}{An^nn^n\prod_{j\neq i}x_j}$, $B=\sum_{j\neq i}x_j + \frac{
 $$
 x^\ast = \frac{x_i^2+C}{B+2x_i-D}
 $$
+
+## Integer Math
+
+All operations on chain will done through integer math instead of float points. $D$ and all coin balance $x_i$'s will have 18 digitis after decimal point.
+
+### Integer Bit Width
+
+The values of $D$, $x_i$'s will be stored as **unsigned 128 bit integer**.
+
+On aptos blockchain, coin values are stored in unsigned 64 bit integers. Most of stable coins have decimal of 6, and will multiply with $10^{12}$ before all the operations ($10^{12}$ is approximately $2^40$). 128 bit can express value up to $3.403\times 10^{20}$ for 18 decimals. Given that $x_i$'s have 6 decimals, the value will have upper ~24 bit all zeros.
+
+### Integer Math for Solving $D$
+
+Rewrite $D^\ast$ with $D_p=\frac{D^{n+1}}{n^n\prod_i x_i}$
+
+$$
+D^\ast = \frac{D\left(nD_p + An^n\sum_i x_i\right)}{D\left(An^n - 1 \right)+\left(n+1\right)D_p}
+$$
+
+$A$ and $n$ are unscaled, or zero decimals.
+
+$D_p$ is initialized with 18 decimals (set to $D$), and in each iteration it maintains 18 decimals
+
+- $D_p = D_p \times D$ ($D_p$ is now 36 decimals)
+- $D_p = D_p / n / x_i$ ($D_p$ is now 18 decimals)
+
+$An^n\sum_i x_i$ is 18 decimals. Their sum multiplied by $D$ will produce 36 decimals - this is the numerator.
+
+Denominator has 18. And the final result yields 18 decimals.
+
+### Integer Math for Solving $x_i^\ast$
+
+With $C=\frac{D^{n+1}}{An^nn^n\prod_{j\neq i}x_j}$, $B=\sum_{j\neq i}x_j + \frac{D}{An^n}$
+
+$$
+x^\ast = \frac{x_i^2+C}{B+2x_i-D}
+$$
+
+$x_i$ has 18 decimals, therefore $x_i^2$ has 36 decimals.
+
+To calculate $C$, similar approach to $D_p$ is employed
+
+- $C = D$ set initial $C$ to $D$, $C$ has 18 decimals.
+- $C = C \times D$ Multiply $C$ with $D$, $C$ has 36 decimals.
+- $C = C / x_j / n$ Divide $C$ by $x_j$ and $n$, which reduces $C$ to 36 decimals
+
+Finally
+
+- $C = C  \times D / A / n^n $ which multiply C with $D$, and then divided by $A$ and $n^n$, which maintains 36 decimals.
+
+The numerator is now 36 decimals. It is easy to show that denominator is 18 decimals, and after the iteration $x_i^\ast$ is 18 decimals.

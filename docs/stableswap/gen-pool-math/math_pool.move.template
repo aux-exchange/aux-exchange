@@ -1,0 +1,131 @@
+module aux::math_{{.N}}pool {
+    use aux::uint256;
+
+    const E_COIN_BALANCE_ZERO: u64 = 1001;
+    const E_D_OVERFLOW: u64 = 1002;
+    const E_FAIL_TO_CONVERGE: u64 = 1003;
+    const E_X_OVERFLOW: u64 = 1004;
+    const E_COIN_DECIMAL_TOO_LARGE: u64 = 1005;
+    const E_D_ZERO: u64 = 1006;
+
+    const N_COINS: u128 = {{.N}};
+
+    public fun calculate_d({{range .Xis}}x_{{.I}}: u128, {{end}}amp: u128): u128 {
+{{range .Xis}}        assert!(x_{{.I}} > 0, E_COIN_BALANCE_ZERO);
+{{end}}
+        let ann: u128 = amp;
+        let sum: u128 = 0;
+
+{{range .Xis}}        {
+            ann = ann * N_COINS;
+            sum = sum + x_{{.I}};
+        };
+{{end}}
+        // initialize d to the sum of all balances
+        let d = sum;
+
+        let ann_sum = sum * ann;
+
+        // at most 256 iterations for the newton raphson method
+        let i: u64 = 0;
+        while (i < 256) {
+            // calculate d_p = D^{n+1}/n^n/\prod x_i
+            let d_p = uint256::new(0, d);
+{{range .Xis}}            {
+                // d_p = d_p * D / n / x_i
+                d_p = uint256::multiply_underlying(d_p, d);
+                d_p = uint256::divide_underlying(d_p, x_{{.I}} * N_COINS);
+            };
+{{end}}
+            let numerator =  uint256::multiply_underlying(d_p, N_COINS);
+            numerator = uint256::add_underlying(numerator, ann_sum);
+            numerator = uint256::multiply_underlying(numerator, d);
+
+            let denominator = uint256::multiply_underlying(d_p, N_COINS + 1);
+            denominator = uint256::add_underlying(denominator, d * ann);
+            denominator = uint256::subtract_underlying(denominator, d);
+
+            let d_prev = d;
+
+            let d_uint256 = uint256::divide(numerator, denominator);
+            assert!(!uint256::underlying_overflow(d_uint256), E_D_OVERFLOW);
+
+            d = uint256::downcast(d_uint256);
+
+            if (d_prev >= d) {
+                if (d_prev - d <= 1) {
+                    return d
+                };
+            } else {
+                if (d - d_prev <= 1) {
+                    return d
+                };
+            };
+
+            i = i + 1;
+        };
+
+        abort(E_FAIL_TO_CONVERGE)
+    }
+{{range .Xis}}
+    public fun calculate_x_{{.I}}({{range .Others}}x_{{.}}: u128, {{end}}amp: u128, d: u128): u128 {
+{{range .Others}}        assert!(x_{{.}} > 0, E_COIN_BALANCE_ZERO);
+{{end}}
+        assert!(d > 0, E_D_ZERO);
+        // note we only iterate N_COINS - 1, so we multiply by N_COINS here.
+        let ann: u128 = amp * N_COINS;
+        let sum_e_i: u128 = 0;
+        let c = uint256::new(0, d);
+
+        // c
+{{range .Others}}        {
+            c = uint256::multiply_underlying(c, d);
+            c = uint256::divide_underlying(c, x_{{.}});
+            c = uint256::divide_underlying(c, N_COINS);
+            // sum_e_i
+            sum_e_i = sum_e_i + x_{{.}};
+            ann = ann * N_COINS;
+        };
+{{end}}
+        // note that N_COINS need be divided again
+        c = uint256::multiply_underlying(c, d);
+        c = uint256::divide_underlying(c, ann * N_COINS);
+        let b = sum_e_i + d / ann;
+
+        let i: u64 = 0;
+
+        let x_{{.I}} = d;
+        while (i < 256) {
+            let prev_x = x_{{.I}};
+            let x_{{.I}}_uint256_2 = uint256::underlying_mul_to_uint256(x_{{.I}}, x_{{.I}});
+            let numerator = uint256::add(c, x_{{.I}}_uint256_2);
+            let denominator = b + 2 * x_{{.I}} - d;
+            let x_{{.I}}_uint256 = uint256::divide_underlying(numerator, denominator);
+            assert!(!uint256::underlying_overflow(x_{{.I}}_uint256), E_X_OVERFLOW);
+            x_{{.I}} = uint256::downcast(x_{{.I}}_uint256);
+            if (prev_x >= x_{{.I}}) {
+                if (prev_x - x_{{.I}} <= 1) {
+                    return x_{{.I}}
+                };
+            } else {
+                if (x_{{.I}} - prev_x <= 1) {
+                    return x_{{.I}}
+                };
+            };
+            i = i + 1;
+        };
+
+        abort(E_FAIL_TO_CONVERGE)
+    }
+
+    // calculate x_{{.I}}, but with d never decreasing.
+    public fun calculate_x_{{.I}}_non_decreasing_d({{range .Others}}x_{{.}}: u128, {{end}}amp: u128, d: u128): u128 {
+        let x_{{.I}} = calculate_x_{{.I}}({{range .Others}}x_{{.}}, {{end}}amp, d);
+        let new_d = calculate_d({{range .Befores}}x_{{.}}, {{end}}x_{{.I}}, {{range .Afters}}x_{{.}}, {{end}}amp);
+        if (new_d < d) {
+            x_{{.I}} + 1
+        } else {
+            x_{{.I}}
+        }
+    }
+{{end}}}
