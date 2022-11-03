@@ -85,6 +85,10 @@ module aux::stake {
 
     struct St<phantom StakeCoin> has store {}
 
+    /// TODO:
+    /// - max total reward per ms field and check on each update reward (maybe this replaces max reward per stake, not sure)
+    /// - handle fractional (< 0) reward increment: maybe just set params such that there is a min stake amount to avoid ever having fractional rewards
+    ///     - maybe just store reward as num/denom
     struct Incentive<phantom StakeCoin, phantom RewardCoin> has key {
         creator: address,
         start_time: u64,
@@ -171,6 +175,7 @@ module aux::stake {
         // iterate through all pre-existing positions
         let total_staked_check = 0;
         let staker_exists = false;
+        let new_reward_remaining = incentive.reward_remaining;
         while (i < len) {
             let pos = vector::borrow_mut(positions, i);
             if (now >= pos.next_unlock_time) {
@@ -201,7 +206,7 @@ module aux::stake {
             pos.unlocked_reward = pos.unlocked_reward + unlocked_reward;
             pos.locked_reward = pos.locked_reward + locked_reward;
             pos.last_reward_update_time = now;
-            incentive.reward_remaining = incentive.reward_remaining - (locked_reward + unlocked_reward);
+            new_reward_remaining = new_reward_remaining - (locked_reward + unlocked_reward);
 
             if (update_stake && pos.owner == staker) {
                 let amount_staked = coin::value(&stake);
@@ -230,9 +235,14 @@ module aux::stake {
         } else {
             coin::destroy_zero<S>(stake);
         };
+        incentive.reward_remaining = new_reward_remaining;
         assert!(total_staked_check == incentive.total_staked, E_INTERNAL_ERROR);
         assert!(total_staked_check == coin::value(&incentive.stake), E_INTERNAL_ERROR);
     }
+
+    /*********/
+    /* TESTS */
+    /*********/
 
     #[test_only]
     use aux::fake_coin::{FakeCoin, ETH, USDC, Self};
@@ -282,11 +292,17 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_update_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Incentive {
         setup_module_for_test(sender, aptos_framework);
+        let alice_addr = signer::address_of(alice);
+        if (!account::exists_at(alice_addr)) {
+            account::create_account_for_test(alice_addr);
+        };
 
         // 90 day duration
         // 1 day unlock
         fake_coin::register_and_mint<USDC>(sender, 2000000 * 1000000); // 2M USDC
         fake_coin::register_and_mint<ETH>(sender, 5 * 100000000); // 5 ETH
+        fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
+        fake_coin::register_and_mint<ETH>(alice, 5 * 100000000); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward = coin::withdraw<FakeCoin<USDC>>(sender, 2000000 * 1000000);
 
@@ -315,6 +331,8 @@ module aux::stake {
         {
             let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
             assert!(incentive.total_staked == 100, E_TEST_FAILURE);
+            assert!(coin::value(&incentive.stake) == 100, E_TEST_FAILURE);
+            assert!(incentive.total_staked == 100, E_TEST_FAILURE);
             assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
             let pos = vector::borrow(&incentive.positions, 0);
             assert!(pos.owner == signer::address_of(sender), E_TEST_FAILURE);
@@ -323,6 +341,7 @@ module aux::stake {
             assert!(pos.unlocked_reward == 0, E_TEST_FAILURE);
             assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
 
+            // TIME: start + 43200
             // fast forward half unlock period and update reward
             timestamp::fast_forward_seconds(86400 / 2);
             update_reward(incentive, false, @0x0, coin::zero<FakeCoin<ETH>>());
@@ -330,7 +349,7 @@ module aux::stake {
             // full amount should be locked
             assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
             let pos = vector::borrow(&incentive.positions, 0);
-            // remaining_reward * (86400/2 % unlock_seconds)  / remaining_seconds;
+            // remaining_reward * (86400/2 % unlock_seconds)  / (now - last_reward_update_time) ;
             let expected_locked_reward = 33333333333;
             let expected_unlocked_reward = 0;
             std::debug::print<u64>(&expected_locked_reward);
@@ -343,6 +362,9 @@ module aux::stake {
             assert!(pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
             assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
 
+            assert!(incentive.reward_remaining == 1966666666667, E_TEST_FAILURE);
+
+            // TIME: start + 43200 * 2
             // fast forward full unlock period and update reward
             timestamp::fast_forward_seconds(86400 / 2);
             update_reward(incentive, false, @0x0, coin::zero<FakeCoin<ETH>>());
@@ -351,7 +373,7 @@ module aux::stake {
             assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
             let pos = vector::borrow(&incentive.positions, 0);
             let expected_locked_reward = 0;
-            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 86400/2));
+            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 43200));
             let expected_unlocked_reward = 33333333333 + 33333333333;
             std::debug::print<u64>(&expected_locked_reward);
             std::debug::print<u64>(&expected_unlocked_reward);
@@ -362,9 +384,12 @@ module aux::stake {
             assert!(pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
             assert!(pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
             assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            assert!(incentive.reward_remaining == 1933333333334, E_TEST_FAILURE);
         };
 
 
+        // TIME: start + 43200 * 3
         // fast forward half unlock period and stake another 100 au ETH
         timestamp::fast_forward_seconds(86400 / 2);
         stake<FakeCoin<ETH>, FakeCoin<USDC>>(sender, 100);
@@ -372,11 +397,13 @@ module aux::stake {
         // same amount should be unlocked; additional half reward period should be locked
         {
             let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            assert!(incentive.total_staked == 200, E_TEST_FAILURE);
+            assert!(coin::value(&incentive.stake) == 200, E_TEST_FAILURE);
             assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
             let pos = vector::borrow(&incentive.positions, 0);
-            // 100 * remaining_reward * (86400/2 % unlock_seconds)  / (remaining_seconds * 200);
+            // remaining_reward * (86400/2 % unlock_seconds)  / remaining_seconds;
             let expected_locked_reward = 33333333333;
-            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 86400/2));
+            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 43200*2));
             let expected_unlocked_reward = 33333333333 + 33333333333;
             std::debug::print<u64>(&expected_locked_reward);
             std::debug::print<u64>(&expected_unlocked_reward);
@@ -388,6 +415,9 @@ module aux::stake {
             assert!(pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
             assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
 
+            assert!(incentive.reward_remaining == 1900000000001, E_TEST_FAILURE);
+
+            // TIME: start + 43200 * 4
             // fast forward half unlock period and update reward
             timestamp::fast_forward_seconds(86400 / 2);
             update_reward(incentive, false, @0x0, coin::zero<FakeCoin<ETH>>());
@@ -396,9 +426,8 @@ module aux::stake {
             let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
             assert!(vector::length(&incentive.positions) == 1, E_TEST_FAILURE);
             let pos = vector::borrow(&incentive.positions, 0);
-            // 100 * remaining_reward * (86400/2 % unlock_seconds)  / (remaining_seconds * 200);
             let expected_locked_reward = 0;
-            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 86400/2));
+            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 43200*3));
             let expected_unlocked_reward = 2 * (33333333333 + 33333333333);
             std::debug::print<u64>(&expected_locked_reward);
             std::debug::print<u64>(&expected_unlocked_reward);
@@ -409,11 +438,106 @@ module aux::stake {
             assert!(pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
             assert!(pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
             assert!(pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            assert!(incentive.reward_remaining == 1866666666668, E_TEST_FAILURE);
         };
 
         // Alice stakes 500 au ETH
-        // TODO: register alice account and give her some money
-        // stake<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 500);
+        stake<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 500);
+        {
+            let incentive = borrow_global_mut<Incentive<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            assert!(vector::length(&incentive.positions) == 2, E_TEST_FAILURE);
+            assert!(incentive.total_staked == 700, E_TEST_FAILURE);
+            assert!(coin::value(&incentive.stake) == 700, E_TEST_FAILURE);
+
+            // sender position is the same
+            let sender_pos = vector::borrow(&incentive.positions, 0);
+            let expected_locked_reward = 0;
+            // 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 43200*3));
+            let expected_unlocked_reward = 2 * (33333333333 + 33333333333);
+            assert!(sender_pos.owner == signer::address_of(sender), E_TEST_FAILURE);
+            assert!(sender_pos.amount_staked == 200, E_TEST_FAILURE);
+            assert!(sender_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            let alice_pos = vector::borrow(&incentive.positions, 1);
+            let expected_locked_reward = 0;
+            let expected_unlocked_reward = 0;
+            assert!(alice_pos.owner == alice_addr, E_TEST_FAILURE);
+            assert!(alice_pos.amount_staked == 500, E_TEST_FAILURE);
+            assert!(alice_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            assert!(incentive.reward_remaining == 1866666666668, E_TEST_FAILURE);
+
+            // TIME: start + 43200 * 5
+            // fast forward half unlock period and update reward
+            timestamp::fast_forward_seconds(86400 / 2);
+            update_reward(incentive, false, @0x0, coin::zero<FakeCoin<ETH>>());
+
+            // Sender: 2 reward periods with 100% stake unlocked, .5 period with 2/7 stake locked
+            let sender_pos = vector::borrow(&incentive.positions, 0);
+            // LOCKED = 200 * remaining_reward * (86400/2 % unlock_seconds)  / ((incentive_duration - 43200*4) * 700);
+            //        = 200 * 1866666666668 * (86400/2) / ((3600*24*30 - 43200*4)*700);
+            let expected_locked_reward = 9523809523;
+            // UNLOCKED = 33333333333 + (remaining_reward * 86400/2 / (incentive_duration - 43200*3));
+            let expected_unlocked_reward = 2 * (33333333333 + 33333333333);
+            std::debug::print<u64>(&expected_locked_reward);
+            std::debug::print<u64>(&expected_unlocked_reward);
+            assert!(sender_pos.owner == signer::address_of(sender), E_TEST_FAILURE);
+            assert!(sender_pos.amount_staked == 200, E_TEST_FAILURE);
+            std::debug::print<u64>(&sender_pos.locked_reward);
+            std::debug::print<u64>(&sender_pos.unlocked_reward);
+            assert!(sender_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            // Alice: 0 unlocked, .5 period with 5/7 stake locked
+            let alice_pos = vector::borrow(&incentive.positions, 1);
+            // LOCKED = 500 * remaining_reward * (86400/2 % unlock_seconds)  / ((incentive_duration - 43200*4) * 700);
+            //        = 500 * 1866666666668 * (86400/2) / ((3600*24*30 - 43200*4)*700);
+            let expected_locked_reward = 23809523809;
+            let expected_unlocked_reward = 0;
+            assert!(alice_pos.owner == alice_addr, E_TEST_FAILURE);
+            assert!(alice_pos.amount_staked == 500, E_TEST_FAILURE);
+            std::debug::print<u64>(&alice_pos.locked_reward);
+            std::debug::print<u64>(&alice_pos.unlocked_reward);
+            assert!(alice_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            assert!(incentive.reward_remaining == 1833333333336, E_TEST_FAILURE);
+
+            // TIME: start + 43200 * 6
+            // fast forward half unlock period and update reward
+            timestamp::fast_forward_seconds(86400 / 2);
+            update_reward(incentive, false, @0x0, coin::zero<FakeCoin<ETH>>());
+
+            // sender: 2 reward periods with 100% stake + 1 period with 2/7 stake unlocked
+            let sender_pos = vector::borrow(&incentive.positions, 0);
+            let expected_locked_reward = 0;
+            let expected_unlocked_reward = 2 * (33333333333 + 33333333333) + 9523809523 * 2;
+            assert!(sender_pos.owner == signer::address_of(sender), E_TEST_FAILURE);
+            assert!(sender_pos.amount_staked == 200, E_TEST_FAILURE);
+            assert!(sender_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(sender_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            // Alice: 1 period with 5/7 stake unlocked
+            let alice_pos = vector::borrow(&incentive.positions, 1);
+            let expected_locked_reward = 0;
+            let expected_unlocked_reward = 23809523809 * 2;
+            assert!(alice_pos.owner == alice_addr, E_TEST_FAILURE);
+            assert!(alice_pos.amount_staked == 500, E_TEST_FAILURE);
+            assert!(alice_pos.locked_reward == expected_locked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.unlocked_reward == expected_unlocked_reward, E_TEST_FAILURE);
+            assert!(alice_pos.last_reward_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+
+            assert!(incentive.reward_remaining == 1800000000004, E_TEST_FAILURE);
+        };
+
 
     }
 
