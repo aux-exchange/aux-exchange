@@ -1,6 +1,7 @@
 /// Simple coin staking module, modeled after SushiSwap's MasterChef: https://github.com/sushiswap/sushiswap/blob/archieve/canary/contracts/MasterChef.sol
 module aux::stake {
     use std::signer;
+    use std::table::{Table, Self};
 
     use aptos_framework::coin::{Coin, Self};
     use aptos_framework::timestamp;
@@ -34,14 +35,23 @@ module aux::stake {
     /* STRUCTS */
     /***********/
 
+    struct Pools<phantom S, phantom R> has key {
+        pools: Table<u64, Pool<S, R>>,
+        puid: u64
+    }
+
+    struct UserInfos<phantom S, phantom R> has key {
+        user_infos: Table<u64, UserInfo<S, R>>,
+    }
+
     /// Stored at user's address once they open a staking position
-    struct UserInfo<phantom S, phantom R> has key {
+    struct UserInfo<phantom S, phantom R> has store {
         amount_staked: u64,
         reward_debt: u128
     }
 
     // TODO: may need PUID
-    struct Pool<phantom S, phantom R> has key {
+    struct Pool<phantom S, phantom R> has store {
         creator: address,
         start_time: u64,
         end_time: u64,
@@ -56,13 +66,22 @@ module aux::stake {
         sender: &signer,
         reward_amount: u64,
         end_time: u64, // ms
-    ) {
+    ) acquires Pools {
         let start_time = timestamp::now_microseconds();
         assert!(end_time - start_time >= MIN_DURATION_MS, E_INVALID_DURATION);
         assert!(end_time - start_time <= MAX_DURATION_MS, E_INVALID_DURATION);
         let module_authority = authority::get_signer_self();
-        move_to<Pool<S, R>>(
-            &module_authority,
+        if (!exists<Pools<S, R>>(@aux)) {
+            move_to<Pools<S, R>>(
+                &module_authority,
+                Pools<S, R> {
+                    pools: table::new(),
+                    puid: 0
+                }
+            )
+        };
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        table::add(&mut pools.pools, pools.puid,
             Pool {
                 creator: signer::address_of(sender),
                 start_time,
@@ -73,18 +92,22 @@ module aux::stake {
                 last_update_time: start_time,
                 acc_reward_per_share: 0,
             }
-        )
+        );
+        pools.puid = pools.puid + 1;
     }
 
     public entry fun modify_pool<S, R>(
         sender: &signer,
+        puid: u64,
         reward_amount: u64,
         reward_increase: bool,
         time_amount_ms: u64,
         time_increase: bool
-    ) acquires Pool {
-        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
-        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+    ) acquires Pools {
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, puid), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, puid);
 
         let sender_addr = signer::address_of(sender);
         assert!(sender_addr == pool.creator, E_NOT_AUTHORIZED);
@@ -157,10 +180,14 @@ module aux::stake {
     }
 
     /// Deposit stake coin to the incentive pool to start earning rewards
-    public entry fun deposit<S, R>(sender: &signer, amount: u64) acquires Pool, UserInfo {
+    public entry fun deposit<S, R>(sender: &signer, puid: u64, amount: u64) acquires Pools, UserInfos {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
-        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
-        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        // assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        // let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, puid), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, puid);
         let now = timestamp::now_microseconds();
         update_pool(pool, now);
 
@@ -170,13 +197,20 @@ module aux::stake {
 
         // Update UserInfo
         let sender_addr = signer::address_of(sender);
-        if (!exists<UserInfo<S, R>>(sender_addr)) {
-            move_to(sender, UserInfo<S, R> {
+        if (!exists<UserInfos<S, R>>(sender_addr)) {
+            move_to(sender, UserInfos<S, R> {
+                user_infos: table::new()
+            })
+        };
+        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
+        let exists = table::contains(&user_infos.user_infos, puid);
+        if (!exists) {
+            table::add(&mut user_infos.user_infos, puid, UserInfo<S, R> {
                 amount_staked: amount,
                 reward_debt: (amount as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL
             });
         } else {
-            let user_info = borrow_global_mut<UserInfo<S, R>>(sender_addr);
+            let user_info = table::borrow_mut(&mut user_infos.user_infos, puid);
             assert!(user_info.amount_staked > 0, E_INTERNAL_ERROR);
 
             // Distribute pending rewards
@@ -196,17 +230,23 @@ module aux::stake {
     }
 
     /// Withdraw stake coin from the incentive pool
-    public entry fun withdraw<S, R>(sender: &signer, amount: u64) acquires Pool, UserInfo {
+    public entry fun withdraw<S, R>(sender: &signer, puid: u64, amount: u64) acquires Pools, UserInfos {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
 
         // check pool
-        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
-        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        // assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        // let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, puid), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, puid);
 
         // check user info
         let sender_addr = signer::address_of(sender);
-        assert!(exists<UserInfo<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
-        let user_info = borrow_global_mut<UserInfo<S, R>>(sender_addr);
+        assert!(exists<UserInfos<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
+        assert!(table::contains(&user_infos.user_infos, puid), E_USER_INFO_NOT_FOUND);
+        let user_info = table::borrow_mut(&mut user_infos.user_infos, puid);
         assert!(user_info.amount_staked > amount, E_INVALID_WITHDRAW_AMOUNT);
 
         // update pool
@@ -231,15 +271,21 @@ module aux::stake {
     }
 
     /// Claim staking rewards without modifying staking position
-    public entry fun claim<S, R>(sender: &signer) acquires Pool, UserInfo {
+    public entry fun claim<S, R>(sender: &signer, puid: u64) acquires Pools, UserInfos {
         // check pool
-        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
-        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        // assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        // let pool = borrow_global_mut<Pool<S, R>>(@aux);
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, puid), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, puid);
 
         // check user info
         let sender_addr = signer::address_of(sender);
-        assert!(exists<UserInfo<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
-        let user_info = borrow_global_mut<UserInfo<S, R>>(sender_addr);
+        assert!(exists<UserInfos<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
+        assert!(table::contains(&user_infos.user_infos, puid), E_USER_INFO_NOT_FOUND);
+        let user_info = table::borrow_mut(&mut user_infos.user_infos, puid);
 
         // update pool
         let now = timestamp::now_microseconds();
