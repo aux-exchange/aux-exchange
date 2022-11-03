@@ -65,7 +65,7 @@ export const account = {
         // @ts-ignore
         const balance = AU(coinStore.data.coin.value)
           .toDecimalUnits(coinInfo.decimals)
-          .toNumber();
+          .toString();
         return {
           balance,
           availableBalance: balance,
@@ -86,8 +86,8 @@ export const account = {
           coinInfo,
           availableBalance: e.value.available_balance
             .toDecimalUnits(coinInfo.decimals)
-            .toNumber(),
-          balance: e.value.balance.toDecimalUnits(coinInfo.decimals).toNumber(),
+            .toString(),
+          balance: e.value.balance.toDecimalUnits(coinInfo.decimals).toString(),
         };
       })
     );
