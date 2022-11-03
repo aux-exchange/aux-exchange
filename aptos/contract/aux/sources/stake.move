@@ -93,6 +93,7 @@ module aux::stake {
         pool.last_update_time = now;
     }
 
+    /// Deposit stake coin to the incentive pool to start earning rewards
     fun deposit<S, R>(sender: &signer, amount: u64) acquires Pool, UserInfo {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
         assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
@@ -128,6 +129,7 @@ module aux::stake {
         // TODO: emit event
     }
 
+    /// Withdraw stake coin from the incentive pool
     fun withdraw<S, R>(sender: &signer, amount: u64) acquires Pool, UserInfo {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
 
@@ -157,6 +159,28 @@ module aux::stake {
         coin::deposit(sender_addr, unstake);
 
         // TODO: emit withdraw event
+    }
+
+    /// Claim staking rewards without modifying staking position
+    fun claim<S, R>(sender: &signer) acquires Pool, UserInfo {
+        // check pool
+        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+
+        // check user info
+        let sender_addr = signer::address_of(sender);
+        assert!(exists<UserInfo<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let user_info = borrow_global_mut<UserInfo<S, R>>(sender_addr);
+
+        // update pool
+        let now = timestamp::now_microseconds();
+        update_pool(pool, now);
+
+        // Distribute pending rewards
+        let pending_reward = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_info.reward_debt;
+        let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
+        coin::deposit(sender_addr, reward);
+        user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
     }
 
 }
