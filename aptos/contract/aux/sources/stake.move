@@ -1,10 +1,8 @@
 module aux::stake {
     use std::signer;
-    use std::string::String;
 
-    use aptos_framework::coin::{Coin, Self, MintCapability, BurnCapability};
+    use aptos_framework::coin::{Coin, Self};
     use aptos_framework::timestamp;
-    use aptos_framework::option;
 
     use aux::authority;
 
@@ -25,16 +23,18 @@ module aux::stake {
     const E_INCENTIVE_POOL_EXPIRED: u64 = 3;
     const E_INVALID_DEPOSIT_AMOUNT: u64 = 4;
     const E_INTERNAL_ERROR: u64 = 5;
+    const E_USER_INFO_NOT_FOUND: u64 = 6;
+    const E_INVALID_WITHDRAW_AMOUNT: u64 = 7;
 
     /***********/
     /* STRUCTS */
     /***********/
+
+    /// Stored at user's address once they open a staking position
     struct UserInfo<phantom S, phantom R> has key {
         amount_staked: u64,
         reward_debt: u128
     }
-
-    struct St<phantom S, phantom R> {}
 
     // TODO: may need PUID
     struct Pool<phantom S, phantom R> has key {
@@ -46,30 +46,16 @@ module aux::stake {
         reward: Coin<R>,
         last_update_time: u64,
         acc_reward_per_share: u128, // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
-
-        // Staked coin management
-        mint: MintCapability<St<S, R>>,
-        burn: BurnCapability<St<S, R>>,
     }
 
     public entry fun create<S, R>(
         sender: &signer,
         reward_amount: u64,
         end_time: u64, // ms
-        coin_name: String,
-        coin_symbol: String
     ) {
         let start_time = timestamp::now_microseconds();
         assert!(end_time - start_time > MIN_DURATION_MS, E_INVALID_DURATION);
         let module_authority = authority::get_signer_self();
-        let (burn, freeze, mint) = coin::initialize<St<S, R>>(
-            &module_authority,
-            coin_name,
-            coin_symbol,
-            ST_COIN_DECIMALS,
-            true // monitor_supply
-        );
-        coin::destroy_freeze_cap(freeze);
         move_to<Pool<S, R>>(
             &module_authority,
             Pool {
@@ -81,8 +67,6 @@ module aux::stake {
                 reward: coin::withdraw<R>(sender, reward_amount),
                 last_update_time: start_time,
                 acc_reward_per_share: 0,
-                mint,
-                burn
             }
         )
     }
@@ -92,8 +76,8 @@ module aux::stake {
         if (now <= pool.last_update_time) {
             return
         };
-        let st_supply = option::get_with_default(&coin::supply<St<S, R>>(), 0);
-        if (st_supply == 0) {
+        let total_stake = coin::value(&pool.stake);
+        if (total_stake == 0) {
             pool.last_update_time = now;
             return
         };
@@ -104,7 +88,7 @@ module aux::stake {
         };
 
         let duration_reward = (duration_ms as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
-        pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / st_supply;
+        pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / (total_stake as u128);
 
         pool.last_update_time = now;
     }
@@ -120,15 +104,8 @@ module aux::stake {
         let stake = coin::withdraw<S>(sender, amount);
         coin::merge(&mut pool.stake, stake);
 
-        // Mint St coins to sender
-        let sender_addr = signer::address_of(sender);
-        if (!coin::is_account_registered<St<S, R>>(sender_addr)) {
-            coin::register<St<S, R>>(sender);
-        };
-        let st = coin::mint(amount, &pool.mint);
-        coin::deposit(sender_addr, st);
-
         // Update UserInfo
+        let sender_addr = signer::address_of(sender);
         if (!exists<UserInfo<S, R>>(sender_addr)) {
             move_to(sender, UserInfo<S, R> {
                 amount_staked: amount,
@@ -149,6 +126,37 @@ module aux::stake {
         }
 
         // TODO: emit event
+    }
+
+    fun withdraw<S, R>(sender: &signer, amount: u64) acquires Pool, UserInfo {
+        assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
+
+        // check pool
+        assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = borrow_global_mut<Pool<S, R>>(@aux);
+
+        // check user info
+        let sender_addr = signer::address_of(sender);
+        assert!(exists<UserInfo<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let user_info = borrow_global_mut<UserInfo<S, R>>(sender_addr);
+        assert!(user_info.amount_staked > amount, E_INVALID_WITHDRAW_AMOUNT);
+
+        // update pool
+        let now = timestamp::now_microseconds();
+        update_pool(pool, now);
+
+        // Distribute pending rewards
+        let pending_reward = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_info.reward_debt;
+        let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
+        coin::deposit(sender_addr, reward);
+
+        // Withdraw staked coin
+        user_info.amount_staked = user_info.amount_staked - amount;
+        user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
+        let unstake = coin::extract(&mut pool.stake, amount);
+        coin::deposit(sender_addr, unstake);
+
+        // TODO: emit withdraw event
     }
 
 }
