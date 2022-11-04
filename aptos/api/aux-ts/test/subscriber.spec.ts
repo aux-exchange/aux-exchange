@@ -24,7 +24,7 @@ let bob: AptosAccount;
 let aliceAddr: string;
 let bobAddr: string;
 
-describe("Subscriber DSL tests", function () {
+describe.skip("Subscriber DSL tests", function () {
   this.timeout(30000);
 
   it("subscribes to Market events", async function () {

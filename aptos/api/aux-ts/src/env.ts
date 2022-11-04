@@ -14,38 +14,41 @@ export class AuxEnv {
   readonly aptosNetwork: AptosNetwork;
   readonly aptosProfile: AptosProfile;
   readonly aptosClient: AptosClient;
+  readonly faucetClient: FaucetClient | undefined;
 
   /**
    * Check if APTOS_PROFILE is set, and if it is set, use that profile for creating an AptosClient.
+   * Otherwise, use defaults for the specified APTOS_NETWORK.
    *
-   * Otherwise use the default for APTOS_NETWORK
-   * @returns profile name
+   * This will look in your `~/.aptos/config.yaml` file for Full Node REST urls.
+   *
+   * For example:
+   *
+   * mainnet:
+   *     rest_url: http://localhost:8080
+   *
+   * `new AuxClient("mainnet")` will use "http://localhost:8080"
    */
-  constructor(
-    aptosNetwork?: AptosNetwork,
-    aptosProfile?: AptosProfile,
-    aptosClient?: AptosClient,
-    readonly faucetClient?: FaucetClient | undefined
-  ) {
+  constructor(aptosNetwork?: AptosNetwork, aptosProfile?: AptosProfile) {
     dotenv.config();
     const aptosNetworkEnv = process.env["APTOS_NETWORK"];
-    if (
-      aptosNetworkEnv === "mainnet" ||
-      aptosNetworkEnv === "testnet" ||
-      aptosNetworkEnv === "devnet" ||
-      aptosNetworkEnv === "local"
-    ) {
-      aptosNetwork = aptosNetwork ?? aptosNetworkEnv;
-    } else if (!_.isUndefined(aptosNetworkEnv)) {
-      throw new Error(
-        `Invalid network \`${aptosNetwork}\`: must be one of ${APTOS_NETWORKS}`
-      );
-    }
-    if (_.isUndefined(aptosNetwork)) {
+    if (_.isUndefined(aptosNetwork) && _.isUndefined(aptosNetworkEnv)) {
       throw new Error(
         `Either pass in aptosNetwork or \`APTOS_NETWORK\` envvar must be set to ${APTOS_NETWORKS}`
       );
+    } else if (
+      !(
+        aptosNetworkEnv === "mainnet" ||
+        aptosNetworkEnv === "testnet" ||
+        aptosNetworkEnv === "devnet" ||
+        aptosNetworkEnv === "local"
+      )
+    ) {
+      throw new Error(
+        `Invalid network \`${aptosNetworkEnv}\`: must be one of ${APTOS_NETWORKS}`
+      );
     }
+    aptosNetwork = aptosNetwork ?? aptosNetworkEnv;
     aptosProfile =
       aptosProfile ??
       getAptosProfile(
@@ -70,11 +73,10 @@ export class AuxEnv {
 
     this.aptosNetwork = aptosNetwork;
     this.aptosProfile = aptosProfile;
-    this.aptosClient = aptosClient ?? new AptosClient(restUrl);
-    faucetClient =
-      faucetClient ?? _.isUndefined(faucetUrl)
-        ? undefined
-        : new FaucetClient(restUrl, faucetUrl);
+    this.aptosClient = new AptosClient(restUrl);
+    this.faucetClient = _.isUndefined(faucetUrl)
+      ? undefined
+      : new FaucetClient(restUrl, faucetUrl);
   }
 }
 

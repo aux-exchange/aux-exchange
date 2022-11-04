@@ -29,7 +29,7 @@ let bob: AptosAccount;
 let aliceAddr: string;
 let bobAddr: string;
 
-describe("Router Core tests", function () {
+describe.skip("Router Core tests", function () {
   this.timeout(30000);
   const aux: AptosAccount = moduleAuthority;
 

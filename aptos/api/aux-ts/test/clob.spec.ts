@@ -39,7 +39,7 @@ function getZeroAuxOrderId(orderCounter: BN): string {
   return r.toString();
 }
 
-describe.only("CLOB DSL tests", function () {
+describe("CLOB DSL tests", function () {
   this.timeout(30000);
 
   let quoteCoinInfo: CoinInfo;
@@ -47,8 +47,8 @@ describe.only("CLOB DSL tests", function () {
   let vault: Vault;
   let market: Market;
 
-  it.only("fund accounts", async function () {
-    const [alice, bob] = await getAliceBob(auxClient);
+  it("fund accounts", async function () {
+    [alice, bob] = await getAliceBob(auxClient);
     aliceAddr = alice.address().toString();
     bobAddr = bob.address().toString();
 

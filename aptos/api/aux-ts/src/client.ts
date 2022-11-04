@@ -10,7 +10,6 @@ import {
 } from "aptos";
 import BN from "bn.js";
 import * as SHA3 from "js-sha3";
-import "reflect-metadata";
 
 import _ from "lodash";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
@@ -24,33 +23,27 @@ import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
  * A fully-featured Typescript client for interacting with AUX exchange.
  *
  * const auxClient = new AuxClient("mainnet", new AptosClient("https://fullnode.mainnet.aptoslabs.com/v1"))
+ * 
+ * // make sure to set a sender
+ * auxClient.sender = AptosAccount.fromAptosAccountObject({ privateKeyHex: "0xAUX" })
+ * 
  * const auxClient = new AuxClient("devnet", new AptosClient("https://fullnode.devnet.aptoslabs.com/v1"))
+ * auxClient.sender = AptosAccount.fromAptosAccountObject({ privateKeyHex: "0xAUXDEVNET" })
  *
  * // use your own Full Node
  * const auxClient = new AuxClient("mainnet", new AptosClient("http://localhost:8080"))
  *
- * This will also look in your `~/.aptos/config.yaml` file for Full Node REST urls.
- *
- * For example:
- *
- * mainnet:
- *     rest_url: http://localhost:8080
- *
- * `new AuxClient("mainnet")` will use "http://localhost:8080"
+ * See the `AuxEnv` class in `env.ts` for a way to create `AuxClient` from environment variables.
+ * This might be useful, if you want to pull in your keys from your environment.
+ * 
  */
 export class AuxClient {
-  // These optional fields are explicitly set on the AuxClient vs. passed-in via AuxClientOptions.
-  //
-  // AuxClientOptions indicates parameters that are configurable per-tx, whereas these are
-  // relatively fixed across txs.
-  //
-  // Nonetheless, they can still be overriden via `auxClient.defaultSimulator = ...`.
   moduleAddress: Types.Address;
   moduleAuthority: AptosAccount | undefined;
   sender: AptosAccount | undefined;
   simulator: Simulator;
 
-  // Per-tx options will take priority over these
+  // Options to apply on every tx. Can be overwritten when making individual calls.
   options: Partial<AuxClientOptions>;
 
   // Internal state.
@@ -60,16 +53,14 @@ export class AuxClient {
   constructor(
     readonly aptosNetwork: AptosNetwork,
     readonly aptosClient: AptosClient,
-    readonly faucetClient: FaucetClient | undefined = undefined,
-    options?: Partial<AuxClientOptions>
+    readonly faucetClient?: FaucetClient
   ) {
-    let moduleAddress, moduleAuthority, simulator;
     switch (aptosNetwork) {
       case "mainnet":
-        moduleAddress =
+        this.moduleAddress =
           "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541";
-        simulator = {
-          accountAddress:
+        this.simulator = {
+          address:
             "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8",
           publicKey: toEd25519PublicKey(
             "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
@@ -77,10 +68,10 @@ export class AuxClient {
         };
         break;
       case "testnet":
-        moduleAddress =
+        this.moduleAddress =
           "0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53";
-        simulator = {
-          accountAddress:
+        this.simulator = {
+          address:
             "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8",
           publicKey: toEd25519PublicKey(
             "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
@@ -88,10 +79,10 @@ export class AuxClient {
         };
         break;
       case "devnet":
-        moduleAddress =
+        this.moduleAddress =
           "0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a";
-        simulator = {
-          accountAddress:
+        this.simulator = {
+          address:
             "0x84f372536c73df84327d2af63992f4443e2bd1aec8695fa85693e256fc1f904f",
           publicKey: toEd25519PublicKey(
             "0x2a27ecf198ff20db2634c43177e0d492df63105fa7106706b91a22dc42797d88"
@@ -115,14 +106,13 @@ export class AuxClient {
             );
           }
         }
-        moduleAuthority =
-          options?.moduleAuthority ??
-          AptosAccount.fromAptosAccountObject({
-            privateKeyHex: profile.private_key!,
-          });
-        moduleAddress = deriveModuleAddress(moduleAuthority);
-        simulator = {
-          accountAddress: profile.account!,
+        const moduleAuthority = AptosAccount.fromAptosAccountObject({
+          privateKeyHex: profile.private_key!,
+        });
+        this.moduleAddress = deriveModuleAddress(moduleAuthority);
+        this.moduleAuthority = moduleAuthority;
+        this.simulator = {
+          address: profile.account!,
           publicKey: toEd25519PublicKey(profile.public_key!),
         };
         break;
@@ -130,15 +120,7 @@ export class AuxClient {
         const exhaustiveCheck: never = aptosNetwork;
         throw new Error(exhaustiveCheck);
     }
-
-    // Lifting these optional fields to be explicitly set at the top-level
-    // (see `options` parameter in constructor)
-    this.moduleAddress = options?.moduleAddress ?? moduleAddress;
-    this.moduleAuthority = options?.moduleAuthority ?? moduleAuthority;
-    this.sender = options?.sender;
-    this.simulator = options?.simulator ?? simulator;
-    this.options = options ?? {};
-
+    this.options = {};
     this.coinInfo = new Map();
     this.vaults = new Map();
   }
@@ -392,15 +374,11 @@ export class AuxClient {
     account: MaybeHexString;
     quantity: AnyUnits;
   }): Promise<string[]> {
-    if (this.faucetClient === undefined) {
+    if (_.isUndefined(this.faucetClient)) {
       throw new AuxClientError("not configured with faucet");
     }
     const au = await this.toAtomicUnits(APTOS_COIN_TYPE, quantity);
-    const faucetClient = new FaucetClient(
-      "http://100.110.50.17:8180",
-      "https://faucet.devnet.aptoslabs.com"
-    );
-    return faucetClient.fundAccount(account, au.toNumber());
+    return this.faucetClient.fundAccount(account, au.toNumber());
   }
 
   /**
@@ -633,7 +611,7 @@ export class AuxClient {
   }: {
     payload: Types.EntryFunctionPayload;
     sender?: AptosAccount | undefined;
-    options?: Partial<AuxClientOptions>;
+    options?: Partial<AuxClientOptions> | undefined;
   }): Promise<Types.UserTransaction> {
     _.defaults(options, this.options);
     const simulate = options?.simulate ?? false;
@@ -645,23 +623,24 @@ export class AuxClient {
     }
 
     return simulate
-      ? this.simulateTransaction(payload, options?.simulator ?? this.simulator)
-      : this.sendTransaction(payload, sender, options);
+      ? this.simulateTransaction({ payload, simulator: this.simulator })
+      : this.sendTransaction({ payload, sender, options });
   }
 
   /**
    * Simulates sending a tx with payload and returns the transaction result.
    */
-  async simulateTransaction(
-    payload: Types.EntryFunctionPayload,
-    simulator?: Simulator | undefined,
-    options?: AuxClientOptions
-  ): Promise<Types.UserTransaction> {
+  async simulateTransaction({
+    payload,
+    simulator,
+  }: {
+    payload: Types.EntryFunctionPayload;
+    simulator?: Simulator | undefined;
+  }): Promise<Types.UserTransaction> {
     const simulator_ = simulator ?? this.simulator;
     const rawTransaction = await this.aptosClient.generateTransaction(
-      simulator_.accountAddress,
-      payload,
-      serialize(options)
+      simulator_.address,
+      payload
     );
     const userTransaction = await this.aptosClient.simulateTransaction(
       simulator?.publicKey ?? this.simulator.publicKey,
@@ -680,18 +659,22 @@ export class AuxClient {
   /**
    * Sends the payload as the sender and returns the transaction result.
    */
-  async sendTransaction(
-    payload: Types.EntryFunctionPayload,
-    sender?: AptosAccount,
-    options?: Partial<AuxClientOptions>
-  ): Promise<Types.UserTransaction> {
+  async sendTransaction({
+    payload,
+    sender,
+    options,
+  }: {
+    payload: Types.EntryFunctionPayload;
+    sender?: AptosAccount | undefined;
+    options?: Partial<AuxClientOptions> | undefined;
+  }): Promise<Types.UserTransaction> {
     if (_.isUndefined(sender)) {
       throw new Error(`Error sending tx. Sender is undefined but required.`);
     }
     const rawTransaction = await this.aptosClient.generateTransaction(
       sender.address(),
       payload,
-      serialize(options)
+      this.serialize(options)
     );
     const signedTxn = await this.aptosClient.signTransaction(
       sender,
@@ -700,7 +683,7 @@ export class AuxClient {
     const pendingTxn = await this.aptosClient.submitTransaction(signedTxn);
     const userTxn = await this.aptosClient.waitForTransactionWithResult(
       pendingTxn.hash,
-      serialize(options)
+      this.serialize(options)
     );
     if (userTxn.type !== "user_transaction") {
       throw new WaitForTransactionError(
@@ -709,6 +692,26 @@ export class AuxClient {
       );
     }
     return userTxn as Types.UserTransaction;
+  }
+
+  serialize(options?: Partial<AuxClientOptions>): Partial<
+    Types.SubmitTransactionRequest & {
+      timeoutSecs?: number;
+      checkSuccess?: boolean;
+    }
+  > {
+    return _.pickBy(
+      {
+        sender: this.sender?.address().toString(),
+        sequence_number: options?.sequenceNumber?.toString(),
+        max_gas_amount: options?.maxGasAmount?.toString(),
+        gas_unit_price: options?.gasUnitPrice?.toString(),
+        expiration_timestamp_secs: options?.expirationTimestampSecs?.toString(),
+        timeoutSecs: options?.timeoutSecs,
+        checkSuccess: options?.checkSuccess,
+      },
+      _.negate(_.isUndefined)
+    );
   }
 }
 
@@ -727,16 +730,8 @@ export class AuxClientError extends Error {
  * the AuxClient constructor.
  */
 export interface AuxClientOptions {
-  // module overrides
-  moduleAddress?: Types.Address;
-  moduleAuthority?: AptosAccount;
-
-  // simulate overrides
+  // Transaction options
   simulate: boolean;
-  simulator: Simulator;
-
-  // tx options (passed through to `AptosClient`)
-  sender: AptosAccount;
   // The sequence number for an account indicates the number of transactions that have been
   // submitted and committed on chain from that account. It is incremented every time a
   // transaction sent from that account is executed or aborted and stored in the blockchain.
@@ -751,26 +746,6 @@ export interface AuxClientOptions {
   // the transaction response just like in case 1, in which the `success` field
   // will be false. If `checkSuccess` is true, it will instead throw FailedTransactionError.
   checkSuccess: boolean;
-}
-
-function serialize(options?: Partial<AuxClientOptions>): Partial<
-  Types.SubmitTransactionRequest & {
-    timeoutSecs?: number;
-    checkSuccess?: boolean;
-  }
-> {
-  return _.pickBy(
-    {
-      sender: options?.sender?.address().toString(),
-      sequence_number: options?.sequenceNumber?.toString(),
-      max_gas_amount: options?.maxGasAmount?.toString(),
-      gas_unit_price: options?.gasUnitPrice?.toString(),
-      expiration_timestamp_secs: options?.expirationTimestampSecs?.toString(),
-      timeoutSecs: options?.timeoutSecs,
-      checkSuccess: options?.checkSuccess,
-    },
-    _.negate(_.isUndefined)
-  );
 }
 
 // TODO: parametrize on key type
@@ -820,8 +795,8 @@ export interface Integer {
 }
 
 export interface Simulator {
-  accountAddress: MaybeHexString;
-  publicKey: AptosAccount | TxnBuilderTypes.Ed25519PublicKey;
+  address: MaybeHexString;
+  publicKey: TxnBuilderTypes.Ed25519PublicKey;
 }
 
 /**
