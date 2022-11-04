@@ -24,8 +24,10 @@ git checkout -b chore/update-ui
 git add .
 git commit -m "chore(ui): update"
 git push origin chore/update-ui --set-upstream -f
-git push origin chore/update-ui:devnet -f
+git push origin chore/update-ui:mainnet -f
 git push origin chore/update-ui:mainnet-beta -f
+git push origin chore/update-ui:testnet -f
+git push origin chore/update-ui:devnet -f
 
 # vybe
 cd ~/projects/aux-frontend/apps/aux
