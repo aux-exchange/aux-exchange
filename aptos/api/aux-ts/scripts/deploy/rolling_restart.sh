@@ -1,40 +1,34 @@
 #!/usr/bin/env bash
 
-WD=~/projects/aux-exchange/aptos/api/aux-ts
-cd $WD
-
-if [ ! -z "$(git status --porcelain)" ]
-then
-    echo $0: "Unclean git directory $WD. Stop."
-    exit 1
-fi
-
-if [ -z $1 ]
-then
-    echo "$0: Missing argument: expected one of [all, mainnet, mainnet-beta, testnet, devnet, devnet-beta, vybe, atrix, mojito]. Stop."
-    exit 1
-fi
-
-
-if [ $1 == all ]
-then
-    setup "mainnet"
-    setup "mainnet-beta"
-    setup "testnet"
-    setup "devnet"
-    setup "devnet-beta"
-    setup "vybe"
-    setup "atrix"
-    setup "mojito"
-else
-    setup $1
-fi
-
-setup() {
+rolling_restart() {
+    cd ~/aux-exchange-$1/aptos/api/aux-ts
+    if [ ! -z "$(git status --porcelain)" ]; then
+        echo $0: "Unclean git directory $pwd. Stop."
+        exit 1
+    fi
     git checkout origin/$1
     yarn install
     yarn build
-    pm2 flush
+    pm2 flush $1
     pm2 reloadLogs
     pm2 reload $1
 }
+
+if [ -z $1 ]; then
+    echo "$0: Missing argument $1: expected one of [all, mainnet, mainnet-beta, mainnet-indexer, testnet, devnet, devnet-beta, devnet-indexer, vybe, atrix, mojito]. Stop."
+    exit 1
+fi
+
+git fetch
+if [ $1 == all ]; then
+    rolling_restart "mainnet"
+    rolling_restart "mainnet-beta"
+    rolling_restart "testnet"
+    rolling_restart "devnet"
+    rolling_restart "devnet-beta"
+    rolling_restart "vybe"
+    rolling_restart "atrix"
+    rolling_restart "mojito"
+else
+    rolling_restart $1
+fi
