@@ -24,8 +24,10 @@ git checkout -b chore/update-ui
 git add .
 git commit -m "chore(ui): update"
 git push origin chore/update-ui --set-upstream -f
-git push origin chore/update-ui:devnet -f
+git push origin chore/update-ui:mainnet -f
 git push origin chore/update-ui:mainnet-beta -f
+git push origin chore/update-ui:testnet -f
+git push origin chore/update-ui:devnet -f
 
 # vybe
 cd ~/projects/aux-frontend/apps/aux
@@ -57,10 +59,10 @@ git push origin atrix --set-upstream -f
 
 # mojito
 cd ~/projects/aux-frontend/apps/aux
-git checkout main
 yarn build:mojito
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
+git checkout main
 rm -rf ./client
 cp -r ~/projects/aux-frontend/apps/aux/dist client
 git br -D mojito
