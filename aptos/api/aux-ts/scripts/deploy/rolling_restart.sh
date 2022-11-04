@@ -2,6 +2,7 @@
 
 rolling_restart() {
     cd ~/aux-exchange-$1/aptos/api/aux-ts
+    git fetch
     if [ ! -z "$(git status --porcelain)" ]; then
         echo $0: "Unclean git directory $(pwd). Stop."
         exit 1
@@ -19,7 +20,6 @@ if [ -z $1 ]; then
     exit 1
 fi
 
-git fetch
 if [ $1 == all ]; then
     rolling_restart "mainnet"
     rolling_restart "mainnet-beta"

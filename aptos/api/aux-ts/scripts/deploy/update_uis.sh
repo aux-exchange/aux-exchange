@@ -57,10 +57,10 @@ git push origin atrix --set-upstream -f
 
 # mojito
 cd ~/projects/aux-frontend/apps/aux
-git checkout main
 yarn build:mojito
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
+git checkout main
 rm -rf ./client
 cp -r ~/projects/aux-frontend/apps/aux/dist client
 git br -D mojito
