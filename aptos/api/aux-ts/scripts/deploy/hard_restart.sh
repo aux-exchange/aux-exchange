@@ -3,7 +3,7 @@
 hard_restart() {
     cd ~/aux-exchange-$1/aptos/api/aux-ts
     if [ ! -z "$(git status --porcelain)" ]; then
-        echo $0: "Unclean git directory $pwd. Stop."
+        echo $0: "Unclean git directory $(pwd). Stop."
         exit 1
     fi
     git checkout origin/$1

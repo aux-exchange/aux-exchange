@@ -3,7 +3,7 @@
 rolling_restart() {
     cd ~/aux-exchange-$1/aptos/api/aux-ts
     if [ ! -z "$(git status --porcelain)" ]; then
-        echo $0: "Unclean git directory $pwd. Stop."
+        echo $0: "Unclean git directory $(pwd). Stop."
         exit 1
     fi
     git checkout origin/$1
@@ -23,9 +23,11 @@ git fetch
 if [ $1 == all ]; then
     rolling_restart "mainnet"
     rolling_restart "mainnet-beta"
+    rolling_restart "mainnet-indexer"
     rolling_restart "testnet"
     rolling_restart "devnet"
     rolling_restart "devnet-beta"
+    rolling_restart "devnet-indexer"
     rolling_restart "vybe"
     rolling_restart "atrix"
     rolling_restart "mojito"
