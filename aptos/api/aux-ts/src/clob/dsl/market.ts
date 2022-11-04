@@ -1,6 +1,11 @@
 import type { AptosAccount, Types } from "aptos";
 import type BN from "bn.js";
-import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
+import type {
+  AuxClient,
+  CoinInfo,
+  AuxClientOptions,
+  Simulator,
+} from "../../client";
 import type { TransactionResult } from "../../transaction";
 import {
   AnyUnits,
@@ -240,7 +245,7 @@ export default class Market implements core.query.Market {
       timeoutTimestamp,
       stpActionType,
     }: PlaceOrderParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<PlaceOrderEvent[]>> {
     const limitPriceAu: Types.U64 = this.makeRoundTick(
       toAtomicUnits(limitPrice, this.quoteDecimals)
@@ -275,7 +280,7 @@ export default class Market implements core.query.Market {
             ? stpActionType
             : STPActionType.CANCEL_PASSIVE,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -287,7 +292,7 @@ export default class Market implements core.query.Market {
    *
    * If the order hasn't been added to the book yet, cancel will enqueue a
    * cancel for when the order is added. In other words, placeOrder and
-   * cancelOrder can be processed out of order from any given validator's
+   * cancelOrder can be processed out of order from any given Full Node's
    * perspective.
    * @param sender
    * @param orderId the global order id to cancel
@@ -403,13 +408,13 @@ export default class Market implements core.query.Market {
    * @returns
    */
   async orderbook(
-    simulatorAccount?: AptosAccount
+    simulator?: Simulator
   ): Promise<{ bids: core.query.Level[]; asks: core.query.Level[] }> {
     return core.query.orderbook(
       this.auxClient,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType,
-      simulatorAccount
+      simulator ?? this.auxClient.simulator
     );
   }
 

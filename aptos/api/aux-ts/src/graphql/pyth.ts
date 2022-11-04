@@ -1,4 +1,4 @@
-import { ALL_USD_STABLES, COIN_MAPPING } from "../coins";
+import { ALL_USD_STABLES, COIN_MAPPING } from "../coin";
 import { pythConnection } from "./connection";
 import { PythRating, RatingColor } from "./generated/types";
 

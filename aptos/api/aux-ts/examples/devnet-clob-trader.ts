@@ -5,13 +5,14 @@
  *
  * Run ts-node devnet-clob-trader.ts to trade on devnet.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import type BN from "bn.js";
 import { assert } from "console";
 import { AU, DU, Market, MarketSubscriber, Vault } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import { FakeCoin } from "../src/coin";
 
 const AUX_TRADER_CONFIG = {
   // The frequency at which we fetch price updates from both FTX and AUX,
@@ -25,18 +26,21 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-// While you can technically connect directly to Devnet, we strongly recommend
-// running a full validator for RPCs.
-const auxClient = AuxClient.create({
-  network: Network.Devnet,
-  // validatorAddress: "http://localhost:8080",
-});
+// While you can technically connect directly to the Aptos Full Node, we strongly recommend
+// running your own Full Node.
+//
+// e.g.
+// const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
+const auxClient = new AuxClient(
+  "devnet",
+  new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+);
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
 
 async function setupTrader(): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000),
   });

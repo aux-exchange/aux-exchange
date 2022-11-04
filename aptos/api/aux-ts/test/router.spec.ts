@@ -1,19 +1,22 @@
 import { AptosAccount, CoinClient } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
-import type Router from "../src/router/dsl/router";
-import type { RouterQuote } from "../src/router/dsl/router_quote";
 import Pool from "../src/amm/dsl/pool";
-import { AuxClient, CoinInfo, FakeCoin } from "../src/client";
+import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
+import { FakeCoin } from "../src/coin";
+import { AuxEnv } from "../src/env";
 import * as core from "../src/router/core";
+import type Router from "../src/router/dsl/router";
+import type { RouterQuote } from "../src/router/dsl/router_quote";
 import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
-import { getAliceBob, withdrawAll } from "./alice_and_bob";
+import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const [auxClient, sender] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const coinClient = new CoinClient(auxClient.aptosClient);
 
@@ -26,9 +29,9 @@ let bob: AptosAccount;
 let aliceAddr: string;
 let bobAddr: string;
 
-describe("Router Core tests", function () {
+describe.skip("Router Core tests", function () {
   this.timeout(30000);
-  const aux: AptosAccount = sender;
+  const aux: AptosAccount = moduleAuthority;
 
   let vault: Vault;
   let market: Market;
@@ -46,7 +49,7 @@ describe("Router Core tests", function () {
 
     // Create two accounts, Alice and Bob, and fund
     console.log("\n=== Addresses ===");
-    console.log(`Sender: ${sender.address()}`);
+    console.log(`Sender: ${moduleAuthority.address()}`);
     console.log(`Module: ${moduleAddress}`);
     console.log("CLOB Resource: " + clobAddress);
     console.log("VAULT Resource: " + vaultAddress);
@@ -56,13 +59,13 @@ describe("Router Core tests", function () {
 
   it("registerAndMint fake coins", async function () {
     let tx = await auxClient.registerAndMintFakeCoin({
-      sender,
+      sender: moduleAuthority,
       coin: FakeCoin.USDC,
       amount: AU(100_000_000_000),
     });
     console.log(tx.success, tx.hash);
     tx = await auxClient.registerAndMintFakeCoin({
-      sender,
+      sender: moduleAuthority,
       coin: FakeCoin.BTC,
       amount: AU(100_000_000_000),
     });
@@ -105,7 +108,7 @@ describe("Router Core tests", function () {
     });
     if (maybePool == undefined) {
       pool = await Pool.create(auxClient, {
-        sender,
+        sender: moduleAuthority,
         coinTypeX: btcCoinType,
         coinTypeY: usdcCoinType,
         feePct: 0,
@@ -125,7 +128,7 @@ describe("Router Core tests", function () {
 
     if (pool.amountAuLP.toNumber() === 0) {
       const tx = await pool.addExactLiquidity({
-        sender,
+        sender: moduleAuthority,
         amountX: DU(1),
         amountY: DU(22_000),
       });
@@ -212,13 +215,13 @@ describe("Router Core tests", function () {
 
   it("swapUsdcForBtc", async function () {
     const initBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     console.log("initBtc", initBtc);
     const initUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -226,7 +229,7 @@ describe("Router Core tests", function () {
     const txResult = await core.mutation.swapExactCoinForCoin(
       auxClient,
       {
-        sender,
+        sender: moduleAuthority,
         exactAmountAuIn: "17000000000",
         minAmountAuOut: "74900000",
         coinTypeIn: usdcCoinType,
@@ -238,12 +241,12 @@ describe("Router Core tests", function () {
     console.log("swapUsdcForBtc", txResult.tx.hash);
     // console.dir(txResult.payload, { depth: null });
     const finalBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     const finalUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -290,20 +293,20 @@ describe("Router Core tests", function () {
 
   it("swapBtcForUsdc", async function () {
     const initBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     console.log("initBtc", initBtc);
     const initUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
     const txResult = await core.mutation.swapExactCoinForCoin(
       auxClient,
       {
-        sender,
+        sender: moduleAuthority,
         exactAmountAuIn: "75000000",
         minAmountAuOut: "14900000000",
         coinTypeIn: btcCoinType,
@@ -315,12 +318,12 @@ describe("Router Core tests", function () {
     // console.dir(txResult.payload, { depth: null });
     await pool.update();
     const finalBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     const finalUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -336,11 +339,11 @@ describe("Router Core tests", function () {
 
     if (pool.amountAuLP.toNumber() >= 1000) {
       let tx = await pool.removeLiquidity({
-        sender,
+        sender: moduleAuthority,
         amountLP: AU(pool.amountAuLP.toNumber() - 1000),
       });
       assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
-      tx = await pool.resetPool({ sender });
+      tx = await pool.resetPool({ sender: moduleAuthority });
       assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
     }
 
@@ -350,7 +353,7 @@ describe("Router Core tests", function () {
 
 describe("Router DSL tests", function () {
   this.timeout(30000);
-  const aux: AptosAccount = sender;
+  const aux: AptosAccount = moduleAuthority;
 
   let vault: Vault;
   let market: Market;
@@ -373,7 +376,7 @@ describe("Router DSL tests", function () {
 
     // Create two accounts, Alice and Bob, and fund
     console.log("\n=== Addresses ===");
-    console.log(`Sender: ${sender.address()}`);
+    console.log(`Sender: ${moduleAuthority.address()}`);
     console.log(`Module: ${moduleAddress}`);
     console.log("CLOB Resource: " + clobAddress);
     console.log("VAULT Resource: " + vaultAddress);
@@ -383,13 +386,13 @@ describe("Router DSL tests", function () {
 
   it("registerAndMint fake coins", async function () {
     let tx = await auxClient.registerAndMintFakeCoin({
-      sender,
+      sender: moduleAuthority,
       coin: FakeCoin.USDC,
       amount: AU(100_000_000_000),
     });
     console.log(tx.success, tx.hash);
     tx = await auxClient.registerAndMintFakeCoin({
-      sender,
+      sender: moduleAuthority,
       coin: FakeCoin.BTC,
       amount: AU(100_000_000_000),
     });
@@ -432,7 +435,7 @@ describe("Router DSL tests", function () {
     });
     if (maybePool == undefined) {
       pool = await Pool.create(auxClient, {
-        sender,
+        sender: moduleAuthority,
         coinTypeX: btcCoinType,
         coinTypeY: usdcCoinType,
         feePct: 0,
@@ -452,7 +455,7 @@ describe("Router DSL tests", function () {
 
     if (pool.amountAuLP.toNumber() === 0) {
       const tx = await pool.addExactLiquidity({
-        sender,
+        sender: moduleAuthority,
         amountX: DU(1),
         amountY: DU(22_000),
       });
@@ -538,7 +541,7 @@ describe("Router DSL tests", function () {
   });
 
   it("createRouter", async function () {
-    router = auxClient.getRouter(sender);
+    router = auxClient.getRouter(moduleAuthority);
     assert.ok(router);
   });
 
@@ -586,13 +589,13 @@ describe("Router DSL tests", function () {
 
   it("swapUsdcForExactBtc", async function () {
     const initBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     console.log("initBtc", initBtc);
     const initUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -609,7 +612,7 @@ describe("Router DSL tests", function () {
     assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
     console.log("swapUsdcForBtc", txResult.tx.hash);
     const finalBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
@@ -619,7 +622,7 @@ describe("Router DSL tests", function () {
     assert.ok(btcReceived.toNumber() == 0.749);
 
     const finalUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -692,13 +695,13 @@ describe("Router DSL tests", function () {
 
   it("swapExactBtcForUsdc", async function () {
     const initBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
     console.log("initBtc", initBtc);
     const initUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -714,7 +717,7 @@ describe("Router DSL tests", function () {
     assert.ok(txResult.tx.success, `${txResult.tx.vm_status}`);
     await pool.update();
     const finalUsdc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
       })
     );
@@ -725,7 +728,7 @@ describe("Router DSL tests", function () {
     assert.ok(usdcReceived.toNumber() >= 15_900);
 
     const finalBtc = Number(
-      await coinClient.checkBalance(sender, {
+      await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
       })
     );
@@ -740,11 +743,11 @@ describe("Router DSL tests", function () {
 
     if (pool.amountAuLP.toNumber() >= 1000) {
       let tx = await pool.removeLiquidity({
-        sender,
+        sender: moduleAuthority,
         amountLP: AU(pool.amountAuLP.toNumber() - 1000),
       });
       assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
-      tx = await pool.resetPool({ sender });
+      tx = await pool.resetPool({ sender: moduleAuthority });
       assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
     }
 

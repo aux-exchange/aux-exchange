@@ -4,11 +4,12 @@
  *
  * Run ts-node devnet-amm-trader.ts to trade on devnet.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import { assert } from "console";
 import { AU, DU, Pool } from "../src";
-import { AuxClient, FakeCoin, Network } from "../src/client";
+import { AuxClient } from "../src/client";
+import { FakeCoin } from "../src/coin";
 
 const AUX_TRADER_CONFIG = {
   // The frequency at which we fetch price updates from both FTX and AUX,
@@ -26,20 +27,22 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-// While you can technically connect directly to Devnet, we strongly recommend
-// running a full validator for RPCs.
-// const auxClient = AuxClient.create(Network.Devnet);
-const auxClient = AuxClient.create({
-  network: Network.Devnet,
-  validatorAddress: "http://localhost:8080",
-});
+const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
+const nodeUrl = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
+
+// While you can technically connect directly to the Aptos Full Node, we strongly recommend
+// running your own Full Node.
+//
+// e.g.
+// const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
+const auxClient = new AuxClient("devnet", new AptosClient(nodeUrl));
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
 
 // We fund trader and module authority with Aptos, BTC, and USDC coins
 async function setupTrader(): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000),
   });
@@ -135,21 +138,19 @@ async function tradeAMM(): Promise<void> {
       // As discussed above, anybody can mint unlimited quantities of fake
       // assets for test trading. To avoid issues dealing with inventory, we
       // simply mint ourselves more fake coins when we run out.
-      const traderBtcBalance =
-        await auxClient.ensureMinimumFakeCoinBalance({
-          sender: trader,
-          coin: FakeCoin.BTC,
-          minQuantity: DU(100),
-          replenishQuantity: DU(1000),
-        });
+      const traderBtcBalance = await auxClient.ensureMinimumFakeCoinBalance({
+        sender: trader,
+        coin: FakeCoin.BTC,
+        minQuantity: DU(100),
+        replenishQuantity: DU(1000),
+      });
 
-      const traderUsdcBalance =
-        await auxClient.ensureMinimumFakeCoinBalance({
-          sender: trader,
-          coin: FakeCoin.USDC,
-          minQuantity: DU(100_000),
-          replenishQuantity: DU(1_000_000),
-        });
+      const traderUsdcBalance = await auxClient.ensureMinimumFakeCoinBalance({
+        sender: trader,
+        coin: FakeCoin.USDC,
+        minQuantity: DU(100_000),
+        replenishQuantity: DU(1_000_000),
+      });
 
       console.log(
         "  Trader BTC=",

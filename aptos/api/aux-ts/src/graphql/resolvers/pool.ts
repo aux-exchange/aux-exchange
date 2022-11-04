@@ -1,5 +1,5 @@
 import * as aux from "../../";
-import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coins";
+import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
 import { auxClient } from "../connection";
 import {
   AddLiquidity,

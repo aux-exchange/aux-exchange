@@ -254,6 +254,7 @@ __metadata:
     organize-imports-cli: ^0.10.0
     prettier: 2.7.1
     redis: ^4.3.1
+    reflect-metadata: ^0.1.13
     ts-node: ^10.9.1
     tslog: ^3.3.4
     typescript: ^4.8.3
@@ -6423,6 +6424,13 @@ __metadata:
     "@redis/search": 1.1.0
     "@redis/time-series": 1.0.3
   checksum: fe20b548f80b55abb50e552c63a39e8e1bed1f48de0eaa87ed14b44b1168916a5ad4f51a766994f15fc2df7d5abc45123a97c3a3fa73da42492419978762244d
+  languageName: node
+  linkType: hard
+
+"reflect-metadata@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "reflect-metadata@npm:0.1.13"
+  checksum: 798d379a7b6f6455501145419505c97dd11cbc23857a386add2b9ef15963ccf15a48d9d15507afe01d4cd74116df8a213247200bac00320bd7c11ddeaa5e8fb4
   languageName: node
   linkType: hard
 

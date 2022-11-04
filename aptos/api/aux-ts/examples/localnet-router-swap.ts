@@ -1,14 +1,15 @@
 /**
  * Demo of the supported Router swap functionality.
  */
-import { AptosAccount, Types } from "aptos";
+import { AptosAccount, AptosClient, Types } from "aptos";
 import assert from "assert";
-import type { DecimalUnits } from "../src/units";
 import { AU, DU, Market, Pool, Vault } from "../src";
-import { AuxClient, CoinInfo, FakeCoin } from "../src/client";
+import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import { FakeCoin } from "../src/coin";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
+import type { DecimalUnits } from "../src/units";
 
 async function printQuote(
   auxClient: AuxClient,
@@ -74,7 +75,7 @@ async function setupAccount(
   auxClient: AuxClient,
   account: AptosAccount
 ): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: account.address(),
     quantity: AU(50_000_000),
   });
@@ -96,7 +97,11 @@ async function setupAccount(
 }
 
 async function main() {
-  const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
+  const auxClient = new AuxClient(
+    "local",
+    new AptosClient("http://localhost:8081")
+  );
+  const moduleAuthority = auxClient.moduleAuthority!;
 
   /***********************/
   /* INITIALIZE ACCOUNTS */

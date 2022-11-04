@@ -1,7 +1,7 @@
 import type { AptosAccount, Types } from "aptos";
 import type BN from "bn.js";
 import type { AccountEvent } from "../../../src/vault/core/query";
-import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
+import type { AuxClient, CoinInfo, AuxClientOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import {
   AnyUnits,
@@ -52,7 +52,7 @@ export default class Pool implements core.query.Pool {
   static async create(
     auxClient: AuxClient,
     { sender, coinTypeX, coinTypeY, feePct }: CreateParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<Pool> {
     await core.mutation.createPool(
       auxClient,
@@ -62,7 +62,7 @@ export default class Pool implements core.query.Pool {
         coinTypeY,
         feeBps: (feePct * 100).toString(),
       },
-      transactionOptions
+      options
     );
     const pool = await Pool.read(auxClient, { coinTypeX, coinTypeY });
     if (pool == undefined) {
@@ -150,13 +150,13 @@ export default class Pool implements core.query.Pool {
   async swap(
     sender: AptosAccount,
     params: SwapInParams | SwapOutParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     switch (params.kind) {
       case "in":
-        return this.swapIn(sender, params, transactionOptions);
+        return this.swapIn(sender, params, options);
       case "out":
-        return this.swapOut(sender, params, transactionOptions);
+        return this.swapOut(sender, params, options);
       default:
         const _exhaustiveCheck: never = params;
         return _exhaustiveCheck;
@@ -166,7 +166,7 @@ export default class Pool implements core.query.Pool {
   private async swapIn(
     sender: AptosAccount,
     params: SwapInParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const slippage = params.slippage ?? {
       kind: "total",
@@ -193,7 +193,7 @@ export default class Pool implements core.query.Pool {
               coinInfoOut.decimals
             ).toString(),
           },
-          transactionOptions
+          options
         );
       case "marginal":
         return core.mutation.swapExactCoinForCoinLimit(
@@ -215,7 +215,7 @@ export default class Pool implements core.query.Pool {
               coinInfoOut.decimals
             ).toString(),
           },
-          transactionOptions
+          options
         );
       default:
         const _exhaustiveCheck: never = slippage;
@@ -226,7 +226,7 @@ export default class Pool implements core.query.Pool {
   private async swapOut(
     sender: AptosAccount,
     params: SwapOutParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const slippage = params.slippage ?? {
       kind: "total",
@@ -253,7 +253,7 @@ export default class Pool implements core.query.Pool {
               coinInfoOut.decimals
             ).toString(),
           },
-          transactionOptions
+          options
         );
       case "marginal":
         return core.mutation.swapCoinForExactCoinLimit(
@@ -276,7 +276,7 @@ export default class Pool implements core.query.Pool {
               coinInfoOut.decimals
             ).toString(),
           },
-          transactionOptions
+          options
         );
       default:
         const _exhaustiveCheck: never = slippage;
@@ -290,7 +290,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapXForY(
     { sender, exactAmountIn, minAmountOut }: SwapExactInParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const exactAmountAuIn = toAtomicUnits(
       exactAmountIn,
@@ -309,7 +309,7 @@ export default class Pool implements core.query.Pool {
         coinTypeIn: this.coinInfoX.coinType,
         coinTypeOut: this.coinInfoY.coinType,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -319,7 +319,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapYForX(
     { sender, exactAmountIn, minAmountOut }: SwapExactInParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const exactAmountAuIn = toAtomicUnits(
       exactAmountIn,
@@ -338,7 +338,7 @@ export default class Pool implements core.query.Pool {
         coinTypeIn: this.coinInfoY.coinType,
         coinTypeOut: this.coinInfoX.coinType,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -349,7 +349,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapXForYLimit(
     { sender, exactAmountIn, minOutPerIn }: SwapExactInLimitParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const ratio = toAtomicUnitsRatio(
       minOutPerIn,
@@ -370,7 +370,7 @@ export default class Pool implements core.query.Pool {
         coinTypeIn: this.coinInfoX.coinType,
         coinTypeOut: this.coinInfoY.coinType,
       },
-      transactionOptions
+      options
     );
   }
   /**
@@ -380,7 +380,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapYForXLimit(
     { sender, exactAmountIn, minOutPerIn }: SwapExactInLimitParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const ratio = toAtomicUnitsRatio(
       minOutPerIn,
@@ -401,7 +401,7 @@ export default class Pool implements core.query.Pool {
         coinTypeIn: this.coinInfoY.coinType,
         coinTypeOut: this.coinInfoX.coinType,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -411,7 +411,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapXForYExact(
     { sender, maxAmountIn, exactAmountOut }: SwapExactOutParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const maxAmountAuIn = toAtomicUnits(
       maxAmountIn,
@@ -430,7 +430,7 @@ export default class Pool implements core.query.Pool {
         maxAmountAuIn,
         exactAmountAuOut,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -440,7 +440,7 @@ export default class Pool implements core.query.Pool {
    */
   async swapYForXExact(
     { sender, maxAmountIn, exactAmountOut }: SwapExactOutParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const maxAmountAuIn = toAtomicUnits(
       maxAmountIn,
@@ -459,7 +459,7 @@ export default class Pool implements core.query.Pool {
         maxAmountAuIn,
         exactAmountAuOut,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -476,7 +476,7 @@ export default class Pool implements core.query.Pool {
       maxInPerOut,
       exactAmountOut,
     }: SwapExactOutLimitParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const ratio = toAtomicUnitsRatio(
       maxInPerOut,
@@ -502,7 +502,7 @@ export default class Pool implements core.query.Pool {
         limitPriceNumerator: ratio[0].toString(),
         limitPriceDenominator: ratio[1].toString(),
       },
-      transactionOptions
+      options
     );
   }
 
@@ -519,7 +519,7 @@ export default class Pool implements core.query.Pool {
       maxInPerOut,
       exactAmountOut,
     }: SwapExactOutLimitParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<SwapEvent | undefined>> {
     const ratio = toAtomicUnitsRatio(
       maxInPerOut,
@@ -545,7 +545,7 @@ export default class Pool implements core.query.Pool {
         limitPriceNumerator: ratio[0].toString(),
         limitPriceDenominator: ratio[1].toString(),
       },
-      transactionOptions
+      options
     );
   }
 
@@ -557,18 +557,18 @@ export default class Pool implements core.query.Pool {
    */
   async addLiquidity(
     { sender, amountX, amountY, maxSlippageBps }: AddLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
     const amountAuX = toAtomicUnits(amountX, this.coinInfoX.decimals).toU64();
     const amountAuY = toAtomicUnits(amountY, this.coinInfoY.decimals).toU64();
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload: {
         function: `${this.auxClient.moduleAddress}::amm::add_liquidity`,
         type_arguments: [this.coinInfoX.coinType, this.coinInfoY.coinType],
         arguments: [amountAuX, amountAuY, maxSlippageBps.toU64()],
       },
-      transactionOptions,
+      options,
     });
     if (tx.success) {
       return addLiquidityTxResult(this.auxClient, tx);
@@ -586,7 +586,7 @@ export default class Pool implements core.query.Pool {
    */
   async addExactLiquidity(
     { sender, amountX, amountY }: AddExactLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
     const amountAuX = toAtomicUnits(amountX, this.coinInfoX.decimals).toU64();
     const amountAuY = toAtomicUnits(amountY, this.coinInfoY.decimals).toU64();
@@ -599,7 +599,7 @@ export default class Pool implements core.query.Pool {
         coinTypeX: this.coinInfoX.coinType,
         coinTypeY: this.coinInfoY.coinType,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -624,10 +624,10 @@ export default class Pool implements core.query.Pool {
       minPoolX,
       minPoolY,
     }: AddApproximateLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
     return this.auxClient
-      .generateSignSubmitWaitForTransaction({
+      .sendOrSimulateTransaction({
         sender,
         payload: {
           function: `${this.auxClient.moduleAddress}::amm::add_approximate_liquidity`,
@@ -641,7 +641,7 @@ export default class Pool implements core.query.Pool {
             toAtomicUnits(minPoolY, this.coinInfoY.decimals).toString(),
           ],
         },
-        transactionOptions,
+        options,
       })
       .then(async (tx) => {
         if (!tx.success) {
@@ -657,7 +657,7 @@ export default class Pool implements core.query.Pool {
    */
   async removeLiquidity(
     { sender, amountLP }: RemoveLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
     const amountAuLP = toAtomicUnits(
       amountLP,
@@ -672,7 +672,7 @@ export default class Pool implements core.query.Pool {
         coinTypeY: this.coinInfoY.coinType,
         coinInfoLP: this.coinInfoLP,
       },
-      transactionOptions
+      options
     );
   }
 
@@ -684,7 +684,7 @@ export default class Pool implements core.query.Pool {
    */
   async addLiquidityWithAccount(
     { sender, amountX, amountY, maxSlippageBps }: AddLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<Array<AddLiquidityEvent | AccountEvent>>> {
     const amountAuX = toAtomicUnits(amountX, this.coinInfoX.decimals).toU64();
     const amountAuY = toAtomicUnits(amountY, this.coinInfoY.decimals).toU64();
@@ -696,10 +696,10 @@ export default class Pool implements core.query.Pool {
       amountAuY,
       maxSlippageBps: maxSlippageBps.toU64(),
     });
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload,
-      transactionOptions,
+      options,
     });
     if (tx.success) {
       return addLiquidityWithAccountTxResult(this.auxClient, tx);
@@ -716,7 +716,7 @@ export default class Pool implements core.query.Pool {
    */
   async removeLiquidityWithAccount(
     { sender, amountLP }: RemoveLiquidityParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<Array<RemoveLiquidityEvent | AccountEvent>>> {
     const amountAuLP = toAtomicUnits(
       amountLP,
@@ -728,10 +728,10 @@ export default class Pool implements core.query.Pool {
       coinTypeY: this.coinInfoY.coinType,
       amountAuLP,
     });
-    const tx = await this.auxClient.generateSignSubmitWaitForTransaction({
+    const tx = await this.auxClient.sendOrSimulateTransaction({
       sender,
       payload,
-      transactionOptions,
+      options,
     });
     if (tx.success) {
       return removeLiquidityWithAccountTxResult(this.auxClient, tx);
@@ -748,7 +748,7 @@ export default class Pool implements core.query.Pool {
    */
   async resetPool(
     { sender }: ResetPoolParams,
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
     return core.mutation.resetPool(
       this.auxClient,
@@ -757,7 +757,7 @@ export default class Pool implements core.query.Pool {
         coinTypeX: this.coinInfoX.coinType,
         coinTypeY: this.coinInfoY.coinType,
       },
-      transactionOptions
+      options
     );
   }
   /**

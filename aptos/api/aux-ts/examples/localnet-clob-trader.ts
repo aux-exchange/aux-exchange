@@ -5,13 +5,14 @@
  *
  * See aux-exchange/README.md for details on how to run this example.
  */
-import { AptosAccount } from "aptos";
+import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import type BN from "bn.js";
 import { assert } from "console";
 import { DU, Market, MarketSubscriber, Vault } from "../src";
-import { AuxClient, FakeCoin } from "../src/client";
+import { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import { FakeCoin } from "../src/coin";
 
 const AUX_TRADER_CONFIG = {
   // The frequency at which we fetch price updates from both FTX and AUX,
@@ -25,7 +26,11 @@ const AUX_TRADER_CONFIG = {
   oracleUrl: "https://ftx.com/api/markets/BTC/USD/orderbook?depth=1",
 };
 
-const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient(
+  "local",
+  new AptosClient("http://localhost:8081")
+);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const aptosCoin = "0x1::aptos_coin::AptosCoin";
@@ -35,7 +40,7 @@ const trader: AptosAccount = new AptosAccount();
 
 // We fund trader and module authority with Aptos, BTC, and USDC coins
 async function setupTrader(): Promise<void> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: moduleAuthority.address(),
     quantity: DU(500_000),
   });
@@ -47,7 +52,7 @@ async function setupTrader(): Promise<void> {
     DU(500_000)
   );
 
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: trader.address(),
     quantity: DU(500_000),
   });

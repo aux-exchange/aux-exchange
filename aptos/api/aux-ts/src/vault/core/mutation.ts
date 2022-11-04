@@ -1,5 +1,5 @@
 import type { AptosAccount, Types } from "aptos";
-import type { AuxClient, TransactionOptions } from "../../client";
+import type { AuxClient, AuxClientOptions } from "../../client";
 
 // TODO: remove
 export interface DepositInput {
@@ -27,48 +27,48 @@ export interface TransferInput {
 export async function createAuxAccount(
   auxClient: AuxClient,
   sender: AptosAccount,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender,
     payload: createAuxAccountPayload(auxClient),
-    transactionOptions,
+    options,
   });
 }
 
 export async function deposit(
   auxClient: AuxClient,
   depositInput: DepositInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: depositInput.sender,
     payload: depositPayload(auxClient, depositInput),
-    transactionOptions,
+    options,
   });
 }
 
 export async function withdraw(
   auxClient: AuxClient,
   withdrawInput: WithdrawInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: withdrawInput.sender,
     payload: withdrawPayload(auxClient, withdrawInput),
-    transactionOptions,
+    options,
   });
 }
 
 export async function transfer(
   auxClient: AuxClient,
   transferInput: TransferInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: transferInput.sender,
     payload: transferPayload(auxClient, transferInput),
-    transactionOptions,
+    options,
   });
 }
 

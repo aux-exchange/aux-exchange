@@ -1,11 +1,14 @@
 import { AptosAccount } from "aptos";
-import { Account } from "..";
-import { AuxClient, FakeCoin } from "../client";
-import Market from "../clob/dsl/market";
 import * as redis from "redis";
+import { Account } from "..";
+import { AuxClient } from "../client";
+import Market from "../clob/dsl/market";
+import { FakeCoin } from "../coin";
+import { AuxEnv } from "../env";
 
 async function main() {
-  const auxClient = AuxClient.createFromEnv({});
+  const auxEnv = new AuxEnv();
+  const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
   let baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
   const quoteCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
   const market = await Market.read(auxClient, { baseCoinType, quoteCoinType });
@@ -19,8 +22,8 @@ async function main() {
   market;
   console.log(account);
   const trades = await account.tradeHistory({ baseCoinType, quoteCoinType });
-  console.log(trades)
-//   console.log(openOrders[0]?.quantity.toNumber());
+  console.log(trades);
+  //   console.log(openOrders[0]?.quantity.toNumber());
 
   const redisClient = redis.createClient();
   redisClient.on("error", (err) => console.error("[Redis]", err));

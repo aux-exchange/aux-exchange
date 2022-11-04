@@ -10,7 +10,7 @@ import {
   SwapCoinForExactCoinInput,
   SwapExactCoinForCoinInput,
 } from "../../amm/core/mutation";
-import type { AuxClient, TransactionOptions } from "../../client";
+import type { AuxClient, AuxClientOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 
 export type RouterEvent = SwapEvent | OrderFillEvent;
@@ -22,12 +22,12 @@ export type RouterEvent = SwapEvent | OrderFillEvent;
 export async function swapExactCoinForCoin(
   auxClient: AuxClient,
   swapInput: SwapExactCoinForCoinInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RouterEvent[]>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: swapInput.sender,
     payload: swapExactCoinForCoinPayload(auxClient, swapInput),
-    transactionOptions,
+    options,
   });
   return tx.then(async (tx) => {
     return parseRouterEvents(auxClient, tx);
@@ -37,12 +37,12 @@ export async function swapExactCoinForCoin(
 export async function swapCoinForExactCoin(
   auxClient: AuxClient,
   swapInput: SwapCoinForExactCoinInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RouterEvent[]>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: swapInput.sender,
     payload: swapCoinForExactCoinPayload(auxClient, swapInput),
-    transactionOptions,
+    options,
   });
   return tx.then(async (tx) => {
     return parseRouterEvents(auxClient, tx);

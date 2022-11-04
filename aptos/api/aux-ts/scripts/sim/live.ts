@@ -3,17 +3,18 @@ import WebSocket from "ws";
 import { AptosAccount, HexString, Types } from "aptos";
 import { Market, Pool, Vault } from "../../src";
 import {
-  ALL_FAKE_COINS,
-  ALL_FAKE_VOLATILES,
   AuxClient,
-  FakeCoin,
 } from "../../src/client";
 import { OrderType } from "../../src/clob/core/mutation";
 import { AU, DU } from "../../src/units";
 import _ from "lodash";
-import { assert } from "console";
+import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
+import assert from "assert";
+import { AuxEnv } from "../../src/env";
 
-const [auxClient, moduleAuthority] = AuxClient.createFromEnvForTesting({});
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {
   ready: boolean;
@@ -24,7 +25,7 @@ async function setupTraders(
   privateKeyHexs?: Types.HexEncodedBytes[],
   n?: number
 ): Promise<Trader[]> {
-  await auxClient.airdropNativeCoin({
+  await auxClient.fundAccount({
     account: moduleAuthority.address(),
     quantity: AU(1_000_000_000_000),
   });
@@ -264,7 +265,7 @@ async function logMarket(productId: string, market: Market) {
 }
 
 async function main() {
-  assert(process.env["APTOS_PROFILE"] !== "mainnet");
+  assert(process.env["APTOS_NETWORK"] !== "mainnet");
   const privateKeyHexs: string[] = [
     "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49", // mnemoic: observe stairs visual bracket sick clog sport erode domain concert ecology strike, address: 0x767b7442b8547fa5cf50989b9b761760ca6687b83d1c23d3589a5ac8acb50639
     "0xe2326b7116633f8cb150e7ad56affd631e20789440317c47721862a62bcf362e", // mnemoic: rack ahead main cabin damp elephant script border rhythm sustain evil ivory, address: 0x574f99ff4a373ce168ea203f10b2bf815564fac19f516077f7c19b6e2b4322d0

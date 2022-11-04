@@ -1,7 +1,7 @@
 import { AptosAccount, CoinClient, Types } from "aptos";
-import type { TransactionResult } from "../..//transaction";
-import { AnyUnits, AU } from "../..//units";
-import type { AuxClient, TransactionOptions } from "../../client";
+import type { TransactionResult } from "../../transaction";
+import { AnyUnits, AU } from "../../units";
+import type { AuxClient, AuxClientOptions } from "../../client";
 import {
   parseRouterEvents,
   RouterEvent,
@@ -40,7 +40,7 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RouterEvent[]>> {
     return swapExactCoinForCoin(
       this.client,
@@ -56,7 +56,7 @@ export default class Router {
           await this.client.toAtomicUnits(coinTypeOut, minAmountOut)
         ).toU64(),
       },
-      transactionOptions
+      options
     );
   }
 
@@ -72,7 +72,7 @@ export default class Router {
       coinTypeIn: Types.MoveStructTag;
       coinTypeOut: Types.MoveStructTag;
     },
-    transactionOptions?: TransactionOptions
+    options?: Partial<AuxClientOptions>
   ): Promise<TransactionResult<RouterEvent[]>> {
     const sender = this.sender;
     if (sender === undefined) {
@@ -91,7 +91,7 @@ export default class Router {
           await this.client.toAtomicUnits(coinTypeOut, exactAmountOut)
         ).toU64(),
       },
-      transactionOptions
+      options
     );
   }
 
@@ -114,7 +114,7 @@ export default class Router {
       ).toU64(),
       minAmountAuOut: "0",
     });
-    const result = this.client.dataSimulate({ payload });
+    const result = this.client.sendOrSimulateTransaction({ sender, payload });
     return result.then((r) => {
       console.dir(r, { depth: null });
       return getRouterQuote(
@@ -155,7 +155,7 @@ export default class Router {
         )
       ).toU64(),
     });
-    const result = this.client.dataSimulate({ payload });
+    const result = this.client.sendOrSimulateTransaction({ sender, payload }); // FIXME
     return result.then((r) => {
       return getRouterQuote(
         this.client,

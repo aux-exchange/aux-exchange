@@ -3,7 +3,7 @@ import assert from "assert";
 import { BN } from "bn.js";
 import type { AccountEvent } from "../../../src/vault/core/query";
 import { parseAccountEvent } from "../../../src/vault/core/query";
-import type { AuxClient, CoinInfo, TransactionOptions } from "../../client";
+import type { AuxClient, CoinInfo, AuxClientOptions } from "../../client";
 import type { TransactionResult } from "../../transaction";
 import { AU } from "../../units";
 import type {
@@ -85,24 +85,24 @@ export interface ResetPoolInput {
 export async function createPool(
   auxClient: AuxClient,
   input: CreatePoolInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<Types.UserTransaction> {
-  return auxClient.generateSignSubmitWaitForTransaction({
+  return auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: createPoolPayload(auxClient, input),
-    transactionOptions,
+    options,
   });
 }
 
 export async function swapExactCoinForCoin(
   auxClient: AuxClient,
   input: SwapExactCoinForCoinInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: swapExactCoinForCoinPayload(auxClient, input),
-    transactionOptions,
+    options,
   });
   return tx.then((tx) => {
     return tx.success
@@ -114,9 +114,9 @@ export async function swapExactCoinForCoin(
 export async function swapExactCoinForCoinLimit(
   auxClient: AuxClient,
   input: SwapExactCoinForCoinLimitInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::swap_exact_coin_for_coin_limit`,
@@ -127,7 +127,7 @@ export async function swapExactCoinForCoinLimit(
         input.limitPriceDenominator,
       ],
     },
-    transactionOptions,
+    options,
   });
   return tx.then((tx) => {
     return tx.success
@@ -139,12 +139,12 @@ export async function swapExactCoinForCoinLimit(
 export async function swapCoinForExactCoin(
   auxClient: AuxClient,
   input: SwapCoinForExactCoinInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: swapCoinForExactCoinPayload(auxClient, input),
-    transactionOptions,
+    options,
   });
   return tx.then((tx) => {
     return tx.success
@@ -156,9 +156,9 @@ export async function swapCoinForExactCoin(
 export async function swapCoinForExactCoinLimit(
   auxClient: AuxClient,
   input: SwapCoinForExactCoinLimitInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<SwapEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::swap_coin_for_exact_coin_limit`,
@@ -170,7 +170,7 @@ export async function swapCoinForExactCoinLimit(
         input.exactAmountAuOut,
       ],
     },
-    transactionOptions,
+    options,
   });
   return tx.then((tx) => {
     return tx.success
@@ -182,12 +182,12 @@ export async function swapCoinForExactCoinLimit(
 export async function addExactLiquidity(
   auxClient: AuxClient,
   input: AddExactLiquidityInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<AddLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: addExactLiquidityPayload(auxClient, input),
-    transactionOptions,
+    options,
   });
   return tx.then(async (tx) => {
     return tx.success
@@ -199,12 +199,12 @@ export async function addExactLiquidity(
 export async function removeLiquidity(
   auxClient: AuxClient,
   input: RemoveLiquidityInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: removeLiquidityPayload(auxClient, input),
-    transactionOptions,
+    options,
   });
   return tx.then(async (tx) => {
     return tx.success
@@ -216,16 +216,16 @@ export async function removeLiquidity(
 export async function resetPool(
   auxClient: AuxClient,
   input: ResetPoolInput,
-  transactionOptions?: TransactionOptions
+  options?: Partial<AuxClientOptions>
 ): Promise<TransactionResult<RemoveLiquidityEvent | undefined>> {
-  const tx = auxClient.generateSignSubmitWaitForTransaction({
+  const tx = auxClient.sendOrSimulateTransaction({
     sender: input.sender,
     payload: {
       function: `${auxClient.moduleAddress}::amm::reset_pool`,
       type_arguments: [input.coinTypeX, input.coinTypeY],
       arguments: [],
     },
-    transactionOptions,
+    options,
   });
 
   return tx.then(async (tx) => {

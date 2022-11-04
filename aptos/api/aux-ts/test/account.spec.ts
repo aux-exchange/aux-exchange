@@ -1,10 +1,12 @@
 import { AptosAccount } from "aptos";
 import { describe, it } from "mocha";
 import { AuxClient } from "../src/client";
+import { AuxEnv } from "../src/env";
 import { AU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 
-const [auxClient, aux] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const aptosCoin = "0x1::aptos_coin::AptosCoin";
@@ -22,12 +24,12 @@ describe("ACCOUNT DSL tests", function () {
     console.log(`Alice: ${alice.address()}`);
     console.log(`Bob: ${bob.address()}`);
 
-    let hash = await auxClient.airdropNativeCoin({
+    let hash = await auxClient.fundAccount({
       account: alice.address(),
       quantity: AU(500_000),
     });
     console.log("fund alice account hash", hash);
-    hash = await auxClient.airdropNativeCoin({
+    hash = await auxClient.fundAccount({
       account: bob.address(),
       quantity: AU(500_000),
     });
@@ -38,8 +40,8 @@ describe("ACCOUNT DSL tests", function () {
       await auxClient.registerAuxCoin(bob),
     ]);
     await Promise.all([
-      await auxClient.mintAux(aux, aliceAddr, AU(100_000_000)),
-      await auxClient.mintAux(aux, bobAddr, AU(100_000_000)),
+      await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000)),
+      await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000)),
     ]);
 
     const vault = new Vault(auxClient);

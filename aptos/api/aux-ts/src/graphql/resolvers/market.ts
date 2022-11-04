@@ -1,6 +1,10 @@
 import _ from "lodash";
 import * as aux from "../../";
-import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coins";
+import {
+  ALL_USD_STABLES,
+  COIN_MAPPING,
+  fakeMapping
+} from "../../coin";
 import { auxClient, pythClient, redisClient } from "../connection";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
@@ -17,7 +21,7 @@ import {
   Order,
   PythRating,
   Resolution as GqlResolution,
-  Side,
+  Side
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
@@ -182,14 +186,6 @@ export const market = {
       .sortedUniqBy((bar) => bar.time)
       .reverse()
       .value();
-    // if (bars.length === countBack) {
-    //   return { bars, noData: false };
-    // } else {
-    //   // const nextTime =
-    //   //   Math.floor(bars[bars.length - 1]!.time / 1000) +
-    //   //   resolutionToSeconds(resolutionToString(resolution));
-    //   return { bars, noData: true };
-    // }
   },
   async pythRating(
     parent: Market,

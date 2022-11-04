@@ -1,7 +1,7 @@
-import { AptosAccount, HexString, Types } from "aptos";
+import { HexString, Types } from "aptos";
 import BN from "bn.js";
 import _ from "lodash";
-import { AuxClient, CoinInfo, parseTypeArgs } from "../../client";
+import { AuxClient, CoinInfo, parseTypeArgs, Simulator } from "../../client";
 import { AtomicUnits, AU, DecimalUnits } from "../../units";
 import {
   OrderCancelEvent,
@@ -260,7 +260,7 @@ export async function market(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
-  const txResult = await auxClient.dataSimulate({
+  const txResult = await auxClient.simulateTransaction({
     payload,
   });
 
@@ -294,17 +294,14 @@ export async function orderbook(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
   quoteCoinType: Types.MoveStructTag,
-  simulatorAccount?: AptosAccount
+  simulator?: Simulator
 ): Promise<{ bids: Level[]; asks: Level[] }> {
   const payload = {
     function: `${auxClient.moduleAddress}::clob_market::load_all_orders_into_event`,
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [],
   };
-  const txResult = await auxClient.dataSimulate({
-    payload,
-    simulatorAccount,
-  });
+  const txResult = await auxClient.simulateTransaction({ payload, simulator });
   const event: RawAllOrdersEvent = txResult.events[0]! as RawAllOrdersEvent;
   const bids: Level[] = event.data.bids.map((level) => {
     return {
@@ -354,7 +351,8 @@ export async function openOrders(
   auxClient: AuxClient,
   owner: Types.Address,
   baseCoinType: Types.MoveStructTag,
-  quoteCoinType: Types.MoveStructTag
+  quoteCoinType: Types.MoveStructTag,
+  simulator?: Simulator
 ): Promise<Order[]> {
   auxClient;
   owner;
@@ -365,8 +363,10 @@ export async function openOrders(
     type_arguments: [baseCoinType, quoteCoinType],
     arguments: [owner],
   };
-  const txResult = await auxClient.dataSimulate({
+  simulator = simulator ?? auxClient.simulator;
+  const txResult = await auxClient.simulateTransaction({
     payload,
+    simulator,
   });
   const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;
   if (_.isUndefined(event)) {

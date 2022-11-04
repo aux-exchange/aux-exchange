@@ -1,13 +1,9 @@
-import { AptosAccount, HexString } from "aptos";
+import { AptosAccount, FaucetClient, HexString } from "aptos";
 import * as assert from "assert";
 import { Vault } from "../src";
-import {
-  ALL_FAKE_COINS,
-  AuxClient,
-  FakeCoin,
-  getAptosProfile,
-  getAptosProfileNameFromEnvironment,
-} from "../src/client";
+import type { AuxClient } from "../src/client";
+import { ALL_FAKE_COINS, FakeCoin } from "../src/coin";
+import { getAptosProfile } from "../src/env";
 import { AU } from "../src/units";
 
 function sleep(ms: number) {
@@ -20,18 +16,24 @@ async function getUser(
   name: string,
   auxClient: AuxClient
 ): Promise<AptosAccount> {
-  let userProfile = getAptosProfile(name);
+  let userProfile;
+  try {
+    userProfile = getAptosProfile(name);
+  } catch {}
   let user = new AptosAccount();
   if (userProfile !== undefined) {
+    console.log("HERE");
     user = AptosAccount.fromAptosAccountObject({
       privateKeyHex: userProfile.private_key!,
     });
   } else {
-    sleep(2000);
-    await auxClient.airdropNativeCoin({
-      account: user.address(),
-      quantity: AU(1_000_000_000),
-    });
+    sleep(500);
+    auxClient;
+    const faucetClient = new FaucetClient(
+      "http://0.0.0.0:8080/v1",
+      "http://0.0.0.0:8081"
+    );
+    await faucetClient.fundAccount(user.address(), 1_000_000_000);
     let privateKey = HexString.fromUint8Array(user.signingKey.secretKey);
     console.log(`
     ${name}:
@@ -77,14 +79,8 @@ export async function getAliceBob(
   auxClient: AuxClient
 ): Promise<[AptosAccount, AptosAccount]> {
   if (!is_init) {
-    alice = await getUser(
-      `alice-${getAptosProfileNameFromEnvironment()}`,
-      auxClient
-    );
-    bob = await getUser(
-      `bob-${getAptosProfileNameFromEnvironment()}`,
-      auxClient
-    );
+    alice = await getUser(`alice-${process.env["APTOS_PROFILE"]}`, auxClient);
+    bob = await getUser(`bob-${process.env["APTOS_PROFILE"]}`, auxClient);
     is_init = true;
   }
   await fundFakeCoin(auxClient, alice);

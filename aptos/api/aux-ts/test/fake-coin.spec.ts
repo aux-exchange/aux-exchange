@@ -1,10 +1,12 @@
 import * as assert from "assert";
 import { describe, it } from "mocha";
-import { AuxClient, FakeCoin } from "../src/client";
+import { AuxClient } from "../src/client";
+import { FakeCoin } from "../src/coin";
+import { AuxEnv } from "../src/env";
 import { AU } from "../src/units";
-import { getAliceBob, withdrawAll } from "./alice_and_bob";
+import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const [auxClient, _aux] = AuxClient.createFromEnvForTesting({});
+const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
 
 describe("Fake Coin tests", function () {
   this.timeout(30000);

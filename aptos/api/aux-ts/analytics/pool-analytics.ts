@@ -4,11 +4,12 @@ import {
 } from "@pythnetwork/client";
 import type { PythHttpClientResult } from "@pythnetwork/client/lib/PythHttpClient";
 import { Connection } from "@solana/web3.js";
+import { AptosClient } from "aptos";
 import { BN } from "bn.js";
 import { poolEvents, pools } from "../src/amm/core/query";
+import { AuxClient } from "../src/client";
 import Market from "../src/clob/dsl/market";
-import { AuxClient, Network } from "../src/client";
-import { ALL_USD_STABLES, COIN_MAPPING } from "../src/coins";
+import { ALL_USD_STABLES, COIN_MAPPING } from "../src/coin";
 import { AU } from "../src/units";
 
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
@@ -22,10 +23,10 @@ export class Analytics {
     const connection = new Connection("https://solana-api.projectserum.com");
     const pythPublicKey = getPythProgramKeyForCluster("mainnet-beta");
     this.pythClient = new PythHttpClient(connection, pythPublicKey);
-    this.auxClient = AuxClient.create({
-      network: Network.Mainnet,
-      validatorAddress: "http://127.0.0.1:8080",
-    });
+    this.auxClient = new AuxClient(
+      "mainnet",
+      new AptosClient("http://127.0.0.1:8080")
+    );
   }
 
   async refresh() {

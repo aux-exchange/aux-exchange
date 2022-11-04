@@ -2,11 +2,14 @@ import { AptosAccount } from "aptos";
 import fs from "fs";
 import * as readline from "node:readline";
 import { Market, Vault } from "../../src";
-import { AuxClient, FakeCoin, NATIVE_APTOS_COIN } from "../../src/client";
+import { AuxClient } from "../../src/client";
 import { OrderType } from "../../src/clob/core/mutation";
+import { APTOS_COIN_TYPE, FakeCoin } from "../../src/coin";
+import { AuxEnv } from "../../src/env";
 import { AU, DU } from "../../src/units";
 
-const auxClient = AuxClient.createFromEnv({});
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
 
 const privateKeyHexs: string[] = [
   "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49", // mnemoic: observe stairs visual bracket sick clog sport erode domain concert ecology strike, address: 0x767b7442b8547fa5cf50989b9b761760ca6687b83d1c23d3589a5ac8acb50639
@@ -98,7 +101,7 @@ async function printTraderBalance(traders: Trader[]) {
     let balance = (
       await auxClient.getCoinBalance({
         account: trader.account.address(),
-        coinType: NATIVE_APTOS_COIN,
+        coinType: APTOS_COIN_TYPE,
       })
     ).toString();
     console.log(

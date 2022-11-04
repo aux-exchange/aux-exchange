@@ -1,19 +1,27 @@
 import type { AptosAccount } from "aptos";
 import * as assert from "assert";
+import BN from "bn.js";
 import { describe, it } from "mocha";
 import AuxAccount from "../src/account";
-import { AuxClient, CoinInfo, FakeCoin, quantize } from "../src/client";
+import { AuxClient, CoinInfo, quantize } from "../src/client";
 import * as clob from "../src/clob/core";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
+import { FakeCoin } from "../src/coin";
+import { AuxEnv } from "../src/env";
 import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
 import * as vault from "../src/vault/core";
 import Vault from "../src/vault/dsl/vault";
-import { getAliceBob, withdrawAll } from "./alice_and_bob";
-import BN from "bn.js";
+import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const [auxClient, aux] = AuxClient.createFromEnvForTesting({});
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
 const baseCoin = auxCoin;
@@ -57,9 +65,9 @@ describe("CLOB DSL tests", function () {
     // assert.ok(tx.success, `${tx.vm_status}`);
     tx = await auxClient.registerAuxCoin(bob);
     // assert.ok(tx.success, `${tx.vm_status}`);
-    tx = await auxClient.mintAux(aux, aliceAddr, AU(100_000_000));
+    tx = await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000));
     assert.ok(tx.success, `${tx.vm_status}`);
-    tx = await auxClient.mintAux(aux, bobAddr, AU(100_000_000));
+    tx = await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000));
     assert.ok(tx.success, `${tx.vm_status}`);
   });
 
@@ -86,7 +94,7 @@ describe("CLOB DSL tests", function () {
 
   it("createMarket", async function () {
     market = await Market.create(auxClient, {
-      sender: aux,
+      sender: moduleAuthority,
       baseCoinType: baseCoin,
       quoteCoinType: quoteCoin,
       baseLotSize: new AtomicUnits(1000),
@@ -295,8 +303,8 @@ describe("CLOB Core tests", function () {
       await auxClient.registerAuxCoin(bob),
     ]);
     await Promise.all([
-      await auxClient.mintAux(aux, aliceAddr, AU(100_000_000)),
-      await auxClient.mintAux(aux, bobAddr, AU(100_000_000)),
+      await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000)),
+      await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000)),
     ]);
   });
 
@@ -341,7 +349,7 @@ describe("CLOB Core tests", function () {
 
   it("createMarket", async function () {
     await clob.mutation.createMarket(auxClient, {
-      sender: aux,
+      sender: moduleAuthority,
       baseCoinType: baseCoin,
       quoteCoinType: quoteCoin,
       baseLotSize: "1000",
@@ -359,7 +367,7 @@ describe("CLOB Core tests", function () {
       amount: AU(100),
     });
     await clob.mutation.createMarket(auxClient, {
-      sender: aux,
+      sender: moduleAuthority,
       baseCoinType: baseCoin,
       quoteCoinType: usdcCoin.coinType,
       baseLotSize: "100000",
@@ -367,7 +375,7 @@ describe("CLOB Core tests", function () {
     });
     await clob.query.market(auxClient, baseCoin, usdcCoin.coinType);
     await clob.mutation.createMarket(auxClient, {
-      sender: aux,
+      sender: moduleAuthority,
       baseCoinType: quoteCoin,
       quoteCoinType: usdcCoin.coinType,
       baseLotSize: "100000",
