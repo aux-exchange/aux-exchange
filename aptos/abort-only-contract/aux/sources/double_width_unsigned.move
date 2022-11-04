@@ -26,7 +26,7 @@ module aux::uint256 {
     const E_OVERFLOW: u64 = 1001;
     const E_DIVISION_BY_ZERO: u64 = 1002;
 
-    // new creates a new Uint256
+    /// new creates a new Uint256
     public fun new(hi: u128, lo: u128): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         Uint256 {
@@ -34,6 +34,7 @@ module aux::uint256 {
         }
     }
 
+    /// create a new zero value of the Uint256
     public fun zero(): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         Uint256 {
@@ -42,28 +43,44 @@ module aux::uint256 {
         }
     }
 
+    /// checks if the value is zero.
     public fun is_zero(x: &Uint256): bool {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         x.hi == 0 && x.lo == 0
     }
 
+    /// equal
     public fun equal(x: Uint256, y: Uint256): bool {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         x.hi == y.hi && x.lo == y.lo
     }
 
+    /// greater
     public fun greater(x: Uint256, y: Uint256): bool {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo > y.lo))
     }
 
+    /// greater_or_equal
+    public fun greater_or_equal(x: Uint256, y: Uint256): bool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        (x.hi > y.hi) || ((x.hi == y.hi) && (x.lo >= y.lo))
+    }
+
+    /// less
     public fun less(x: Uint256, y: Uint256): bool {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo < y.lo))
     }
 
-    // add two underlying with carry - will never abort.
-    // First return value is the value of the result, the second return value indicate if carry happens.
+    /// less_or_equal
+    public fun less_or_equal(x: Uint256, y: Uint256): bool {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        (x.hi < y.hi) || ((x.hi == y.hi) && (x.lo <= y.lo))
+    }
+
+    /// add two underlying with carry - will never abort.
+    /// First return value is the value of the result, the second return value indicate if carry happens.
     public fun underlying_add_with_carry(x: u128, y: u128):(u128, u128) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let r = UNDERLYING_ONES - x;
@@ -74,8 +91,8 @@ module aux::uint256 {
         }
     }
 
-    // subtract y from x with borrow - will never abort.
-    // First return value is the value of the result, the second return value indicate if borrow happens.
+    /// subtract y from x with borrow - will never abort.
+    /// First return value is the value of the result, the second return value indicate if borrow happens.
     public fun underlying_sub_with_borrow(x: u128, y:u128): (u128, u128) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (x < y) {
@@ -85,17 +102,17 @@ module aux::uint256 {
         }
     }
 
-    // add x and y, plus possible carry, abort when overflow
+    /// add x and y, plus possible carry, abort when overflow
     fun underlying_add_plus_carry(x: u128, y: u128, carry: u128): u128 {
         x + y + carry // will abort if overflow
     }
 
-    // subtract y and possible borrow from x, abort when underflow
+    /// subtract y and possible borrow from x, abort when underflow
     fun underlying_sub_minus_borrow(x: u128, y: u128, borrow: u128): u128 {
         x - y - borrow // will abort if underflow
     }
 
-    // add x and y, abort if overflows
+    /// add x and y, abort if overflows
     public fun add(x: Uint256, y: Uint256): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (lo, c) = underlying_add_with_carry(x.lo, y.lo);
@@ -106,7 +123,17 @@ module aux::uint256 {
         }
     }
 
-    // subtract y from x, abort if underflows
+    /// add u128 to Uint256
+    public fun add_underlying(x:Uint256, y: u128): Uint256 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        let (lo, carry) = underlying_add_with_carry(x.lo, y);
+        Uint256 {
+            lo,
+            hi: x.hi + carry,
+        }
+    }
+
+    /// subtract y from x, abort if underflows
     public fun subtract(x: Uint256, y: Uint256): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (lo, b) = underlying_sub_with_borrow(x.lo, y.lo);
@@ -117,7 +144,18 @@ module aux::uint256 {
         }
     }
 
-    // x * y, first return value is the lower part of the result, second return value is the upper part of the result.
+    /// subtract y from x, abort if underflows
+    public fun subtract_underlying(x: Uint256, y: u128): Uint256 {
+        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
+        let (lo, b) = underlying_sub_with_borrow(x.lo, y);
+        let hi = x.hi - b;
+        Uint256 {
+            hi,
+            lo,
+        }
+    }
+
+    /// x * y, first return value is the lower part of the result, second return value is the upper part of the result.
     public fun underlying_mul_with_carry(x: u128, y: u128):(u128, u128) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         // split x and y into lower part and upper part.
@@ -145,7 +183,7 @@ module aux::uint256 {
         new(hi, lo)
     }
 
-    // x * y, abort if overflow
+    /// x * y, abort if overflow
     public fun multiply(x: Uint256, y: Uint256): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(x.hi == 0 || y.hi == 0, E_OVERFLOW); // if hi * hi is not zero, overflow already
@@ -156,7 +194,7 @@ module aux::uint256 {
         }
     }
 
-    // x * y where y is u128
+    /// x * y where y is u128
     public fun multiply_underlying(x: Uint256, y: u128): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (xlyl, xlyl_carry) = underlying_mul_with_carry(x.lo, y);
@@ -166,7 +204,7 @@ module aux::uint256 {
         }
     }
 
-    // left shift, abort if shift is greater than the size of the int.
+    /// left shift, abort if shift is greater than the size of the int.
     public fun lsh(x: Uint256, y: u8): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
@@ -185,7 +223,7 @@ module aux::uint256 {
         }
     }
 
-    // right shift, abort if shift is greater than the size of the int
+    /// right shift, abort if shift is greater than the size of the int
     public fun rsh(x: Uint256, y: u8): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(y <= MAX_SHIFT, E_OVERFLOW);
@@ -204,6 +242,7 @@ module aux::uint256 {
         }
     }
 
+    /// count leading zeros of the underlying type u128
     public fun underlying_leading_zeros(x: u128): u8 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (x == 0) {
@@ -248,6 +287,7 @@ module aux::uint256 {
         }
     }
 
+    /// get number leading zeros
     public fun leading_zeros(x: Uint256): u8 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (x.hi == 0) {
@@ -257,16 +297,7 @@ module aux::uint256 {
         }
     }
 
-    public fun add_underlying(x:Uint256, y: u128): Uint256 {
-        assert!(is_not_emergency(), E_EMERGENCY_ABORT);
-        let (lo, carry) = underlying_add_with_carry(x.lo, y);
-        Uint256 {
-            lo,
-            hi: x.hi + carry,
-        }
-    }
-
-    // divide_mod returns x/y and x%y
+    /// divide_mod returns x/y and x%y
     public fun divide_mod(x: Uint256, y: Uint256): (Uint256, Uint256) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(y.hi != 0 || y.lo != 0, E_DIVISION_BY_ZERO);
@@ -302,39 +333,41 @@ module aux::uint256 {
         }
     }
 
-    // divide returns x/y
+    /// divide returns x/y
     public fun divide(x: Uint256, y: Uint256): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (r, _) = divide_mod(x, y);
         r
     }
 
-    // mody returns x%y
+    /// mod returns x%y
     public fun mod(x: Uint256, y: Uint256): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (_, r) = divide_mod(x, y);
         r
     }
 
-    // divide_mod_underlying returns x/y and x%y, where y is u128.
+    /// divide_mod_underlying returns x/y and x%y, where y is u128.
     public fun divide_mod_underlying(x: Uint256, y: u128): (Uint256, u128) {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (result, remainder) = divide_mod(x, new(0, y));
         (result, downcast(remainder))
     }
 
-    // divide underlying returns x/y, where y is u128
+    /// divide underlying returns x/y, where y is u128
     public fun divide_underlying(x: Uint256, y: u128): Uint256 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         let (result, _) = divide_mod(x, new(0, y));
         result
     }
 
+    /// hi component of the value.
     public fun hi(x: Uint256): u128 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         x.hi
     }
 
+    /// lo component of the value
     public fun lo(x: Uint256): u128 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         x.lo
@@ -364,13 +397,13 @@ module aux::uint256 {
         }
     }
 
-    // Indicate the value will overflow if converted to underlying type.
+    /// Indicate the value will overflow if converted to underlying type.
     public fun underlying_overflow(x: Uint256): bool {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         x.hi != 0
     }
 
-    // downcast converts Uint256 to u128. abort if overflow.
+    /// downcast converts Uint256 to u128. abort if overflow.
     public fun downcast(x: Uint256): u128 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         assert!(
