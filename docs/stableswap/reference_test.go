@@ -1,6 +1,7 @@
 package stableswap
 
 import (
+	"fmt"
 	"math/big"
 	"testing"
 )
@@ -35,6 +36,24 @@ func TestCalculateD(t *testing.T) {
 			t.Fatalf("looking for %s, got %s", ed.String(), d.String())
 		}
 	}
+}
+
+func ExampleCalculateD() {
+	a := big.NewInt(300)
+	test := TwoCoinTestCases[0]
+	x0, _ := big.NewInt(0).SetString(test[0], 10)
+	x1 := big.NewInt(1_000_000_000)
+
+	d, err := CalculateD(a, 2, x0, x1)
+	if err != nil {
+		panic(err)
+	}
+
+	v := big.NewInt(0).Div(x0, d)
+
+	fmt.Printf("x0: %s, x1: %s, d: %s, x0/d: %s\n", x0.String(), x1.String(), d.String(), v.String())
+
+	// Output: x0: 1000000000000000000000, x1: 1000000000, d: 1685917616243366874, x0/d: 593
 }
 
 func TestCalculateXi(t *testing.T) {

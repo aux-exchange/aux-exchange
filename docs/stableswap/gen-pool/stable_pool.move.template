@@ -1,0 +1,875 @@
+{{.WarningForManualEdit}}
+module aux::stable_{{.N}}pool {
+{{$lastIndex := .LastIndex}}{{$typeList := .CoinTypeList}}    use std::string::{Self, String};
+    use std::option;
+    use std::signer;
+
+    use aptos_std::event::{Self, EventHandle};
+    use aptos_framework::coin::{Self, Coin};
+    use aptos_framework::account;
+
+    use aux::authority;
+    use aux::math_{{.N}}pool as pool_math;
+{{if .UseQuoter}}    use aux::quoter_{{.N}}pool::{Self, Quoter};
+{{end}}    use aux::uint256;
+
+    /*********************/
+    /* Error Codes       */
+    /*********************/
+
+    const E_POOL_ALREADY_EXISTS: u64 = 1;
+    const E_UNAUTHORIZED: u64 = 2;
+    const E_AMP_ZERO: u64 = 3;
+    const E_BALANCED_RESERVE_DECREASING: u64 = 4;
+    const E_LP_AMOUNT_OVERFLOW: u64 = 5;
+    const E_LP_AMOUNT_INCREASE_UNDERFLOW: u64 = 6;
+    const E_LP_TO_MINT_OVERFLOW: u64 = 7;
+    const E_LP_AMOUNT_INSUFFICIENT: u64 = 8;
+    const E_WITHDRAW_AMOUNT_ALL_ZERO: u64 = 9;
+    const E_WITHDRAW_BALANCED_RESERVE_UNDERFLOW: u64 = 10;
+    const E_LP_BURNT_OVERFLOW: u64 = 10;
+    const E_COIN_DECIMAL_TOO_LARGE: u64 = 11;
+    const E_LP_TO_BURN_IS_ZERO: u64 = 12;
+    const E_INVALID_OUT_COIN_INDEX: u64 = 13;
+    const E_OUTPUT_COIN_UNDERFLOW: u64 = 14;
+    const E_OUTPUT_COIN_INSUFFICIENT: u64 = 15;
+    const E_INVALID_IN_COIN_INDEX: u64 = 16;
+    const E_INPUT_COIN_UNDERFLOW: u64 = 17;
+    const E_INPUT_COIN_INSUFFICIENT: u64 = 18;
+    const E_AMP_TOO_LARGE: u64 = 19;
+
+    /// Number of Coins
+    const N_COINS: u128 = {{.N}};
+    const N_COINS_U8: u8 = {{.N}};
+
+    /// Fee Denominator
+    const FEE_DENOMINATOR: u128 = {{.FeeDenominator}};
+    /// Min fee
+    const MIN_FEE_NUMERATOR: u128 = {{.MinFeeNumerator}};
+    /// Max fee
+    const MAX_FEE_NUMERATOR: u128 = {{.MaxFeeNumerator}};
+
+    /// Balanced Reserve is stored with 18 decimals,
+    /// while lp tokens only have 8 decimals.
+    const BALANCED_RESERVED_TO_LP_SCALER: u128 = {{.BalanceScaler}};
+
+    /// Max U64, used to check if a u128 can be safely cast into u64
+    const MAX_U64: u128 = {{.MaxU64}};
+
+    /// Lp token decimals is constant 8
+    const LP_TOKEN_DECIMALS: u8 = 8;
+
+    /// max coin decimal allowed is 8
+    const MAX_COIN_DECIMAL_ALLOWED: u8 = {{.MaxDecimal}};
+
+    /// max amp
+    const MAX_AMP: u128 = {{.MaxAmp}};
+
+    /// LP Token for the pool
+    struct LP<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> {}
+
+    /// Pool
+    struct Pool<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+{{range .Xis}}        /// reserve of the coin {{.I}}
+        reserve_{{.I}}: Coin<Coin{{.I}}>,
+        /// fee for coin {{.I}}
+        fee_{{.I}}: Coin<Coin{{.I}}>,
+        /// scaler_{{.I}} is used to convert the coin value to 18 decimals.
+        scaler_{{.I}}: u128,
+{{end}}
+        /// mint capability of the lp tokens.
+        lp_mint: coin::MintCapability<LP<{{.CoinTypeList}}>>,
+        /// burn capability of the lp tokens.
+        lp_burn: coin::BurnCapability<LP<{{.CoinTypeList}}>>,
+
+        /// balanced reserve, or D.
+        /// If the pool is in equilibrium (all coins have the save reserve),
+        /// the sum of the all coins will have this value.
+        balanced_reserve: u128,
+        /// amp
+        amp: u128,
+
+        /// fee numertor.
+        /// the denominator is the consant FEE_DENOMINATOR
+        fee_numerator: u128,
+    }
+
+    struct SwapEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
+        sender: address,
+{{range .Xis}}
+        before_reserve_{{.I}}: u64,
+        after_reserve_{{.I}}: u64,
+        fee_{{.I}}: u64,
+        is_coin_{{.I}}_out: bool,
+        amount_{{.I}}_in: u64,
+        amount_{{.I}}_out: u64,
+{{end}}
+        before_balanced_reserve: u128,
+        after_balanced_reserve: u128,
+        amp: u128,
+    }
+
+    struct SwapEventHolder<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+        swap_events: EventHandle<SwapEvent<{{.CoinTypeList}}>>,
+    }
+
+    struct AddLiquidityEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
+        sender: address,
+
+{{range .Xis}}        before_reserve_{{.I}}: u64,
+        after_reserve_{{.I}}: u64,
+{{end}}
+
+        before_balanced_reserve: u128,
+        after_balanced_reserve: u128,
+
+        amp: u128,
+
+        before_lp_tokens_supply: u128,
+        after_lp_tokens_supply: u128,
+    }
+
+    struct AddLiquidityEventHolder<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+        add_liquidity_events: EventHandle<AddLiquidityEvent<{{.CoinTypeList}}>>,
+    }
+
+    struct RemoveLiquidityEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
+        sender: address,
+
+{{range .Xis}}        before_reserve_{{.I}}: u64,
+        after_reserve_{{.I}}: u64,
+        fee_{{.I}}: u64,
+        withdraw_{{.I}}: u64,
+{{end}}
+
+        before_balanced_reserve: u128,
+        after_balanced_reserve: u128,
+
+        amp: u128,
+
+        before_lp_tokens_supply: u128,
+        after_lp_tokens_supply: u128,
+        lp_burnt: u64,
+    }
+
+    struct RemoveLiquidityEventHolder<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+        remove_liquidity_events: EventHandle<RemoveLiquidityEvent<{{.CoinTypeList}}>>,
+    }
+
+    struct FeeMoveEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
+{{range .Xis}}        before_reserve_{{.I}}: u64,
+        after_reserve_{{.I}}: u64,
+        fee_moved_{{.I}}: u64,
+{{end}}        before_balanced_reserve: u128,
+        after_balanced_reserve: u128,
+        amp: u128,
+    }
+
+    struct FeeMoveEventHolder<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+        fee_move_events: EventHandle<FeeMoveEvent<{{.CoinTypeList}}>>,
+    }
+
+    /**************************/
+    /* Public Function        */
+    /**************************/
+
+    /// create a new {{.N}}pool.
+    public entry fun create_pool<{{.CoinTypeList}}>(sender: &signer, fee_numerator: u128, amp: u128) {
+        assert!(
+            amp > 0,
+            E_AMP_ZERO,
+        );
+
+        assert!(
+            amp <= MAX_AMP,
+            E_AMP_TOO_LARGE,
+        );
+
+        if (fee_numerator > MAX_FEE_NUMERATOR || fee_numerator < MIN_FEE_NUMERATOR) {
+            assert!(
+                signer::address_of(sender) == @aux || authority::is_signer_owner(sender),
+                E_UNAUTHORIZED,
+            );
+        };
+
+        // check if any of the permutation already initialized.
+{{range .AllPerms}}        assert!(
+            !exists<Pool<{{range $index, $element := .}}Coin{{$element.I}}{{if lt $index $lastIndex}}, {{end}}{{end}}>>(@aux),
+            E_POOL_ALREADY_EXISTS,
+        );
+{{end}}
+        // initialize the lp token for the pool
+        let amm_signer = &authority::get_signer_self();
+        let (lp_burn, lp_freeze, lp_mint) = coin::initialize<LP<{{.CoinTypeList}}>>(
+            amm_signer,
+            lp_name<{{.CoinTypeList}}>(),
+            lp_symbol<{{.CoinTypeList}}>(),
+            LP_TOKEN_DECIMALS,
+            true // monitor_supply
+        );
+        coin::destroy_freeze_cap(lp_freeze);
+
+        coin::register<LP<{{.CoinTypeList}}>>(amm_signer);
+{{range .Xis}}
+        // related to coin {{.I}}
+        let reserve_{{.I}} = coin::zero<Coin{{.I}}>();
+        let fee_{{.I}} = coin::zero<Coin{{.I}}>();
+        let scaler_{{.I}} = pool_math::get_scaler(coin::decimals<Coin{{.I}}>());
+        // register coin {{.I}} for aux
+        if (!coin::is_account_registered<Coin{{.I}}>(@aux)) {
+            coin::register<Coin{{.I}}>(amm_signer);
+        };
+{{end}}
+        // create the pool
+        move_to(amm_signer,
+            Pool<{{.CoinTypeList}}>{
+                fee_numerator,
+                lp_mint,
+                lp_burn,
+                balanced_reserve: 0,
+                amp,
+{{range .Xis}}                reserve_{{.I}},
+                fee_{{.I}},
+                scaler_{{.I}},
+{{end}}            }
+        );
+
+        move_to(amm_signer,
+            SwapEventHolder<{{.CoinTypeList}}> {
+                swap_events: account::new_event_handle<SwapEvent<{{.CoinTypeList}}>>(amm_signer),
+            }
+        );
+        move_to(amm_signer,
+            AddLiquidityEventHolder<{{.CoinTypeList}}> {
+                add_liquidity_events: account::new_event_handle<AddLiquidityEvent<{{.CoinTypeList}}>>(amm_signer),
+            }
+        );
+        move_to(amm_signer,
+            RemoveLiquidityEventHolder<{{.CoinTypeList}}> {
+                remove_liquidity_events: account::new_event_handle<RemoveLiquidityEvent<{{.CoinTypeList}}>>(amm_signer),
+            }
+        );
+        move_to(amm_signer,
+            FeeMoveEventHolder<{{.CoinTypeList}}> {
+                fee_move_events: account::new_event_handle<FeeMoveEvent<{{.CoinTypeList}}>>(amm_signer),
+            }
+        )
+    }
+{{if .UseQuoter}}
+    public fun get_quoter<{{.CoinTypeList}}>(): Quoter acquires Pool {
+        let pool = borrow_global<Pool<{{.CoinTypeList}}>>(@aux);
+
+        let lp_supply = std::option::destroy_with_default(coin::supply<LP<{{.CoinTypeList}}>>(), 0);
+
+        quoter_{{.N}}pool::new_quoter(
+            pool.fee_numerator,
+            pool.amp,
+            pool.balanced_reserve,
+            {{range .Xis}}coin::value(&pool.reserve_{{.I}}),
+            coin::value(&pool.fee_{{.I}}),
+            pool.scaler_{{.I}},
+            {{end}}lp_supply,
+        )
+    }
+{{end}}
+    public entry fun update_amp<{{.CoinTypeList}}>(sender: &signer, amp: u128) acquires Pool {
+        assert!(
+            amp > 0,
+            E_AMP_ZERO,
+        );
+
+        assert!(
+            amp <= MAX_AMP,
+            E_AMP_TOO_LARGE,
+        );
+
+        assert!(
+            authority::is_signer_owner(sender),
+            E_UNAUTHORIZED,
+        );
+
+        update_balanced_reserve(borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux));
+    }
+
+    public entry fun update_fee<{{.CoinTypeList}}>(sender: &signer, fee_numerator: u128) acquires Pool {
+        assert!(
+            authority::is_signer_owner(sender),
+            E_UNAUTHORIZED,
+        );
+
+        borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux).fee_numerator = fee_numerator;
+    }
+
+    /// Move fee into reserve.
+    /// This will be automatically called when adding/removing liquidity from the pool.
+    public entry fun move_fee_into_reserve<{{.CoinTypeList}}>()
+        acquires Pool, FeeMoveEventHolder
+    {
+        // no op if there is no fee to move
+        let fee_added = false;
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+{{range .Xis}}
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+        let after_reserve_{{.I}} = before_reserve_{{.I}};
+
+        let fee_moved_{{.I}} = coin::value(&pool.fee_{{.I}});
+        // only merge if there is fee to move
+        if (fee_moved_{{.I}}> 0) {
+            fee_added = true;
+            coin::merge(&mut pool.reserve_{{.I}}, coin::extract_all(&mut pool.fee_{{.I}}));
+            after_reserve_{{.I}} = before_reserve_{{.I}} + fee_moved_{{.I}};
+        };
+{{end}}
+        if (!fee_added) {
+            return
+        };
+
+        let before_balanced_reserve = pool.balanced_reserve;
+        update_balanced_reserve(pool);
+
+        // emit event
+        let after_balanced_reserve = pool.balanced_reserve;
+        let amp = pool.amp;
+        event::emit_event<FeeMoveEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<FeeMoveEventHolder<{{.CoinTypeList}}>>(@aux).fee_move_events,
+            FeeMoveEvent<{{.CoinTypeList}}>{
+                {{range .Xis}}before_reserve_{{.I}},
+                after_reserve_{{.I}},
+                fee_moved_{{.I}},
+                {{end}}before_balanced_reserve,
+                after_balanced_reserve,
+                amp,
+            },
+        );
+    }
+
+    /// Add liquidity to the protocol.
+    /// There is no fee to add liquidity.
+    public fun add_liquidity<{{.CoinTypeList}}>(
+        sender: address,
+        {{range .Xis}}amount_{{.I}}: Coin<Coin{{.I}}>,
+        {{end}}min_lp_amount: u64,
+    ): Coin<LP<{{.CoinTypeList}}>>
+        acquires Pool, FeeMoveEventHolder, AddLiquidityEventHolder
+    {
+        move_fee_into_reserve<{{.CoinTypeList}}>();
+
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+{{range .Xis}}
+        // move the coins into reserve
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+        coin::merge(&mut pool.reserve_{{.I}}, amount_{{.I}});
+        let after_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+{{end}}
+        // update balanced reserve and lp token supply
+        let before_balanced_reserve = pool.balanced_reserve;
+        let before_lp_tokens_supply = option::destroy_with_default(coin::supply<LP<{{.CoinTypeList}}>>(), 0);
+
+        update_balanced_reserve(pool);
+
+        let after_balanced_reserve = pool.balanced_reserve;
+
+        assert!(
+            before_balanced_reserve <= after_balanced_reserve,
+            E_BALANCED_RESERVE_DECREASING,
+        );
+
+        // if lp token supply is 0, this is an empty pool.
+        let after_lp_tokens_supply = if (before_lp_tokens_supply == 0) {
+            after_balanced_reserve / BALANCED_RESERVED_TO_LP_SCALER
+        } else {
+            let new_lp_amount = uint256::divide_underlying(
+                uint256::underlying_mul_to_uint256(
+                    after_balanced_reserve,
+                    before_lp_tokens_supply,
+                ),
+                before_balanced_reserve,
+            );
+            assert!(
+                !uint256::underlying_overflow(new_lp_amount),
+                E_LP_AMOUNT_OVERFLOW,
+            );
+
+            uint256::downcast(new_lp_amount)
+        };
+
+        assert!(
+            after_lp_tokens_supply > before_lp_tokens_supply,
+            E_LP_AMOUNT_INCREASE_UNDERFLOW,
+        );
+
+        let lp_to_mint = after_lp_tokens_supply - before_lp_tokens_supply;
+
+        assert!(
+            lp_to_mint <= MAX_U64,
+            E_LP_TO_MINT_OVERFLOW,
+        );
+
+        let lp_to_mint = (lp_to_mint as u64);
+
+        assert!(
+            lp_to_mint >= min_lp_amount,
+            E_LP_AMOUNT_INSUFFICIENT,
+        );
+
+        let lp_minted = coin::mint<LP<{{.CoinTypeList}}>>(
+            lp_to_mint,
+            &pool.lp_mint,
+        );
+
+        event::emit_event<AddLiquidityEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<AddLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).add_liquidity_events,
+            AddLiquidityEvent<{{.CoinTypeList}}> {
+                sender,
+
+{{range .Xis}}                before_reserve_{{.I}},
+                after_reserve_{{.I}},
+{{end}}
+                before_balanced_reserve,
+                after_balanced_reserve,
+
+                amp: pool.amp,
+
+                before_lp_tokens_supply,
+                after_lp_tokens_supply,
+            }
+        );
+
+        lp_minted
+    }
+
+    /// Remove coins from the pool and burn some lp tokens.
+    /// There will be a fee charged on each withdrawal. If the withdrawal amount is 0, fee is 0,
+    /// otherwise the fee will be the same as swap, with a 1 minimal.
+    /// Fee is charged on the output amount.
+    /// For example, if 10000 is requested, and fee is 1bps, the pool will dispense 10001
+    /// coins from the reserve, and deposite 1 into the fee.
+    public fun remove_liquidity_for_coin<{{.CoinTypeList}}>(
+        sender: address,
+        {{range .Xis}}amount_{{.I}}_to_withdraw: u64,
+        {{end}}lp: Coin<LP<{{.CoinTypeList}}>>,
+    ): ({{range .Xis}}Coin<Coin{{.I}}>, {{end}}Coin<LP<{{.CoinTypeList}}>>)
+        acquires Pool, FeeMoveEventHolder, RemoveLiquidityEventHolder
+    {
+        assert!(
+            {{range .Xis}}amount_{{.I}}_to_withdraw > 0{{if .NotLast}} || {{end}}{{end}},
+            E_WITHDRAW_AMOUNT_ALL_ZERO,
+        );
+
+        move_fee_into_reserve<{{.CoinTypeList}}>();
+
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+        let before_balanced_reserve = pool.balanced_reserve;
+{{range .Xis}}
+        // calculate the new reserve
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+
+        // calculate the fee
+        let (fee_{{.I}}, coin_{{.I}}, after_reserve_{{.I}}) = if (amount_{{.I}}_to_withdraw > 0) {
+            let fee = ((amount_{{.I}}_to_withdraw as u128) * pool.fee_numerator) / FEE_DENOMINATOR;
+            if (fee * FEE_DENOMINATOR < (amount_{{.I}}_to_withdraw as u128) * pool.fee_numerator) {
+                fee = fee + 1;
+            };
+            let fee = (fee as u64);
+
+            let fee_coin_{{.I}} = coin::extract(&mut pool.reserve_{{.I}}, fee);
+            coin::merge(&mut pool.fee_{{.I}}, fee_coin_{{.I}});
+
+            (fee, coin::extract(&mut pool.reserve_{{.I}}, amount_{{.I}}_to_withdraw), coin::value(&pool.reserve_{{.I}}))
+        } else {
+            (0, coin::zero<Coin{{.I}}>(), before_reserve_{{.I}})
+        };
+{{end}}
+        let before_lp_tokens_supply = option::destroy_with_default(coin::supply<LP<{{.CoinTypeList}}>>(), 0);
+
+        update_balanced_reserve(pool);
+
+        let after_balanced_reserve = pool.balanced_reserve;
+        assert!(
+            before_balanced_reserve > after_balanced_reserve,
+            E_WITHDRAW_BALANCED_RESERVE_UNDERFLOW
+        );
+
+        let after_lp_tokens_supply = uint256::downcast(
+            uint256::divide_underlying(
+                uint256::underlying_mul_to_uint256(
+                    after_balanced_reserve,
+                    before_lp_tokens_supply,
+                ),
+                before_balanced_reserve,
+            ),
+        );
+
+        if (after_lp_tokens_supply == before_lp_tokens_supply) {
+            after_lp_tokens_supply = before_lp_tokens_supply - 1;
+        };
+
+        let lp_burnt = (before_lp_tokens_supply - after_lp_tokens_supply);
+        assert!(
+            lp_burnt <= MAX_U64,
+            E_LP_BURNT_OVERFLOW,
+        );
+
+        let lp_burnt = (lp_burnt as u64);
+
+        coin::burn(coin::extract(&mut lp, lp_burnt), &pool.lp_burn);
+
+        event::emit_event<RemoveLiquidityEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<RemoveLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).remove_liquidity_events,
+            RemoveLiquidityEvent<{{.CoinTypeList}}> {
+                sender,
+
+                lp_burnt,
+                before_balanced_reserve,
+                after_balanced_reserve,
+                before_lp_tokens_supply,
+                after_lp_tokens_supply,
+                amp: pool.amp,
+{{range .Xis}}
+                before_reserve_{{.I}},
+                after_reserve_{{.I}},
+                fee_{{.I}},
+                withdraw_{{.I}}: amount_{{.I}}_to_withdraw,
+{{end}}            }
+        );
+
+        ({{range .Xis}}coin_{{.I}}, {{end}}lp)
+    }
+
+    /// Remove liquidity from the pool by burning lp tokens.
+    /// The coins returned will follow the current ratio of the pool.
+    /// There is no fee.
+    public fun remove_liquidity<{{.CoinTypeList}}>(
+        sender: address,
+        lp: Coin<LP<{{.CoinTypeList}}>>,
+    ): ({{range .Xis}}Coin<Coin{{.I}}>{{if .NotLast}}, {{end}}{{end}})
+        acquires Pool, FeeMoveEventHolder, RemoveLiquidityEventHolder
+    {
+        let lp_burnt = coin::value(&lp);
+        assert!(
+            lp_burnt > 0,
+            E_LP_TO_BURN_IS_ZERO,
+        );
+
+        move_fee_into_reserve<{{.CoinTypeList}}>();
+
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+
+        let before_lp_tokens_supply = option::destroy_with_default(coin::supply<LP<{{.CoinTypeList}}>>(), 0);
+        let before_balanced_reserve = pool.balanced_reserve;
+{{range .Xis}}
+        // remove liquidity for coin {{.I}}
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+
+        let withdraw_{{.I}} = (
+            ((before_reserve_{{.I}} as u128) * (lp_burnt as u128))
+            / before_lp_tokens_supply
+             as u64);
+        let coin_{{.I}} = coin::extract(&mut pool.reserve_{{.I}}, withdraw_{{.I}});
+
+        let after_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+
+        let fee_{{.I}}: u64 = 0;
+{{end}}
+        // recalculate d
+        update_balanced_reserve(pool);
+
+        let after_balanced_reserve = pool.balanced_reserve;
+        coin::burn(lp, &pool.lp_burn);
+        let after_lp_tokens_supply = option::destroy_with_default(coin::supply<LP<{{.CoinTypeList}}>>(), 0);
+
+        event::emit_event<RemoveLiquidityEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<RemoveLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).remove_liquidity_events,
+            RemoveLiquidityEvent<{{.CoinTypeList}}> {
+                sender,
+
+                lp_burnt,
+                before_balanced_reserve,
+                after_balanced_reserve,
+                before_lp_tokens_supply,
+                after_lp_tokens_supply,
+                amp: pool.amp,
+{{range .Xis}}
+                before_reserve_{{.I}},
+                after_reserve_{{.I}},
+                fee_{{.I}},
+                withdraw_{{.I}},
+{{end}}            }
+        );
+
+        ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}})
+    }
+
+    /// swap coins, where output amount is decided by the input amount.
+    /// for input coins, the full amount stored in the coin will be transferred to the pool.
+    /// for the output coin, the amount swapped for will be added (so the output coin can contain non-zero value).
+    /// output coin is identified by the index.
+    public fun swap_exact_coin_for_coin<{{.CoinTypeList}}>(
+        sender: address,
+        {{range .Xis}}coin_{{.I}}: Coin<Coin{{.I}}>,
+        {{end}}out_coin_index: u8,
+        min_quantity_out: u64,
+    ): ({{range .Xis}}Coin<Coin{{.I}}>{{if .NotLast}}, {{end}}{{end}})
+        acquires Pool, SwapEventHolder
+    {
+        assert!(out_coin_index < N_COINS_U8, E_INVALID_OUT_COIN_INDEX);
+
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+
+        let amp = pool.amp;
+        let before_balanced_reserve = pool.balanced_reserve;
+{{range .Xis}}
+        // calculate the amount in for coin {{.I}}
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+
+        let is_coin_{{.I}}_out = out_coin_index == {{.I}};
+
+        let (amount_{{.I}}_in, amount_{{.I}}_out, fee_{{.I}}) = if (out_coin_index != {{.I}}) {
+            let in_amount = coin::value(&coin_{{.I}});
+            coin::merge(&mut pool.reserve_{{.I}}, coin::extract_all(&mut coin_{{.I}}));
+            (in_amount, 0u64, 0u64)
+        } else {
+            (0u64, 0u64, 0u64)
+        };
+
+        let after_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+        let after_reserve_{{.I}}_scaled = (after_reserve_{{.I}} as u128) * pool.scaler_{{.I}};
+{{end}}
+        // calculate the scaled output coin value
+        let new_x = pool_math::calculate_x_non_decreasing_d(
+{{range .Xis}}            after_reserve_{{.I}}_scaled,
+{{end}}            out_coin_index,
+            amp,
+            before_balanced_reserve,
+        );
+{{range .Xis}}
+        // if coin {{.I}} is the output, update it.
+        if (is_coin_{{.I}}_out) {
+            after_reserve_{{.I}} = ((new_x / pool.scaler_{{.I}}) as u64);
+            // make sure reserve after swap is not truncated.
+            if (new_x % pool.scaler_{{.I}} > 0) {
+                after_reserve_{{.I}} = after_reserve_{{.I}} + 1;
+            };
+            assert!(before_reserve_{{.I}} > after_reserve_{{.I}}, E_OUTPUT_COIN_UNDERFLOW);
+
+            // the value the pool will dispense
+            let diff = before_reserve_{{.I}} - after_reserve_{{.I}};
+
+            // fee is charged on the amount the user receives.
+            let fee_amount = ((diff as u128) * pool.fee_numerator)/(FEE_DENOMINATOR + pool.fee_numerator);
+            if (fee_amount * (FEE_DENOMINATOR + pool.fee_numerator) < (diff as u128) * pool.fee_numerator) {
+                fee_amount = fee_amount + 1;
+            };
+            fee_{{.I}} = (fee_amount as u64);
+            // amount the user will receive
+            amount_{{.I}}_out = diff - fee_{{.I}};
+
+            assert!(amount_{{.I}}_out > 0, E_OUTPUT_COIN_UNDERFLOW);
+            assert!(amount_{{.I}}_out >= min_quantity_out, E_OUTPUT_COIN_INSUFFICIENT);
+
+            let out_coin = coin::extract(&mut pool.reserve_{{.I}}, amount_{{.I}}_out);
+            coin::merge(&mut coin_{{.I}}, out_coin);
+            let fee_coin = coin::extract(&mut pool.reserve_{{.I}}, fee_{{.I}});
+            coin::merge(&mut pool.fee_{{.I}}, fee_coin);
+        };
+{{end}}
+        update_balanced_reserve(pool);
+        let after_balanced_reserve = pool.balanced_reserve;
+        assert!(after_balanced_reserve >= before_balanced_reserve, E_BALANCED_RESERVE_DECREASING);
+
+        event::emit_event<SwapEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<SwapEventHolder<{{.CoinTypeList}}>>(@aux).swap_events,
+            SwapEvent<{{.CoinTypeList}}>{
+                sender,
+{{range .Xis}}
+                before_reserve_{{.I}},
+                after_reserve_{{.I}},
+                fee_{{.I}},
+                is_coin_{{.I}}_out,
+                amount_{{.I}}_in,
+                amount_{{.I}}_out,
+{{end}}
+                before_balanced_reserve,
+                after_balanced_reserve,
+                amp,
+            },
+        );
+
+        ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}})
+    }
+
+    /// swap coins, where input amount is decided by the requested output amount.
+    /// for the output coins, the amount swapped for will be added (so the output coin can contain non-zero value).
+    /// for the input coin, the amount necessary is deducted.
+    /// input coin is identified by the index.
+    public fun swap_coin_for_exact_coin<{{.CoinTypeList}}>(
+        sender: address,
+        {{range .Xis}}coin_{{.I}}: Coin<Coin{{.I}}>,
+        requested_quantity_{{.I}}: u64,
+        {{end}}in_coin_index: u8,
+    ): ({{range .Xis}}Coin<Coin{{.I}}>{{if .NotLast}}, {{end}}{{end}})
+        acquires Pool, SwapEventHolder
+    {
+        assert!(in_coin_index < N_COINS_U8, E_INVALID_IN_COIN_INDEX);
+
+        let pool = borrow_global_mut<Pool<{{.CoinTypeList}}>>(@aux);
+
+        let amp = pool.amp;
+        let before_balanced_reserve = pool.balanced_reserve;
+{{range .Xis}}
+        // process coin {{.I}}
+        let before_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+
+        let is_coin_{{.I}}_out = in_coin_index != {{.I}};
+
+        let (amount_{{.I}}_in, amount_{{.I}}_out, fee_{{.I}}) = if (is_coin_{{.I}}_out && requested_quantity_{{.I}} > 0) {
+            // calculate fee.
+            // fee is based on the amount user receives.
+            let fee = (pool.fee_numerator * (requested_quantity_{{.I}} as u128))/FEE_DENOMINATOR;
+            if (fee * FEE_DENOMINATOR < pool.fee_numerator * (requested_quantity_{{.I}} as u128)) {
+                fee = fee + 1;
+            };
+            let fee = (fee as u64);
+            let fee_coin = coin::extract(&mut pool.reserve_{{.I}}, fee);
+            coin::merge(&mut pool.fee_{{.I}}, fee_coin);
+            coin::merge(&mut coin_{{.I}}, coin::extract(&mut pool.reserve_{{.I}}, requested_quantity_{{.I}}));
+            (0, requested_quantity_{{.I}}, fee)
+        } else {
+            (0u64, 0u64, 0u64)
+        };
+
+        let after_reserve_{{.I}} = coin::value(&pool.reserve_{{.I}});
+        let after_reserve_{{.I}}_scaled = (after_reserve_{{.I}} as u128) * pool.scaler_{{.I}};
+{{end}}
+
+        // get the new reserve for the input coin
+        let new_x = pool_math::calculate_x_non_decreasing_d(
+{{range .Xis}}            after_reserve_{{.I}}_scaled,
+{{end}}            in_coin_index,
+            amp,
+            before_balanced_reserve,
+        );
+{{range .Xis}}
+        if (in_coin_index == {{.I}}) {
+            after_reserve_{{.I}} = ((new_x / pool.scaler_{{.I}}) as u64);
+            // make sure new reserve is not round down
+            if (new_x % pool.scaler_{{.I}} > 0) {
+                after_reserve_{{.I}} = after_reserve_{{.I}} + 1;
+            };
+            assert!(after_reserve_{{.I}} > before_reserve_{{.I}}, E_INPUT_COIN_UNDERFLOW);
+            amount_{{.I}}_in = after_reserve_{{.I}} - before_reserve_{{.I}};
+            assert!(amount_{{.I}}_in <= coin::value(&coin_{{.I}}), E_INPUT_COIN_INSUFFICIENT);
+            coin::merge(&mut pool.reserve_{{.I}}, coin::extract(&mut coin_{{.I}}, amount_{{.I}}_in));
+        };
+{{end}}
+        update_balanced_reserve(pool);
+
+        let after_balanced_reserve = pool.balanced_reserve;
+        assert!(after_balanced_reserve >= before_balanced_reserve, E_BALANCED_RESERVE_DECREASING);
+
+        event::emit_event<SwapEvent<{{.CoinTypeList}}>>(
+            &mut borrow_global_mut<SwapEventHolder<{{.CoinTypeList}}>>(@aux).swap_events,
+            SwapEvent<{{.CoinTypeList}}>{
+                sender,
+{{range .Xis}}
+                before_reserve_{{.I}},
+                after_reserve_{{.I}},
+                fee_{{.I}},
+                is_coin_{{.I}}_out,
+                amount_{{.I}}_in,
+                amount_{{.I}}_out,
+{{end}}
+                before_balanced_reserve,
+                after_balanced_reserve,
+                amp,
+            },
+        );
+
+        ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}})
+    }
+
+    public fun pool_exists<{{.CoinTypeList}}>(): bool {
+        exists<Pool<{{.CoinTypeList}}>>(@aux)
+    }
+
+    #[test_only]
+    public fun print_pool<{{.CoinTypeList}}>() acquires Pool {
+        std::debug::print(borrow_global<Pool<{{.CoinTypeList}}>>(@aux))
+    }
+
+    #[test_only]
+    /// during test it may be desired to reset the pool - for example, a pool with coin X, Y is created,
+    /// but need to do something with coin Y, X. This will destroy the pool, but the LP token will still
+    /// exists.
+    public fun delete_pool_in_test<{{.CoinTypeList}}>(sender: &signer) acquires Pool {
+        assert!(
+            authority::is_signer_owner(sender),
+            E_UNAUTHORIZED,
+        );
+        let Pool {
+            amp: _,
+            balanced_reserve: _,
+            fee_numerator: _,
+            lp_burn,
+            lp_mint,
+{{range .Xis}}
+            scaler_{{.I}}: _,
+            reserve_{{.I}},
+            fee_{{.I}},
+{{end}}        } = move_from<Pool<{{.CoinTypeList}}>>(@aux);
+{{range .Xis}}
+        coin::deposit(@aux, reserve_{{.I}});
+        coin::deposit(@aux, fee_{{.I}});
+{{end}}
+        coin::destroy_mint_cap(lp_mint);
+        coin::destroy_burn_cap(lp_burn);
+    }
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    fun update_balanced_reserve<{{.CoinTypeList}}>(
+        pool: &mut Pool<{{.CoinTypeList}}>,
+    ) {
+{{range .Xis}}
+        let scaler_{{.I}} = pool.scaler_{{.I}};
+        let reserve_{{.I}}_unscaled = coin::value(&pool.reserve_{{.I}});
+        let reserve_{{.I}} = (reserve_{{.I}}_unscaled as u128) * scaler_{{.I}};
+{{end}}
+        pool.balanced_reserve = pool_math::calculate_d(
+            {{range .Xis}}reserve_{{.I}},
+            {{end}}pool.amp
+        );
+    }
+
+    fun lp_name<{{.CoinTypeList}}>(): String {
+        let name = string::utf8(b"");
+{{$nameTake := .NameTake}}{{range .Xis}}
+        let coin_name_{{.I}} = coin::name<Coin{{.I}}>();
+        let end_{{.I}} = min_u64(string::length(&coin_name_{{.I}}), {{$nameTake}});
+        string::append(&mut name, string::sub_string(&coin_name_{{.I}}, 0, end_{{.I}}));
+{{if .NotLast}}        string::append(&mut name, string::utf8(b"/"));
+{{end}}{{end}}
+        string::sub_string(&name, 0, min_u64(string::length(&name), 10))
+    }
+
+    fun lp_symbol<{{.CoinTypeList}}>(): String {
+        let symbol = string::utf8(b"");
+{{range .Xis}}
+        let coin_symbol_{{.I}} = coin::symbol<Coin{{.I}}>();
+        let end_{{.I}} = min_u64(string::length(&coin_symbol_{{.I}}), 3);
+        string::append(&mut symbol, string::sub_string(&coin_symbol_{{.I}}, 0, end_{{.I}}));
+{{if .NotLast}}        string::append(&mut symbol, string::utf8(b"/"));
+{{end}}{{end}}
+        string::sub_string(&symbol, 0, min_u64(string::length(&symbol), 10))
+    }
+
+    fun min_u64(l: u64, r: u64): u64 {
+        if (l>r) {
+            r
+        } else {
+            l
+        }
+    }
+}
