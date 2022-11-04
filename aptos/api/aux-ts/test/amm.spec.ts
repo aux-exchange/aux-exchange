@@ -21,7 +21,7 @@ const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
 const auxAccountOwner = new AptosAccount();
 const auxAccountOwnerAddr = auxAccountOwner.address().toShortString();
 
-describe("AMM DSL tests", function () {
+describe("AMM tests", function () {
   this.timeout(30000);
 
   let pool: Pool;

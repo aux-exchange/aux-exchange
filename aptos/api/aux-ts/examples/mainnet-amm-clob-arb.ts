@@ -11,20 +11,18 @@
  *  APTOS_NODE=https://your/node/address \
  *  yarn ts-node mainnet-amm-clob-arb.ts
  */
-import { AptosAccount } from "aptos";
-import * as coins from "../src/coins";
+import { AptosAccount, AptosClient } from "aptos";
+import * as coins from "../src/coin";
 import { DU } from "../src";
-import { AuxClient, getAptosProfile, Network } from "../src/client";
+import { AuxClient } from "../src/client";
 import { AUXArbitrageStrategy } from "../bots/amm-clob";
+import { getAptosProfile } from "../src/env";
 
 const DEFAULT_MAINNET = "https://fullnode.mainnet.aptoslabs.com/v1";
 const aptosNode = process.env["APTOS_NODE"] ?? DEFAULT_MAINNET;
 
 async function main(): Promise<void> {
-  const auxClient = AuxClient.create({
-    network: Network.Mainnet,
-    validatorAddress: aptosNode,
-  });
+  const auxClient = new AuxClient("mainnet", new AptosClient(aptosNode));
   const privateKeyHex = getAptosProfile("default")?.private_key!;
   const trader: AptosAccount = AptosAccount.fromAptosAccountObject({
     privateKeyHex,

@@ -3,7 +3,7 @@ import type { AuxClient } from "../src/client";
 import Pool from "../src/amm/dsl/pool";
 import Market from "../src/clob/dsl/market";
 import Vault from "../src/vault/dsl/vault";
-import { USDC_eth } from "../src/coins";
+import { USDC_ETH_WH } from "../src/coin";
 import { DecimalUnits, DU } from "../src/units";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { Logger } from "tslog";
@@ -95,13 +95,13 @@ export class AUXArbitrageStrategy {
 
     const existingQuote = await this.vault.availableBalance(
       this.trader.address().toString(),
-      USDC_eth
+      USDC_ETH_WH
     );
     if (existingQuote.toNumber() < this.transferQuote.toNumber()) {
       this.log.info(
-        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_eth} to AUX`
+        `Depositing ${this.transferQuote.toNumber()} units of ${USDC_ETH_WH} to AUX`
       );
-      await this.vault.deposit(this.trader, USDC_eth, this.transferQuote);
+      await this.vault.deposit(this.trader, USDC_ETH_WH, this.transferQuote);
     }
   }
 
@@ -123,7 +123,7 @@ export class AUXArbitrageStrategy {
 
     const maybeMarket = await Market.read(this.client, {
       baseCoinType: this.baseCoin,
-      quoteCoinType: USDC_eth,
+      quoteCoinType: USDC_ETH_WH,
     });
     if (maybeMarket === undefined) {
       throw new Error(`No market for ${this.baseCoin}`);
@@ -132,7 +132,7 @@ export class AUXArbitrageStrategy {
 
     const maybePool = await Pool.read(this.client, {
       coinTypeX: this.baseCoin,
-      coinTypeY: USDC_eth,
+      coinTypeY: USDC_ETH_WH,
     });
 
     if (maybePool === undefined) {
@@ -174,7 +174,7 @@ export class AUXArbitrageStrategy {
       if (marketBid / poolPrice > this.deviationThreshold) {
         const quoteBalance = await this.client.getCoinBalanceDecimals({
           account: this.trader.address(),
-          coinType: USDC_eth,
+          coinType: USDC_ETH_WH,
         });
         if (quoteBalance.toNumber() > this.dollarsPerTrade.toNumber()) {
           const tradeQuantity = Math.min(
