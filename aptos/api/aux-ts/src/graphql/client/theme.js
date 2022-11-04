@@ -22,11 +22,6 @@ const red = createPalletteValues('red', colors.red)
 const orange = createPalletteValues('orange', colors.orange)
 const brand = createPalletteValues('accent', colors.sky)
 
-const font = 'Lato'
-const linkEl = document.createElement('link')
-linkEl.setAttribute('rel', 'stylesheet')
-linkEl.setAttribute('href', `https://fonts.googleapis.com/css?family=${font}:wght@100;300;400;700;900`)
-document.head.appendChild(linkEl)
 document.title = "AUX"
 
 const tag = document.createElement('style')
@@ -45,7 +40,6 @@ tag.innerHTML = `
     --brand-gradient-start: #0b101d;
     --brand-gradient-mid:#262262;
     --brand-gradient-end: #003448;
-    font-family: ${font}, Avenir, Helvetica, Arial, sans-serif;
   }
   `
 
