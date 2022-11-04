@@ -32,7 +32,7 @@ func getProfile(network aptos.Network) string {
 	case aptos.Testnet:
 		return "testnet"
 	case aptos.Localnet:
-		return "localnet"
+		return "local"
 	default:
 		orPanic(fmt.Errorf("unrecognized network: %s", network))
 		return ""

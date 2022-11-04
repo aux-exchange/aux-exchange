@@ -3,11 +3,11 @@ module github.com/aux-exchange/aux-exchange
 go 1.19
 
 require (
-	github.com/fardream/go-aptos v0.4.0
+	github.com/fardream/go-aptos v0.5.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-isatty v0.0.16
 	github.com/spf13/cobra v1.6.1
-	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f
+	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
 )
 
 require (
