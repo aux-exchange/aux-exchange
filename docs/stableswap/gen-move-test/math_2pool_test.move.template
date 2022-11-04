@@ -1,6 +1,6 @@
 #[test_only]
 module aux::math_2pool_test {
-    use aux::math_2pool::{calculate_d, calculate_x_0, calculate_x_0_non_decreasing_d};
+    use aux::math_2pool::{calculate_d, calculate_x, calculate_x_non_decreasing_d};
 
 {{range .Tests}}    #[test]
     fun test_calculate_d_{{.Id}}() {
@@ -13,14 +13,14 @@ module aux::math_2pool_test {
     }
 {{end}}
 {{range .Tests}}    #[test]
-    fun test_calculate_x_0_{{.Id}}() {
+    fun test_calculate_x_1_{{.Id}}() {
         // test
         let x0: u128 = {{.X0}};
         let d: u128 = {{.D}};
         let expected_x1: u128 = {{.ExpectedX1}};
-        let x1 = calculate_x_0(x0, 15, d);
+        let x1 = calculate_x(x0, 0, 1, 15, d);
         assert!(x1 == expected_x1, 1);
-}
+    }
 {{end}}
 {{range .Tests}}    #[test]
     fun test_calculate_x_0_non_decreasing_{{.Id}}() {
@@ -28,7 +28,7 @@ module aux::math_2pool_test {
         let x0: u128 = {{.X0}};
         let d: u128 = {{.D}};
         let expected_x1: u128 = {{.X1}};
-        let x1 = calculate_x_0_non_decreasing_d(x0, 15, d);
+        let x1 = calculate_x_non_decreasing_d(x0, 0, 1, 15, d);
         assert!(x1 == expected_x1, 1);
     }
 {{end}}}

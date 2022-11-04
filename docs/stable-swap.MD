@@ -199,7 +199,7 @@ The numerator is now 36 decimals. It is easy to show that denominator is 18 deci
 
 ## Fee Accounting
 
-All fees paid to the pool go to the liquidity providers. Fees are transferred into the separate fee line in the pool, and merged into `RewardDistributor` to distribute to LPs. When staking/unstaking, fee redeem tokens are returned/burned with lp coins.
+All fees paid to the pool go to the liquidity providers. Fees are transferred into the separate fee line in the pool, and merged into `RewardDistributor` to distribute to LPs. When staking/unstaking, fee redeem tokens are returned/burned with lp coins (this is achieved through returning or burning a `LPBundle`).
 
 ## Implementation
 
@@ -216,7 +216,14 @@ All fees paid to the pool go to the liquidity providers. Fees are transferred in
 - `swap_exact_coin_for_coin`: swap. Specify the input coin amounts, and let the contract calculate the output coin amount.
 - `swap_coin_for_exact_coin`: swap. Specify the output coin amounts, and let the contract calculate the necessary input coin amount.
 
-`router_[n]pool.move` provides entry function versions for those functions that take coin in `stable_[n]pool.move`, so users off-chain can interact with them. Every function besides `create_pool` has a copy in `router_[n]pool.move`. Those functions take a `signer` and the amount to be deposit or withdraw.
+There are also two entry functions to update pool parameters
+
+- `update_amp`: update $A$.
+- `update_fee`: update `fee_numerator` of the pool.
+
+`router_[n]pool.move` provides entry function versions for those functions that take coin in `stable_[n]pool.move`, so users off-chain can interact with them. Every function has a copy in `router_[n]pool.move`. Those functions take a `signer` and the amount to be deposit or withdraw. `router_[n]poo.move` also provides function `remove_coin`, which is similar to `remove_liquidity_for_coin`, but the max lp coin amount is read from user's balance instead of passed in.
+
+Besides providing entry functions, `router_[n]pool.move` also provides `LPRewardTokenStore`, which entry functions utilize the store user's fee reward tokens, and the associated `deposit`, `withdraw`, and `balance` function (just like `aptos_framework::coin` module).
 
 `quoter_[n]pool.move` is a helper module that replicates the pool logic but with integers instead of `aptos_framework::coin::Coin<T>`s. Protocols can utilize the `quoter_[n]pool.move` to calculate swap amounts, lp coins necessary or minted etc. `stable_[n]pool.move` provides a `get_quoter` function for onchain users to obtain a quoter from the pool, which they can then use to perform the calculations.
 
