@@ -1,0 +1,190 @@
+{{.WarningForManualEdit}}
+/// helpers for stable pool
+module aux::router_{{.N}}pool {
+{{$lastIndex := .LastIndex}}{{$typeList := .CoinTypeList}}    use std::signer;
+
+    use aptos_framework::coin;
+
+    use aux::stable_{{.N}}pool::{Self, LPBundle, bundle_melt, bundle_extract, bundle_value};
+
+    struct LPBundleStore<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+        lp_bundle: LPBundle<{{$typeList}}>,
+    }
+
+    public entry fun deposit<{{$typeList}}>(sender: &signer, lp_bundle: LPBundle<{{$typeList}}>) acquires LPBundleStore {
+        let sender_addr = signer::address_of(sender);
+        if (!exists<LPBundleStore<{{$typeList}}>>(sender_addr)) {
+            move_to(
+                sender,
+                LPBundleStore {
+                    lp_bundle,
+                },
+            )
+        } else {
+            let store = borrow_global_mut<LPBundleStore<{{$typeList}}>>(sender_addr);
+            bundle_melt(&mut store.lp_bundle, lp_bundle)
+        }
+    }
+
+    public fun withdraw<{{$typeList}}>(sender: &signer, amount: u64): LPBundle<{{$typeList}}> acquires LPBundleStore {
+        let sender_addr = signer::address_of(sender);
+        bundle_extract(&mut borrow_global_mut<LPBundleStore<{{$typeList}}>>(sender_addr).lp_bundle, amount)
+    }
+
+    public fun balance<{{$typeList}}>(sender_addr: address): u64 acquires LPBundleStore {
+        if (!exists<LPBundleStore<{{$typeList}}>>(sender_addr)) {
+            0
+        } else {
+            bundle_value(&borrow_global<LPBundleStore<{{$typeList}}>>(sender_addr).lp_bundle)
+        }
+    }
+
+    /**************************/
+    /* Entry Function Wrapper */
+    /**************************/
+
+    public entry fun add_liquidity<{{.CoinTypeList}}>(
+        sender: &signer,
+        {{range .Xis}}coin_{{.I}}_amount: u64,
+        {{end}}min_lp_amount: u64,
+    ) acquires LPBundleStore {
+        let sender_addr = signer::address_of(sender);
+{{range .Xis}}
+        let coin_{{.I}} = if (coin_{{.I}}_amount > 0) {
+            coin::withdraw<Coin{{.I}}>(sender, coin_{{.I}}_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+        let lp_tokens = stable_{{.N}}pool::add_liquidity(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            {{end}}min_lp_amount,
+        );
+
+        if (!coin::is_account_registered<stable_{{.N}}pool::LP<{{.CoinTypeList}}>>(sender_addr)) {
+            coin::register<stable_{{.N}}pool::LP<{{.CoinTypeList}}>>(sender);
+        };
+        deposit(sender, lp_tokens);
+    }
+
+    public entry fun remove_liquidity_for_coin<{{.CoinTypeList}}>(
+        sender: &signer,
+        {{range .Xis}}amount_{{.I}}_to_withdraw: u64,
+        {{end}}lp_amount: u64,
+    ) acquires LPBundleStore {
+        let lp = withdraw<{{$typeList}}>(sender, lp_amount);
+        let sender_addr = signer::address_of(sender);
+
+        let ({{range .Xis}}coin_{{.I}}, {{end}}lp) = stable_{{.N}}pool::remove_liquidity_for_coin<{{.CoinTypeList}}>(
+            sender_addr,
+            {{range .Xis}}amount_{{.I}}_to_withdraw,
+            {{end}}lp,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}
+        deposit(sender, lp);
+    }
+
+    public entry fun remove_liquidity<{{.CoinTypeList}}>(
+        sender: &signer,
+        lp_amount: u64,
+    ) acquires LPBundleStore {
+        let lp = withdraw<{{.CoinTypeList}}>(sender, lp_amount);
+        let sender_addr = signer::address_of(sender);
+
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::remove_liquidity<{{.CoinTypeList}}>(sender_addr, lp);
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    public entry fun swap_exact_coin_for_coin<{{.CoinTypeList}}>(
+        sender: &signer,
+        {{range .Xis}}coin_{{.I}}_amount: u64,
+        {{end}}out_coin_index: u8,
+        min_quantity_out: u64,
+    ) {
+        let sender_addr = signer::address_of(sender);
+{{range .Xis}}
+        let coin_{{.I}} = if (coin_{{.I}}_amount > 0) {
+            coin::withdraw<Coin{{.I}}>(sender, coin_{{.I}}_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::swap_exact_coin_for_coin(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            {{end}}out_coin_index,
+            min_quantity_out,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    public entry fun swap_coin_for_exact_coin<{{.CoinTypeList}}>(
+        sender: &signer,
+        {{range .Xis}}requested_quantity_{{.I}}: u64,
+        {{end}}in_coin_index: u8,
+        max_in_coin_amount: u64,
+    ) {
+        let sender_addr = signer::address_of(sender);
+{{range .Xis}}
+        let coin_{{.I}} = if (in_coin_index == {{.I}}) {
+            coin::withdraw<Coin{{.I}}>(sender, max_in_coin_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::swap_coin_for_exact_coin(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            requested_quantity_{{.I}},
+            {{end}}in_coin_index,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    public entry fun remove_coin<{{.CoinTypeList}}>(
+        sender: &signer,
+{{range .Xis}}        amount_{{.I}}_to_withdraw: u64,
+{{end}}    ) acquires LPBundleStore {
+        let sender_addr = signer::address_of(sender);
+        let lp_amount = coin::balance<stable_{{.N}}pool::LP<{{.CoinTypeList}}>>(sender_addr);
+        remove_liquidity_for_coin<{{.CoinTypeList}}>(
+            sender,
+            {{range .Xis}}amount_{{.I}}_to_withdraw,
+            {{end}}lp_amount,
+        );
+    }
+}
