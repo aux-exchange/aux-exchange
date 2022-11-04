@@ -10,9 +10,9 @@ redis-server  # or `brew services start redis` if installed with Homebrew
 go run ./go-util/aptos/cmd/setup-aux -f
 
 # cwd: `aux-exchange/aptos/api/aux-ts`
-APTOS_PROFILE=localnet yarn sim:live
-APTOS_PROFILE=localnet yarn start:graphql
-APTOS_PROFILE=localnet yarn start:indexer
+APTOS_PROFILE=local yarn sim:live
+APTOS_PROFILE=local yarn start:graphql
+APTOS_PROFILE=local yarn start:indexer
 ```
 
 ### Check data is populating in Redis
@@ -41,7 +41,7 @@ subscription ($marketInputs: [MarketInput!], $resolution: String!) {
 }
 ```
 
-- Copy output of this into Variables panel: `APTOS_PROFILE=localnet yarn metadata`
+- Copy output of this into Variables panel: `APTOS_PROFILE=local yarn metadata`
 
 ## Other commands
 

@@ -17,7 +17,7 @@ func GetSetupAuxCmd() *cobra.Command {
 		Short: "set up aux for testing.",
 		Long: `setup aux on the target network.
 
-Deploy aux to devnet with "default" profile or a local validator with "localnet" profile.
+Deploy aux to devnet with "default" profile or a local validator with "local" profile.
 The profiles at user home directory's ".aptos/config.yaml" will be used.
 If the profile for the chosen network exists, use that. Othwerise a new key will be generated.
 		`,
