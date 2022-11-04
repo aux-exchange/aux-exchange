@@ -61,9 +61,9 @@ export class AuxClient {
           "0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541";
         this.simulator = {
           address:
-            "0x490d9592c7f246ecd5eef80e0e5592fef813d0adb43b26dbedc0d045282c36b8",
+            "0x73daac91bd205cec351524974cfae156985f947e07d55f2acfcb38981fdb8898",
           publicKey: toEd25519PublicKey(
-            "0x5252282e6fd74873a1a777e707496919cb118fb65ba46e5271ebd4c2af716a28"
+            "0xa257c3a9f8c0316326681fc525c038886e39b3495c99bb28e1bca01ff6216634"
           ),
         };
         break;
