@@ -14,25 +14,25 @@ hard_restart() {
     pm2 reloadLogs
 
     if [ $1 == "mainnet" ]; then
-        GRAPHQL_PORT=4000 APTOS_PROFILE=mainnet yarn pm2:graphql -i 3 --name mainnet
+        GRAPHQL_PORT=4000 APTOS_NETWORK=mainnet yarn pm2:graphql -i 3 --name mainnet
     elif [ $1 == "mainnet-beta" ]; then
-        GRAPHQL_PORT=4006 APTOS_NETWORK=mainnet APTOS_PROFILE=mainnet-0 yarn pm2:graphql -i 3 --name mainnet-beta
+        GRAPHQL_PORT=4006 APTOS_NETWORK=mainnet yarn pm2:graphql -i 3 --name mainnet-beta
     elif [ $1 == "mainnet-indexer" ]; then
-        APTOS_NETWORK=mainnet APTOS_PROFILE=mainnet-0 yarn pm2:graphql --name mainnet-indexer
+        APTOS_NETWORK=mainnet yarn pm2:graphql --name mainnet-indexer
     elif [ $1 == "testnet" ]; then
-        GRAPHQL_PORT=4002 APTOS_PROFILE=testnet yarn pm2:graphql --name testnet
+        GRAPHQL_PORT=4002 APTOS_NETWORK=testnet yarn pm2:graphql --name testnet
     elif [ $1 == "devnet" ]; then
-        GRAPHQL_PORT=4001 APTOS_NETWORK=devnet APTOS_PROFILE=devnet yarn pm2:graphql --name devnet
+        GRAPHQL_PORT=4001 APTOS_NETWORK=devnet yarn pm2:graphql --name devnet
     elif [ $1 == "devnet-beta" ]; then
-        GRAPHQL_PORT=4007 APTOS_NETWORK=devnet APTOS_PROFILE=devnet yarn pm2:graphql --name devnet-beta
+        GRAPHQL_PORT=4007 APTOS_NETWORK=devnet yarn pm2:graphql --name devnet-beta
     elif [ $1 == "devnet-indexer" ]; then
-        APTOS_NETWORK=devnet APTOS_PROFILE=devnet yarn pm2:graphql --name devnet-indexer
+        APTOS_NETWORK=devnet yarn pm2:graphql --name devnet-indexer
     elif [ $1 == "vybe" ]; then
-        GRAPHQL_PORT=4003 APTOS_PROFILE=mainnet yarn pm2:graphql -i 3 --name vybe
+        GRAPHQL_PORT=4003 APTOS_NETWORK=mainnet yarn pm2:graphql -i 3 --name vybe
     elif [ $1 == "atrix" ]; then
-        GRAPHQL_PORT=4004 APTOS_PROFILE=mainnet yarn pm2:graphql -i 3 --name atrix
+        GRAPHQL_PORT=4004 APTOS_NETWORK=mainnet yarn pm2:graphql -i 3 --name atrix
     elif [ $1 == "mojito" ]; then
-        GRAPHQL_PORT=4005 APTOS_PROFILE=mainnet yarn pm2:graphql -i 3 --name mojito
+        GRAPHQL_PORT=4005 APTOS_NETWORK=mainnet yarn pm2:graphql -i 3 --name mojito
     else
         echo "$0: Invalid argument $1: expected one of [all, mainnet, mainnet-beta, mainnet-indexer, testnet, devnet, devnet-beta, devnet-indexer, vybe, atrix, mojito]. Stop."
     fi
