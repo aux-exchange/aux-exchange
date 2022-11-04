@@ -1,0 +1,249 @@
+{{.WarningForManualEdit}}
+/// helpers for stable pool
+module aux::router_{{.N}}pool {
+{{$lastIndex := .LastIndex}}{{$typeList := .CoinTypeList}}    use std::signer;
+
+    use aptos_framework::coin;
+
+    use aux::stable_{{.N}}pool::{Self, LPBundle, LP, bundle_detach_reward, bundle_attach_reward};
+    use aux::reward_distributor::{Self, RedeemToken};
+
+    /*******************************/
+    /* LPRewardTokenStore related  */
+    /*******************************/
+
+    struct LPRewardTokenStore<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has key {
+    {{range .Xis}}    reward_token_{{.I}}: RedeemToken<Coin{{.I}}, LP{{$typeList}}>,
+    {{end}}}
+
+    public entry fun deposit{{$typeList}}(sender: &signer, lp_bundle: LPBundle{{$typeList}}) acquires LPRewardTokenStore {
+        let (lps,
+        {{range .Xis}}    reward_token_{{.I}},
+        {{end}}) = bundle_detach_reward(lp_bundle);
+        let sender_addr = signer::address_of(sender);
+        if (!exists<LPRewardTokenStore{{$typeList}}>(sender_addr)) {
+            move_to(
+                sender,
+                LPRewardTokenStore {
+                {{range .Xis}}    reward_token_{{.I}},
+                {{end}}},
+            )
+        } else {
+            let store = borrow_global_mut<LPRewardTokenStore{{$typeList}}>(sender_addr);
+        {{range .Xis}}    reward_distributor::token_melt(&mut store.reward_token_{{.I}}, reward_token_{{.I}});
+        {{end}}};
+        if (!coin::is_account_registered<LP{{$typeList}}>(sender_addr)) {
+            coin::register<LP{{$typeList}}>(sender);
+        };
+        coin::deposit(sender_addr, lps);
+    }
+
+    public fun withdraw{{$typeList}}(sender: &signer, amount: u64): LPBundle{{$typeList}} acquires LPRewardTokenStore {
+        let sender_addr = signer::address_of(sender);
+        let lps = coin::withdraw<LP{{$typeList}}>(sender, amount);
+        let reward_store = borrow_global_mut<LPRewardTokenStore{{$typeList}}>(sender_addr);
+
+        {{range .Xis}}let reward_token_{{.I}} = reward_distributor::token_extract(&mut reward_store.reward_token_{{.I}}, amount);
+        {{end}}bundle_attach_reward(
+            lps,
+        {{range .Xis}}    reward_token_{{.I}},
+        {{end}})
+    }
+
+    public fun balance{{$typeList}}(sender_addr: address): u64 acquires LPRewardTokenStore {
+        if (!exists<LPRewardTokenStore{{$typeList}}>(sender_addr)) {
+            0
+        } else {
+            reward_distributor::token_value(&borrow_global<LPRewardTokenStore{{$typeList}}>(sender_addr).reward_token_0)
+        }
+    }
+
+    /**************************/
+    /* Entry Function Wrapper */
+    /**************************/
+
+    public entry fun create_pool{{$typeList}}(sender: &signer, fee_numerator: u128, amp: u128) {
+        stable_{{.N}}pool::create_pool{{$typeList}}(sender, fee_numerator, amp);
+    }
+
+    public entry fun update_amp{{$typeList}}(sender: &signer, amp: u128) {
+        stable_{{.N}}pool::update_amp{{$typeList}}(sender, amp);
+    }
+
+    public entry fun update_fee{{$typeList}}(sender: &signer, fee_numerator: u128) {
+        stable_{{.N}}pool::update_fee{{$typeList}}(sender, fee_numerator);
+    }
+
+    /// Add liquidity to the protocol.
+    /// Unlike constant product amm, arbitrary amount of coins are allowed here.
+    /// Note, however, imbalanced coins will result in less lp coins than balanced coins.
+    /// There is no fee to add liquidity.
+    public entry fun add_liquidity{{$typeList}}(
+        sender: &signer,
+        {{range .Xis}}coin_{{.I}}_amount: u64,
+        {{end}}min_lp_amount: u64,
+    ) acquires LPRewardTokenStore {
+        let sender_addr = signer::address_of(sender);
+{{range .Xis}}
+        let coin_{{.I}} = if (coin_{{.I}}_amount > 0) {
+            coin::withdraw<Coin{{.I}}>(sender, coin_{{.I}}_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+
+        let lp_tokens = stable_{{.N}}pool::add_liquidity(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            {{end}}min_lp_amount,
+        );
+
+        if (!coin::is_account_registered<stable_{{.N}}pool::LP{{$typeList}}>(sender_addr)) {
+            coin::register<stable_{{.N}}pool::LP{{$typeList}}>(sender);
+        };
+        deposit(sender, lp_tokens);
+    }
+
+    /// Remove coins from the pool and burn some lp bundles.
+    /// There will be a fee charged on each withdrawal. If the withdrawal amount is 0, fee is 0,
+    /// otherwise the fee will be the same as swap, with a 1 minimal.
+    /// Fee is charged on the output amount.
+    /// For example, if 10000 is requested, and fee is 1bps, the pool will dispense 10001
+    /// coins from the reserve, and deposit 1 into the fee.
+    /// Also, since fees that the lp earned will be dispensed at the same time, the actual out amount may be higher than requested amount.
+    public entry fun remove_liquidity_for_coin{{$typeList}}(
+        sender: &signer,
+        {{range .Xis}}amount_{{.I}}_to_withdraw: u64,
+        {{end}}lp_amount: u64,
+    ) acquires LPRewardTokenStore {
+        let lp = withdraw{{$typeList}}(sender, lp_amount);
+        let sender_addr = signer::address_of(sender);
+
+        let ({{range .Xis}}coin_{{.I}}, {{end}}lp) = stable_{{.N}}pool::remove_liquidity_for_coin{{$typeList}}(
+            sender_addr,
+            {{range .Xis}}amount_{{.I}}_to_withdraw,
+            {{end}}lp,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}
+        deposit(sender, lp);
+    }
+
+    /// Remove liquidity from the pool by burning lp bundles.
+    /// The coins returned will follow the current ratio of the pool.
+    /// There is no fee.
+    public entry fun remove_liquidity{{$typeList}}(
+        sender: &signer,
+        lp_amount: u64,
+    ) acquires LPRewardTokenStore {
+        let lp = withdraw{{$typeList}}(sender, lp_amount);
+        let sender_addr = signer::address_of(sender);
+
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::remove_liquidity{{$typeList}}(
+            sender_addr,
+            lp,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    /// swap coins, where output amount is decided by the input amount.
+    /// for input coins, the full amount will be transferred to the pool.
+    /// for the output coin, the amount will be ignored.
+    /// output coin is identified by the index.
+    public entry fun swap_exact_coin_for_coin{{$typeList}}(
+        sender: &signer,
+        {{range .Xis}}coin_{{.I}}_amount: u64,
+        {{end}}out_coin_index: u8,
+        min_quantity_out: u64,
+    ) {
+        let sender_addr = signer::address_of(sender);
+{{range .Xis}}
+        let coin_{{.I}} = if (coin_{{.I}}_amount > 0) {
+            coin::withdraw<Coin{{.I}}>(sender, coin_{{.I}}_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::swap_exact_coin_for_coin(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            {{end}}out_coin_index,
+            min_quantity_out,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    /// swap coins, where input amount is decided by the requested output amount.
+    /// input coin is identified by the index.
+    public entry fun swap_coin_for_exact_coin{{$typeList}}(
+        sender: &signer,
+        {{range .Xis}}requested_quantity_{{.I}}: u64,
+        {{end}}in_coin_index: u8,
+        max_in_coin_amount: u64,
+    ) {
+        let sender_addr = signer::address_of(sender);
+
+{{range .Xis}}
+        let coin_{{.I}} = if (in_coin_index == {{.I}}) {
+            coin::withdraw<Coin{{.I}}>(sender, max_in_coin_amount)
+        } else {
+            coin::zero<Coin{{.I}}>()
+        };
+{{end}}
+        let ({{range .Xis}}coin_{{.I}}{{if .NotLast}}, {{end}}{{end}}) = stable_{{.N}}pool::swap_coin_for_exact_coin(
+            sender_addr,
+            {{range .Xis}}coin_{{.I}},
+            requested_quantity_{{.I}},
+            {{end}}in_coin_index,
+        );
+{{range .Xis}}
+        if (coin::value(&coin_{{.I}}) > 0) {
+            if (!coin::is_account_registered<Coin{{.I}}>(sender_addr)) {
+                coin::register<Coin{{.I}}>(sender);
+            };
+            coin::deposit(sender_addr, coin_{{.I}});
+        } else {
+            coin::destroy_zero(coin_{{.I}});
+        };
+{{end}}    }
+
+    /// remove_coin is similar to `remove_liquidity_for_coin`, however,
+    /// this entry function will take all the current balance of the user's lp amount,
+    /// instead of asking the amount to be passed in.
+    public entry fun remove_coin{{$typeList}}(
+        sender: &signer,
+{{range .Xis}}        amount_{{.I}}_to_withdraw: u64,
+{{end}}    ) acquires LPRewardTokenStore {
+        let sender_addr = signer::address_of(sender);
+        let lp_amount = coin::balance<stable_{{.N}}pool::LP{{$typeList}}>(sender_addr);
+        remove_liquidity_for_coin{{$typeList}}(
+            sender,
+            {{range .Xis}}amount_{{.I}}_to_withdraw,
+            {{end}}lp_amount,
+        );
+    }
+}
