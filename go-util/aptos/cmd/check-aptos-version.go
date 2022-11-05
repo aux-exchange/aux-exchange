@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	requiredVersion = "1.0.1"
-	installCmd      = `RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-labs/aptos-core.git --rev aptos-cli-v1.0.1 aptos`
+	requiredVersion = "1.0.0"
+	installCmd      = `RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-labs/aptos-core.git --rev aptos-cli-v1.0.0 aptos`
 )
 
 func checkAptosVersion() {
@@ -19,7 +19,7 @@ func checkAptosVersion() {
 
 	versionCmd := exec.Command("aptos", "--version")
 
-	versionMatch := regexp.MustCompile(`(?m)^aptos 1\.0\.1$`)
+	versionMatch := regexp.MustCompile(`(?m)^aptos 1\.0\.0$`)
 
 	output := getOrPanic(versionCmd.Output())
 
