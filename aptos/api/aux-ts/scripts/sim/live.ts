@@ -13,7 +13,10 @@ import assert from "assert";
 import { AuxEnv } from "../../src/env";
 
 const auxEnv = new AuxEnv();
-const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
+if (auxEnv.faucetClient === undefined) {
+  throw new Error("Cannot sim:live without a faucet.")
+}
+const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient, auxEnv.faucetClient);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {
