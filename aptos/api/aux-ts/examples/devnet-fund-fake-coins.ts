@@ -1,4 +1,4 @@
-import { AptosAccount, AptosClient } from "aptos";
+import { AptosAccount, AptosClient, FaucetClient } from "aptos";
 import { AU, DU } from "../src";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
@@ -11,7 +11,11 @@ import { getAptosProfile } from "../src/env";
 // const auxClient = new AuxClient("devnet", new AptosClient("http://localhost:8080"));
 const auxClient = new AuxClient(
   "devnet",
-  new AptosClient("https://fullnode.devnet.aptoslabs.com/v1")
+  new AptosClient("https://fullnode.devnet.aptoslabs.com/v1"),
+  new FaucetClient(
+    "https://fullnode.devnet.aptoslabs.com/v1",
+    "https://faucet.devnet.aptoslabs.com"
+  )
 );
 
 // Get the account that has authority over the module from local profile
