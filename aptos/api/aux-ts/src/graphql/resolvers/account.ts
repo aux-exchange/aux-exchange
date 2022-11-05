@@ -58,10 +58,15 @@ export const account = {
       (resource) =>
         resource.type.includes("CoinStore<") && !resource.type.includes("LP")
     );
-    return Promise.all(
+    const balances = await Promise.all(
       coinStores.map(async (coinStore) => {
         const coinType = parseTypeArgs(coinStore.type)[0]!;
-        const coinInfo = await auxClient.getCoinInfo(coinType);
+        let coinInfo;
+        try {
+          coinInfo = await auxClient.getCoinInfo(coinType);
+        } catch {
+          return undefined;
+        }
         // @ts-ignore
         const balance = AU(coinStore.data.coin.value)
           .toDecimalUnits(coinInfo.decimals)
@@ -73,15 +78,21 @@ export const account = {
         };
       })
     );
+    return balances.filter((i) => i !== undefined) as Balance[];
   },
   async balances(parent: Account): Promise<Balance[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const balances = await account.balances();
 
-    return await Promise.all(
+    const allBalances = await Promise.all(
       balances.balances.map(async (e) => {
         const [coinType] = parseTypeArgs(e.key.name);
-        const coinInfo = await auxClient.getCoinInfo(coinType!);
+        let coinInfo;
+        try {
+          coinInfo = await auxClient.getCoinInfo(coinType!);
+        } catch {
+          return undefined;
+        }
         return {
           coinInfo,
           availableBalance: e.value.available_balance
@@ -91,6 +102,7 @@ export const account = {
         };
       })
     );
+    return allBalances.filter((i) => i !== undefined) as Balance[];
   },
   async deposits(parent: Account): Promise<Deposit[]> {
     const account = new AuxAccount(auxClient, parent.address);
