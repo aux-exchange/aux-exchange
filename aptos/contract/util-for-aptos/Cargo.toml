@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v1.0.0" }
-framework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "aptos-cli-v1.0.0" }
+aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core.git", tag = "aptos-cli-v1.0.1" }
+framework = { git = "https://github.com/aptos-labs/aptos-core.git", tag = "aptos-cli-v1.0.1" }
 tokio = { version = "1.21.0", features = ["macros", "rt-multi-thread"] }
 url = "2.2.2"
 hex = "0.4.3"
