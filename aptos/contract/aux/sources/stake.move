@@ -5,6 +5,8 @@ module aux::stake {
 
     use aptos_framework::coin::{Coin, Self};
     use aptos_framework::timestamp;
+    use aptos_framework::event::{EventHandle, Self};
+    use aptos_framework::account;
 
     use aux::authority;
 
@@ -60,8 +62,66 @@ module aux::stake {
         stake: Coin<S>,
         reward: Coin<R>,
         last_update_time: u64,
-        acc_reward_per_share: u128, // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+        acc_reward_per_share: u128,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+        create_pool_events: EventHandle<CreatePoolEvent<S, R>>,
+        deposit_events: EventHandle<DepositEvent<S, R>>,
+        withdraw_events: EventHandle<WithdrawEvent<S, R>>,
+        modify_pool_events: EventHandle<ModifyPoolEvent<S, R>>,
+        claim_events: EventHandle<ClaimEvent<S, R>>,
     }
+
+    struct CreatePoolEvent<phantom S, phantom R> has store, drop {
+        pool_id: u64,
+        start_time: u64,
+        end_time: u64,
+        reward_amount: u64
+    }
+
+    struct DepositEvent<phantom S, phantom R> has store, drop {
+        pool_id: u64,
+        user: address,
+        deposit_amount: u64,
+        reward_amount: u64,
+        reward_debt: u128,
+        amount_staked: u64,
+        total_amount_staked: u64,
+        reward_remaining: u64,
+        acc_reward_per_share: u128
+    }
+
+    struct WithdrawEvent<phantom S, phantom R> has store, drop {
+        pool_id: u64,
+        user: address,
+        withdraw_amount: u64,
+        reward_amount: u64,
+        reward_debt: u128,
+        amount_staked: u64,
+        total_amount_staked: u64,
+        reward_remaining: u64,
+        acc_reward_per_share: u128
+    }
+
+    struct ClaimEvent<phantom S, phantom R> has store, drop {
+        pool_id: u64,
+        user: address,
+        reward_amount: u64,
+        reward_debt: u128,
+        reward_remaining: u64,
+        acc_reward_per_share: u128
+    }
+
+    struct ModifyPoolEvent<phantom S, phantom R> has store, drop {
+        pool_id: u64,
+        start_time: u64,
+        end_time: u64,
+        reward_remaining: u64,
+        total_amount_staked: u64,
+        acc_reward_per_share: u128
+    }
+
+    /*************/
+    /* FUNCTIONS */
+    /*************/
 
     public entry fun create_with_signer<S, R>(
         sender: &signer,
@@ -90,8 +150,7 @@ module aux::stake {
             )
         };
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
-        table::add(&mut pools.pools, pools.id,
-            Pool {
+        let pool = Pool {
                 creator,
                 start_time,
                 end_time,
@@ -100,8 +159,22 @@ module aux::stake {
                 reward,
                 last_update_time: start_time,
                 acc_reward_per_share: 0,
+                create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
+                deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
+                withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
+                modify_pool_events: account::new_event_handle<ModifyPoolEvent<S, R>>(&module_authority),
+                claim_events: account::new_event_handle<ClaimEvent<S, R>>(&module_authority),
+        };
+        event::emit_event<CreatePoolEvent<S, R>>(
+            &mut pool.create_pool_events,
+            CreatePoolEvent {
+                pool_id: pools.id,
+                start_time,
+                end_time,
+                reward_amount
             }
         );
+        table::add(&mut pools.pools, pools.id, pool);
         pools.id = pools.id + 1;
         pools.id - 1
     }
@@ -161,7 +234,17 @@ module aux::stake {
         assert!(pool.end_time - pool.start_time <= MAX_DURATION_MS, E_INVALID_DURATION);
         assert!(pool.end_time - pool.start_time >= MIN_DURATION_MS, E_INVALID_DURATION);
 
-        // TODO: emit event
+        event::emit_event<ModifyPoolEvent<S, R>>(
+            &mut pool.modify_pool_events,
+            ModifyPoolEvent {
+                pool_id: id,
+                start_time: pool.start_time,
+                end_time: pool.end_time,
+                reward_remaining: pool.reward_remaining,
+                total_amount_staked: coin::value(&pool.stake),
+                acc_reward_per_share: pool.acc_reward_per_share
+            }
+        );
     }
 
     fun update_pool<S, R>(pool: &mut Pool<S, R>, now: u64) {
@@ -186,6 +269,7 @@ module aux::stake {
         assert!(coin::value(&pool.reward) >= pool.reward_remaining, E_INTERNAL_ERROR);
 
         pool.last_update_time = now;
+
     }
 
     /// Deposit stake coin to the incentive pool to start earning rewards
@@ -213,11 +297,23 @@ module aux::stake {
         };
         let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
         let exists = table::contains(&user_infos.user_infos, id);
-        if (!exists) {
+        let deposit_event = if (!exists) {
+            let reward_debt = (amount as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
             table::add(&mut user_infos.user_infos, id, UserInfo<S, R> {
                 amount_staked: amount,
-                reward_debt: (amount as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL
+                reward_debt
             });
+            DepositEvent<S, R> {
+                pool_id: id,
+                user: sender_addr,
+                deposit_amount: amount,
+                reward_amount: 0,
+                reward_debt,
+                amount_staked: amount,
+                total_amount_staked: coin::value(&pool.stake),
+                reward_remaining: pool.reward_remaining,
+                acc_reward_per_share: pool.acc_reward_per_share
+            }
         } else {
             let user_info = table::borrow_mut(&mut user_infos.user_infos, id);
 
@@ -232,9 +328,24 @@ module aux::stake {
             // Update UserInfo
             user_info.amount_staked = user_info.amount_staked + amount;
             user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
-        }
 
-        // TODO: emit event
+            DepositEvent {
+                pool_id: id,
+                user: sender_addr,
+                deposit_amount: amount,
+                reward_amount: (pending_reward as u64),
+                reward_debt: user_info.reward_debt,
+                amount_staked: user_info.amount_staked,
+                total_amount_staked: coin::value(&pool.stake),
+                reward_remaining: pool.reward_remaining,
+                acc_reward_per_share: pool.acc_reward_per_share
+            }
+        };
+
+        event::emit_event<DepositEvent<S, R>>(
+            &mut pool.deposit_events,
+            deposit_event
+        );
     }
 
     /// Withdraw stake coin from the incentive pool
@@ -275,7 +386,20 @@ module aux::stake {
         let unstake = coin::extract(&mut pool.stake, amount);
         coin::deposit(sender_addr, unstake);
 
-        // TODO: emit withdraw event
+        event::emit_event<WithdrawEvent<S, R>>(
+            &mut pool.withdraw_events,
+            WithdrawEvent<S, R> {
+                pool_id: id,
+                user: sender_addr,
+                withdraw_amount: amount,
+                reward_amount: (pending_reward as u64),
+                reward_debt: user_info.reward_debt,
+                amount_staked: user_info.amount_staked,
+                total_amount_staked: coin::value(&pool.stake),
+                reward_remaining: pool.reward_remaining,
+                acc_reward_per_share: pool.acc_reward_per_share
+            }
+        );
     }
 
     /// Claim staking rewards without modifying staking position
@@ -308,17 +432,28 @@ module aux::stake {
         };
         user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
 
-        // TODO: emit claim event
+        event::emit_event<ClaimEvent<S, R>>(
+            &mut pool.claim_events,
+            ClaimEvent<S, R> {
+                pool_id: id,
+                user: sender_addr,
+                reward_amount: (pending_reward as u64),
+                reward_debt: user_info.reward_debt,
+                reward_remaining: pool.reward_remaining,
+                acc_reward_per_share: pool.acc_reward_per_share
+            }
+        );
     }
 
     /*********/
     /* TESTS */
     /*********/
 
+    // TODO: test creating multiple pools for same token
+    // TODO: test only creator can modify pool
+
     #[test_only]
     use aux::fake_coin::{FakeCoin, ETH, USDC, Self};
-    #[test_only]
-    use aptos_framework::account;
 
     #[test_only]
     public fun setup_module_for_test(sender: &signer, aptos_framework: &signer) {
