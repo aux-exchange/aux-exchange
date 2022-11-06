@@ -17,9 +17,9 @@ RUN dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 # Aptos
-RUN wget https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.1/aptos-cli-1.0.1-Ubuntu-x86_64.zip
+RUN wget https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v1.0.0/aptos-cli-1.0.0-Ubuntu-x86_64.zip
 RUN mkdir /root/bin
-RUN unzip aptos-cli-1.0.1-Ubuntu-x86_64.zip -d /root/bin
+RUN unzip aptos-cli-1.0.0-Ubuntu-x86_64.zip -d /root/bin
 
 EXPOSE 8080
 EXPOSE 8081
