@@ -8,11 +8,6 @@ package aux_go_generate
 //go:generate gen-move-container critbit -o ../aptos/contract/aux/sources/critbit_v.move -p aux -m critbit_v
 //go:generate gen-move-container critbit -o ../aptos/contract/aux/sources/critbit.move -p aux -m critbit --use-aptos-table
 
-//go:generate go run ../docs/stableswap/gen-pool-math -n 2 -o ../aptos/contract/aux/sources/math_2pool.move
-//go:generate go run ../docs/stableswap/gen-move-test 2pool -o ../aptos/contract/aux/sources/math_2pool_test.move -n 50
-//go:generate go run ../docs/stableswap/gen-pool-math -n 3 -o ../aptos/contract/aux/sources/math_3pool.move
-//go:generate go run ../docs/stableswap/gen-move-test 3pool -o ../aptos/contract/aux/sources/math_3pool_test.move -n 50
-
 // abort-only-contract
 // must run this at the last one of the commands since this will copy all contract codes
 
