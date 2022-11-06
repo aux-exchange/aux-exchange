@@ -11,5 +11,5 @@ deployer = "0x12345"
 
 [dependencies.AptosFramework]
 git = 'https://github.com/aptos-labs/aptos-core.git'
-rev = 'aptos-cli-v1.0.0'
+rev = '23d258d1f2440267f866eeb27f9830be48682af8'
 subdir = 'aptos-move/framework/aptos-framework'
