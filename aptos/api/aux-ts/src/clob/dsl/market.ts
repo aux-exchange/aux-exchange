@@ -6,7 +6,7 @@ import type {
   AuxClientOptions,
   Simulator,
 } from "../../client";
-import type { TransactionResult } from "../../transaction";
+import type { AuxTransaction } from "../../client";
 import {
   AnyUnits,
   AtomicUnits,
@@ -245,8 +245,8 @@ export default class Market implements core.query.Market {
       timeoutTimestamp,
       stpActionType,
     }: PlaceOrderParams,
-    options?: Partial<AuxClientOptions>
-  ): Promise<TransactionResult<PlaceOrderEvent[]>> {
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<PlaceOrderEvent[]>> {
     const limitPriceAu: Types.U64 = this.makeRoundTick(
       toAtomicUnits(limitPrice, this.quoteDecimals)
     ).toU64();

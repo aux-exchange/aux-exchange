@@ -2,35 +2,43 @@ import { AptosAccount } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
 import { Vault } from "../src";
-import Pool from "../src/amm/dsl/pool";
+import { PoolClient } from "../src/pool/client";
+import type { ConstantProduct } from "../src/pool/schema";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
-import { AU, DU } from "../src/units";
-
-const auxEnv = new AuxEnv();
-const auxClient = new AuxClient(
-  auxEnv.aptosNetwork,
-  auxEnv.aptosClient,
-  auxEnv.faucetClient
-);
-const moduleAuthority = auxClient.moduleAuthority!;
-
-const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
-const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
-const auxAccountOwner = new AptosAccount();
-const auxAccountOwnerAddr = auxAccountOwner.address().toShortString();
+import { AU, Bps, DU } from "../src/units";
 
 describe("AMM tests", function () {
   this.timeout(30000);
 
-  let pool: Pool;
+  const auxEnv = new AuxEnv();
+  const auxClient = new AuxClient(
+    auxEnv.aptosNetwork,
+    auxEnv.aptosClient,
+    auxEnv.faucetClient
+  );
+  const moduleAuthority = auxClient.moduleAuthority!;
+  auxClient.sender = moduleAuthority;
+
+  const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
+  const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
+  const auxAccountOwner = AptosAccount.fromAptosAccountObject({
+    privateKeyHex:
+      "0x2b248dee740ee1e8d271afb89590554cd9655ee9fae8a0ec616b95911834eb49",
+  });
+  const auxAccountOwnerAddr = auxAccountOwner.address().toShortString();
+
+  const poolClient: PoolClient = new PoolClient(auxClient, {
+    coinTypeX: auxCoin,
+    coinTypeY: btcCoin,
+  });
+  let pool: ConstantProduct;
   let vault: Vault;
 
   it("mintAux", async function () {
-    await auxClient.registerAuxCoin(moduleAuthority);
+    await auxClient.registerAuxCoin();
     let tx = await auxClient.mintAux(
-      moduleAuthority,
       moduleAuthority.address().toString(),
       AU(1_000_000_000_000)
     );
@@ -39,35 +47,20 @@ describe("AMM tests", function () {
   });
 
   it("mintOther", async function () {
-    let tx = await auxClient.registerAndMintFakeCoin({
-      sender: moduleAuthority,
-      coin: FakeCoin.BTC,
-      amount: AU(5_000_000_000_000),
-    });
+    let tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(5_000_000_000_000)
+    );
     assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
   });
 
   it("createPool", async function () {
-    const maybePool = await Pool.read(auxClient, {
-      coinTypeX: auxCoin,
-      coinTypeY: btcCoin,
-    });
-    if (maybePool == undefined) {
-      pool = await Pool.create(auxClient, {
-        sender: moduleAuthority,
-        coinTypeX: auxCoin,
-        coinTypeY: btcCoin,
-        feePct: 0,
-      });
-      assert.equal(pool.amountX, 0);
-      assert.equal(pool.amountY, 0);
-      assert.equal(pool.amountLP, 0);
-    } else {
-      pool = maybePool;
-    }
+    await poolClient.create({ fee: new Bps(0) });
+    pool = await poolClient.query();
   });
 
   it("addExactLiquidity", async function () {
+    pool = await poolClient.query();
     let initX = await auxClient.getCoinBalanceDecimals({
       account: moduleAuthority.address(),
       coinType: pool.coinInfoX.coinType,
@@ -77,13 +70,12 @@ describe("AMM tests", function () {
       coinType: pool.coinInfoY.coinType,
     });
 
-    const tx = await pool.addExactLiquidity({
-      sender: moduleAuthority,
+    const tx = await poolClient.addExactLiquidity({
       amountX: DU(2),
       amountY: DU(2),
     });
-    assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
-    await pool.update();
+    assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
@@ -101,166 +93,160 @@ describe("AMM tests", function () {
     assert.equal(initY.toNumber() - finalY.toNumber(), 2);
   });
 
-  it("checkPoolSymmetricRead", async function () {
-    const maybePool = await Pool.read(auxClient, {
-      coinTypeX: btcCoin,
-      coinTypeY: auxCoin,
-    });
-
-    assert.ok(maybePool !== undefined);
-
-    assert.equal(maybePool.amountX.toNumber(), 2);
-    assert.equal(maybePool.amountY.toNumber(), 2);
-    assert.equal(maybePool.amountLP.toNumber(), 0.2);
-  });
-
   it("position", async function () {
-    await pool.update();
-    const position = await pool.position(moduleAuthority.address().toString())!;
+    const position = await poolClient.position(
+      moduleAuthority.address().toString()
+    )!;
     assert.equal(position?.amountX.toNumber(), 1.9999);
     assert.equal(position?.amountY.toNumber(), 1.9999);
     assert.equal(position?.amountLP.toNumber(), 0.19999);
     assert.equal(position?.share, 0.99995);
   });
 
-  it("swapXForY", async function () {
-    await pool.swapXForY({
-      sender: moduleAuthority,
+  it("swap AUX for BTC", async function () {
+    await poolClient.swap({
+      coinTypeIn: auxCoin,
       exactAmountIn: DU(2),
-      minAmountOut: DU(1),
+      parameters: { minAmountOut: DU(1) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 4);
     assert.equal(pool.amountY.toNumber(), 1);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapYForX", async function () {
-    await pool.swapYForX({
-      sender: moduleAuthority,
+  it("swap BTC for AUX", async function () {
+    await poolClient.swap({
+      coinTypeIn: btcCoin,
       exactAmountIn: DU(1),
-      minAmountOut: DU(2),
+      parameters: { minAmountOut: DU(2) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapXForYLimit binding limit price", async function () {
+  it("swap AUX for BTC binding limit price", async function () {
     // Starting from (X, Y) = (2, 2)
     // The marginal price of X:Y is currently 1.
     // Swap with a max price of 1 should do nothing.
-    await pool.swapXForYLimit({
-      sender: moduleAuthority,
+    pool = await poolClient.query();
+    await poolClient.swap({
+      coinTypeIn: auxCoin,
       exactAmountIn: DU(2),
-      minOutPerIn: DU(1),
+      parameters: { minAmountOutPerIn: DU(2) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapXForYLimit relaxed limit price", async function () {
+  it("swap AUX for BTC relaxed limit price", async function () {
     // Starting from (X, Y) = (2,
     //                         2)
     // The marginal price of X:Y is currently 1.
     // Swap with a max price of 4 should enable a swap.
-    await pool.swapXForYLimit({
-      sender: moduleAuthority,
+    await poolClient.swap({
+      coinTypeIn: auxCoin,
       exactAmountIn: DU(2),
-      minOutPerIn: DU(0.25),
+      parameters: { minAmountOutPerIn: DU(0.25) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 4);
     assert.equal(pool.amountY.toNumber(), 1);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapYForXLimit binding limit price", async function () {
+  it("swap BTC for AUX binding limit price", async function () {
     // Starting from (X, Y) = (4,
     //                         1)
     // The marginal price of Y:X is 0.25
     // Swap with a max price of 0.25 should do nothing.
-    await pool.swapYForXLimit({
-      sender: moduleAuthority,
+    await poolClient.swap({
+      coinTypeIn: btcCoin,
       exactAmountIn: DU(0.00000005),
-      minOutPerIn: DU(4),
+      parameters: { minAmountOutPerIn: DU(4) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 4);
     assert.equal(pool.amountY.toNumber(), 1);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapYForXLimit relaxed limit price", async function () {
+  it("swap BTC for AUX relaxed limit price", async function () {
     // Starting from (X, Y) = (4,
     //                         1)
     // The marginal price of Y:X is 0.25
-    await pool.swapYForXLimit({
-      sender: moduleAuthority,
+    await poolClient.swap({
+      coinTypeIn: btcCoin,
       exactAmountIn: DU(1),
-      minOutPerIn: DU(1),
+      parameters: { minAmountOutPerIn: DU(1) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapXForYExact", async function () {
-    await pool.swapXForYExact({
-      sender: moduleAuthority,
-      maxAmountIn: DU(2),
+  it("swap AUX for BTC exact out", async function () {
+    pool = await poolClient.query();
+    await poolClient.swap({
+      coinTypeOut: btcCoin,
       exactAmountOut: DU(1),
+      parameters: { maxAmountIn: DU(2) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 4);
     assert.equal(pool.amountY.toNumber(), 1);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapYForXExact", async function () {
-    await pool.swapYForXExact({
-      sender: moduleAuthority,
-      maxAmountIn: DU(1),
+  it("swap BTC for AUX exact out", async function () {
+    await poolClient.swap({
+      coinTypeOut: auxCoin,
       exactAmountOut: DU(2),
+      parameters: { maxAmountIn: DU(1) },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapXForYExactLimit", async function () {
-    let tx = await pool.swapXForYExactLimit({
-      sender: moduleAuthority,
-      maxAmountIn: DU(2),
-      maxInPerOut: DU(4),
+  it("swap AUX for BTC exact out limit", async function () {
+    let tx = await poolClient.swap({
+      coinTypeOut: btcCoin,
       exactAmountOut: DU(1),
+      parameters: {
+        maxAmountIn: DU(2),
+        maxAmountInPerOut: DU(4),
+      },
     });
     assert.ok(
-      tx.tx.success,
-      `failed: ${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+      tx.transaction.success,
+      `failed: ${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
     );
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 4);
     assert.equal(pool.amountY.toNumber(), 1);
     assert.equal(pool.amountLP.toNumber(), 0.2);
   });
 
-  it("swapYForXExactLimit", async function () {
-    let tx = await pool.swapYForXExactLimit({
-      sender: moduleAuthority,
-      maxAmountIn: DU(3),
-      maxInPerOut: DU(4),
+  it("swap BTC for AUX exact out limit", async function () {
+    let tx = await poolClient.swap({
+      coinTypeOut: auxCoin,
       exactAmountOut: DU(3),
+      parameters: {
+        maxAmountIn: DU(3),
+        maxAmountInPerOut: DU(4),
+      },
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.ok(
-      tx.tx.success,
-      `failed: ${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+      tx.transaction.success,
+      `failed: ${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
     );
     assert.equal(pool.amountX.toNumber(), 1);
     assert.equal(pool.amountY.toNumber(), 4);
@@ -268,162 +254,194 @@ describe("AMM tests", function () {
   });
 
   it("removeLiquidity", async function () {
-    await pool.removeLiquidity({
-      sender: moduleAuthority,
+    await poolClient.removeLiquidity({
       amountLP: DU(0.1),
     });
-    await pool.update();
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 0.5);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.1);
   });
 
   it("addApproximateLiquidity", async () => {
-    let tx = await pool.addExactLiquidity({
-      sender: moduleAuthority,
+    let tx = await poolClient.addExactLiquidity({
       amountX: DU("49.5"),
       amountY: DU("198"),
     });
     assert.ok(
-      tx.tx.success,
-      `${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+      tx.transaction.success,
+      `${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
     );
 
-    await pool.update();
-    const originalLP = pool.amountAuLP;
+    pool = await poolClient.query();
+    const originalLP = pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals);
     assert.equal(50, pool.amountX.toNumber());
     assert.equal(200, pool.amountY.toNumber());
 
     // Should fail because the LP will increase.
-    tx = await pool.addApproximateLiquidity({
-      sender: moduleAuthority,
+    tx = await poolClient.addApproximateLiquidity({
       maxX: AU("1"),
       maxY: AU("10"),
       maxPoolLP: originalLP,
     });
-    assert.ok(!tx.tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
-    await pool.update();
+    assert.ok(
+      !tx.transaction.success,
+      `${JSON.stringify(tx, undefined, "  ")}`
+    );
+    pool = await poolClient.query();
     assert.equal(50, pool.amountX.toNumber());
     assert.equal(200, pool.amountY.toNumber());
 
     // Should fail because X only increases by 1.
-    tx = await pool.addApproximateLiquidity({
-      sender: moduleAuthority,
+    tx = await poolClient.addApproximateLiquidity({
       maxX: DU("1"),
       maxY: DU("10"),
       minPoolX: DU("52"),
     });
-    assert.ok(!tx.tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
-    await pool.update();
+    assert.ok(
+      !tx.transaction.success,
+      `${JSON.stringify(tx, undefined, "  ")}`
+    );
+    pool = await poolClient.query();
     assert.equal(50, pool.amountX.toNumber());
     assert.equal(200, pool.amountY.toNumber());
 
     // Should fail because Y only increases by 4
-    tx = await pool.addApproximateLiquidity({
-      sender: moduleAuthority,
+    tx = await poolClient.addApproximateLiquidity({
       maxX: DU("1"),
       maxY: DU("4"),
       minPoolY: DU("205"),
     });
-    assert.ok(!tx.tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
-    await pool.update();
+    assert.ok(
+      !tx.transaction.success,
+      `${JSON.stringify(tx, undefined, "  ")}`
+    );
+    pool = await poolClient.query();
     assert.equal(50, pool.amountX.toNumber());
     assert.equal(200, pool.amountY.toNumber());
 
-    tx = await pool.addApproximateLiquidity({
-      sender: moduleAuthority,
+    tx = await poolClient.addApproximateLiquidity({
       maxX: DU("1"),
       maxY: DU("10"),
       maxPoolLP: DU("10404"),
       minPoolX: DU("51"),
       minPoolY: DU("204"),
     });
-    assert.ok(tx.tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
-    await pool.update();
+    assert.ok(tx.transaction.success, `${JSON.stringify(tx, undefined, "  ")}`);
+    pool = await poolClient.query();
     assert.equal(51, pool.amountX.toNumber());
     assert.equal(204, pool.amountY.toNumber());
 
     assert.ok(
       (
-        await pool.removeLiquidity({
-          sender: moduleAuthority,
-          amountLP: AU(pool.amountAuLP.toNumber() - 1000),
+        await poolClient.removeLiquidity({
+          amountLP: AU(
+            pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber() -
+              1000
+          ),
         })
-      ).tx.success
+      ).transaction.success
     );
   });
 
   it("addLiquidity", async () => {
-    await pool.resetPool({ sender: moduleAuthority });
+    await poolClient.drain();
     {
-      let tx = await pool.addExactLiquidity({
-        sender: moduleAuthority,
+      let tx = await poolClient.addLiquidity({
         amountX: AU("1000"),
         amountY: AU("4001"),
       });
       assert.ok(
-        tx.tx.success,
-        `${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+        tx.transaction.success,
+        `${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
       );
 
-      await pool.update();
-      assert.equal(1000, pool.amountAuX.toNumber());
-      assert.equal(4001, pool.amountAuY.toNumber());
-      assert.equal(2000, pool.amountAuLP.toNumber());
+      pool = await poolClient.query();
+      assert.equal(
+        1000,
+        pool.amountX.toAtomicUnits(pool.coinInfoX.decimals).toNumber()
+      );
+      assert.equal(
+        4001,
+        pool.amountY.toAtomicUnits(pool.coinInfoY.decimals).toNumber()
+      );
+      assert.equal(
+        2000,
+        pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber()
+      );
     }
 
     {
       // Should fail because user will receive 1999 tokens for the deposit.
       // 1 / 2000 = 5 bps.
-      let tx = await pool.addLiquidity({
-        sender: moduleAuthority,
+      let tx = await poolClient.addLiquidity({
         amountX: AU("1000"),
         amountY: AU("4000"),
-        maxSlippageBps: AU("4"),
+        slippage: new Bps(4),
       });
       assert.ok(
-        !tx.tx.success,
-        `${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+        !tx.transaction.success,
+        `${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
       );
-      await pool.update();
-      assert.equal(1000, pool.amountAuX.toNumber());
-      assert.equal(4001, pool.amountAuY.toNumber());
-      assert.equal(2000, pool.amountAuLP.toNumber());
+      pool = await poolClient.query();
+      assert.equal(
+        1000,
+        pool.amountX.toAtomicUnits(pool.coinInfoX.decimals).toNumber()
+      );
+      assert.equal(
+        4001,
+        pool.amountY.toAtomicUnits(pool.coinInfoY.decimals).toNumber()
+      );
+      assert.equal(
+        2000,
+        pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber()
+      );
     }
 
     {
-      let tx = await pool.addLiquidity({
-        sender: moduleAuthority,
+      let tx = await poolClient.addLiquidity({
         amountX: AU("1000"),
         amountY: AU("4000"),
-        maxSlippageBps: AU("5"),
+        slippage: new Bps(5),
       });
       assert.ok(
-        tx.tx.success,
-        `${JSON.stringify(tx.tx.vm_status, undefined, "  ")}`
+        tx.transaction.success,
+        `${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
       );
-      await pool.update();
-      assert.equal(2000, pool.amountAuX.toNumber());
-      assert.equal(8001, pool.amountAuY.toNumber());
-      assert.equal(3999, pool.amountAuLP.toNumber());
+      pool = await poolClient.query();
+      assert.equal(
+        2000,
+        pool.amountX.toAtomicUnits(pool.coinInfoX.decimals).toNumber()
+      );
+      assert.equal(
+        8001,
+        pool.amountY.toAtomicUnits(pool.coinInfoY.decimals).toNumber()
+      );
+      assert.equal(
+        3999,
+        pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber()
+      );
     }
 
     assert.ok(
       (
-        await pool.removeLiquidity({
-          sender: moduleAuthority,
-          amountLP: AU(pool.amountAuLP.toNumber() - 1000),
+        await poolClient.removeLiquidity({
+          amountLP: AU(
+            pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber() -
+              1000
+          ),
         })
-      ).tx.success
+      ).transaction.success
     );
+    await poolClient.drain();
   });
 
   it("events", async function () {
-    await pool.update();
+    pool = await poolClient.query();
     await Promise.all([
-      assert.ok(await pool.swapEvents()),
-      assert.ok(await pool.addLiquidityEvents()),
-      assert.ok(await pool.removeLiquidityEvents()),
+      assert.ok(await poolClient.swapEvents()),
+      assert.ok(await poolClient.addLiquidityEvents()),
+      assert.ok(await poolClient.removeLiquidityEvents()),
     ]);
   });
 
@@ -433,19 +451,14 @@ describe("AMM tests", function () {
       account: auxAccountOwner.address(),
       quantity: AU(500_000_000),
     });
-    await auxClient.registerAuxCoin(auxAccountOwner);
-    let tx = await auxClient.mintAux(
-      moduleAuthority,
-      auxAccountOwnerAddr,
-      DU(4)
-    );
-    assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: auxAccountOwner,
-      coin: FakeCoin.BTC,
-      amount: DU(4),
+    auxClient.sender = auxAccountOwner;
+    await auxClient.registerAuxCoin();
+    let tx = await auxClient.mintAux(auxAccountOwnerAddr, DU(4), {
+      sender: moduleAuthority,
     });
-    await vault.createAuxAccount(auxAccountOwner);
+    assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
+    tx = await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(4));
+    await vault.createAuxAccount();
     tx = await vault.deposit(
       auxAccountOwner,
       auxCoin,
@@ -471,7 +484,7 @@ describe("AMM tests", function () {
   });
 
   it("addLiquidityWithAccount", async function () {
-    await pool.resetPool({ sender: moduleAuthority });
+    pool = await poolClient.query();
     let initX = await vault.balance(
       auxAccountOwnerAddr,
       pool.coinInfoX.coinType
@@ -481,14 +494,14 @@ describe("AMM tests", function () {
       pool.coinInfoY.coinType
     );
 
-    const tx = await pool.addLiquidityWithAccount({
-      sender: auxAccountOwner,
+    const tx = await poolClient.addLiquidity({
       amountX: DU(2),
       amountY: DU(2),
-      maxSlippageBps: AU(0),
+      slippage: new Bps(0),
+      useAuxAccount: true,
     });
-    assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
-    await pool.update();
+    assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
+    pool = await poolClient.query();
     assert.equal(pool.amountX.toNumber(), 2);
     assert.equal(pool.amountY.toNumber(), 2);
     assert.equal(pool.amountLP.toNumber(), 0.2);
@@ -504,13 +517,14 @@ describe("AMM tests", function () {
 
     assert.equal(initX.toNumber() - finalX.toNumber(), 2);
     assert.equal(initY.toNumber() - finalY.toNumber(), 2);
-    await pool.removeLiquidityWithAccount({
-      sender: auxAccountOwner,
+    await poolClient.removeLiquidity({
       amountLP: DU(0.2),
+      useAuxAccount: true,
     });
   });
 
   it("resetPool", async function () {
-    await pool.resetPool({ sender: moduleAuthority });
+    pool = await poolClient.query();
+    await poolClient.drain();
   });
 });

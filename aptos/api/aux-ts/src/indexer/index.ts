@@ -3,7 +3,6 @@ import * as aux from "..";
 import { AuxClient } from "../client";
 
 import type { Types } from "aptos";
-import * as BN from "bn.js";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import _ from "lodash";
 import { orderEventToOrder } from "../graphql/conversion";
@@ -47,58 +46,56 @@ interface Bbo {
   time: number;
 }
 
-async function publishAmmEvents() {
-  let swapCursor: BN = new BN.BN(0);
-  let addCursor: BN = new BN.BN(0);
-  let removeCursor: BN = new BN.BN(0);
+// async function publishAmmEvents() {
+//   let swapCursor: BN = new BN.BN(0);
+//   let addCursor: BN = new BN.BN(0);
+//   let removeCursor: BN = new BN.BN(0);
 
-  const poolReadParams = await aux.Pool.index(auxClient);
-  const pools = await Promise.all(
-    poolReadParams.map((poolReadParam) =>
-      aux.Pool.read(auxClient, poolReadParam).then((pool) => pool!)
-    )
-  );
-  while (true) {
-    for (const pool of pools) {
-      for (const swapEvent of await pool.swapEvents()) {
-        if (swapCursor === swapEvent.sequenceNumber) {
-          break;
-        }
-        await redisPubSub.publish("SWAP", {
-          ...swapEvent,
-          amountIn: swapEvent.in.toNumber(),
-          amountOut: swapEvent.out.toNumber(),
-        });
-        swapCursor = swapEvent.sequenceNumber;
-      }
-      for (const addLiquidityEvent of await pool.addLiquidityEvents()) {
-        if (addCursor === addLiquidityEvent.sequenceNumber) {
-          break;
-        }
-        await redisPubSub.publish("ADD_LIQUIDITY", {
-          ...addLiquidityEvent,
-          amountAddedX: addLiquidityEvent.xAdded.toNumber(),
-          amountAddedY: addLiquidityEvent.yAdded.toNumber(),
-          amountMintedLP: addLiquidityEvent.lpMinted.toNumber(),
-        });
-        addCursor = addLiquidityEvent.sequenceNumber;
-      }
-      for (const removeLiquidityEvent of await pool.removeLiquidityEvents()) {
-        if (removeCursor === removeLiquidityEvent.sequenceNumber) {
-          break;
-        }
-        await redisPubSub.publish("REMOVE_LIQUIDITY", {
-          ...removeLiquidityEvent,
-          amountRemovedX: removeLiquidityEvent.xRemoved.toNumber(),
-          amountRemovedY: removeLiquidityEvent.yRemoved.toNumber(),
-          amountBurnedLP: removeLiquidityEvent.lpBurned.toNumber(),
-        });
-        removeCursor = removeLiquidityEvent.sequenceNumber;
-      }
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-}
+//   const poolInputs = await auxClient.pools();
+//   const pools = await Promise.all(
+//     poolInputs.map((poolInput) => new aux.Pool(auxClient, poolInput))
+//   );
+//   while (true) {
+//     for (const pool of pools) {
+//       for (const swapEvent of await pool.swapEvents()) {
+//         if (swapCursor === swapEvent.sequenceNumber) {
+//           break;
+//         }
+//         await redisPubSub.publish("SWAP", {
+//           ...swapEvent,
+//           amountIn: swapEvent.amountIn.toNumber(),
+//           amountOut: swapEvent.amountOut.toNumber(),
+//         });
+//         swapCursor = swapEvent.sequenceNumber;
+//       }
+//       for (const addLiquidityEvent of await pool.addLiquidityEvents()) {
+//         if (addCursor === addLiquidityEvent.sequenceNumber) {
+//           break;
+//         }
+//         await redisPubSub.publish("ADD_LIQUIDITY", {
+//           ...addLiquidityEvent,
+//           amountAddedX: addLiquidityEvent.xAdded.toNumber(),
+//           amountAddedY: addLiquidityEvent.yAdded.toNumber(),
+//           amountMintedLP: addLiquidityEvent.lpMinted.toNumber(),
+//         });
+//         addCursor = addLiquidityEvent.sequenceNumber;
+//       }
+//       for (const removeLiquidityEvent of await pool.removeLiquidityEvents()) {
+//         if (removeCursor === removeLiquidityEvent.sequenceNumber) {
+//           break;
+//         }
+//         await redisPubSub.publish("REMOVE_LIQUIDITY", {
+//           ...removeLiquidityEvent,
+//           amountRemovedX: removeLiquidityEvent.xRemoved.toNumber(),
+//           amountRemovedY: removeLiquidityEvent.yRemoved.toNumber(),
+//           amountBurnedLP: removeLiquidityEvent.lpBurned.toNumber(),
+//         });
+//         removeCursor = removeLiquidityEvent.sequenceNumber;
+//       }
+//     }
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+//   }
+// }
 
 async function publishClobEvents() {
   const marketInputs = await aux.Market.index(auxClient);
@@ -345,7 +342,7 @@ async function publishAnalytics(
 
 async function main() {
   await redisClient.connect();
-  publishAmmEvents;
+  // publishAmmEvents;
   publishClobEvents();
 }
 

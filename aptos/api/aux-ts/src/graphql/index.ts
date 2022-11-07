@@ -17,7 +17,7 @@ import { pool } from "./resolvers/pool";
 import { query } from "./resolvers/query";
 import { subscription } from "./resolvers/subscription";
 import cors from "cors";
-import { redisClient } from "./connection";
+import { redisClient } from "./client";
 
 const resolvers = {
   Query: query,

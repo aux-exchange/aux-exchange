@@ -1,5 +1,4 @@
-import { parsePoolType } from "../src/amm/core/query";
-import { AuxClient } from "../src/client";
+import { AuxClient, parsePoolType } from "../src/client";
 import { parseMarketType } from "../src/clob/core/query";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";

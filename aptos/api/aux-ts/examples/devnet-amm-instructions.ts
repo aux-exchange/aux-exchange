@@ -2,8 +2,8 @@
  * Demo of the supported AMM instructions.
  */
 import { AptosAccount, AptosClient } from "aptos";
-import { assert } from "console";
-import { AU, DU, Pool } from "../src";
+import { AU, DU } from "../src";
+import { PoolClient } from "../src/pool/client";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 
@@ -25,6 +25,12 @@ async function main() {
   // shortcut for DecimalUnits, the fixed-precision representation that will be
   // converted to AU in API calls.
   const trader = new AptosAccount();
+
+  // Set the sender for all future txs to the trader. Note you can override this for individual txs
+  // by passing in `options`.
+  auxClient.sender = trader;
+
+  // Fund and create the trader
   await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(500_000_000),
@@ -32,52 +38,37 @@ async function main() {
 
   // We support several fake coins that can be used for test trading. You can
   // mint and burn any quantities.
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000), // i.e. 1000 BTC
-  });
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000), // i.e. $1m
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000));
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000));
 
   // The full type names for the fake coins. For real trading.
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
 
-  let maybePool = await Pool.read(auxClient, {
+  const poolClient = new PoolClient(auxClient, {
     coinTypeX: btcCoin,
     coinTypeY: usdcCoin,
   });
 
-  assert(
-    maybePool !== undefined,
-    "Pool should have been created during contract deployment."
-  );
-  const pool = maybePool as Pool;
-
   // Fetch current user positions in the pool.
   console.log(
     "pool.position:",
-    await pool.position(trader.address().toShortString())
+    await poolClient.position(trader.address().toShortString())
   );
 
   // Call update to refresh the internal variables.
-  await pool.update();
+  let pool = await poolClient.query();
 
   // Add some liquidity. This instruction may round the result in a way that is
   // unfavorable to me. Here we do not specify any limits on the rounding.
-  const add = await pool.addApproximateLiquidity({
-    sender: trader,
+  const add = await poolClient.addApproximateLiquidity({
     maxX: DU(0.1),
     maxY: DU(2000),
   });
 
   // The returned event includes information about the quantities actually added
   // and LP received.
-  console.log("add.payload:", add.payload);
+  console.log("add.result:", add.result);
 
   // Add liquidity in a more controlled way. Abort the add if the pool
   // parameters have moved against us, or if the rounding leads to a poor
@@ -85,8 +76,7 @@ async function main() {
   // LP based on our off-chain understanding of the pool state, and that the LP
   // represents a position in at least 90% of our off-chain undestanding of the
   // X and Y quantities.
-  await pool.addApproximateLiquidity({
-    sender: trader,
+  await poolClient.addApproximateLiquidity({
     maxX: DU(0.1),
     maxY: DU(2000),
     minLP: DU(
@@ -97,40 +87,39 @@ async function main() {
   });
 
   // Put in 0.1 BTC and get at least 1000 USDC out, or fail.
-  const swap = await pool.swapXForY({
-    sender: trader,
+  const swap = await poolClient.swap({
+    coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
     exactAmountIn: DU(0.1),
-    minAmountOut: DU(1000),
+    parameters: { minAmountOut: DU(1000) },
   });
 
   // The returned swap event includes information about the swapped quantities.
   // The swap instructions below also return this event, but we omit the output
   // for brevity.
-  console.log("swap.payload:", swap.payload);
+  console.log("swap.result:", swap.result);
 
   // We would like to receive 1000 USDC using a maximum of 0.1 BTC. Fail if this
   // cannot be done.
-  await pool.swapXForYExact({
-    sender: trader,
-    maxAmountIn: DU(0.1),
+  await poolClient.swap({
+    coinTypeOut: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
     exactAmountOut: DU(1000),
+    parameters: { maxAmountIn: DU(0.1) },
   });
 
   // We would like to swap exactly 0.1 BTC for USDC, where the swap price of
   // each marginal unit swapped is at least $10,000.
-  await pool.swapXForYLimit({
-    sender: trader,
+  await poolClient.swap({
+    coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
     exactAmountIn: DU(0.1),
-    minOutPerIn: DU(10000),
+    parameters: { minAmountOutPerIn: DU(10000) },
   });
 
   // We would like to swap up to 0.1 BTC for exactly 1000 USDC, where the swap
   // price of each marginal unit swapped is at least $10,000.
-  await pool.swapXForYExactLimit({
-    sender: trader,
-    maxAmountIn: DU(0.1),
+  await poolClient.swap({
+    coinTypeOut: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
     exactAmountOut: DU(1000),
-    maxInPerOut: DU(1 / 10000),
+    parameters: { maxAmountIn: DU(0.1), maxAmountInPerOut: DU(1 / 10000) },
   });
 }
 

@@ -6,7 +6,12 @@ import { AuxEnv } from "../src/env";
 import { AU } from "../src/units";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 
 describe("Fake Coin tests", function () {
   this.timeout(30000);
@@ -17,10 +22,8 @@ describe("Fake Coin tests", function () {
     const [alice, _] = await getAliceBob(auxClient);
     const aliceAddr = alice.address();
 
-    await auxClient.registerAndMintFakeCoin({
+    await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, AU(100), {
       sender: alice,
-      coin: FakeCoin.USDC,
-      amount: AU(100),
     });
     const balance = await auxClient.getFakeCoinBalance(
       aliceAddr,

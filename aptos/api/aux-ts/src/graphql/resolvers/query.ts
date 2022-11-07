@@ -3,9 +3,10 @@ import axios from "axios";
 import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
-import { poolEvents, pools } from "../../amm/core/query";
+import { PoolClient } from "../../pool/client";
+import type { ConstantProduct, SwapEvent } from "../../pool/schema";
 import { ALL_FAKE_COINS } from "../../coin";
-import { auxClient, redisClient } from "../connection";
+import { auxClient, redisClient } from "../client";
 import {
   Account,
   CoinInfo,
@@ -91,7 +92,7 @@ export const query = {
   },
 
   async summaryMetrics(_parent: any): Promise<SummaryMetrics> {
-    const allPools = await pools(auxClient);
+    const poolInputs = await auxClient.pools();
     const now = Date.now();
     const nowMinus7D = now - 7 * 24 * 60 * 60 * 1000;
     const nowMinus24H = now - 24 * 60 * 60 * 1000;
@@ -104,43 +105,39 @@ export const query = {
     let allUsers7D = new Set<string>();
     let allUsers24H = new Set<string>();
 
-    for (const pool of allPools) {
-      const loadedPool = await aux.Pool.read(auxClient, {
-        coinTypeX: pool.coinTypeX,
-        coinTypeY: pool.coinTypeY,
+    for (const { coinTypeX, coinTypeY } of poolInputs) {
+      const poolClient = new PoolClient(auxClient, {
+        coinTypeX,
+        coinTypeY,
       });
-      if (loadedPool === undefined) {
+      const pool = await poolClient.query();
+      if (pool === undefined) {
         continue;
       } else {
-        dollarTVL += getRecognizedTVL(
-          pool.coinTypeX,
-          loadedPool.amountX.toNumber()
-        );
-        dollarTVL += getRecognizedTVL(
-          pool.coinTypeY,
-          loadedPool.amountY.toNumber()
-        );
+        dollarTVL += getRecognizedTVL(coinTypeX, pool.amountX!.toNumber());
+        dollarTVL += getRecognizedTVL(coinTypeY, pool.amountY!.toNumber());
       }
 
-      const allEvents = await poolEvents(auxClient, pool, {
+      const allEvents = await poolClient.poolEvents({
         start: new BN(0),
       });
-      for (const event of allEvents) {
-        if (event.type == "SwapEvent") {
+      for (const poolEvent of allEvents) {
+        if (poolEvent.kind === "SwapEvent") {
+          const event = poolEvent as SwapEvent;
           const eventMilliseconds = event.timestamp.toNumber() / 1000;
           if (eventMilliseconds < nowMinus7D) {
             continue;
           }
           const inUSD = getRecognizedTVL(
-            event.inCoinType,
+            event.coinTypeIn,
             (
-              await auxClient.toDecimalUnits(event.inCoinType, event.in)
+              await auxClient.toDecimalUnits(event.coinTypeIn, event.amountIn)
             ).toNumber()
           );
           const outUSD = getRecognizedTVL(
-            event.outCoinType,
+            event.coinTypeOut,
             (
-              await auxClient.toDecimalUnits(event.outCoinType, event.out)
+              await auxClient.toDecimalUnits(event.coinTypeOut, event.amountOut)
             ).toNumber()
           );
           const tradeUSD = Math.max(inUSD, outUSD);
@@ -229,7 +226,9 @@ export const query = {
     return allCoins;
   },
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
-    const pool = await aux.Pool.read(auxClient, poolInput);
+    const poolClient = new PoolClient(auxClient, poolInput);
+    const pool = await poolClient.query();
+
     if (pool === undefined) {
       return null;
     }
@@ -241,12 +240,12 @@ export const query = {
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
-    const poolReadParams = args.poolInputs
+    const poolInputs = args.poolInputs
       ? args.poolInputs
-      : (await aux.Pool.index(auxClient));
+      : await auxClient.pools();
     const pools = await Promise.all(
-      poolReadParams.map((poolReadParam) =>
-        aux.Pool.read(auxClient, poolReadParam)
+      poolInputs.map((poolInput) =>
+        new PoolClient(auxClient, poolInput).query()
       )
     );
     const hippoCoins = await coinsWithoutLiquidity();
@@ -410,7 +409,7 @@ function getFeaturedPriority(status: FeaturedStatus): number {
 }
 
 function formatPool(
-  pool: aux.Pool,
+  pool: ConstantProduct,
   coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
 ) {
   let featuredStatus = FeaturedStatus.None;
@@ -441,8 +440,8 @@ function formatPool(
   );
 
   const auLiquidity = Math.max(
-    pool.amountAuX.toNumber(),
-    pool.amountAuY.toNumber()
+    pool.amountX.toAtomicUnits(pool.coinInfoX.decimals).toNumber(),
+    pool.amountY.toAtomicUnits(pool.coinInfoY.decimals).toNumber()
   );
 
   const coinXNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoX.coinType];
@@ -468,7 +467,7 @@ function formatPool(
     amountX: pool.amountX.toNumber(),
     amountY: pool.amountY.toNumber(),
     amountLP: pool.amountLP.toNumber(),
-    feePercent: pool.feePct,
+    feePercent: pool.fee.toPercent(),
     featuredStatus,
     recognizedLiquidity,
     auLiquidity,

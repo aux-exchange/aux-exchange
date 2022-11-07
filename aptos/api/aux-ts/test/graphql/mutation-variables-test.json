@@ -1,0 +1,80 @@
+{
+  "createPoolInput": {
+    "poolInput": {
+      "coinTypeX": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "coinTypeY": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "feePercent": 0.3
+  },
+  "swapInput": {
+    "poolInput": {
+      "coinTypeX": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "coinTypeY": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "coinTypeIn": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+    "coinTypeOut": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>",
+    "amountIn": 1,
+    "minAmountOut": 1200
+  },
+  "addLiquidityInput": {
+    "poolInput": {
+      "coinTypeX": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "coinTypeY": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "amountX": 1,
+    "amountY": 1
+  },
+  "removeLiquidityInput": {
+    "poolInput": {
+      "coinTypeX": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "coinTypeY": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "amountLP": 1
+  },
+  "createMarketInput": {
+    "marketInput": {
+      "baseCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "quoteCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "baseLotSize": 1,
+    "quoteLotSize": 1
+  },
+  "placeOrderInput": {
+    "marketInput": {
+      "baseCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "quoteCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "sender": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "side": "BUY",
+    "limitPrice": 1300,
+    "quantity": 1,
+    "auxToBurn": 0,
+    "clientOrderId": 42,
+    "orderType": "LIMIT"
+  },
+  "cancelOrderInput": {
+    "marketInput": {
+      "baseCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+      "quoteCoinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::USDC>"
+    },
+    "sender": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "orderId": 1
+  },
+  "depositInput": {
+    "coinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+    "sender": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "amount": 42
+  },
+  "withdrawInput": {
+    "coinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+    "sender": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "amount": 42
+  },
+  "transferInput": {
+    "coinType": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::FakeCoin<0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c::fake_coin::ETH>",
+    "from": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "to": "0x8f6139e9daa2e9096a029c120d2efa8ee20c6b187904c29071389107c13cf92c",
+    "amount": 42
+  }
+}
+

@@ -10,7 +10,12 @@ import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 import { AuxEnv } from "../src/env";
 
-const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
@@ -24,7 +29,7 @@ let bob: AptosAccount;
 let aliceAddr: string;
 let bobAddr: string;
 
-describe.skip("Subscriber DSL tests", function () {
+describe("Subscriber DSL tests", function () {
   this.timeout(30000);
 
   it("subscribes to Market events", async function () {
@@ -32,17 +37,21 @@ describe.skip("Subscriber DSL tests", function () {
     aliceAddr = alice.address().toString();
     bobAddr = bob.address().toString();
     await Promise.all([
-      auxClient.registerAuxCoin(alice),
-      auxClient.registerAuxCoin(bob),
+      auxClient.registerAuxCoin({ sender: alice }),
+      auxClient.registerAuxCoin({ sender: bob }),
     ]);
 
-    await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000));
-    await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000));
+    await auxClient.mintAux(aliceAddr, AU(100_000_000), {
+      sender: moduleAuthority,
+    });
+    await auxClient.mintAux(bobAddr, AU(100_000_000), {
+      sender: moduleAuthority,
+    });
 
     const vault = new Vault(auxClient);
     await Promise.all([
-      vault.createAuxAccount(alice),
-      vault.createAuxAccount(bob),
+      vault.createAuxAccount({ sender: alice }),
+      vault.createAuxAccount({ sender: bob }),
     ]);
     await Promise.all([
       vault.deposit(alice, quoteCoin, DU(0.004)),

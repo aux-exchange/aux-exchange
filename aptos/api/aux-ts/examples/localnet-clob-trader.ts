@@ -44,13 +44,11 @@ async function setupTrader(): Promise<void> {
     account: moduleAuthority.address(),
     quantity: DU(500_000),
   });
-  await auxClient.registerAuxCoin(moduleAuthority);
+  await auxClient.registerAuxCoin({ sender: moduleAuthority });
 
-  await auxClient.mintAux(
-    moduleAuthority,
-    moduleAuthority.address().toString(),
-    DU(500_000)
-  );
+  await auxClient.mintAux(moduleAuthority.address().toString(), DU(500_000), {
+    sender: moduleAuthority,
+  });
 
   await auxClient.fundAccount({
     account: trader.address(),
@@ -62,23 +60,19 @@ async function setupTrader(): Promise<void> {
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
 
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000), {
     sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000),
   });
 
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000), {
     sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000),
   });
 
   // The vault must be configurd to accept all types being traded.
   const vault = new Vault(auxClient);
 
   // Deposit funds to prepare for trading.
-  await vault.createAuxAccount(trader);
+  await vault.createAuxAccount({sender: trader});
   await vault.deposit(trader, auxCoin, DU(400_000));
   await vault.deposit(trader, aptosCoin, DU(400_000));
   await vault.deposit(trader, btcCoin, DU(1000));
@@ -176,7 +170,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of tx.payload) {
+      for (const e of tx.result ?? []) {
         if (e.type == "OrderFillEvent") {
           console.log(
             "    Fill for ",
@@ -197,7 +191,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.IMMEDIATE_OR_CANCEL_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of tx.payload) {
+      for (const e of tx.result ?? []) {
         if (e.type == "OrderFillEvent") {
           console.log(
             "    Fill for ",
@@ -246,7 +240,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of bidTx.payload) {
+      for (const e of bidTx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           bidOrderId = e.orderId;
         }
@@ -268,7 +262,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of askTx.payload) {
+      for (const e of askTx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           askOrderId = e.orderId;
         }

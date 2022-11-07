@@ -34,16 +34,12 @@ async function setupTrader(): Promise<void> {
 
   // We're rich! Use canonical fake types for trading. Fake coins can be freely
   // minted by anybody. All AUX test markets use these canonical fake coins.
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000), {
     sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000),
   });
 
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000), {
     sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000),
   });
 }
 

@@ -61,13 +61,17 @@ describe("CLOB DSL tests", function () {
   });
 
   it("mintAux", async function () {
-    let tx = await auxClient.registerAuxCoin(alice);
+    let tx = await auxClient.registerAuxCoin({ sender: alice });
     // assert.ok(tx.success, `${tx.vm_status}`);
-    tx = await auxClient.registerAuxCoin(bob);
+    tx = await auxClient.registerAuxCoin({ sender: bob });
     // assert.ok(tx.success, `${tx.vm_status}`);
-    tx = await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000));
+    tx = await auxClient.mintAux(aliceAddr, AU(100_000_000), {
+      sender: moduleAuthority,
+    });
     assert.ok(tx.success, `${tx.vm_status}`);
-    tx = await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000));
+    tx = await auxClient.mintAux(bobAddr, AU(100_000_000), {
+      sender: moduleAuthority,
+    });
     assert.ok(tx.success, `${tx.vm_status}`);
   });
 
@@ -76,8 +80,8 @@ describe("CLOB DSL tests", function () {
   });
 
   it("createAuxAccount", async function () {
-    await vault.createAuxAccount(alice);
-    await vault.createAuxAccount(bob);
+    await vault.createAuxAccount({ sender: alice });
+    await vault.createAuxAccount({ sender: bob });
   });
 
   it("depositToAuxAccount", async function () {
@@ -115,8 +119,8 @@ describe("CLOB DSL tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    assert.equal(1, tx.payload?.length);
-    const event = tx.payload[0]!;
+    assert.equal(1, tx.result?.length);
+    const event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "2000000");
     assert.equal(
@@ -202,6 +206,7 @@ describe("CLOB DSL tests", function () {
     // withdrawal all the money, so core test can run successfully.
     await withdrawAll(auxClient);
   });
+
   it("getPlacedOrderEvents", async function () {
     await market.update();
     const placedOrderEvents = await market.orders();
@@ -299,18 +304,22 @@ describe("CLOB Core tests", function () {
 
   it("mintAux", async function () {
     await Promise.all([
-      await auxClient.registerAuxCoin(alice),
-      await auxClient.registerAuxCoin(bob),
+      await auxClient.registerAuxCoin({ sender: alice }),
+      await auxClient.registerAuxCoin({ sender: bob }),
     ]);
     await Promise.all([
-      await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000)),
-      await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000)),
+      await auxClient.mintAux(aliceAddr, AU(100_000_000), {
+        sender: moduleAuthority,
+      }),
+      await auxClient.mintAux(bobAddr, AU(100_000_000), {
+        sender: moduleAuthority,
+      }),
     ]);
   });
 
   it("createAuxAccount", async function () {
-    await vault.mutation.createAuxAccount(auxClient, alice);
-    await vault.mutation.createAuxAccount(auxClient, bob);
+    await vault.mutation.createAuxAccount(auxClient, { sender: alice });
+    await vault.mutation.createAuxAccount(auxClient, { sender: bob });
   });
 
   it("depositToAuxAccount", async function () {
@@ -361,10 +370,8 @@ describe("CLOB Core tests", function () {
   it("listMarkets", async function () {
     // Create some fake markets
     const usdcCoin = await auxClient.getFakeCoinInfo(FakeCoin.USDC);
-    await auxClient.registerAndMintFakeCoin({
+    await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, AU(100), {
       sender: alice,
-      coin: FakeCoin.USDC,
-      amount: AU(100),
     });
     await clob.mutation.createMarket(auxClient, {
       sender: moduleAuthority,
@@ -557,11 +564,11 @@ describe("CLOB Core tests", function () {
     assert.ok(last.isBid == false);
     assert.equal(
       last.quantity.toDecimalUnits(market.baseCoinInfo.decimals).toNumber(),
-      2
+      1
     );
     assert.equal(
       last.price.toDecimalUnits(market.quoteCoinInfo.decimals).toNumber(),
-      0.0001
+      0.002
     );
   });
 

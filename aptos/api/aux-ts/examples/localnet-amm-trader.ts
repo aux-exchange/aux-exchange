@@ -6,8 +6,8 @@
  */
 import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
-import { assert } from "console";
-import { AU, DU, Pool } from "../src";
+import { AU, DU } from "../src";
+import { PoolClient } from "../src/pool/client";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 
@@ -43,6 +43,10 @@ const moduleAuthority: AptosAccount = auxClient.moduleAuthority!;
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
 
+// Set the sender for all future txs to the trader. Note you can override this for individual txs
+// by passing in `options`.
+auxClient.sender = trader;
+
 // We fund trader and module authority with Aptos, BTC, and USDC coins
 async function setupTrader(): Promise<void> {
   await auxClient.fundAccount({
@@ -57,27 +61,18 @@ async function setupTrader(): Promise<void> {
 
   // We're rich! Use canonical fake types for trading. Fake coins can be freely
   // minted by anybody. All AUX test markets use these canonical fake coins.
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000),
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000));
 
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000),
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000));
 }
 
 async function tradeAMM(): Promise<void> {
-  let pool = await Pool.read(auxClient, {
+  let poolClient = new PoolClient(auxClient, {
     coinTypeX: auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
     coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
   });
 
-  assert(pool !== undefined);
-  pool = pool as Pool;
+  let pool = await poolClient.query();
 
   while (true) {
     try {
@@ -86,19 +81,18 @@ async function tradeAMM(): Promise<void> {
       if (pool.amountX.toNumber() == 0) {
         const amountXToAdd = DU(10);
         const amountYToAdd = DU(200000);
-        const tx = await pool.addExactLiquidity({
-          sender: trader,
+        const tx = await poolClient.addExactLiquidity({
           amountX: amountXToAdd,
           amountY: amountYToAdd,
         });
-        // The transaction contains the raw transaction (tx.tx) as well as a parsed
-        // payload (tx.payload).
-        console.log(">>>> Add Liquidity event:", tx.payload);
+        // The transaction contains the raw transaction (tx.transaction) as well as a parsed
+        // payload (tx.result ?? []).
+        console.log(">>>> Add Liquidity event:", tx.result ?? []);
       }
 
       // Note that amountX and amountY are DecimalUnits, so the ratio is the
       // conventional human price.
-      await pool.update();
+      pool = await poolClient.query();
 
       console.log(
         `Pool BTC=${pool.amountX.toString()}, USDC=${pool.amountY.toString()}`
@@ -123,21 +117,21 @@ async function tradeAMM(): Promise<void> {
         try {
           if (poolMid < ftxMid) {
             console.log(">>>> Swapping for BTC");
-            tx = await pool.swapYForX({
-              sender: trader,
+            tx = await poolClient.swap({
+              coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
               exactAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
-              minAmountOut: AU(0),
+              parameters: {minAmountOut: AU(0)},
             });
           } else {
             console.log(">>>> Swapping for USDC");
-            tx = await pool.swapXForY({
-              sender: trader,
+            tx = await poolClient.swap({
+              coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
               exactAmountIn: AUX_TRADER_CONFIG.btcPerSwap,
-              minAmountOut: AU(0),
+              parameters: {minAmountOut: AU(0)},
             });
           }
 
-          console.log(">>>> Swap event:", tx.payload);
+          console.log(">>>> Swap event:", tx.result ?? []);
         } catch (e) {
           console.log("  Placing order failed with error", e);
         }

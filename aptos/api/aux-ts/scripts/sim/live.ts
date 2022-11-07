@@ -1,22 +1,26 @@
 import WebSocket from "ws";
 
 import { AptosAccount, HexString, Types } from "aptos";
-import { Market, Pool, Vault } from "../../src";
-import {
-  AuxClient,
-} from "../../src/client";
-import { OrderType } from "../../src/clob/core/mutation";
-import { AU, DU } from "../../src/units";
-import _ from "lodash";
-import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
 import assert from "assert";
+import _ from "lodash";
+import { Market, Vault } from "../../src";
+import { PoolClient } from "../../src/pool/client";
+import type { SwapExactInInput } from "../../src/pool/schema";
+import { AuxClient } from "../../src/client";
+import { OrderType } from "../../src/clob/core/mutation";
+import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
 import { AuxEnv } from "../../src/env";
+import { AU, DU } from "../../src/units";
 
 const auxEnv = new AuxEnv();
 if (auxEnv.faucetClient === undefined) {
-  throw new Error("Cannot sim:live without a faucet.")
+  throw new Error("Cannot sim:live without a faucet.");
 }
-const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient, auxEnv.faucetClient);
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {
@@ -47,20 +51,20 @@ async function setupTrader(
   vault: Vault,
   account: AptosAccount
 ): Promise<Trader> {
+  auxClient.sender = account;
   await auxClient.faucetClient!.fundAccount(
     account.address(),
     1_000_000_000_000_000
   );
-  await vault.createAuxAccount(account);
-  await auxClient.registerAuxCoin(moduleAuthority);
+  await vault.createAuxAccount();
+  await auxClient.registerAuxCoin();
 
   for (const coin of ALL_FAKE_COINS) {
     const coinType = auxClient.getWrappedFakeCoinType(coin);
-    await auxClient.registerAndMintFakeCoin({
-      sender: account,
+    await auxClient.registerAndMintFakeCoin(
       coin,
-      amount: DU(4_000_000), // 4 million
-    });
+      DU(4_000_000) // 4 million
+    );
     await vault.deposit(account, coinType, DU(1_000_000));
     await vault.withdraw(account, coinType, DU(100_000));
   }
@@ -69,16 +73,18 @@ async function setupTrader(
 
 async function mirrorCoinbase(
   traders: Trader[],
-  pools: Record<string, Pool>,
+  pools: Record<string, PoolClient>,
   markets: Record<string, Market>
 ) {
   await Promise.all(
-    Object.values(pools).map((pool, i) =>
-      pool.addExactLiquidity({
-        sender: traders[i]!.account,
-        amountX: DU(1_000_000),
-        amountY: DU(1_000_000),
-      })
+    Object.values(pools).map((poolClient, i) =>
+      poolClient.addExactLiquidity(
+        {
+          amountX: DU(1_000_000),
+          amountY: DU(1_000_000),
+        },
+        { sender: traders[i]!.account }
+      )
     )
   );
 
@@ -112,13 +118,13 @@ async function mirrorCoinbase(
         }).then(
           (txResult) => {
             trader.ready = true;
-            if (!txResult.tx.success) {
+            if (!txResult.transaction.success) {
               console.log(
                 `[${data.product_id}] ${trader.account
                   .address()
-                  .hex()}: placed order: ${txResult.tx.hash}: vm_status: ${
-                  txResult.tx.vm_status
-                }`
+                  .hex()}: placed order: ${
+                  txResult.transaction.hash
+                }: vm_status: ${txResult.transaction.vm_status}`
               );
             }
           },
@@ -127,43 +133,46 @@ async function mirrorCoinbase(
       } else if (data.type === "match") {
         const [x, y] = data.product_id.split("-");
         trader.ready = false;
+        const poolClient = pools[data.product_id]!;
         if (data.side === "buy") {
-          const swap = {
-            sender: trader.account,
+          const swap: SwapExactInInput = {
+            coinTypeIn: poolClient.coinTypeX,
             exactAmountIn: DU(data.size),
-            minAmountOut: DU(0),
+            parameters: {
+              minAmountOut: DU(0),
+            },
           };
-          pools[data.product_id]!.swapXForY(swap).then(
+          poolClient.swap(swap, { sender: trader.account }).then(
             (txResult) => {
               trader.ready = true;
-              if (!txResult.tx.success) {
+              if (!txResult.transaction.success) {
                 console.log(
                   `[${data.product_id}] ${trader.account
                     .address()
                     .hex()}: swapped ${x} for ${y}: ${
-                    txResult.tx.hash
-                  }: vm_status: ${txResult.tx.vm_status}`
+                    txResult.transaction.hash
+                  }: vm_status: ${txResult.transaction.vm_status}`
                 );
               }
             },
             (failure) => console.error(failure)
           );
         } else {
-          const swap = {
-            sender: trader.account,
+          const swap: SwapExactInInput = {
+            coinTypeIn: poolClient.coinTypeY,
             exactAmountIn: DU(data.price * data.size),
-            minAmountOut: DU(0),
+            parameters: { minAmountOut: DU(0) },
           };
-          pools[data.product_id]!.swapYForX(swap).then(
+          poolClient.swap(swap, { sender: trader.account }).then(
             (txResult) => {
               trader.ready = true;
-              if (!txResult.tx.success) {
+              if (!txResult.transaction.success) {
                 console.log(
                   `[${data.product_id}] ${trader.account
                     .address()
                     .hex()}: swapped ${y} for ${x}: ${
-                    txResult.tx.hash
-                  }: vm_status: ${txResult.tx.vm_status}`
+                    txResult.transaction.hash
+                  }: vm_status: ${txResult.transaction.vm_status}`
                 );
               }
             },
@@ -229,15 +238,15 @@ function logTraders(traders: { address: string; privateKeyHex: string }[]) {
   setTimeout(() => logTraders(traders), 10000);
 }
 
-async function logPool(productId: string, pool: Pool) {
-  pool.update();
+async function logPool(productId: string, poolClient: PoolClient) {
+  const pool = await poolClient.query();
   console.log({
     productId,
     amountX: pool.amountX.toNumber(),
-    amountY: pool.amountAuY.toNumber(),
+    amountY: pool.amountY.toNumber(),
     amountLP: pool.amountLP.toNumber(),
   });
-  setTimeout(() => logPool(productId, pool), 10000);
+  setTimeout(() => logPool(productId, poolClient), 10000);
 }
 
 async function logMarket(productId: string, market: Market) {
@@ -316,15 +325,13 @@ async function main() {
     // "APT-USD": FakeCoin.AUX,
   };
 
-  const pools: Record<string, Pool> = Object.fromEntries(
-    await Promise.all(
-      Object.entries(convert).map(([productId, fakeCoin]) =>
-        Pool.read(auxClient, {
-          coinTypeX: auxClient.getWrappedFakeCoinType(fakeCoin),
-          coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
-        }).then((pool) => [productId, pool])
-      )
-    )
+  const pools: Record<string, PoolClient> = Object.fromEntries(
+    Object.entries(convert).map(([productId, fakeCoin]) => {
+      const coinTypeX = auxClient.getWrappedFakeCoinType(fakeCoin);
+      const coinTypeY = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
+      const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+      return [productId, poolClient];
+    })
   );
   const markets: Record<string, Market> = Object.fromEntries(
     await Promise.all(

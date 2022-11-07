@@ -22,12 +22,6 @@ type Mutation {
   removeLiquidity(
     removeLiquidityInput: RemoveLiquidityInput!
   ): EntryFunctionPayload!
-  addLiquidityWithAccount(
-    addLiquidityInput: AddLiquidityInput!
-  ): EntryFunctionPayload!
-  removeLiquidityWithAccount(
-    removeLiquidityInput: RemoveLiquidityInput!
-  ): EntryFunctionPayload!
 
   createMarket(createMarketInput: CreateMarketInput!): EntryFunctionPayload!
   placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!
@@ -69,6 +63,11 @@ type SummaryMetrics {
   users7D: Int!
 }
 
-scalar EntryFunctionPayload
+type EntryFunctionPayload {
+  function: String!
+  type_arguments: [String!]!
+  arugments: [String!]
+}
+
 scalar Address
 scalar Timestamp

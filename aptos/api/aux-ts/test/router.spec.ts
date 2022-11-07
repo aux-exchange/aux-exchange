@@ -1,23 +1,28 @@
 import { AptosAccount, CoinClient } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
-import Pool from "../src/amm/dsl/pool";
 import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
+import { PoolClient } from "../src/pool/client";
+import type { ConstantProduct } from "../src/pool/schema";
 import * as core from "../src/router/core";
 import type Router from "../src/router/dsl/router";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
-import { AtomicUnits, AU, DecimalUnits, DU } from "../src/units";
+import { AtomicUnits, AU, Bps, DecimalUnits, DU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 import { getAliceBob, withdrawAll } from "./alice-and-bob";
 
-const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
+const auxEnv = new AuxEnv();
+const auxClient = new AuxClient(
+  auxEnv.aptosNetwork,
+  auxEnv.aptosClient,
+  auxEnv.faucetClient
+);
 const moduleAuthority = auxClient.moduleAuthority!;
-
 const coinClient = new CoinClient(auxClient.aptosClient);
 
 const moduleAddress = auxClient.moduleAddress;
@@ -29,13 +34,15 @@ let bob: AptosAccount;
 let aliceAddr: string;
 let bobAddr: string;
 
-describe.skip("Router Core tests", function () {
+describe("Router Core tests", function () {
   this.timeout(30000);
   const aux: AptosAccount = moduleAuthority;
 
   let vault: Vault;
   let market: Market;
-  let pool: Pool;
+
+  let pool: ConstantProduct;
+  let poolClient: PoolClient;
 
   let btcCoinInfo: CoinInfo;
   let usdcCoinInfo: CoinInfo;
@@ -58,41 +65,41 @@ describe.skip("Router Core tests", function () {
   });
 
   it("registerAndMint fake coins", async function () {
-    let tx = await auxClient.registerAndMintFakeCoin({
-      sender: moduleAuthority,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    let tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: moduleAuthority }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: moduleAuthority,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: moduleAuthority }
+    );
     console.log(tx.success, tx.hash);
-    await auxClient.registerAndMintFakeCoin({
-      sender: alice,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: alice }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: alice,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: alice }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: bob,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: bob }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: bob,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: bob }
+    );
     console.log(tx.success, tx.hash);
   });
 
@@ -102,38 +109,23 @@ describe.skip("Router Core tests", function () {
     usdcCoinType = usdcCoinInfo.coinType;
     btcCoinType = btcCoinInfo.coinType;
 
-    const maybePool = await Pool.read(auxClient, {
+    poolClient = new PoolClient(auxClient, {
       coinTypeX: btcCoinType,
       coinTypeY: usdcCoinType,
     });
-    if (maybePool == undefined) {
-      pool = await Pool.create(auxClient, {
-        sender: moduleAuthority,
-        coinTypeX: btcCoinType,
-        coinTypeY: usdcCoinType,
-        feePct: 0,
-      });
-      console.log(
-        "createPool",
-        pool.amountX.toString(),
-        pool.amountY.toString(),
-        pool.amountLP.toString()
-      );
-      assert.equal(pool.amountX, 0);
-      assert.equal(pool.amountY, 0);
-      assert.equal(pool.amountLP, 0);
-    } else {
-      pool = maybePool;
-    }
+    await poolClient.create({ fee: new Bps(0) }, { sender: moduleAuthority });
+    pool = await poolClient.query();
 
-    if (pool.amountAuLP.toNumber() === 0) {
-      const tx = await pool.addExactLiquidity({
-        sender: moduleAuthority,
-        amountX: DU(1),
-        amountY: DU(22_000),
-      });
-      assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
-      await pool.update();
+    if ((await pool).amountLP.toNumber() === 0) {
+      const tx = await poolClient.addExactLiquidity(
+        {
+          amountX: DU(1),
+          amountY: DU(22_000),
+        },
+        { sender: moduleAuthority }
+      );
+      assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
+      pool = await poolClient.query();
     }
   });
 
@@ -142,8 +134,8 @@ describe.skip("Router Core tests", function () {
   });
 
   it("createAuxAccount", async function () {
-    await vault.createAuxAccount(alice);
-    await vault.createAuxAccount(bob);
+    await vault.createAuxAccount({ sender: alice });
+    await vault.createAuxAccount({ sender: bob });
   });
 
   it("depositToAuxAccount", async function () {
@@ -189,9 +181,13 @@ describe.skip("Router Core tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    let event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    let event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -206,9 +202,13 @@ describe.skip("Router Core tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
   });
@@ -229,17 +229,22 @@ describe.skip("Router Core tests", function () {
     const txResult = await core.mutation.swapExactCoinForCoin(
       auxClient,
       {
-        sender: moduleAuthority,
         exactAmountAuIn: "17000000000",
         minAmountAuOut: "74900000",
         coinTypeIn: usdcCoinType,
         coinTypeOut: btcCoinType,
       },
-      { maxGasAmount: AU(30_000) }
+      {
+        sender: moduleAuthority,
+        maxGasAmount: AU(1_000_000),
+      }
     );
-    assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
-    console.log("swapUsdcForBtc", txResult.tx.hash);
-    // console.dir(txResult.payload, { depth: null });
+    assert.ok(
+      txResult.transaction.success,
+      `${JSON.stringify(txResult.transaction.vm_status)}`
+    );
+    console.log("swapUsdcForBtc", txResult.transaction.hash);
+    // console.dir(txResult.result, { depth: null });
     const finalBtc = Number(
       await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
@@ -267,9 +272,13 @@ describe.skip("Router Core tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    let event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    let event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -284,9 +293,13 @@ describe.skip("Router Core tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
   });
@@ -306,17 +319,22 @@ describe.skip("Router Core tests", function () {
     const txResult = await core.mutation.swapExactCoinForCoin(
       auxClient,
       {
-        sender: moduleAuthority,
         exactAmountAuIn: "75000000",
         minAmountAuOut: "14900000000",
         coinTypeIn: btcCoinType,
         coinTypeOut: usdcCoinType,
       },
-      { maxGasAmount: AU(30_000) }
+      {
+        sender: moduleAuthority,
+        maxGasAmount: AU(1_000_000),
+      }
     );
-    assert.ok(txResult.tx.success, `${txResult.tx.vm_status}`);
-    // console.dir(txResult.payload, { depth: null });
-    await pool.update();
+    assert.ok(
+      txResult.transaction.success,
+      `${txResult.transaction.vm_status}`
+    );
+    // console.dir(txResult.result, { depth: null });
+    pool = await poolClient.query();
     const finalBtc = Number(
       await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
@@ -335,16 +353,21 @@ describe.skip("Router Core tests", function () {
     await market.cancelAll(bob);
     await market.cancelAll(alice);
 
-    await pool.update();
+    pool = await poolClient.query();
 
-    if (pool.amountAuLP.toNumber() >= 1000) {
-      let tx = await pool.removeLiquidity({
-        sender: moduleAuthority,
-        amountLP: AU(pool.amountAuLP.toNumber() - 1000),
-      });
-      assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
-      tx = await pool.resetPool({ sender: moduleAuthority });
-      assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
+    const auLP = pool.amountLP
+      .toAtomicUnits(pool.coinInfoLP.decimals)
+      .toNumber();
+    if (auLP >= 1000) {
+      const tx1 = await poolClient.removeLiquidity(
+        {
+          amountLP: AU(auLP - 1000),
+        },
+        { sender: moduleAuthority }
+      );
+      assert.ok(tx1.transaction.success, `${tx1.transaction.vm_status}`);
+      const tx = await poolClient.drain({ sender: moduleAuthority });
+      assert.ok(tx.transaction.success, `${tx.transaction.vm_status}`);
     }
 
     await withdrawAll(auxClient);
@@ -357,7 +380,10 @@ describe("Router DSL tests", function () {
 
   let vault: Vault;
   let market: Market;
-  let pool: Pool;
+
+  let pool: ConstantProduct;
+  let poolClient: PoolClient;
+
   let router: Router;
 
   let btcCoinInfo: CoinInfo;
@@ -385,41 +411,41 @@ describe("Router DSL tests", function () {
   });
 
   it("registerAndMint fake coins", async function () {
-    let tx = await auxClient.registerAndMintFakeCoin({
-      sender: moduleAuthority,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    let tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: moduleAuthority }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: moduleAuthority,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: moduleAuthority }
+    );
     console.log(tx.success, tx.hash);
-    await auxClient.registerAndMintFakeCoin({
-      sender: alice,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: alice }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: alice,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: alice }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: bob,
-      coin: FakeCoin.USDC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDC,
+      AU(100_000_000_000),
+      { sender: bob }
+    );
     console.log(tx.success, tx.hash);
-    tx = await auxClient.registerAndMintFakeCoin({
-      sender: bob,
-      coin: FakeCoin.BTC,
-      amount: AU(100_000_000_000),
-    });
+    tx = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.BTC,
+      AU(100_000_000_000),
+      { sender: bob }
+    );
     console.log(tx.success, tx.hash);
   });
 
@@ -429,38 +455,23 @@ describe("Router DSL tests", function () {
     usdcCoinType = usdcCoinInfo.coinType;
     btcCoinType = btcCoinInfo.coinType;
 
-    const maybePool = await Pool.read(auxClient, {
+    poolClient = new PoolClient(auxClient, {
       coinTypeX: btcCoinType,
       coinTypeY: usdcCoinType,
     });
-    if (maybePool == undefined) {
-      pool = await Pool.create(auxClient, {
-        sender: moduleAuthority,
-        coinTypeX: btcCoinType,
-        coinTypeY: usdcCoinType,
-        feePct: 0,
-      });
-      console.log(
-        "createPool",
-        pool.amountX.toString(),
-        pool.amountY.toString(),
-        pool.amountLP.toString()
-      );
-      assert.equal(pool.amountX, 0);
-      assert.equal(pool.amountY, 0);
-      assert.equal(pool.amountLP, 0);
-    } else {
-      pool = maybePool;
-    }
+    await poolClient.create({ fee: new Bps(0) }, { sender: moduleAuthority });
+    pool = await poolClient.query();
 
-    if (pool.amountAuLP.toNumber() === 0) {
-      const tx = await pool.addExactLiquidity({
-        sender: moduleAuthority,
-        amountX: DU(1),
-        amountY: DU(22_000),
-      });
-      assert.ok(tx.tx.success, JSON.stringify(tx, undefined, "  "));
-      await pool.update();
+    if (pool.amountLP.toNumber() === 0) {
+      const tx = await poolClient.addExactLiquidity(
+        {
+          amountX: DU(1),
+          amountY: DU(22_000),
+        },
+        { sender: moduleAuthority }
+      );
+      assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
+      pool = await poolClient.query();
     }
   });
 
@@ -469,8 +480,8 @@ describe("Router DSL tests", function () {
   });
 
   it("createAuxAccount", async function () {
-    await vault.createAuxAccount(alice);
-    await vault.createAuxAccount(bob);
+    await vault.createAuxAccount({ sender: alice });
+    await vault.createAuxAccount({ sender: bob });
   });
 
   it("depositToAuxAccount", async function () {
@@ -516,9 +527,13 @@ describe("Router DSL tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    let event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    let event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -533,9 +548,13 @@ describe("Router DSL tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
   });
@@ -551,10 +570,12 @@ describe("Router DSL tests", function () {
       coinTypeIn: usdcCoinType,
       coinTypeOut: btcCoinType,
     });
-    assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
-    console.log("quoteExactUsdcForBtc", txResult.tx.hash);
-    assert.ok(!!txResult.payload);
-    const quote: RouterQuote = txResult.payload;
+    assert.ok(
+      txResult.transaction.success,
+      `${JSON.stringify(txResult.transaction.vm_status)}`
+    );
+    console.log("quoteExactUsdcForBtc", txResult.transaction.hash);
+    const quote: RouterQuote = txResult.result!;
     assert.equal(quote.routes.length, 2);
     assert.equal(
       quote.routes[0]!.amountOut.toNumber() +
@@ -572,10 +593,13 @@ describe("Router DSL tests", function () {
       coinTypeIn: usdcCoinType,
       coinTypeOut: btcCoinType,
     });
-    assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
-    console.log("quoteUsdcForExactBtc", txResult.tx.hash);
-    assert.ok(!!txResult.payload);
-    const quote: RouterQuote = txResult.payload;
+    assert.ok(
+      txResult.transaction.success,
+      `${JSON.stringify(txResult.transaction.vm_status)}`
+    );
+    console.log("quoteUsdcForExactBtc", txResult.transaction.hash);
+    assert.ok(!!txResult.result);
+    const quote: RouterQuote = txResult.result;
     assert.equal(quote.routes.length, 2);
     assert.equal(
       quote.routes[0]!.amountIn.toNumber() +
@@ -600,6 +624,7 @@ describe("Router DSL tests", function () {
       })
     );
     console.log("initUSDC", initUsdc);
+
     const txResult = await router.swapCoinForExactCoin(
       {
         maxAmountIn: DU(17_000),
@@ -607,10 +632,13 @@ describe("Router DSL tests", function () {
         coinTypeIn: usdcCoinType,
         coinTypeOut: btcCoinType,
       },
-      { maxGasAmount: AU(30_000) }
+      { sender: moduleAuthority, maxGasAmount: AU(1_000_000) }
     );
-    assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
-    console.log("swapUsdcForBtc", txResult.tx.hash);
+    assert.ok(
+      txResult.transaction.success,
+      `${JSON.stringify(txResult.transaction.vm_status)}`
+    );
+    console.log("swapUsdcForBtc", txResult.transaction.hash);
     const finalBtc = Number(
       await coinClient.checkBalance(moduleAuthority, {
         coinType: btcCoinType,
@@ -648,9 +676,13 @@ describe("Router DSL tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    let event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    let event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -665,9 +697,13 @@ describe("Router DSL tests", function () {
       orderType: OrderType.LIMIT_ORDER,
       stpActionType: STPActionType.CANCEL_PASSIVE,
     });
-    console.log("placeLimitOrder", tx.tx.hash, tx.tx.vm_status);
-    assert.equal(1, tx.payload?.length);
-    event = tx.payload[0]!;
+    console.log(
+      "placeLimitOrder",
+      tx.transaction.hash,
+      tx.transaction.vm_status
+    );
+    assert.equal(1, tx.result?.length);
+    event = tx.result![0]!;
     assert.equal(event.type, "OrderPlacedEvent");
     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
   });
@@ -678,10 +714,13 @@ describe("Router DSL tests", function () {
       coinTypeIn: btcCoinType,
       coinTypeOut: usdcCoinType,
     });
-    assert.ok(txResult.tx.success, `${JSON.stringify(txResult.tx.vm_status)}`);
-    console.log("quoteExactBtcForUsdc", txResult.tx.hash);
-    assert.ok(!!txResult.payload);
-    const quote: RouterQuote = txResult.payload;
+    assert.ok(
+      txResult.transaction.success,
+      `${JSON.stringify(txResult.transaction.vm_status)}`
+    );
+    console.log("quoteExactBtcForUsdc", txResult.transaction.hash);
+    assert.ok(!!txResult.result);
+    const quote: RouterQuote = txResult.result;
     assert.equal(quote.routes.length, 2);
     assert.equal(
       quote.routes[0]!.amountOut.toNumber() +
@@ -712,10 +751,13 @@ describe("Router DSL tests", function () {
         coinTypeIn: btcCoinType,
         coinTypeOut: usdcCoinType,
       },
-      { maxGasAmount: AU(30_000) }
+      { sender: moduleAuthority, maxGasAmount: AU(1_000_000) }
     );
-    assert.ok(txResult.tx.success, `${txResult.tx.vm_status}`);
-    await pool.update();
+    assert.ok(
+      txResult.transaction.success,
+      `${txResult.transaction.vm_status}`
+    );
+    pool = await poolClient.query();
     const finalUsdc = Number(
       await coinClient.checkBalance(moduleAuthority, {
         coinType: usdcCoinType,
@@ -739,16 +781,21 @@ describe("Router DSL tests", function () {
     await market.cancelAll(bob);
     await market.cancelAll(alice);
 
-    await pool.update();
+    pool = await poolClient.query();
 
-    if (pool.amountAuLP.toNumber() >= 1000) {
-      let tx = await pool.removeLiquidity({
-        sender: moduleAuthority,
-        amountLP: AU(pool.amountAuLP.toNumber() - 1000),
-      });
-      assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
-      tx = await pool.resetPool({ sender: moduleAuthority });
-      assert.ok(tx.tx.success, `${tx.tx.vm_status}`);
+    const auLP = pool.amountLP
+      .toAtomicUnits(pool.coinInfoLP.decimals)
+      .toNumber();
+    if (auLP >= 1000) {
+      const tx1 = await poolClient.removeLiquidity(
+        {
+          amountLP: AU(auLP - 1000),
+        },
+        { sender: moduleAuthority }
+      );
+      assert.ok(tx1.transaction.success, `${tx1.transaction.vm_status}`);
+      const tx2 = await poolClient.drain({ sender: moduleAuthority });
+      assert.ok(tx2.transaction.success, `${tx2.transaction.vm_status}`);
     }
 
     await withdrawAll(auxClient);

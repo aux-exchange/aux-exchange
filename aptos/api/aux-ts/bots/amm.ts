@@ -1,10 +1,11 @@
 import type { AptosAccount, Types } from "aptos";
-import type { AuxClient } from "../src/client";
-import Pool from "../src/amm/dsl/pool";
-import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
-import { onMarketUpdate } from "./ftx";
-import { DecimalUnits, DU } from "../src/units";
 import { Logger } from "tslog";
+import { PoolClient } from "../src/pool/client";
+import type { ConstantProduct } from "../src/pool/schema";
+import type { AuxClient } from "../src/client";
+import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
+import { DecimalUnits, DU } from "../src/units";
+import { onMarketUpdate } from "./ftx";
 
 export class FTXArbitrageStrategy {
   log: Logger;
@@ -60,15 +61,17 @@ export class FTXArbitrageStrategy {
   }
 
   async run() {
-    const maybePool = await Pool.read(this.client, {
+    const poolClient = new PoolClient(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });
 
-    if (maybePool === undefined) {
+    let pool: ConstantProduct;
+    try {
+      pool = await poolClient.query();
+    } catch {
       throw new Error(`No pool for ${this.baseCoin}`);
     }
-    const pool = maybePool as Pool;
 
     const ftxMarket = COIN_MAPPING.get(this.baseCoin)?.ftxInternationalMarket;
     if (ftxMarket === undefined) {
@@ -117,10 +120,12 @@ export class FTXArbitrageStrategy {
         });
         if (quoteBalance.toNumber() > this.dollarsPerSwap.toNumber()) {
           if (netPositionNumTrades < this.maxPositionNumTrades) {
-            const tx = await pool.swapYForXLimit({
-              sender: this.trader,
+            const tx = await poolClient.swap({
+              coinTypeIn: poolClient.coinTypeY,
               exactAmountIn: this.dollarsPerSwap,
-              minOutPerIn: DU(this.limitThreshold / bid),
+              parameters: {
+                minAmountOutPerIn: DU(this.limitThreshold / bid),
+              },
             });
             this.log.info(
               `>>>> ${new Date()} | BUY  | FTX: ${bid}; AMM: ${poolPrice}; Swap:`,
@@ -145,10 +150,12 @@ export class FTXArbitrageStrategy {
         const exactAmountIn = DU(this.dollarsPerSwap.toNumber() / poolPrice);
         if (baseBalance.toNumber() > exactAmountIn.toNumber()) {
           if (netPositionNumTrades > -this.maxPositionNumTrades) {
-            const tx = await pool.swapXForYLimit({
-              sender: this.trader,
+            const tx = await poolClient.swap({
+              coinTypeIn: poolClient.coinTypeX,
               exactAmountIn,
-              minOutPerIn: DU(ask * this.limitThreshold),
+              parameters: {
+                minAmountOutPerIn: DU(ask * this.limitThreshold),
+              },
             });
             this.log.info(
               `>>>> ${new Date()} | SELL | FTX: ${ask}; AMM: ${poolPrice}; Swap:`,
@@ -180,7 +187,7 @@ export class FTXArbitrageStrategy {
     });
 
     while (true) {
-      await pool.update();
+      pool = await poolClient.query();
       const poolPrice = pool.amountY.toNumber() / pool.amountX.toNumber();
       if (poolPrice != previousPoolPrice) {
         previousPoolPrice = poolPrice;

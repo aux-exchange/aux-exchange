@@ -36,18 +36,22 @@ describe("ACCOUNT DSL tests", function () {
     console.log("fund bob account hash", hash);
 
     await Promise.all([
-      await auxClient.registerAuxCoin(alice),
-      await auxClient.registerAuxCoin(bob),
+      await auxClient.registerAuxCoin({ sender: alice }),
+      await auxClient.registerAuxCoin({ sender: bob }),
     ]);
     await Promise.all([
-      await auxClient.mintAux(moduleAuthority, aliceAddr, AU(100_000_000)),
-      await auxClient.mintAux(moduleAuthority, bobAddr, AU(100_000_000)),
+      await auxClient.mintAux(aliceAddr, AU(100_000_000), {
+        sender: moduleAuthority,
+      }),
+      await auxClient.mintAux(bobAddr, AU(100_000_000), {
+        sender: moduleAuthority,
+      }),
     ]);
 
     const vault = new Vault(auxClient);
 
-    await vault.createAuxAccount(alice);
-    await vault.createAuxAccount(bob);
+    await vault.createAuxAccount({ sender: alice });
+    await vault.createAuxAccount({ sender: bob });
     await vault.deposit(alice, aptosCoin, AU(42));
     await vault.deposit(alice, auxCoin, AU(42));
     await vault.deposit(bob, aptosCoin, AU(42));

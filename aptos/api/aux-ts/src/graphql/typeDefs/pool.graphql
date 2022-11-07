@@ -55,11 +55,13 @@ input AddLiquidityInput {
   poolInput: PoolInput!
   amountX: Float!
   amountY: Float!
+  useAuxAccount: Boolean!
 }
 
 input RemoveLiquidityInput {
   poolInput: PoolInput!
   amountLP: Float!
+  useAuxAccount: Boolean!
 }
 
 input SwapExactInInput {

@@ -7,7 +7,8 @@
 import { AptosAccount, AptosClient } from "aptos";
 import { assert } from "console";
 import { WebSocket } from "ws";
-import { AU, DU, Pool } from "../src";
+import { AU, DU } from "../src";
+import { PoolClient } from "../src/pool/client";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 
@@ -34,6 +35,10 @@ const auxClient = new AuxClient("devnet", new AptosClient(nodeUrl));
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();
 
+// Set the sender for all future txs to the trader. Note you can override this for individual txs
+// by passing in `options`.
+auxClient.sender = trader;
+
 // We fund trader and module authority with Aptos, BTC, and USDC coins
 async function setupTrader(): Promise<void> {
   await auxClient.fundAccount({
@@ -43,17 +48,9 @@ async function setupTrader(): Promise<void> {
 
   // We're rich! Use canonical fake types for trading. Fake coins can be freely
   // minted by anybody. All AUX test markets use these canonical fake coins.
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.ETH,
-    amount: DU(5000),
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.ETH, DU(5000));
 
-  await auxClient.registerAndMintFakeCoin({
-    sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(5_000_000),
-  });
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(5_000_000));
 }
 
 function sleep(ms: number) {
@@ -97,13 +94,12 @@ async function printAccountBalance(
 }
 
 async function tradeAMM(): Promise<void> {
-  let maybePool = await Pool.read(auxClient, {
+  const poolClient = new PoolClient(auxClient, {
     coinTypeX: auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
     coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
   });
 
-  assert(maybePool !== undefined);
-  const pool = maybePool as Pool;
+  let pool = await poolClient.query();
 
   let prevBid = 0;
   let prevAsk = 0;
@@ -130,17 +126,16 @@ async function tradeAMM(): Promise<void> {
         let poolY = pool.amountY;
         if (prevBid !== bestBid || prevAsk !== bestAsk) {
           try {
-            await pool.update();
+            pool = await poolClient.query();
             if (poolX.toNumber() === 0 || poolY.toNumber() === 0) {
               const amountXToAdd = DU(100);
               const amountYToAdd = DU(150000);
-              const tx = await pool.addExactLiquidity({
-                sender: trader,
+              const tx = await poolClient.addExactLiquidity({
                 amountX: amountXToAdd,
                 amountY: amountYToAdd,
               });
-              console.log(">>>> Add Liquidity event:", tx.payload);
-              await pool.update();
+              console.log(">>>> Add Liquidity event:", tx.result ?? []);
+              pool = await poolClient.query();
             }
           } catch (e) {
             console.log("  Pool update failed with error: ", e);
@@ -163,12 +158,12 @@ async function tradeAMM(): Promise<void> {
           if (bestBid / poolPrice - 1 > AUX_TRADER_CONFIG.deviationThreshold) {
             console.log(">>>> Swapping for ETH");
             try {
-              tx = await pool.swapYForXLimit({
-                sender: trader,
+              tx = await poolClient.swap({
+                coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
                 exactAmountIn: AUX_TRADER_CONFIG.usdcPerSwap,
-                minOutPerIn: DU(1 / bestBid),
+                parameters: { minAmountOutPerIn: DU(1 / bestBid) },
               });
-              console.log(">>>> Swap event:", tx.payload);
+              console.log(">>>> Swap event:", tx.result ?? []);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from USDC to ETH failed with error: ", e);
@@ -181,12 +176,12 @@ async function tradeAMM(): Promise<void> {
           ) {
             console.log(">>>> Swapping for USDC");
             try {
-              tx = await pool.swapXForYLimit({
-                sender: trader,
+              tx = await poolClient.swap({
+                coinTypeIn: auxClient.getWrappedFakeCoinType(FakeCoin.ETH),
                 exactAmountIn: AUX_TRADER_CONFIG.ethPerSwap,
-                minOutPerIn: DU(bestAsk),
+                parameters: { minAmountOutPerIn: DU(bestAsk) },
               });
-              console.log(">>>> Swap event:", tx.payload);
+              console.log(">>>> Swap event:", tx.result ?? []);
               await printAccountBalance(auxClient, trader);
             } catch (e) {
               console.log("  Swap from ETH to USDC failed with error: ", e);

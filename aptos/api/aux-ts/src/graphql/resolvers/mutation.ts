@@ -1,7 +1,16 @@
+// TODO GraphQL currently uses a hack where it simulates a tx, and then extracts the tx payload.
+//
+// Note the `simulate` is unnecesssary: the payload is already known before simulate.
+//
+// The TODO is to refactor the API to support a "builder" interface (but it is somewhat tricky to
+// do this cleanly)
+
+import _ from "lodash";
 import * as aux from "../../";
+import { PoolClient } from "../../pool/client";
 import { OrderType as AuxOrderType } from "../../clob/core/mutation";
-import { DU } from "../../units";
-import { auxClient } from "../connection";
+import { Bps, DU, Pct } from "../../units";
+import { auxClient } from "../client";
 import {
   MutationAddLiquidityArgs,
   MutationCancelOrderArgs,
@@ -22,12 +31,12 @@ import {
 export const mutation = {
   createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
     const { coinTypeX, coinTypeY } = createPoolInput.poolInput;
-    return aux.amm.core.mutation.createPoolPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
+    const poolClient = new PoolClient(auxClient, {
       coinTypeX,
       coinTypeY,
-      feeBps: createPoolInput.feeBasisPoints,
+    });
+    return poolClient.create({
+      fee: new Bps(Number(createPoolInput.feeBasisPoints)),
     });
   },
 
@@ -38,139 +47,97 @@ export const mutation = {
       arguments: [],
     };
   },
+
   async swapExactIn(
     _parent: any,
-    { swapExactInInput }: MutationSwapExactInArgs
+    {
+      swapExactInInput: {
+        coinTypeIn,
+        amountIn,
+        poolInput: { coinTypeX, coinTypeY },
+        slippagePct,
+      },
+    }: MutationSwapExactInArgs
   ) {
-    const { coinTypeX, coinTypeY } = swapExactInInput.poolInput;
-    const coinTypeOut =
-      swapExactInInput.coinTypeIn === coinTypeX ? coinTypeY : coinTypeX;
-    const [coinInfoIn, coinInfoOut] = await Promise.all([
-      auxClient.getCoinInfo(swapExactInInput.coinTypeIn),
-      auxClient.getCoinInfo(coinTypeOut),
-    ]);
-    const slippage = 1 - (swapExactInInput.slippagePct ?? 0.1) / 100;
-    return aux.amm.core.mutation.swapExactCoinForCoinPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeIn: swapExactInInput.coinTypeIn,
-      coinTypeOut,
-      exactAmountAuIn: DU(swapExactInInput.amountIn)
-        .toAtomicUnits(coinInfoIn.decimals)
-        .toString(),
-      minAmountAuOut: DU(slippage * swapExactInInput.quoteAmountOut)
-        .toAtomicUnits(coinInfoOut.decimals)
-        .toString(),
-    });
+    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const exactAmountIn = DU(amountIn);
+    const parameters = _.isNil(slippagePct)
+      ? {}
+      : { slippage: new Pct(slippagePct) };
+    // TODO this is a giant hack to grab a payload by simulating it, and then extracting the
+    // simulated payload.
+    // Need to refactor API to support "builder" (but somewhat tricky to do this cleanly / adding
+    // way too much code)
+    const tx = await poolClient.swap(
+      { coinTypeIn, exactAmountIn, parameters },
+      { simulate: true }
+    );
+    return tx.transaction.payload;
   },
+
   async swapExactOut(
     _parent: any,
-    { swapExactOutInput }: MutationSwapExactOutArgs
+    {
+      swapExactOutInput: {
+        coinTypeOut,
+        amountOut,
+        poolInput: { coinTypeX, coinTypeY },
+        slippagePct,
+      },
+    }: MutationSwapExactOutArgs
   ) {
-    const { coinTypeX, coinTypeY } = swapExactOutInput.poolInput;
-    const coinTypeIn =
-      swapExactOutInput.coinTypeOut === coinTypeY ? coinTypeX : coinTypeY;
-    const [coinInfoIn, coinInfoOut] = await Promise.all([
-      auxClient.getCoinInfo(coinTypeIn),
-      auxClient.getCoinInfo(swapExactOutInput.coinTypeOut),
-    ]);
-    const slippage = 1 + (swapExactOutInput.slippagePct ?? 0.1) / 100;
-    return aux.amm.core.mutation.swapCoinForExactCoinPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeIn,
-      coinTypeOut: swapExactOutInput.coinTypeOut,
-      exactAmountAuOut: DU(swapExactOutInput.amountOut)
-        .toAtomicUnits(coinInfoOut.decimals)
-        .toString(),
-      maxAmountAuIn: DU(slippage * swapExactOutInput.quoteAmountIn)
-        .toAtomicUnits(coinInfoIn.decimals)
-        .toString(),
-    });
+    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const exactAmountOut = DU(amountOut);
+    const parameters = _.isNil(slippagePct)
+      ? {}
+      : { slippage: new Pct(slippagePct) };
+    const tx = await poolClient.swap(
+      { coinTypeOut, exactAmountOut, parameters },
+      { simulate: true }
+    );
+    return tx.transaction.payload;
   },
+
   async addLiquidity(
     _parent: any,
-    { addLiquidityInput }: MutationAddLiquidityArgs
+    {
+      addLiquidityInput: {
+        poolInput: { coinTypeX, coinTypeY },
+        amountX,
+        amountY,
+        useAuxAccount,
+      },
+    }: MutationAddLiquidityArgs
   ) {
-    const { coinTypeX, coinTypeY } = addLiquidityInput.poolInput;
-    const [coinInfoX, coinInfoY] = await Promise.all([
-      auxClient.getCoinInfo(coinTypeX),
-      auxClient.getCoinInfo(coinTypeY),
-    ]);
-    return aux.amm.core.mutation.addLiquidityPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeX,
-      coinTypeY,
-      amountAuX: DU(addLiquidityInput.amountX)
-        .toAtomicUnits(coinInfoX.decimals)
-        .toString(),
-      amountAuY: DU(addLiquidityInput.amountY)
-        .toAtomicUnits(coinInfoY.decimals)
-        .toString(),
-      maxSlippageBps: "50",
-    });
+    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    return poolClient.addLiquidity(
+      {
+        amountX: DU(amountX),
+        amountY: DU(amountY),
+        useAuxAccount,
+      },
+      {
+        simulate: true,
+      }
+    );
   },
-  async addLiquidityWithAccount(
-    _parent: any,
-    { addLiquidityInput }: MutationAddLiquidityArgs
-  ) {
-    const { coinTypeX, coinTypeY } = addLiquidityInput.poolInput;
-    const [coinInfoX, coinInfoY] = await Promise.all([
-      auxClient.getCoinInfo(coinTypeX),
-      auxClient.getCoinInfo(coinTypeY),
-    ]);
-    return aux.amm.core.mutation.addLiquidityWithAccountPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeX,
-      coinTypeY,
-      amountAuX: DU(addLiquidityInput.amountX)
-        .toAtomicUnits(coinInfoX.decimals)
-        .toString(),
-      amountAuY: DU(addLiquidityInput.amountY)
-        .toAtomicUnits(coinInfoY.decimals)
-        .toString(),
-      maxSlippageBps: "50",
-    });
-  },
+
   async removeLiquidity(
     _parent: any,
-    { removeLiquidityInput }: MutationRemoveLiquidityArgs
+    {
+      removeLiquidityInput: {
+        poolInput: { coinTypeX, coinTypeY },
+        amountLP,
+        useAuxAccount,
+      },
+    }: MutationRemoveLiquidityArgs
   ) {
-    const { coinTypeX, coinTypeY } = removeLiquidityInput.poolInput;
-    const pool = await aux.amm.core.query.pool(auxClient, {
-      coinTypeX,
-      coinTypeY,
-    });
-    return aux.amm.core.mutation.removeLiquidityPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeX,
-      coinTypeY,
-      amountAuLP: DU(removeLiquidityInput.amountLP)
-        .toAtomicUnits(pool!.coinInfoLP.decimals)
-        .toString(),
-    });
-  },
-  async removeLiquidityWithAccount(
-    _parent: any,
-    { removeLiquidityInput }: MutationRemoveLiquidityArgs
-  ) {
-    const { coinTypeX, coinTypeY } = removeLiquidityInput.poolInput;
-    const pool = await aux.amm.core.query.pool(auxClient, {
-      coinTypeX,
-      coinTypeY,
-    });
-    return aux.amm.core.mutation.removeLiquidityWithAccountPayload(auxClient, {
-      // @ts-ignore
-      sender: undefined,
-      coinTypeX,
-      coinTypeY,
-      amountAuLP: DU(removeLiquidityInput.amountLP)
-        .toAtomicUnits(pool!.coinInfoLP.decimals)
-        .toString(),
-    });
+    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const tx = await poolClient.removeLiquidity(
+      { amountLP: DU(amountLP), useAuxAccount },
+      { simulate: true }
+    );
+    return tx.transaction.payload;
   },
 
   async createMarket(
@@ -196,6 +163,7 @@ export const mutation = {
         .toString(),
     });
   },
+
   async placeOrder(_parent: any, { placeOrderInput }: MutationPlaceOrderArgs) {
     const { baseCoinType, quoteCoinType } = placeOrderInput.marketInput;
     const market = await aux.clob.core.query.market(
@@ -219,6 +187,7 @@ export const mutation = {
       orderType: convertOrderType(placeOrderInput.orderType),
     });
   },
+
   cancelOrder(_parent: any, { cancelOrderInput }: MutationCancelOrderArgs) {
     const { baseCoinType, quoteCoinType } = cancelOrderInput.marketInput;
     return aux.clob.core.mutation.cancelOrderPayload(auxClient, {
@@ -229,9 +198,11 @@ export const mutation = {
       orderId: cancelOrderInput.orderId,
     });
   },
+
   createAuxAccount() {
     return aux.vault.core.mutation.createAuxAccountPayload(auxClient);
   },
+
   async deposit(_parent: any, { depositInput }: MutationDepositArgs) {
     return aux.vault.core.mutation.depositPayload(auxClient, {
       coinType: depositInput.coinType,
@@ -244,6 +215,7 @@ export const mutation = {
         .toString(),
     });
   },
+
   async withdraw(_parent: any, { withdrawInput }: MutationWithdrawArgs) {
     return aux.vault.core.mutation.withdrawPayload(auxClient, {
       coinType: withdrawInput.coinType,
@@ -255,6 +227,7 @@ export const mutation = {
         .toString(),
     });
   },
+
   async transfer(_parent: any, { transferInput }: MutationTransferArgs) {
     return aux.vault.core.mutation.transferPayload(auxClient, {
       sender: transferInput.from,

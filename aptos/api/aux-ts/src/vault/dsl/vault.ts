@@ -1,5 +1,5 @@
 import type { AptosAccount, HexString, Types } from "aptos";
-import type { AuxClient } from "../../client";
+import type { AuxClient, AuxClientOptions } from "../../client";
 import type { FakeCoin } from "../../coin";
 import {
   AnyUnits,
@@ -23,8 +23,10 @@ export default class Vault {
   /* MUTATIONS */
   /*************/
 
-  async createAuxAccount(sender: AptosAccount): Promise<Types.UserTransaction> {
-    return await mutation.createAuxAccount(this.auxClient, sender);
+  async createAuxAccount(
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<Types.UserTransaction> {
+    return await mutation.createAuxAccount(this.auxClient, options);
   }
 
   async deposit(
