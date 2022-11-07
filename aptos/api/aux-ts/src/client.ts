@@ -468,7 +468,7 @@ export class AuxClient {
     }
     let balance = await this.getFakeCoinBalance(sender.address(), coin);
     if (balance.amount.gtn(0)) {
-      return this.burnFakeCoin(coin, balance);
+      return this.burnFakeCoin(coin, balance, { sender });
     }
     return undefined;
   }
