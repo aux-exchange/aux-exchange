@@ -41,7 +41,7 @@ export async function deposit(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     depositPayload(auxClient, depositInput),
-    options
+    { ...options, sender: depositInput.sender }
   );
 }
 
@@ -52,7 +52,7 @@ export async function withdraw(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     withdrawPayload(auxClient, withdrawInput),
-    options
+    { ...options, sender: withdrawInput.sender }
   );
 }
 
@@ -63,7 +63,7 @@ export async function transfer(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     transferPayload(auxClient, transferInput),
-    options
+    { ...options, sender: transferInput.sender }
   );
 }
 

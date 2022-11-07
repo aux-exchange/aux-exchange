@@ -1,16 +1,10 @@
-import { AptosAccount, FaucetClient, HexString } from "aptos";
+import { AptosAccount, HexString } from "aptos";
 import * as assert from "assert";
 import { Vault } from "../src";
 import type { AuxClient } from "../src/client";
 import { ALL_FAKE_COINS, FakeCoin } from "../src/coin";
 import { getAptosProfile } from "../src/env";
 import { AU } from "../src/units";
-
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
 
 async function getUser(
   name: string,
@@ -22,18 +16,15 @@ async function getUser(
   } catch {}
   let user = new AptosAccount();
   if (userProfile !== undefined) {
-    console.log("HERE");
     user = AptosAccount.fromAptosAccountObject({
       privateKeyHex: userProfile.private_key!,
     });
   } else {
-    sleep(500);
-    auxClient;
-    const faucetClient = new FaucetClient(
-      "http://0.0.0.0:8080/v1",
-      "http://0.0.0.0:8081"
-    );
-    await faucetClient.fundAccount(user.address(), 1_000_000_000);
+    auxClient.sender = user;
+    await auxClient.fundAccount({
+      account: user.address(),
+      quantity: AU(1_000_000_000),
+    });
     let privateKey = HexString.fromUint8Array(user.signingKey.secretKey);
     console.log(`
     ${name}:
@@ -59,13 +50,19 @@ async function fundFakeCoin(auxClient: AuxClient, user: AptosAccount) {
 
   tx = await auxClient.registerAndMintFakeCoin(
     FakeCoin.SOL,
-    AU(5_000_000_000_000)
+    AU(5_000_000_000_000),
+    {
+      sender: user
+    }
   );
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
 
   tx = await auxClient.registerAndMintFakeCoin(
     FakeCoin.AUX,
-    AU(100_000_000_000)
+    AU(100_000_000_000),
+    {
+      sender: user
+    }
   );
 
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);

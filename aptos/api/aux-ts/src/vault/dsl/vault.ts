@@ -23,7 +23,9 @@ export default class Vault {
   /* MUTATIONS */
   /*************/
 
-  async createAuxAccount(options: Partial<AuxClientOptions> = {}): Promise<Types.UserTransaction> {
+  async createAuxAccount(
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<Types.UserTransaction> {
     return await mutation.createAuxAccount(this.auxClient, options);
   }
 

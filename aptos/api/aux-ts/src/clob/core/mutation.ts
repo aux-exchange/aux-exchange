@@ -65,7 +65,7 @@ export async function createMarket(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     createMarketPayload(auxClient, createMarketInput),
-    options,
+    { ...options, sender: createMarketInput.sender }
   );
 }
 
@@ -76,7 +76,7 @@ export async function placeOrder(
 ): Promise<AuxTransaction<PlaceOrderEvent[]>> {
   const tx = auxClient.sendOrSimulateTransaction(
     placeOrderPayload(auxClient, placeOrderInput),
-    options,
+    { ...options, sender: placeOrderInput.sender }
   );
   return tx.then((tx) => {
     return {
@@ -93,7 +93,7 @@ export async function cancelOrder(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     cancelOrderPayload(auxClient, cancelOrderInput),
-    options,
+    { ...options, sender: cancelOrderInput.sender }
   );
 }
 
@@ -104,7 +104,7 @@ export async function cancelAll(
 ): Promise<Types.UserTransaction> {
   return auxClient.sendOrSimulateTransaction(
     cancelAllPayload(auxClient, cancelAllInput),
-    options,
+    { ...options, sender: cancelAllInput.sender }
   );
 }
 
