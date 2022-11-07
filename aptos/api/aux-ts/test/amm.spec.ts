@@ -9,7 +9,7 @@ import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
 import { AU, Bps, DU } from "../src/units";
 
-describe.only("AMM tests", function () {
+describe("AMM tests", function () {
   this.timeout(30000);
 
   const auxEnv = new AuxEnv();
