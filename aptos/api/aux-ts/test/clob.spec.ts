@@ -39,7 +39,7 @@ function getZeroAuxOrderId(orderCounter: BN): string {
   return r.toString();
 }
 
-describe.only("CLOB DSL tests", function () {
+describe("CLOB DSL tests", function () {
   this.timeout(30000);
 
   let quoteCoinInfo: CoinInfo;

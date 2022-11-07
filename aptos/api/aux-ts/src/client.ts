@@ -690,6 +690,9 @@ export class AuxClient {
     if (_.isUndefined(sender)) {
       throw new Error(`Error sending tx. Sender is undefined but required.`);
     }
+    if (!_.isUndefined(options.maxGasAmount)) {
+      console.log(this.serialize(options));
+    }
     const rawTransaction = await this.aptosClient.generateTransaction(
       sender.address(),
       payload,
