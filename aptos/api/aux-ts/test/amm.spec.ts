@@ -19,7 +19,7 @@ describe("AMM tests", function () {
     auxEnv.faucetClient
   );
   const moduleAuthority = auxClient.moduleAuthority!;
-  auxClient.options.sender = moduleAuthority;
+  auxClient.sender = moduleAuthority;
 
   const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
@@ -451,7 +451,7 @@ describe("AMM tests", function () {
       account: auxAccountOwner.address(),
       quantity: AU(500_000_000),
     });
-    auxClient.options.sender = auxAccountOwner;
+    auxClient.sender = auxAccountOwner;
     await auxClient.registerAuxCoin();
     let tx = await auxClient.mintAux(auxAccountOwnerAddr, DU(4), {
       sender: moduleAuthority,

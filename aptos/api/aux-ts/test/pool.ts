@@ -18,7 +18,7 @@ async function main() {
   //     "0x4df3a75ebb6697e5fa79e2e3649b62026423698f44b7e50c703648b2af4cd882",
   // });
   AptosAccount
-  auxClient.options.sender = sender;
+  auxClient.sender = sender;
 
   const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
