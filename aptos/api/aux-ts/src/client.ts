@@ -12,7 +12,7 @@ import BN from "bn.js";
 import * as SHA3 from "js-sha3";
 
 import _ from "lodash";
-import { Pool } from "./amm/pool";
+import { PoolClient } from "./amm/pool";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
 import { AptosNetwork, AuxEnv } from "./env";
 import type { PoolInput } from "./graphql/generated/types";
@@ -55,6 +55,10 @@ export class AuxClient {
     readonly aptosClient: AptosClient,
     readonly faucetClient?: FaucetClient
   ) {
+    this.options = {};
+    this.coinInfo = new Map();
+    this.vaults = new Map();
+
     switch (aptosNetwork) {
       case "mainnet":
         this.moduleAddress =
@@ -110,6 +114,7 @@ export class AuxClient {
           privateKeyHex: profile.private_key!,
         });
         this.moduleAddress = deriveModuleAddress(moduleAuthority);
+        this.options.moduleAuthority = moduleAuthority;
         this.simulator = {
           address: profile.account!,
           publicKey: toEd25519PublicKey(profile.public_key!),
@@ -119,13 +124,34 @@ export class AuxClient {
         const exhaustiveCheck: never = aptosNetwork;
         throw new Error(exhaustiveCheck);
     }
-    this.options = {};
-    this.coinInfo = new Map();
-    this.vaults = new Map();
   }
 
-  pool(poolInput: PoolInput): Pool {
-    return new Pool(this, poolInput);
+  get sender(): AptosAccount | undefined {
+    return this.options.sender;
+  }
+
+  set sender(newSender: AptosAccount | undefined) {
+    if (_.isUndefined(newSender)) {
+      delete this.options["sender"];
+    } else {
+      this.options.sender = newSender;
+    }
+  }
+
+  get simulate(): boolean | undefined {
+    return this.options.simulate;
+  }
+
+  set simulate(newSimulate: boolean | undefined) {
+    if (_.isUndefined(newSimulate)) {
+      delete this.options["simulate"];
+    } else {
+      this.options.simulate = newSimulate;
+    }
+  }
+
+  pool(poolInput: PoolInput): PoolClient {
+    return new PoolClient(this, poolInput);
   }
 
   async pools(): Promise<PoolInput[]> {
@@ -935,4 +961,9 @@ export function parsePoolType(poolType: Types.MoveStructTag): {
     throw new Error(`Failed to parse poolType ${poolType}`);
   }
   return { poolType, coinTypeX, coinTypeY };
+}
+
+// https://github.com/microsoft/TypeScript/issues/20707
+export function notUndefined<T>(x: T | undefined): x is T {
+  return x !== undefined;
 }

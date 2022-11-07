@@ -3,13 +3,14 @@
  */
 import { AptosAccount, AptosClient, Types } from "aptos";
 import assert from "assert";
-import { AU, DU, Market, Pool, Vault } from "../src";
+import { AU, DU, Market, Vault } from "../src";
+import { PoolClient } from "../src/amm/pool";
 import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { FakeCoin } from "../src/coin";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
-import type { DecimalUnits } from "../src/units";
+import { Bps, DecimalUnits } from "../src/units";
 
 async function printQuote(
   auxClient: AuxClient,
@@ -81,18 +82,18 @@ async function setupAccount(
   });
   // We support several fake coins that can be used for test trading. You can
   // mint and burn any quantities.
-  let tx = await auxClient.registerAndMintFakeCoin({
-    sender: account,
-    coin: FakeCoin.BTC,
-    amount: DU(1000), // i.e. 1000 BTC
-  });
+  let tx = await auxClient.registerAndMintFakeCoin(
+    FakeCoin.BTC,
+    DU(1000), // i.e. 1000 BTC
+    { sender: account }
+  );
   assert(tx.success);
   // console.log(tx);
-  tx = await auxClient.registerAndMintFakeCoin({
-    sender: account,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000), // i.e. $1m
-  });
+  tx = await auxClient.registerAndMintFakeCoin(
+    FakeCoin.USDC,
+    DU(1_000_000), // i.e. $1m
+    { sender: account }
+  );
   assert(tx.success);
 }
 
@@ -136,48 +137,40 @@ async function main() {
   /* CREATE POOL */
   /***************/
 
-  let pool: Pool;
-  const maybePool = await Pool.read(auxClient, {
+  const poolClient = new PoolClient(auxClient, {
     coinTypeX: btcCoinType,
     coinTypeY: usdcCoinType,
   });
-  if (maybePool == undefined) {
-    pool = await Pool.create(auxClient, {
-      sender: moduleAuthority,
-      coinTypeX: btcCoinType,
-      coinTypeY: usdcCoinType,
-      feePct: 0,
-    });
-    console.log(
-      "createPool",
-      pool.amountX.toString(),
-      pool.amountY.toString(),
-      pool.amountLP.toString()
+  await poolClient.create({ fee: new Bps(0) }, { sender: moduleAuthority });
+  let pool = await poolClient.query();
+  console.log(
+    "createPool",
+    pool.amountX.toString(),
+    pool.amountY.toString(),
+    pool.amountLP.toString()
+  );
+  if (pool.amountLP.toNumber() === 0) {
+    const tx = await poolClient.addExactLiquidity(
+      {
+        amountX: DU(10),
+        amountY: DU(220_000),
+      },
+      { sender: alice }
     );
-    assert.equal(pool.amountX, 0);
-    assert.equal(pool.amountY, 0);
-    assert.equal(pool.amountLP, 0);
-  } else {
-    pool = maybePool;
-  }
 
-  if (pool.amountAuLP.toNumber() === 0) {
-    const tx = await pool.addExactLiquidity({
-      sender: alice,
-      amountX: DU(10),
-      amountY: DU(220_000),
-    });
     assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
   } else {
-    const tx = await pool.addLiquidity({
-      sender: alice,
-      amountX: DU(10),
-      amountY: DU(220_000),
-      maxSlippageBps: AU(100),
-    });
+    const tx = await poolClient.addLiquidity(
+      {
+        amountX: DU(10),
+        amountY: DU(220_000),
+        slippage: new Bps(100),
+      },
+      { sender: alice }
+    );
     assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
   }
-  await pool.update();
+  pool = await poolClient.query();
   console.log(`Pool reserves:`);
   console.log(
     `    ${fakeCoinSymbol(pool.coinInfoX.coinType)}: ${pool.amountX}`
@@ -191,8 +184,8 @@ async function main() {
   /**********************************/
 
   const vault: Vault = new Vault(auxClient);
-  await vault.createAuxAccount(alice);
-  await vault.createAuxAccount(bob);
+  await vault.createAuxAccount({ sender: alice });
+  await vault.createAuxAccount({ sender: bob });
 
   await vault.deposit(alice, usdcCoinType, DU(50_000));
   await vault.deposit(alice, btcCoinType, DU(100));
@@ -236,8 +229,8 @@ async function main() {
   });
   assert(tx.transaction.success, tx.transaction.hash);
   console.log("placeLimitOrder", tx.transaction.hash, tx.transaction.vm_status);
-  assert.equal(1, tx.result ?? []?.length);
-  let event = tx.result ?? [][0]!;
+  assert.equal(1, tx.result);
+  let event = tx.result![0]!;
   assert.equal(event.type, "OrderPlacedEvent");
   assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -254,7 +247,7 @@ async function main() {
   });
   console.log("placeLimitOrder", tx.transaction.hash, tx.transaction.vm_status);
   assert.equal(1, tx.result ?? []?.length);
-  event = tx.result ?? [][0]!;
+  event = tx.result![0]!;
   assert.equal(event.type, "OrderPlacedEvent");
   assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 
@@ -272,11 +265,11 @@ async function main() {
     exactAmountOut: exactAmount,
   });
 
-  if (quoteResult.output === undefined) {
+  if (quoteResult.result === undefined) {
     console.log("get quote failed");
     console.log(quoteResult.transaction);
   } else {
-    await printQuote(auxClient, exactAmount, quoteResult.output);
+    await printQuote(auxClient, exactAmount, quoteResult.result);
   }
 
   // Swap up to 0.1 BTC for exactly 1000 USDC. Choose the best price between AMM
@@ -285,8 +278,8 @@ async function main() {
     {
       coinTypeIn: usdcCoinType,
       coinTypeOut: btcCoinType,
-      maxAmountIn: !!quoteResult.output
-        ? quoteResult.output.amount
+      maxAmountIn: !!quoteResult.result
+        ? quoteResult.result.amount
         : DU(17_000),
       exactAmountOut: DU(0.749),
     },
@@ -302,7 +295,7 @@ async function main() {
     console.log(txResult.transaction);
     throw new Error("swap tx failed");
   } else {
-    for (const event of txResult.output) {
+    for (const event of txResult.result ?? []) {
       console.log("event", event);
     }
   }
@@ -314,11 +307,11 @@ async function main() {
     exactAmountIn: exactAmount,
   });
 
-  if (quoteResult2.output === undefined) {
+  if (quoteResult2.result === undefined) {
     console.log("get quote failed");
     console.log(quoteResult2.transaction);
   } else {
-    await printQuote(auxClient, exactAmount, quoteResult2.output);
+    await printQuote(auxClient, exactAmount, quoteResult2.result);
   }
 
   //  Similar to the above function, the payload contains
@@ -328,8 +321,8 @@ async function main() {
       coinTypeIn: btcCoinType,
       coinTypeOut: usdcCoinType,
       exactAmountIn: exactAmount,
-      minAmountOut: !!quoteResult2.output
-        ? quoteResult2.output.amount
+      minAmountOut: !!quoteResult2.result
+        ? quoteResult2.result.amount
         : DU(17_000),
     },
     {

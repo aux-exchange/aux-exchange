@@ -15,18 +15,26 @@ import BN from "bn.js";
 
 export const MAX_U64 = "18446744073709551615";
 
-export class Percent {
-  percent: number;
+export class Pct {
+  pct: number;
 
   constructor(percent: number) {
     if (percent < 0 || percent > 100) {
       throw new Error("Percent out of range.");
     }
-    this.percent = percent;
+    this.pct = percent;
   }
 
   toNumber() {
-    return this.percent / 100;
+    return this.pct / 100;
+  }
+
+  toPercent() {
+    return this.pct;
+  }
+
+  toBps() {
+    return this.pct * 100;
   }
 }
 
@@ -46,6 +54,14 @@ export class Bps {
 
   toNumber() {
     return this.bps / 10000;
+  }
+
+  toPercent() {
+    return this.bps / 100;
+  }
+
+  toBps() {
+    return this.bps;
   }
 }
 

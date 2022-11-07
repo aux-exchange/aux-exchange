@@ -1,5 +1,4 @@
 // module exports
-export { Pool } from "./amm/pool"
 export * as client from "./client";
 export * as clob from "./clob";
 export * as units from "./units";

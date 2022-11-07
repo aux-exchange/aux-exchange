@@ -6,7 +6,7 @@ import {
 import { Connection } from "@solana/web3.js";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import * as redis from "redis";
-import { AuxClient } from "../../src/client";
+import { AuxClient } from "../client";
 import { AuxEnv } from "../env";
 
 export const auxEnv = new AuxEnv();

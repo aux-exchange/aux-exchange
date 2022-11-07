@@ -3,8 +3,8 @@
  * yarn ts-node mainnet-amm-add-liquidity.ts
  */
 import { AptosAccount, AptosClient } from "aptos";
-import { assert } from "console";
-import { DU, Pool } from "../src";
+import { DU } from "../src";
+import { PoolClient } from "../src/amm/pool";
 import { AuxClient } from "../src/client";
 import { getAptosProfile } from "../src/env";
 
@@ -22,29 +22,33 @@ async function main() {
   const tAPT =
     "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114::staked_aptos_coin::StakedAptosCoin";
 
-  let maybePool = await new Pool(auxClient, {
+  const poolClient = await new PoolClient(auxClient, {
     coinTypeX: APT,
     coinTypeY: tAPT,
   });
 
-  assert(
-    maybePool !== undefined,
-    "Pool should have been created during contract deployment."
-  );
-  const pool = maybePool as Pool;
+  let pool;
+  try {
+    pool = await poolClient.query();
+  } catch {
+    throw new Error(
+      "Pool should have been created during contract deployment."
+    );
+  }
+  pool
 
   // Fetch current user positions in the pool.
   console.log(
     "pool.position:",
-    await pool.position(trader.address().toShortString())
+    await poolClient.position(trader.address().toShortString())
   );
 
   // Call update to refresh the internal variables.
-  await pool.query();
+  pool = await poolClient.query();
 
   // Add some liquidity. This instruction may round the result in a way that is
   // unfavorable to me. Here we do not specify any limits on the rounding.
-  const add = await pool.addApproximateLiquidity({
+  const add = await poolClient.addApproximateLiquidity({
     maxX: DU(1000),
     maxY: DU(1000),
   });

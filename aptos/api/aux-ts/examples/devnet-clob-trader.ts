@@ -50,23 +50,19 @@ async function setupTrader(): Promise<void> {
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
 
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000), {
     sender: trader,
-    coin: FakeCoin.BTC,
-    amount: DU(1000),
   });
 
-  await auxClient.registerAndMintFakeCoin({
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000), {
     sender: trader,
-    coin: FakeCoin.USDC,
-    amount: DU(1_000_000),
   });
 
   // The vault must be configurd to accept all types being traded.
   const vault = new Vault(auxClient);
 
   // Deposit funds to prepare for trading.
-  await vault.createAuxAccount(trader);
+  await vault.createAuxAccount({sender: trader});
   await vault.deposit(trader, btcCoin, DU(1000));
   await vault.deposit(trader, usdcCoin, DU(1_000_000));
 }
@@ -233,7 +229,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of bidtx.result ?? []) {
+      for (const e of bidTx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           bidOrderId = e.orderId;
         }
@@ -255,7 +251,7 @@ async function tradeCLOB(): Promise<void> {
         orderType: OrderType.LIMIT_ORDER,
         stpActionType: STPActionType.CANCEL_AGGRESSIVE,
       });
-      for (const e of asktx.result ?? []) {
+      for (const e of askTx.result ?? []) {
         if (e.type == "OrderPlacedEvent") {
           askOrderId = e.orderId;
         }

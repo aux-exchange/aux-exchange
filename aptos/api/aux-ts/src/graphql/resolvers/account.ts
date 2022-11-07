@@ -3,7 +3,7 @@ import * as aux from "../../";
 import { AU } from "../../";
 import AuxAccount from "../../account";
 import { parseTypeArgs } from "../../client";
-import { auxClient } from "../connection";
+import { auxClient } from "../client";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import type {
   Account,
@@ -147,16 +147,21 @@ export const account = {
   },
   async poolPositions(
     parent: Account,
-    args: AccountPoolPositionsArgs
+    { poolInputs }: AccountPoolPositionsArgs
   ): Promise<Position[]> {
-    const poolInputs = args.poolInputs ?? (await aux.Pool.index(auxClient));
-    const auxPositions = await Promise.all(
-      poolInputs.map((poolInput) =>
-        aux.amm.core.query.position(auxClient, parent.address, poolInput)
+    const positions = await new aux.Account(
+      auxClient,
+      parent.address
+    ).poolPositions();
+    return positions
+      .filter((auxPosition) =>
+        _.some(
+          poolInputs,
+          (poolInput) =>
+            poolInput.coinTypeX === auxPosition.coinInfoX.coinType &&
+            poolInput.coinTypeY === auxPosition.coinInfoY.coinType
+        )
       )
-    );
-    return auxPositions
-      .filter((auxPosition) => auxPosition !== undefined)
       .map((auxPosition) => {
         const pos = auxPosition!;
         return {

@@ -1,5 +1,5 @@
 import { ALL_USD_STABLES, COIN_MAPPING } from "../coin";
-import { pythConnection } from "./connection";
+import { pythConnection } from "./client";
 import { PythRating, RatingColor } from "./generated/types";
 
 export const LATEST_PYTH_PRICE = new Map<string, number>();

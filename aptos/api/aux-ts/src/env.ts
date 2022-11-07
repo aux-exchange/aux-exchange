@@ -68,6 +68,12 @@ export class AuxEnv {
       devnet: "https://fullnode.devnet.aptoslabs.com/v1",
       local: "http://0.0.0.0:8081",
     };
+    if (aptosProfile.rest_url === "") {
+      delete aptosProfile["rest_url"];
+    }
+    if (aptosProfile.faucet_url === "") {
+      delete aptosProfile["faucet_url"];
+    }
     const restUrl = aptosProfile.rest_url ?? restUrls[aptosNetwork];
     const faucetUrl = aptosProfile.faucet_url ?? faucetUrls[aptosNetwork];
 

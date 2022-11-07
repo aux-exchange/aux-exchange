@@ -1,19 +1,22 @@
-import type { HexString, Types } from "aptos";
-import type BN from "bn.js";
+import { HexString, Types } from "aptos";
+import BN from "bn.js";
 import type { CoinInfo } from "../client";
-import type {
-  AnyUnits,
-  AtomicUnits,
-  Bps,
-  DecimalUnits,
-  Percent,
-} from "../units";
+import { AnyUnits, AtomicUnits, AU, Bps, DecimalUnits, Pct } from "../units";
 
 /****************/
 /* Pool schemas */
 /****************/
 
-export type Curve = "constant product" | "stable swap";
+export interface ConstantProduct {
+  coinInfoX: CoinInfo;
+  coinInfoY: CoinInfo;
+  coinInfoLP: CoinInfo;
+  fee: Bps;
+  timestamp: BN;
+  amountX: DecimalUnits;
+  amountY: DecimalUnits;
+  amountLP: DecimalUnits;
+}
 
 export interface Position {
   owner: Types.Address;
@@ -109,6 +112,55 @@ export interface RawRemoveLiquidityEvent extends RawPoolEvent {
   };
 }
 
+export function parseRawSwapEvent(event: RawSwapEvent): SwapEvent {
+  return {
+    kind: "SwapEvent",
+    type: event.type,
+    sequenceNumber: new BN(event.sequence_number),
+    timestamp: new BN(event.data.timestamp),
+    senderAddr: new HexString(event.data.sender_addr),
+    coinTypeIn: event.data.in_coin_type,
+    coinTypeOut: event.data.out_coin_type,
+    amountIn: AU(event.data.in_au),
+    amountOut: AU(event.data.out_au),
+    feeBps: Number(event.data.fee_bps),
+    reserveIn: AU(event.data.in_reserve),
+    reserveOut: AU(event.data.out_reserve),
+  };
+}
+
+export function parseRawAddLiquidityEvent(
+  event: RawAddLiquidityEvent
+): AddLiquidityEvent {
+  return {
+    kind: "AddLiquidityEvent",
+    type: event.type,
+    sequenceNumber: new BN(event.sequence_number),
+    timestamp: new BN(event.data.timestamp),
+    xCoinType: event.data.x_coin_type,
+    yCoinType: event.data.y_coin_type,
+    xAdded: AU(event.data.x_added_au),
+    yAdded: AU(event.data.y_added_au),
+    lpMinted: AU(event.data.lp_minted_au),
+  };
+}
+
+export function parseRawRemoveLiquidityEvent(
+  event: RawRemoveLiquidityEvent
+): RemoveLiquidityEvent {
+  return {
+    kind: "RemoveLiquidityEvent",
+    type: event.type,
+    sequenceNumber: new BN(event.sequence_number),
+    timestamp: new BN(event.data.timestamp),
+    xCoinType: event.data.x_coin_type,
+    yCoinType: event.data.y_coin_type,
+    xRemoved: AU(event.data.x_removed_au),
+    yRemoved: AU(event.data.y_removed_au),
+    lpBurned: AU(event.data.lp_burned_au),
+  };
+}
+
 /************************/
 /* Input schemas (Pool) */
 /************************/
@@ -123,8 +175,8 @@ export type SwapInput = SwapExactInInput | SwapExactOutInput;
 export interface SwapExactInInput {
   coinTypeIn: Types.MoveStructTag;
   exactAmountIn: AnyUnits;
-  parameters:
-    | { priceImpact?: Percent | Bps; slippage?: Percent | Bps }
+  parameters?:
+    | { priceImpact?: Pct | Bps; slippage?: Pct | Bps }
     | { minAmountOut: AnyUnits }
     | { minAmountOutPerIn: AnyUnits };
 }
@@ -132,24 +184,24 @@ export interface SwapExactInInput {
 export interface SwapExactOutInput {
   coinTypeOut: Types.MoveStructTag;
   exactAmountOut: AnyUnits;
-  parameters:
+  parameters?:
     | {
-        priceImpact?: Percent | Bps;
-        slippage?: Percent | Bps;
+        priceImpact?: Pct | Bps;
+        slippage?: Pct | Bps;
       }
     | { maxAmountIn: AnyUnits }
-    | { maxAmountIn: AnyUnits; maxAmountInPerOut: AnyUnits };
+    | { maxAmountIn: AnyUnits; maxAmountInPerOut: AnyUnits }
 }
 
 export interface SlippageInput {
-  slippage?: Percent | Bps;
+  slippage?: Pct | Bps;
 }
 
 export interface AddLiquidityInput {
   amountX: AnyUnits;
   amountY: AnyUnits;
-  slippage: Bps;
-  useAccountBalance?: Boolean;
+  slippage?: Bps;
+  useAuxAccount?: Boolean;
 }
 
 export interface AddExactLiquidityInput {
@@ -265,7 +317,7 @@ export function addApproximateLiquidityPayload(
     type_arguments: [input.coinTypeX, input.coinTypeY],
     arguments: [
       input.maxAuX,
-      input.maxAuX,
+      input.maxAuY,
       input.minAuLP,
       input.maxPoolAuLP,
       input.minPoolAuX,

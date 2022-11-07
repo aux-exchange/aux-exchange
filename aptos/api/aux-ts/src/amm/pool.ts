@@ -1,4 +1,4 @@
-import { HexString, Types } from "aptos";
+import type { Types } from "aptos";
 import BN from "bn.js";
 import _ from "lodash";
 import type {
@@ -14,8 +14,9 @@ import {
   Bps,
   DecimalUnits,
   DU,
-  Percent,
+  Pct,
   toAtomicUnits,
+  toAtomicUnitsRatio,
 } from "../units";
 import {
   AddApproximateLiquidityInput,
@@ -27,7 +28,9 @@ import {
   addLiquidityPayload,
   addLiquidityWithAccountPayload,
   createPoolPayload,
-  Curve,
+  parseRawAddLiquidityEvent,
+  parseRawRemoveLiquidityEvent,
+  parseRawSwapEvent,
   PoolEvent,
   PoolInput,
   Position,
@@ -55,27 +58,14 @@ import {
  * pools of 3 or more be introduced, users can expect a separate `NPool` (or similarly named)
  * client use.
  */
-export class Pool {
-  // Metadata fields immediately initialized
+export class PoolClient {
+  static readonly defaultSlippage: Bps = new Bps(50);
+
   readonly auxClient: AuxClient;
   readonly type: Types.MoveStructTag;
-  readonly curve: Curve;
-  readonly defaultSlippage: Bps = new Bps(50);
   readonly coinTypeX: Types.MoveStructTag;
   readonly coinTypeY: Types.MoveStructTag;
   readonly coinTypeLP: Types.MoveStructTag;
-
-  // Metadata fields loaded from the on-chain resource
-  fee: Bps | undefined = undefined;
-  coinInfoX: CoinInfo | undefined = undefined;
-  coinInfoY: CoinInfo | undefined = undefined;
-  coinInfoLP: CoinInfo | undefined = undefined;
-
-  // State fields
-  timestamp: BN | undefined = undefined;
-  amountX: DecimalUnits | undefined = undefined;
-  amountY: DecimalUnits | undefined = undefined;
-  amountLP: DecimalUnits | undefined = undefined;
 
   /********************/
   /* Public functions */
@@ -84,7 +74,6 @@ export class Pool {
   constructor(auxClient: AuxClient, { coinTypeX, coinTypeY }: PoolInput) {
     this.auxClient = auxClient;
     this.type = `${auxClient.moduleAddress}::amm::Pool<${coinTypeX}, ${coinTypeY}>`;
-    this.curve = "constant product";
     this.coinTypeX = coinTypeX;
     this.coinTypeY = coinTypeY;
     this.coinTypeLP = `${auxClient.moduleAddress}::amm::LP<${coinTypeX}, ${coinTypeY}>`;
@@ -106,27 +95,29 @@ export class Pool {
       this.type
     );
     const rawPool = resource.data as any;
-    this.fee = new Bps(rawPool.fee_bps);
-    this.coinInfoX = coinInfoX;
-    this.coinInfoY = coinInfoY;
-    this.coinInfoLP = coinInfoLP;
-    this.timestamp = new BN.BN(rawPool.timestamp);
-    this.amountX = new AtomicUnits(rawPool.x_reserve.value).toDecimalUnits(
-      coinInfoX.decimals
-    );
-    this.amountY = new AtomicUnits(rawPool.y_reserve.value).toDecimalUnits(
-      coinInfoY.decimals
-    );
-    this.amountLP = new AtomicUnits(
-      coinInfoLP.supply[0]!.integer.vec[0]!.value
-    ).toDecimalUnits(coinInfoLP.decimals);
+    return {
+      fee: new Bps(rawPool.fee_bps),
+      coinInfoX: coinInfoX,
+      coinInfoY: coinInfoY,
+      coinInfoLP: coinInfoLP,
+      timestamp: new BN.BN(rawPool.timestamp),
+      amountX: new AtomicUnits(rawPool.x_reserve.value).toDecimalUnits(
+        coinInfoX.decimals
+      ),
+      amountY: new AtomicUnits(rawPool.y_reserve.value).toDecimalUnits(
+        coinInfoY.decimals
+      ),
+      amountLP: new AtomicUnits(
+        coinInfoLP.supply[0]!.integer.vec[0]!.value
+      ).toDecimalUnits(coinInfoLP.decimals),
+    };
   }
 
   /**
    * Create a pool, specifying a swap fee. This fee goes entirely to LPs.
    */
   async create(
-    { fee }: { fee: Percent | Bps },
+    { fee }: { fee: Pct | Bps },
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<Types.MoveStructTag>> {
     const input = {
@@ -199,9 +190,8 @@ export class Pool {
     input: SwapExactInInput | SwapExactOutInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
-    await this.initIfNeeded();
     if ("coinTypeIn" in input) {
-      return this.swapExactIn(input, options);
+      return this.swapExactInPayload(input, options);
     }
     return this.swapExactOut(input, options);
   }
@@ -214,31 +204,30 @@ export class Pool {
    * - Pool mints and transfers LP tokens to sender, representing their position.
    */
   async addLiquidity(
-    { amountX, amountY, slippage, useAccountBalance }: AddLiquidityInput,
+    { amountX, amountY, slippage, useAuxAccount }: AddLiquidityInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    await this.initIfNeeded();
-    const amountAuX = toAtomicUnits(amountX, this.coinInfoX!.decimals).toU64();
-    const amountAuY = toAtomicUnits(amountY, this.coinInfoY!.decimals).toU64();
+    const pool = await this.query();
+    const amountAuX = toAtomicUnits(amountX, pool.coinInfoX.decimals).toU64();
+    const amountAuY = toAtomicUnits(amountY, pool.coinInfoY.decimals).toU64();
     const input = {
-      coinTypeX: this.coinInfoX!.coinType,
-      coinTypeY: this.coinInfoY!.coinType,
+      coinTypeX: pool.coinInfoX.coinType,
+      coinTypeY: pool.coinInfoY.coinType,
       amountAuX,
       amountAuY,
-      maxSlippageBps: slippage.toNumber().toString(),
+      maxSlippageBps: (slippage ?? PoolClient.defaultSlippage)
+        .toBps()
+        .toString(),
     };
     const payload =
-      useAccountBalance ?? false
+      useAuxAccount ?? false
         ? addLiquidityWithAccountPayload(this.auxClient.moduleAddress, input)
         : addLiquidityPayload(this.auxClient.moduleAddress, input);
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       payload,
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      this.parseRawAddLiquidityEvent
-    );
+    return this.parseAddLiquidityTransaction(transaction);
   }
 
   /**
@@ -248,23 +237,20 @@ export class Pool {
     { amountX, amountY }: AddExactLiquidityInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    await this.initIfNeeded();
-    const amountAuX = toAtomicUnits(amountX, this.coinInfoX!.decimals).toU64();
-    const amountAuY = toAtomicUnits(amountY, this.coinInfoY!.decimals).toU64();
+    const pool = await this.query();
+    const amountAuX = toAtomicUnits(amountX, pool.coinInfoX.decimals).toU64();
+    const amountAuY = toAtomicUnits(amountY, pool.coinInfoY.decimals).toU64();
     const input = {
       amountAuX,
       amountAuY,
-      coinTypeX: this.coinInfoX!.coinType,
-      coinTypeY: this.coinInfoY!.coinType,
+      coinTypeX: pool.coinInfoX.coinType,
+      coinTypeY: pool.coinInfoY.coinType,
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       addExactLiquidityPayload(this.auxClient.moduleAddress, input),
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      this.parseRawAddLiquidityEvent
-    );
+    return this.parseAddLiquidityTransaction(transaction);
   }
 
   /**
@@ -292,28 +278,25 @@ export class Pool {
     }: AddApproximateLiquidityInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const input = {
-      coinTypeX: this.coinInfoX!.coinType,
-      coinTypeY: this.coinInfoY!.coinType,
-      maxAuX: toAtomicUnits(maxX, this.coinInfoX!.decimals).toString(),
-      maxAuY: toAtomicUnits(maxY, this.coinInfoY!.decimals).toString(),
-      minAuLP: toAtomicUnits(minLP, this.coinInfoLP!.decimals).toString(),
+      coinTypeX: pool.coinInfoX.coinType,
+      coinTypeY: pool.coinInfoY.coinType,
+      maxAuX: toAtomicUnits(maxX, pool.coinInfoX.decimals).toString(),
+      maxAuY: toAtomicUnits(maxY, pool.coinInfoY.decimals).toString(),
+      minAuLP: toAtomicUnits(minLP, pool.coinInfoLP.decimals).toString(),
       maxPoolAuLP: toAtomicUnits(
         maxPoolLP,
-        this.coinInfoLP!.decimals
+        pool.coinInfoLP.decimals
       ).toString(),
-      minPoolAuX: toAtomicUnits(minPoolX, this.coinInfoX!.decimals).toString(),
-      minPoolAuY: toAtomicUnits(minPoolY, this.coinInfoY!.decimals).toString(),
+      minPoolAuX: toAtomicUnits(minPoolX, pool.coinInfoX.decimals).toString(),
+      minPoolAuY: toAtomicUnits(minPoolY, pool.coinInfoY.decimals).toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       addApproximateLiquidityPayload(this.auxClient.moduleAddress, input),
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      this.parseRawAddLiquidityEvent
-    );
+    return this.parseAddLiquidityTransaction(transaction);
   }
 
   /**
@@ -325,33 +308,30 @@ export class Pool {
   async removeLiquidity(
     {
       amountLP,
-      useAccountBalance,
-    }: { amountLP: AnyUnits; useAccountBalance?: boolean },
+      useAuxAccount,
+    }: { amountLP: AnyUnits; useAuxAccount?: boolean },
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<RemoveLiquidityEvent>> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const amountAuLP = toAtomicUnits(
       amountLP,
-      this.coinInfoLP!.decimals
+      pool.coinInfoLP.decimals
     ).toU64();
     const input = {
       amountAuLP,
-      coinTypeX: this.coinInfoX!.coinType,
-      coinTypeY: this.coinInfoY!.coinType,
-      coinInfoLP: this!.coinInfoLP,
+      coinTypeX: pool.coinInfoX.coinType,
+      coinTypeY: pool.coinInfoY.coinType,
+      coinInfoLP: pool.coinInfoLP,
     };
     const payload =
-      useAccountBalance ?? false
+      useAuxAccount ?? false
         ? removeLiquidityWithAccountPayload(this.auxClient.moduleAddress, input)
         : removeLiquidityPayload(this.auxClient.moduleAddress, input);
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       payload,
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      this.parseRawRemoveLiquidityEvent
-    );
+    return this.parseRemoveLiquidityTransaction(transaction);
   }
 
   /**
@@ -361,11 +341,11 @@ export class Pool {
   async drain(
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<Types.MoveStructTag>> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const input = {
       sender: this.auxClient.options.sender!,
-      coinTypeX: this.coinInfoX!.coinType,
-      coinTypeY: this.coinInfoY!.coinType,
+      coinTypeX: pool.coinInfoX.coinType,
+      coinTypeY: pool.coinInfoY.coinType,
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       resetPoolPayload(this.auxClient.moduleAddress, input),
@@ -381,11 +361,11 @@ export class Pool {
    * Returns the owner's position in the pool. It will be undefined if not found.
    */
   async position(owner: Types.Address): Promise<Position | undefined> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const resources = await this.auxClient.aptosClient.getAccountResources(
       owner
     );
-    const coinStoreLP = `0x1::coin::CoinStore<${this.auxClient.moduleAddress}::amm::Pool<${this.coinTypeX}, ${this.coinTypeY}>>`;
+    const coinStoreLP = `0x1::coin::CoinStore<${this.auxClient.moduleAddress}::amm::LP<${this.coinTypeX}, ${this.coinTypeY}>>`;
     const position = resources.find(
       (resource) => resource.type === coinStoreLP
     );
@@ -393,20 +373,20 @@ export class Pool {
       return undefined;
     }
     const amountLP = AU((position.data as any).coin.value).toDecimalUnits(
-      this.coinInfoLP!.decimals
+      pool.coinInfoLP.decimals
     );
     const share =
       amountLP.toNumber() === 0
         ? 0
-        : amountLP.toNumber() / this.amountLP!.toNumber();
+        : amountLP.toNumber() / pool.amountLP.toNumber();
     return {
       owner,
-      coinInfoX: this.coinInfoX!,
-      coinInfoY: this.coinInfoY!,
-      coinInfoLP: this.coinInfoLP!,
+      coinInfoX: pool.coinInfoX,
+      coinInfoY: pool.coinInfoY,
+      coinInfoLP: pool.coinInfoLP,
       // do ops in AU then convert
-      amountX: DU(share * this.amountX!.toNumber()),
-      amountY: DU(share * this.amountY!.toNumber()),
+      amountX: DU(share * pool.amountX.toNumber()),
+      amountY: DU(share * pool.amountY.toNumber()),
       amountLP,
       share,
     };
@@ -463,7 +443,7 @@ export class Pool {
       "swap_events",
       queryParameter
     )) as RawSwapEvent[];
-    return events.map(this.parseRawSwapEvent);
+    return events.map(parseRawSwapEvent);
   }
 
   async addLiquidityEvents(
@@ -481,7 +461,7 @@ export class Pool {
       "add_liquidity_events",
       queryParameter
     )) as RawAddLiquidityEvent[];
-    return events.map(this.parseRawAddLiquidityEvent);
+    return events.map(parseRawAddLiquidityEvent);
   }
 
   async removeLiquidityEvents(
@@ -499,37 +479,18 @@ export class Pool {
       "remove_liquidity_events",
       queryParameter
     )) as RawRemoveLiquidityEvent[];
-    return events.map(this.parseRawRemoveLiquidityEvent);
+    return events.map(parseRawRemoveLiquidityEvent);
   }
 
   /*********************/
   /* Private functions */
   /*********************/
 
-  private async initIfNeeded() {
-    if (
-      _.some(
-        [
-          this.fee,
-          this.coinInfoX,
-          this.coinInfoY,
-          this.coinInfoLP,
-          this.timestamp,
-          this.amountX,
-          this.amountY,
-          this.amountLP,
-        ],
-        _.isUndefined
-      )
-    ) {
-      this.query();
-    }
-  }
-
-  private async swapExactIn(
+  private async swapExactInPayload(
     { coinTypeIn, exactAmountIn, parameters }: SwapExactInInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
+    parameters = parameters ?? {};
     const [coinInfoIn, coinInfoOut] = await this.exactInCoinInfos(coinTypeIn);
     const coinTypeOut = coinInfoOut.coinType;
     const exactAmountAuIn = toAtomicUnits(
@@ -549,18 +510,17 @@ export class Pool {
         ).toString(),
       });
     } else if ("minAmountOutPerIn" in parameters) {
+      const [numerator, denominator] = toAtomicUnitsRatio(
+        parameters.minAmountOutPerIn,
+        coinInfoOut.decimals,
+        coinInfoIn.decimals
+      );
       payload = swapExactCoinForCoinLimitPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
         exactAmountAuIn,
-        limitPriceNumerator: toAtomicUnits(
-          parameters.minAmountOutPerIn,
-          coinInfoIn.decimals
-        ).toString(),
-        limitPriceDenominator: toAtomicUnits(
-          DU(1),
-          coinInfoOut.decimals
-        ).toString(),
+        limitPriceNumerator: numerator.toString(),
+        limitPriceDenominator: denominator.toString(),
       });
     } else {
       const quote = await this.quoteExactIn({
@@ -568,7 +528,8 @@ export class Pool {
         exactAmountIn,
       });
       if (!_.isUndefined(parameters.priceImpact)) {
-        const spotPrice = this.amountY!.toNumber() / this.amountX!.toNumber();
+        const pool = await this.query();
+        const spotPrice = pool.amountY.toNumber() / pool.amountX.toNumber();
         const estimatedPriceImpact = (quote.toNumber() - spotPrice) / spotPrice;
         if (estimatedPriceImpact > parameters.priceImpact.toNumber()) {
           throw new Error(
@@ -577,7 +538,7 @@ export class Pool {
         }
       }
       const slippageMultiplier =
-        1 + (parameters.slippage ?? this.defaultSlippage).toNumber();
+        1 - (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
       payload = swapExactCoinForCoinPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
@@ -590,37 +551,39 @@ export class Pool {
       payload,
       options
     );
-    return this.parsePoolTransaction(transaction, this.parseRawSwapEvent);
+    return this.parseSwapTransaction(transaction);
   }
 
   private async swapExactOut(
     { coinTypeOut, exactAmountOut, parameters }: SwapExactOutInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
+    parameters = parameters ?? {};
     const [coinInfoIn, coinInfoOut] = await this.exactOutCoinInfos(coinTypeOut);
     const coinTypeIn = coinInfoIn.coinType;
     const exactAmountAuOut = toAtomicUnits(
       exactAmountOut,
-      coinInfoIn.decimals
+      coinInfoOut.decimals
     ).toString();
 
     let payload;
     if ("maxAmountIn" in parameters && "maxAmountInPerOut" in parameters) {
+      const [numerator, denominator] = toAtomicUnitsRatio(
+        // @ts-ignore typescript narrowing is confused
+        parameters.maxAmountInPerOut,
+        coinInfoIn.decimals,
+        coinInfoOut.decimals
+      );
       payload = swapCoinForExactCoinLimitPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
         maxAmountAuIn: toAtomicUnits(
+          // @ts-ignore typescript narrowing is confused
           parameters.maxAmountIn,
-          coinInfoOut.decimals
-        ).toString(),
-        limitPriceNumerator: toAtomicUnits(
-          parameters.maxAmountInPerOut,
           coinInfoIn.decimals
         ).toString(),
-        limitPriceDenominator: toAtomicUnits(
-          DU(1),
-          coinInfoOut.decimals
-        ).toString(),
+        limitPriceNumerator: numerator.toString(),
+        limitPriceDenominator: denominator.toString(),
         exactAmountAuOut,
       });
     } else if ("maxAmountIn" in parameters) {
@@ -630,7 +593,7 @@ export class Pool {
         exactAmountAuOut,
         maxAmountAuIn: toAtomicUnits(
           parameters.maxAmountIn,
-          coinInfoOut.decimals
+          coinInfoIn.decimals
         ).toString(),
       });
     } else {
@@ -639,7 +602,8 @@ export class Pool {
         exactAmountOut,
       });
       if (!_.isUndefined(parameters.priceImpact)) {
-        const spotPrice = this.amountY!.toNumber() / this.amountX!.toNumber();
+        const pool = await this.query();
+        const spotPrice = pool.amountY.toNumber() / pool.amountX.toNumber();
         const estimatedPriceImpact = (quote.toNumber() - spotPrice) / spotPrice;
         if (estimatedPriceImpact > parameters.priceImpact.toNumber()) {
           throw new Error(
@@ -648,12 +612,12 @@ export class Pool {
         }
       }
       const slippageMultiplier =
-        1 + (parameters.slippage ?? this.defaultSlippage).toNumber();
-      payload = swapExactCoinForCoinPayload(this.auxClient.moduleAddress, {
+        1 + (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
+      payload = swapCoinForExactCoinPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
-        exactAmountAuIn: exactAmountAuOut,
-        minAmountAuOut: (quote.toNumber() * slippageMultiplier).toString(),
+        exactAmountAuOut,
+        maxAmountAuIn: (quote.toNumber() * slippageMultiplier).toString(),
       });
     }
 
@@ -661,7 +625,7 @@ export class Pool {
       payload,
       options
     );
-    return this.parsePoolTransaction(transaction, this.parseRawSwapEvent);
+    return this.parseSwapTransaction(transaction);
   }
 
   /**
@@ -674,17 +638,17 @@ export class Pool {
     coinTypeIn: Types.MoveStructTag;
     exactAmountIn: AnyUnits;
   }): Promise<DecimalUnits> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const [coinInfoIn, _] = await this.exactInCoinInfos(coinTypeIn);
     const [reserveIn, reserveOut] =
-      coinTypeIn === this.coinInfoX!.coinType
-        ? [this.amountX!, this.amountY!]
-        : [this.amountY!, this.amountX!];
+      coinTypeIn === pool.coinInfoX.coinType
+        ? [pool.amountX, pool.amountY]
+        : [pool.amountY, pool.amountX];
     const amountIn =
       toAtomicUnits(exactAmountIn, coinInfoIn.decimals)
         .toDecimalUnits(coinInfoIn.decimals)
         .toNumber() *
-      (1 - this.fee!.toNumber() / 100.0);
+      (1 - pool.fee.toNumber() / 100.0);
     const expectedAmountOut =
       (amountIn * reserveOut.toNumber()) / (reserveIn.toNumber() + amountIn);
     return DU(expectedAmountOut);
@@ -700,13 +664,13 @@ export class Pool {
     coinTypeOut: Types.MoveStructTag;
     exactAmountOut: AnyUnits;
   }): Promise<DecimalUnits> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const [_, coinInfoOut] = await this.exactOutCoinInfos(coinTypeOut);
     const [reserveIn, reserveOut] =
-      coinTypeOut === this.coinInfoY!.coinType
-        ? [this.amountX!, this.amountY!]
-        : [this.amountY!, this.amountX!];
-    const feeRatio = 1 - this.fee!.toNumber() / 100.0;
+      coinTypeOut === pool.coinInfoY.coinType
+        ? [pool.amountX, pool.amountY]
+        : [pool.amountY, pool.amountX];
+    const feeRatio = 1 - pool.fee.toNumber() / 100.0;
     const amountOut = toAtomicUnits(exactAmountOut, coinInfoOut.decimals)
       .toDecimalUnits(coinInfoOut.decimals)
       .toNumber();
@@ -719,84 +683,53 @@ export class Pool {
   private async exactInCoinInfos(
     coinTypeIn: Types.MoveStructTag
   ): Promise<[CoinInfo, CoinInfo]> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const [coinInfoIn, coinInfoOut] =
-      coinTypeIn === this.coinInfoX!.coinType
-        ? [this.coinInfoX!, this.coinInfoY!]
-        : [this.coinInfoY!, this.coinInfoX!];
+      coinTypeIn === pool.coinInfoX.coinType
+        ? [pool.coinInfoX, pool.coinInfoY]
+        : [pool.coinInfoY, pool.coinInfoX];
     return [coinInfoIn, coinInfoOut];
   }
 
   private async exactOutCoinInfos(
     coinTypeOut: Types.MoveStructTag
   ): Promise<[CoinInfo, CoinInfo]> {
-    await this.initIfNeeded();
+    const pool = await this.query();
     const [coinInfoIn, coinInfoOut] =
-      coinTypeOut === this.coinInfoY!.coinType
-        ? [this.coinInfoX!, this.coinInfoY!]
-        : [this.coinInfoY!, this.coinInfoX!];
+      coinTypeOut === pool.coinInfoY.coinType
+        ? [pool.coinInfoX, pool.coinInfoY]
+        : [pool.coinInfoY, pool.coinInfoX];
     return [coinInfoIn, coinInfoOut];
   }
 
-  private parseRawSwapEvent(event: RawSwapEvent): SwapEvent {
-    const type = `${this.auxClient.moduleAddress}::amm::SwapEvent`;
-    if (event.type !== type) {
-      throw new Error(`Expected ${type}, got ${event.type}`);
-    }
-    return {
-      kind: "SwapEvent",
-      type: event.type,
-      sequenceNumber: new BN(event.sequence_number),
-      timestamp: new BN(event.data.timestamp),
-      senderAddr: new HexString(event.data.sender_addr),
-      coinTypeIn: event.data.in_coin_type,
-      coinTypeOut: event.data.out_coin_type,
-      amountIn: AU(event.data.in_au),
-      amountOut: AU(event.data.out_au),
-      feeBps: Number(event.data.fee_bps),
-      reserveIn: AU(event.data.in_reserve),
-      reserveOut: AU(event.data.out_reserve),
-    };
+  private parseSwapTransaction(
+    transaction: Types.UserTransaction
+  ): AuxTransaction<SwapEvent> {
+    return this.parsePoolTransaction(
+      transaction,
+      `${this.auxClient.moduleAddress}::amm::SwapEvent`,
+      parseRawSwapEvent
+    );
   }
 
-  private parseRawAddLiquidityEvent(
-    event: RawAddLiquidityEvent
-  ): AddLiquidityEvent {
-    const type = `${this.auxClient.moduleAddress}::amm::AddLiquidityEvent`;
-    if (event.type !== type) {
-      throw new Error(`Expected ${type}, got ${event.type}`);
-    }
-    return {
-      kind: "AddLiquidityEvent",
-      type: event.type,
-      sequenceNumber: new BN(event.sequence_number),
-      timestamp: new BN(event.data.timestamp),
-      xCoinType: event.data.x_coin_type,
-      yCoinType: event.data.y_coin_type,
-      xAdded: AU(event.data.x_added_au),
-      yAdded: AU(event.data.y_added_au),
-      lpMinted: AU(event.data.lp_minted_au),
-    };
+  private parseAddLiquidityTransaction(
+    transaction: Types.UserTransaction
+  ): AuxTransaction<AddLiquidityEvent> {
+    return this.parsePoolTransaction(
+      transaction,
+      `${this.auxClient.moduleAddress}::amm::AddLiquidityEvent`,
+      parseRawAddLiquidityEvent
+    );
   }
 
-  private parseRawRemoveLiquidityEvent(
-    event: RawRemoveLiquidityEvent
-  ): RemoveLiquidityEvent {
-    const type = `${this.auxClient.moduleAddress}::amm::RemoveLiquidityEvent`;
-    if (event.type !== type) {
-      throw new Error(`Expected ${type}, got ${event.type}`);
-    }
-    return {
-      kind: "RemoveLiquidityEvent",
-      type: event.type,
-      sequenceNumber: new BN(event.sequence_number),
-      timestamp: new BN(event.data.timestamp),
-      xCoinType: event.data.x_coin_type,
-      yCoinType: event.data.y_coin_type,
-      xRemoved: AU(event.data.x_removed_au),
-      yRemoved: AU(event.data.y_removed_au),
-      lpBurned: AU(event.data.lp_burned_au),
-    };
+  private parseRemoveLiquidityTransaction(
+    transaction: Types.UserTransaction
+  ): AuxTransaction<RemoveLiquidityEvent> {
+    return this.parsePoolTransaction(
+      transaction,
+      `${this.auxClient.moduleAddress}::amm::RemoveLiquidityEvent`,
+      parseRawRemoveLiquidityEvent
+    );
   }
 
   private parsePoolTransaction<
@@ -804,17 +737,30 @@ export class Pool {
     ParsedType extends PoolEvent
   >(
     transaction: Types.UserTransaction,
+    poolEventType: Types.MoveStructTag,
     parse: (raw: RawType) => ParsedType
   ): AuxTransaction<ParsedType> {
+    const events = transaction.events.filter(
+      (event) => event.type === poolEventType
+    );
     if (!transaction.success) {
       return { transaction, result: undefined };
     }
-    if (transaction.events.length !== 1) {
-      throw new Error(`Got unexpected events: ${transaction.events}`);
+    if (events.length > 1) {
+      throw new Error(
+        `Got unexpected number of events: ${transaction.hash} ${JSON.stringify(
+          events,
+          undefined,
+          4
+        )}`
+      );
+    }
+    if (events.length === 0) {
+      return { transaction, result: undefined };
     }
     return {
       transaction,
-      result: parse(transaction.events[0]!.data as RawType),
+      result: parse(events[0]! as RawType),
     };
   }
 }

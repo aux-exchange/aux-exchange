@@ -1,7 +1,7 @@
 import type { Types } from "aptos";
 import { withFilter } from "graphql-subscriptions";
 import _ from "lodash";
-import { redisPubSub } from "../connection";
+import { redisPubSub } from "../client";
 import type {
   InputMaybe,
   MarketInput,

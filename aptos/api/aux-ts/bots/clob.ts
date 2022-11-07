@@ -132,7 +132,7 @@ export class FTXMarketMakingStrategy {
     const accountExists = await this.vault.accountExists(this.trader.address());
     if (!accountExists) {
       this.log.info("Creating AUX account");
-      await this.vault.createAuxAccount(this.trader);
+      await this.vault.createAuxAccount({ sender: this.trader });
     }
 
     const existingBase = await this.vault.availableBalance(
@@ -559,7 +559,7 @@ export class FTXArbitrageStrategy {
     const accountExists = await this.vault.accountExists(this.trader.address());
     if (!accountExists) {
       this.log.info("Creating AUX account");
-      await this.vault.createAuxAccount(this.trader);
+      await this.vault.createAuxAccount({sender: this.trader});
     }
 
     const existingBase = await this.vault.availableBalance(

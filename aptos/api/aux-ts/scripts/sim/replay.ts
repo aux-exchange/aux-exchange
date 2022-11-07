@@ -74,8 +74,9 @@ async function setupTrader(
   if (alreadyDone) {
     return { ready: true, account: trader };
   }
+  auxClient.sender = trader;
   await auxClient.faucetClient!.fundAccount(trader.address(), 1_000_000_000);
-  await vault.createAuxAccount(trader);
+  await vault.createAuxAccount();
 
   console.log(`setting up ${trader.address().toString()}`);
   for (const coin of [
@@ -87,11 +88,10 @@ async function setupTrader(
     FakeCoin.USDT,
   ]) {
     const coinType = auxClient.getWrappedFakeCoinType(coin);
-    await auxClient.registerAndMintFakeCoin({
-      sender: trader,
+    await auxClient.registerAndMintFakeCoin(
       coin,
-      amount: DU(4_000_000_000), // 4 billion
-    });
+      DU(4_000_000_000), // 4 billion
+    );
     await vault.deposit(trader, coinType, DU(2_000_000_000));
     await vault.withdraw(trader, coinType, DU(1_000_000_000));
   }
@@ -156,6 +156,7 @@ async function replay(
         orderType: OrderType.LIMIT_ORDER,
       };
       const txResult = await market.placeOrder(order, {
+        sender: trader.account,
         maxGasAmount: AU(100_000),
       });
       trader.ready = true;

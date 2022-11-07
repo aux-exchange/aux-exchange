@@ -1,12 +1,12 @@
 import type { AptosAccount, Types } from "aptos";
-import type { AuxClient } from "../src/client";
-import Market from "../src/clob/dsl/market";
-import Vault from "../src/vault/dsl/vault";
-import { USDC_ETH_WH } from "../src/coin";
-import { Bps, DecimalUnits, DU } from "../src/units";
-import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import { Logger } from "tslog";
-import { Pool } from "../src";
+import { PoolClient } from "../src/amm/pool";
+import type { AuxClient } from "../src/client";
+import { OrderType, STPActionType } from "../src/clob/core/mutation";
+import Market from "../src/clob/dsl/market";
+import { USDC_ETH_WH } from "../src/coin";
+import { DecimalUnits, DU } from "../src/units";
+import Vault from "../src/vault/dsl/vault";
 
 export class AUXArbitrageStrategy {
   log: Logger;
@@ -71,13 +71,15 @@ export class AUXArbitrageStrategy {
     this.transferQuote = transferQuote;
     this.inFlight = false;
     this.previousPrint = 0;
+
+    this.client.sender = trader;
   }
 
   async maybeInitializeAccount() {
     const accountExists = await this.vault.accountExists(this.trader.address());
     if (!accountExists) {
       this.log.info("Creating AUX account");
-      await this.vault.createAuxAccount(this.trader);
+      await this.vault.createAuxAccount();
     }
 
     const existingBase = await this.vault.availableBalance(
@@ -130,15 +132,17 @@ export class AUXArbitrageStrategy {
     }
     const market = maybeMarket as Market;
 
-    const maybePool = await new Pool(this.client, {
+    const poolClient = new PoolClient(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });
 
-    if (maybePool === undefined) {
+    let pool;
+    try {
+      pool = await poolClient.query();
+    } catch {
       throw new Error(`No pool for ${this.baseCoin}`);
     }
-    const pool = maybePool as Pool;
 
     const maybeTrade = async (
       marketBid: number | undefined,
@@ -184,17 +188,19 @@ export class AUXArbitrageStrategy {
           const roundlotQuantity = market.makeRoundLot(
             await this.client.toAtomicUnits(this.baseCoin, DU(tradeQuantity))
           );
-          const buyTx = await pool.swapYForXExactLimit({
-            sender: this.trader,
-            maxAmountIn: this.dollarsPerTrade,
-            maxInPerOut: DU(marketBid / this.limitThreshold),
+          const buyTx = await poolClient.swap({
+            coinTypeOut: poolClient.coinTypeX,
             exactAmountOut: roundlotQuantity,
+            parameters: {
+              maxAmountIn: this.dollarsPerTrade,
+              maxAmountInPerOut: DU(marketBid / this.limitThreshold),
+            },
           });
           this.log.info(
             `>>>> ${new Date()} | BUY  | AMM: ${poolPrice}; Limit: ${
               marketBid / this.limitThreshold
             }; Swap:`,
-            buyTx.tx
+            buyTx.transaction
           );
 
           const sellTx = await market.placeOrder({
@@ -274,16 +280,16 @@ export class AUXArbitrageStrategy {
               );
             }
           }
-          const sellTx = await pool.swap({
+          const sellTx = await poolClient.swap({
+            coinTypeIn: poolClient.coinTypeY,
             exactAmountIn: roundlotQuantity,
-            priceImpact: {
-              minOutPerIn: DU(marketAsk),
+            parameters: {
+              minAmountOutPerIn: DU(marketAsk),
             },
-            slippage: new Bps(0)
           });
           this.log.info(
             `>>>> ${new Date()} | SELL  | AMM: ${poolPrice}; Limit: ${marketAsk}; Swap:`,
-            sellTx.tx
+            sellTx.transaction
           );
         }
       }
@@ -296,7 +302,7 @@ export class AUXArbitrageStrategy {
 
     while (true) {
       await market.update();
-      await pool.update();
+      pool = await poolClient.query();
       const marketBid = market.l2.bids[0]?.price.toNumber();
       const marketAsk = market.l2.asks[0]?.price.toNumber();
       const marketBidSize = market.l2.bids[0]?.quantity.toNumber();

@@ -25,6 +25,7 @@ async function main() {
   // shortcut for DecimalUnits, the fixed-precision representation that will be
   // converted to AU in API calls.
   const trader = new AptosAccount();
+  auxClient.sender = trader
   await auxClient.fundAccount({
     account: trader.address(),
     quantity: AU(10_000_000),
@@ -32,8 +33,8 @@ async function main() {
 
   // We support several fake coins that can be used for test trading. You can
   // mint and burn any quantities.
-  await auxClient.registerAndMintFakeCoin(trader, FakeCoin.BTC, DU(1000));
-  await auxClient.registerAndMintFakeCoin(trader, FakeCoin.USDC, DU(1_000_000));
+  await auxClient.registerAndMintFakeCoin(FakeCoin.BTC, DU(1000));
+  await auxClient.registerAndMintFakeCoin(FakeCoin.USDC, DU(1_000_000));
 
   // The full type names for the fake coins. For real trading.
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
@@ -52,11 +53,11 @@ async function main() {
     exactAmountOut: DU(10),
   });
 
-  if (quoteResult.output === undefined) {
+  if (quoteResult.result === undefined) {
     console.log("get quote failed:");
     throw new Error("get quote failed");
   }
-  const quote: RouterQuote = quoteResult.output;
+  const quote: RouterQuote = quoteResult.result;
   console.log(`Quote for swapping BTC for ${DU(10)} USDC:`);
   console.log(`required BTC: ${quote.amount}`);
   console.log(`gas amount: ${quote.estGasAmount}`);
@@ -90,10 +91,10 @@ async function main() {
   });
 
   // The swap returns the sequence of AMM swaps and CLOB fills that occurred.
-  if (txResult.output === undefined) {
+  if (txResult.result === undefined) {
     throw new Error("swap tx failed");
   } else {
-    for (const event of txResult.output) {
+    for (const event of txResult.result) {
       console.log("event", event);
     }
   }

@@ -1,6 +1,6 @@
-import * as aux from "../../";
+import { PoolClient } from "../../amm/pool";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
-import { auxClient } from "../connection";
+import { auxClient } from "../client";
 import {
   AddLiquidity,
   Maybe,
@@ -9,16 +9,16 @@ import {
   PoolQuoteExactInArgs,
   PoolQuoteExactOutArgs,
   Position,
-  RatingColor,
   QuoteExactIn,
   QuoteExactOut,
+  RatingColor,
   RemoveLiquidity,
   Swap,
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
-const PRICE_IMPACT_PCT_RED: number = 0.5
-const PRICE_IMPACT_PCT_YELLOW: number = 0.2
+const PRICE_IMPACT_PCT_RED: number = 0.5;
+const PRICE_IMPACT_PCT_YELLOW: number = 0.2;
 
 export const pool = {
   priceX(parent: Pool): number {
@@ -29,39 +29,34 @@ export const pool = {
     return parent.amountY === 0 ? 0 : parent.amountX / parent.amountY;
   },
 
-  async swaps(parent: Pool): Promise<Swap[]> {
-    const swaps = await aux.amm.core.query.swapEvents(auxClient, {
-      coinTypeX: parent.coinInfoX.coinType,
-      coinTypeY: parent.coinInfoY.coinType,
-    });
+  async swaps({ coinInfoX, coinInfoY }: Pool): Promise<Swap[]> {
+    const [coinTypeX, coinTypeY] = [coinInfoX.coinType, coinInfoY.coinType];
+    const swaps = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).swapEvents();
     return swaps.map((swap) => {
-      const coinInfoIn =
-        swap.coinTypeIn === parent.coinInfoX.coinType
-          ? parent.coinInfoX
-          : parent.coinInfoY;
+      const coinInfoIn = swap.coinTypeIn === coinTypeX ? coinInfoX : coinInfoY;
       const coinInfoOut =
-        swap.coinTypeOut === parent.coinInfoY.coinType
-          ? parent.coinInfoY
-          : parent.coinInfoX;
+        swap.coinTypeOut === coinTypeY ? coinInfoY : coinInfoX;
       return {
         ...swap,
         coinInfoIn,
         coinInfoOut,
         amountIn: swap.amountIn.toDecimalUnits(coinInfoIn.decimals).toNumber(),
-        amountOut: swap.amountOut.toDecimalUnits(coinInfoOut.decimals).toNumber(),
+        amountOut: swap.amountOut
+          .toDecimalUnits(coinInfoOut.decimals)
+          .toNumber(),
         time: swap.timestamp.divn(1000).toString(), // microseconds => milliseconds
       };
     });
   },
 
   async adds(parent: Pool): Promise<AddLiquidity[]> {
-    const addLiquiditys = await aux.amm.core.query.addLiquidityEvents(
-      auxClient,
-      {
-        coinTypeX: parent.coinInfoX.coinType,
-        coinTypeY: parent.coinInfoY.coinType,
-      }
-    );
+    const addLiquiditys = await new PoolClient(auxClient, {
+      coinTypeX: parent.coinInfoX.coinType,
+      coinTypeY: parent.coinInfoY.coinType,
+    }).addLiquidityEvents();
     return addLiquiditys.map((addLiquidity) => ({
       ...addLiquidity,
       amountAddedX: addLiquidity.xAdded
@@ -78,13 +73,10 @@ export const pool = {
   },
 
   async removes(parent: Pool): Promise<RemoveLiquidity[]> {
-    const removeLiquiditys = await aux.amm.core.query.removeLiquidityEvents(
-      auxClient,
-      {
-        coinTypeX: parent.coinInfoX.coinType,
-        coinTypeY: parent.coinInfoY.coinType,
-      }
-    );
+    const removeLiquiditys = await new PoolClient(auxClient, {
+      coinTypeX: parent.coinInfoX.coinType,
+      coinTypeY: parent.coinInfoY.coinType,
+    }).removeLiquidityEvents();
     return removeLiquiditys.map((removeLiquidity) => ({
       ...removeLiquidity,
       amountRemovedX: removeLiquidity.xRemoved
@@ -104,10 +96,10 @@ export const pool = {
     parent: Pool,
     { owner }: PoolPositionArgs
   ): Promise<Maybe<Position>> {
-    const position = await aux.amm.core.query.position(auxClient, owner, {
+    const position = await new PoolClient(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
-    });
+    }).position(owner);
     return position
       ? {
           ...position,
@@ -145,8 +137,7 @@ export const pool = {
 
     const decimalUnitsInWithFee = amountIn * (1 - parent.feePercent / 100.0);
     const expectedAmountOutNoFee =
-      (amountIn * outReserve) /
-      (inReserve + amountIn);
+      (amountIn * outReserve) / (inReserve + amountIn);
     const expectedAmountOut =
       (decimalUnitsInWithFee * outReserve) /
       (inReserve + decimalUnitsInWithFee);
@@ -257,7 +248,7 @@ export const pool = {
       expectedAmountIn *
       (1 - parent.feePercent / 100.0);
     const priceImpactPct =
-      100.0 * (instantaneousAmountOut - amountOut) / instantaneousAmountOut;
+      (100.0 * (instantaneousAmountOut - amountOut)) / instantaneousAmountOut;
     const priceIn = amountOut / expectedAmountIn;
     const priceOut = expectedAmountIn / amountOut;
     let ratio = null;

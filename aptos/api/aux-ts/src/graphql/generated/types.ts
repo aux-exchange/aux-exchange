@@ -13,7 +13,6 @@ export type Scalars = {
   Int: number;
   Float: number;
   Address: any;
-  EntryFunctionPayload: any;
   Timestamp: any;
 };
 
@@ -71,6 +70,7 @@ export type AddLiquidityInput = {
   amountX: Scalars['Float'];
   amountY: Scalars['Float'];
   poolInput: PoolInput;
+  useAuxAccount: Scalars['Boolean'];
 };
 
 export type Balance = {
@@ -126,6 +126,13 @@ export type DepositInput = {
   coinType: Scalars['String'];
   from: Scalars['Address'];
   to: Scalars['Address'];
+};
+
+export type EntryFunctionPayload = {
+  __typename?: 'EntryFunctionPayload';
+  arugments?: Maybe<Array<Scalars['String']>>;
+  function: Scalars['String'];
+  type_arguments: Array<Scalars['String']>;
 };
 
 export enum FeaturedStatus {
@@ -233,30 +240,23 @@ export type MarketInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addLiquidity: Scalars['EntryFunctionPayload'];
-  addLiquidityWithAccount: Scalars['EntryFunctionPayload'];
-  cancelOrder: Scalars['EntryFunctionPayload'];
-  createAuxAccount: Scalars['EntryFunctionPayload'];
-  createMarket: Scalars['EntryFunctionPayload'];
-  createPool: Scalars['EntryFunctionPayload'];
-  deposit: Scalars['EntryFunctionPayload'];
-  placeOrder: Scalars['EntryFunctionPayload'];
-  registerCoin: Scalars['EntryFunctionPayload'];
-  removeLiquidity: Scalars['EntryFunctionPayload'];
-  removeLiquidityWithAccount: Scalars['EntryFunctionPayload'];
-  swapExactIn: Scalars['EntryFunctionPayload'];
-  swapExactOut: Scalars['EntryFunctionPayload'];
-  transfer: Scalars['EntryFunctionPayload'];
-  withdraw: Scalars['EntryFunctionPayload'];
+  addLiquidity: EntryFunctionPayload;
+  cancelOrder: EntryFunctionPayload;
+  createAuxAccount: EntryFunctionPayload;
+  createMarket: EntryFunctionPayload;
+  createPool: EntryFunctionPayload;
+  deposit: EntryFunctionPayload;
+  placeOrder: EntryFunctionPayload;
+  registerCoin: EntryFunctionPayload;
+  removeLiquidity: EntryFunctionPayload;
+  swapExactIn: EntryFunctionPayload;
+  swapExactOut: EntryFunctionPayload;
+  transfer: EntryFunctionPayload;
+  withdraw: EntryFunctionPayload;
 };
 
 
 export type MutationAddLiquidityArgs = {
-  addLiquidityInput: AddLiquidityInput;
-};
-
-
-export type MutationAddLiquidityWithAccountArgs = {
   addLiquidityInput: AddLiquidityInput;
 };
 
@@ -292,11 +292,6 @@ export type MutationRegisterCoinArgs = {
 
 
 export type MutationRemoveLiquidityArgs = {
-  removeLiquidityInput: RemoveLiquidityInput;
-};
-
-
-export type MutationRemoveLiquidityWithAccountArgs = {
   removeLiquidityInput: RemoveLiquidityInput;
 };
 
@@ -553,6 +548,7 @@ export type RemoveLiquidity = {
 export type RemoveLiquidityInput = {
   amountLP: Scalars['Float'];
   poolInput: PoolInput;
+  useAuxAccount: Scalars['Boolean'];
 };
 
 export enum Resolution {
@@ -811,7 +807,7 @@ export type ResolversTypes = {
   CreatePoolInput: CreatePoolInput;
   Deposit: ResolverTypeWrapper<Deposit>;
   DepositInput: DepositInput;
-  EntryFunctionPayload: ResolverTypeWrapper<Scalars['EntryFunctionPayload']>;
+  EntryFunctionPayload: ResolverTypeWrapper<EntryFunctionPayload>;
   FeaturedStatus: FeaturedStatus;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   High24h: ResolverTypeWrapper<High24h>;
@@ -875,7 +871,7 @@ export type ResolversParentTypes = {
   CreatePoolInput: CreatePoolInput;
   Deposit: Deposit;
   DepositInput: DepositInput;
-  EntryFunctionPayload: Scalars['EntryFunctionPayload'];
+  EntryFunctionPayload: EntryFunctionPayload;
   Float: Scalars['Float'];
   High24h: High24h;
   ID: Scalars['ID'];
@@ -977,9 +973,12 @@ export type DepositResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface EntryFunctionPayloadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['EntryFunctionPayload'], any> {
-  name: 'EntryFunctionPayload';
-}
+export type EntryFunctionPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EntryFunctionPayload'] = ResolversParentTypes['EntryFunctionPayload']> = {
+  arugments?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  function?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type_arguments?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type High24hResolvers<ContextType = any, ParentType extends ResolversParentTypes['High24h'] = ResolversParentTypes['High24h']> = {
   baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1035,7 +1034,6 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationAddLiquidityArgs, 'addLiquidityInput'>>;
-  addLiquidityWithAccount?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationAddLiquidityWithAccountArgs, 'addLiquidityInput'>>;
   cancelOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCancelOrderArgs, 'cancelOrderInput'>>;
   createAuxAccount?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType>;
   createMarket?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreateMarketArgs, 'createMarketInput'>>;
@@ -1044,7 +1042,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   placeOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationPlaceOrderArgs, 'placeOrderInput'>>;
   registerCoin?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRegisterCoinArgs, 'registerCoinInput'>>;
   removeLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRemoveLiquidityArgs, 'removeLiquidityInput'>>;
-  removeLiquidityWithAccount?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRemoveLiquidityWithAccountArgs, 'removeLiquidityInput'>>;
   swapExactIn?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapExactInArgs, 'swapExactInInput'>>;
   swapExactOut?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapExactOutArgs, 'swapExactOutInput'>>;
   transfer?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationTransferArgs, 'transferInput'>>;
@@ -1258,7 +1255,7 @@ export type Resolvers<ContextType = any> = {
   Bar?: BarResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;
   Deposit?: DepositResolvers<ContextType>;
-  EntryFunctionPayload?: GraphQLScalarType;
+  EntryFunctionPayload?: EntryFunctionPayloadResolvers<ContextType>;
   High24h?: High24hResolvers<ContextType>;
   LastTradePrice?: LastTradePriceResolvers<ContextType>;
   Level?: LevelResolvers<ContextType>;

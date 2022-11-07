@@ -5,7 +5,7 @@ import {
   COIN_MAPPING,
   fakeMapping
 } from "../../coin";
-import { auxClient, pythClient, redisClient } from "../connection";
+import { auxClient, pythClient, redisClient } from "../client";
 import { orderEventToOrder, orderToOrder } from "../conversion";
 import {
   Bar,

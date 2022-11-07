@@ -195,8 +195,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     let event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     let event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -217,8 +217,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 //   });
@@ -252,7 +252,7 @@
 //       `${JSON.stringify(txResult.transaction.vm_status)}`
 //     );
 //     console.log("swapUsdcForBtc", txResult.transaction.hash);
-//     // console.dir(txResult.output, { depth: null });
+//     // console.dir(txResult.result, { depth: null });
 //     const finalBtc = Number(
 //       await coinClient.checkBalance(moduleAuthority, {
 //         coinType: btcCoinType,
@@ -286,8 +286,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     let event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     let event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -308,8 +308,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 //   });
@@ -341,7 +341,7 @@
 //       txResult.transaction.success,
 //       `${txResult.transaction.vm_status}`
 //     );
-//     // console.dir(txResult.output, { depth: null });
+//     // console.dir(txResult.result, { depth: null });
 //     await pool.update();
 //     const finalBtc = Number(
 //       await coinClient.checkBalance(moduleAuthority, {
@@ -548,8 +548,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     let event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     let event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -570,8 +570,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 //   });
@@ -593,7 +593,7 @@
 //     );
 //     console.log("quoteExactUsdcForBtc", txResult.transaction.hash);
 //     assert.ok(txResult.kind === "ok");
-//     const quote: RouterQuote = txResult.output;
+//     const quote: RouterQuote = txResult.result;
 //     assert.equal(quote.routes.length, 2);
 //     assert.equal(
 //       quote.routes[0]!.amountOut.toNumber() +
@@ -617,8 +617,8 @@
 //     );
 //     console.log("quoteUsdcForExactBtc", txResult.transaction.hash);
 //     assert.ok(txResult.kind === "ok");
-//     assert.ok(!!txResult.output);
-//     const quote: RouterQuote = txResult.output;
+//     assert.ok(!!txResult.result);
+//     const quote: RouterQuote = txResult.result;
 //     assert.equal(quote.routes.length, 2);
 //     assert.equal(
 //       quote.routes[0]!.amountIn.toNumber() +
@@ -700,8 +700,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     let event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     let event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "25000000");
 
@@ -722,8 +722,8 @@
 //       tx.transaction.vm_status
 //     );
 //     assert.ok(tx.kind === "ok");
-//     assert.equal(1, tx.output?.length);
-//     event = tx.output[0]!;
+//     assert.equal(1, tx.result?.length);
+//     event = tx.result[0]!;
 //     assert.equal(event.type, "OrderPlacedEvent");
 //     assert.equal((event as OrderPlacedEvent).quantity.toString(), "50000000");
 //   });
@@ -740,8 +740,8 @@
 //     );
 //     console.log("quoteExactBtcForUsdc", txResult.transaction.hash);
 //     assert.ok(txResult.kind === "ok");
-//     assert.ok(!!txResult.output);
-//     const quote: RouterQuote = txResult.output;
+//     assert.ok(!!txResult.result);
+//     const quote: RouterQuote = txResult.result;
 //     assert.equal(quote.routes.length, 2);
 //     assert.equal(
 //       quote.routes[0]!.amountOut.toNumber() +

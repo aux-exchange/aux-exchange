@@ -3,9 +3,10 @@ import axios from "axios";
 import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
-import type { SwapEvent } from "../../amm/schema";
+import { PoolClient } from "../../amm/pool";
+import type { ConstantProduct, SwapEvent } from "../../amm/schema";
 import { ALL_FAKE_COINS } from "../../coin";
-import { auxClient, redisClient } from "../connection";
+import { auxClient, redisClient } from "../client";
 import {
   Account,
   CoinInfo,
@@ -104,25 +105,20 @@ export const query = {
     let allUsers7D = new Set<string>();
     let allUsers24H = new Set<string>();
 
-    for (const poolInput of poolInputs) {
-      const pool = new aux.Pool(auxClient, {
-        coinTypeX: poolInput.coinTypeX!,
-        coinTypeY: poolInput.coinTypeY!,
+    for (const { coinTypeX, coinTypeY } of poolInputs) {
+      const poolClient = new PoolClient(auxClient, {
+        coinTypeX,
+        coinTypeY,
       });
+      const pool = await poolClient.query();
       if (pool === undefined) {
         continue;
       } else {
-        dollarTVL += getRecognizedTVL(
-          pool.coinTypeX,
-          pool.amountX!.toNumber()
-        );
-        dollarTVL += getRecognizedTVL(
-          pool.coinTypeY,
-          pool.amountY!.toNumber()
-        );
+        dollarTVL += getRecognizedTVL(coinTypeX, pool.amountX!.toNumber());
+        dollarTVL += getRecognizedTVL(coinTypeY, pool.amountY!.toNumber());
       }
 
-      const allEvents = await pool.poolEvents({
+      const allEvents = await poolClient.poolEvents({
         start: new BN(0),
       });
       for (const poolEvent of allEvents) {
@@ -230,7 +226,9 @@ export const query = {
     return allCoins;
   },
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
-    const pool = await aux.Pool.read(auxClient, poolInput);
+    const poolClient = new PoolClient(auxClient, poolInput);
+    const pool = await poolClient.query();
+
     if (pool === undefined) {
       return null;
     }
@@ -242,12 +240,12 @@ export const query = {
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
-    const poolReadParams = args.poolInputs
+    const poolInputs = args.poolInputs
       ? args.poolInputs
-      : (await aux.Pool.index(auxClient));
+      : await auxClient.pools();
     const pools = await Promise.all(
-      poolReadParams.map((poolReadParam) =>
-        aux.Pool.read(auxClient, poolReadParam)
+      poolInputs.map((poolInput) =>
+        new PoolClient(auxClient, poolInput).query()
       )
     );
     const hippoCoins = await coinsWithoutLiquidity();
@@ -411,7 +409,7 @@ function getFeaturedPriority(status: FeaturedStatus): number {
 }
 
 function formatPool(
-  pool: aux.Pool,
+  pool: ConstantProduct,
   coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
 ) {
   let featuredStatus = FeaturedStatus.None;
@@ -442,8 +440,8 @@ function formatPool(
   );
 
   const auLiquidity = Math.max(
-    pool.amountAuX.toNumber(),
-    pool.amountAuY.toNumber()
+    pool.amountX.toAtomicUnits(pool.coinInfoX.decimals).toNumber(),
+    pool.amountY.toAtomicUnits(pool.coinInfoY.decimals).toNumber()
   );
 
   const coinXNameSymbol = coinTypeToHippoNameSymbol[pool.coinInfoX.coinType];
@@ -469,7 +467,7 @@ function formatPool(
     amountX: pool.amountX.toNumber(),
     amountY: pool.amountY.toNumber(),
     amountLP: pool.amountLP.toNumber(),
-    feePercent: pool.feePct,
+    feePercent: pool.fee.toPercent(),
     featuredStatus,
     recognizedLiquidity,
     auLiquidity,
