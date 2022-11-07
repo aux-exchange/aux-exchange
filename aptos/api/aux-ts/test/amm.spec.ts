@@ -18,7 +18,7 @@ describe("AMM tests", function () {
     auxEnv.aptosClient,
     auxEnv.faucetClient
   );
-  const moduleAuthority = auxClient.options.moduleAuthority!;
+  const moduleAuthority = auxClient.moduleAuthority!;
   auxClient.options.sender = moduleAuthority;
 
   const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;

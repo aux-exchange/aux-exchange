@@ -12,10 +12,10 @@ import BN from "bn.js";
 import * as SHA3 from "js-sha3";
 
 import _ from "lodash";
-import { PoolClient } from "./pool/client";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
 import { AptosNetwork, AuxEnv } from "./env";
 import type { PoolInput } from "./graphql/generated/types";
+import { PoolClient } from "./pool/client";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
@@ -41,6 +41,7 @@ import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
  */
 export class AuxClient {
   moduleAddress: Types.Address;
+  moduleAuthority: AptosAccount | undefined;
   simulator: Simulator;
 
   // Options to apply on every tx. Can be overwritten when making individual calls.
@@ -114,7 +115,7 @@ export class AuxClient {
           privateKeyHex: profile.private_key!,
         });
         this.moduleAddress = deriveModuleAddress(moduleAuthority);
-        this.options.moduleAuthority = moduleAuthority;
+        this.moduleAuthority = moduleAuthority;
         this.simulator = {
           address: profile.account!,
           publicKey: toEd25519PublicKey(profile.public_key!),
@@ -750,11 +751,13 @@ export class AuxClientError extends Error {
  *
  * Note that options that can't be reconfigured per tx (e.g. moduleAddress) are passed directly to
  * the AuxClient constructor.
+ *
+ * Note these arguments are simply serialized and passed through as:
+ * - Types.SubmitTransactionRequest (see Aptos SDK's `generateTransaction`)
+ * - ExtraArgs (see Aptos SDK's `waitForTransactionWithResult`)
  */
 export interface AuxClientOptions {
-  moduleAuthority: AptosAccount;
   sender: AptosAccount;
-  // Transaction options
   simulate: boolean;
   // The sequence number for an account indicates the number of transactions that have been
   // submitted and committed on chain from that account. It is incremented every time a

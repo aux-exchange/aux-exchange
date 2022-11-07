@@ -102,7 +102,7 @@ async function main() {
     "local",
     new AptosClient("http://localhost:8081")
   );
-  const moduleAuthority = auxClient.options.moduleAuthority!;
+  const moduleAuthority = auxClient.moduleAuthority!;
 
   /***********************/
   /* INITIALIZE ACCOUNTS */

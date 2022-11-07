@@ -38,7 +38,7 @@ auxClient.moduleAddress;
 
 // Get the account that has authority over the module from local profile
 // This is also the account that deployed the Aux program
-const moduleAuthority: AptosAccount = auxClient.options.moduleAuthority!;
+const moduleAuthority: AptosAccount = auxClient.moduleAuthority!;
 
 // We create a new Aptos account for the trader
 const trader: AptosAccount = new AptosAccount();

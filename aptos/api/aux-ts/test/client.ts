@@ -5,7 +5,7 @@ import { AuxClient } from "../src/client";
 import { AuxEnv } from "../src/env";
 
 const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
-const moduleAuthority = auxClient.options.moduleAuthority!;
+const moduleAuthority = auxClient.moduleAuthority!;
 
 describe("AUX Client tests", function () {
   this.timeout(30000);

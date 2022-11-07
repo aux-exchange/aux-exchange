@@ -22,7 +22,7 @@ const auxClient = new AuxClient(
   auxEnv.aptosClient,
   auxEnv.faucetClient
 );
-const moduleAuthority = auxClient.options.moduleAuthority!;
+const moduleAuthority = auxClient.moduleAuthority!;
 const coinClient = new CoinClient(auxClient.aptosClient);
 
 const moduleAddress = auxClient.moduleAddress;

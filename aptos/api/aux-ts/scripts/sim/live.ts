@@ -21,7 +21,7 @@ const auxClient = new AuxClient(
   auxEnv.aptosClient,
   auxEnv.faucetClient
 );
-const moduleAuthority = auxClient.options.moduleAuthority!;
+const moduleAuthority = auxClient.moduleAuthority!;
 
 interface Trader {
   ready: boolean;

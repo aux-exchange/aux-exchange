@@ -12,7 +12,7 @@ async function main() {
     auxEnv.aptosClient,
     auxEnv.faucetClient
   );
-  const sender = auxClient.options.moduleAuthority!;
+  const sender = auxClient.moduleAuthority!;
   // const sender = AptosAccount.fromAptosAccountObject({
   //   privateKeyHex:
   //     "0x4df3a75ebb6697e5fa79e2e3649b62026423698f44b7e50c703648b2af4cd882",

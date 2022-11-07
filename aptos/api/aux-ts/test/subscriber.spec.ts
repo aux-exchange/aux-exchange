@@ -16,7 +16,7 @@ const auxClient = new AuxClient(
   auxEnv.aptosClient,
   auxEnv.faucetClient
 );
-const moduleAuthority = auxClient.options.moduleAuthority!;
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
 const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);

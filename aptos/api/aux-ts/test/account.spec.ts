@@ -6,7 +6,7 @@ import { AU } from "../src/units";
 import Vault from "../src/vault/dsl/vault";
 
 const auxClient = new AuxClient("local", new AuxEnv().aptosClient);
-const moduleAuthority = auxClient.options.moduleAuthority!;
+const moduleAuthority = auxClient.moduleAuthority!;
 
 const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
 const aptosCoin = "0x1::aptos_coin::AptosCoin";
