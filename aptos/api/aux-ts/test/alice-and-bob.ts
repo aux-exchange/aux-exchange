@@ -52,7 +52,7 @@ async function fundFakeCoin(auxClient: AuxClient, user: AptosAccount) {
     FakeCoin.SOL,
     AU(5_000_000_000_000),
     {
-      sender: user
+      sender: user,
     }
   );
   assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
@@ -61,7 +61,7 @@ async function fundFakeCoin(auxClient: AuxClient, user: AptosAccount) {
     FakeCoin.AUX,
     AU(100_000_000_000),
     {
-      sender: user
+      sender: user,
     }
   );
 
@@ -98,7 +98,7 @@ export async function withrawAndBurn(auxClient: AuxClient, user: AptosAccount) {
       );
     }
 
-    const maybeBurn = await auxClient.burnAllFakeCoin(coin);
+    const maybeBurn = await auxClient.burnAllFakeCoin(coin, { sender: user });
     if (maybeBurn !== undefined) {
       assert.ok(
         maybeBurn.success,

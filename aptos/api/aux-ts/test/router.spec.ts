@@ -634,9 +634,6 @@ describe("Router DSL tests", function () {
       },
       { sender: moduleAuthority, maxGasAmount: AU(1_000_000) }
     );
-    console.log("SWAP TX!!!");
-    console.log(txResult);
-    console.log(txResult.transaction);
     assert.ok(
       txResult.transaction.success,
       `${JSON.stringify(txResult.transaction.vm_status)}`

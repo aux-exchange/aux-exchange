@@ -206,6 +206,7 @@ describe("CLOB DSL tests", function () {
     // withdrawal all the money, so core test can run successfully.
     await withdrawAll(auxClient);
   });
+
   it("getPlacedOrderEvents", async function () {
     await market.update();
     const placedOrderEvents = await market.orders();
@@ -317,8 +318,8 @@ describe("CLOB Core tests", function () {
   });
 
   it("createAuxAccount", async function () {
-    await vault.mutation.createAuxAccount(auxClient, {sender: alice});
-    await vault.mutation.createAuxAccount(auxClient, {sender: bob});
+    await vault.mutation.createAuxAccount(auxClient, { sender: alice });
+    await vault.mutation.createAuxAccount(auxClient, { sender: bob });
   });
 
   it("depositToAuxAccount", async function () {
@@ -563,11 +564,11 @@ describe("CLOB Core tests", function () {
     assert.ok(last.isBid == false);
     assert.equal(
       last.quantity.toDecimalUnits(market.baseCoinInfo.decimals).toNumber(),
-      2
+      1
     );
     assert.equal(
       last.price.toDecimalUnits(market.quoteCoinInfo.decimals).toNumber(),
-      0.0001
+      0.002
     );
   });
 

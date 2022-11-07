@@ -343,7 +343,7 @@ export class PoolClient {
   ): Promise<AuxTransaction<Types.MoveStructTag>> {
     const pool = await this.query();
     const input = {
-      sender: this.auxClient.options.sender!,
+      sender: this.auxClient.sender!,
       coinTypeX: pool.coinInfoX.coinType,
       coinTypeY: pool.coinInfoY.coinType,
     };

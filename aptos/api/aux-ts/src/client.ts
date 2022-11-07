@@ -460,9 +460,10 @@ export class AuxClient {
    * transaction. If nothing was burned return undefined.
    */
   async burnAllFakeCoin(
-    coin: FakeCoin
+    coin: FakeCoin,
+    options: Partial<AuxClientOptions> = {}
   ): Promise<Types.UserTransaction | undefined> {
-    const sender = this.options.sender;
+    const sender = options.sender ?? this.sender;
     if (_.isUndefined(sender)) {
       throw new Error(`Error sending tx. Sender is undefined but required.`);
     }
@@ -642,7 +643,7 @@ export class AuxClient {
   ): Promise<Types.UserTransaction> {
     _.defaults(options, this.options);
     const simulate = options?.simulate ?? false;
-    const sender = options?.sender ?? this.options.sender;
+    const sender = options?.sender ?? this.sender;
 
     // AUX has a default simulator for every network, so only matters when sending real txs
     if (!simulate && _.isUndefined(sender)) {
@@ -687,7 +688,7 @@ export class AuxClient {
     payload: Types.EntryFunctionPayload,
     options: Partial<AuxClientOptions> = {}
   ): Promise<Types.UserTransaction> {
-    const sender = options.sender ?? this.options.sender;
+    const sender = options.sender ?? this.sender;
     if (_.isUndefined(sender)) {
       throw new Error(`Error sending tx. Sender is undefined but required.`);
     }
@@ -719,7 +720,7 @@ export class AuxClient {
   ): Partial<Types.SubmitTransactionRequest> {
     return _.pickBy(
       {
-        sender: this.options.sender?.address().toString(),
+        sender: this.sender?.address().toString(),
         sequence_number: options?.sequenceNumber?.toString(),
         max_gas_amount: options?.maxGasAmount?.toString(),
         gas_unit_price: options?.gasUnitPrice?.toString(),
