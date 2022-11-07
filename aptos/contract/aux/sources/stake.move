@@ -14,10 +14,10 @@ module aux::stake {
     /*************/
     /* CONSTANTS */
     /*************/
-    const MIN_DURATION_MS: u64 = 3600 * 24 * 1000000; // 1 day
-    const MAX_DURATION_MS: u64 = 3600 * 24 * 365 * 1000000; // 1 year
+    const MIN_DURATION_US: u64 = 3600 * 24 * 1000000; // 1 day
+    const MAX_DURATION_US: u64 = 3600 * 24 * 365 * 1000000; // 1 year
     const ST_COIN_DECIMALS: u8 = 8;
-    // const REWARD_PERIOD_MS: u64 = 1000000; // 1 second
+    // const REWARD_PERIOD_US: u64 = 1000000; // 1 second
     const REWARD_PER_SHARE_MUL: u128 = 1000000000000; // 1e12
 
     /**********/
@@ -49,13 +49,12 @@ module aux::stake {
         claim_events: EventHandle<ClaimEvent<S, R>>,
     }
 
-    // TODO: rename
-    struct UserInfos<phantom S, phantom R> has key {
-        user_infos: Table<u64, UserInfo<S, R>>,
+    struct UserPositions<phantom S, phantom R> has key {
+        positions: Table<u64, UserPosition<S, R>>,
     }
 
     /// Stored at user's address once they open a staking position
-    struct UserInfo<phantom S, phantom R> has store {
+    struct UserPosition<phantom S, phantom R> has store {
         amount_staked: u64,
         reward_debt: u128
     }
@@ -127,7 +126,7 @@ module aux::stake {
     public entry fun create_with_signer<S, R>(
         sender: &signer,
         reward_amount: u64,
-        end_time: u64, // ms
+        end_time: u64, // us
     ) acquires Pools {
         let reward = coin::withdraw<R>(sender, reward_amount);
         create<S, R>(signer::address_of(sender), reward, end_time);
@@ -136,8 +135,8 @@ module aux::stake {
     // Returns the pool's ID
     public fun create<S, R>(creator: address, reward: Coin<R>, end_time: u64): u64 acquires Pools {
         let start_time = timestamp::now_microseconds();
-        assert!(end_time - start_time >= MIN_DURATION_MS, E_INVALID_DURATION);
-        assert!(end_time - start_time <= MAX_DURATION_MS, E_INVALID_DURATION);
+        assert!(end_time - start_time >= MIN_DURATION_US, E_INVALID_DURATION);
+        assert!(end_time - start_time <= MAX_DURATION_US, E_INVALID_DURATION);
         let reward_amount = coin::value(&reward);
         assert!(reward_amount != 0, E_INVALID_REWARD);
         let module_authority = authority::get_signer_self();
@@ -226,7 +225,7 @@ module aux::stake {
         id: u64,
         reward_amount: u64,
         reward_increase: bool,
-        time_amount_ms: u64,
+        time_amount_us: u64,
         time_increase: bool
     ) acquires Pools {
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
@@ -259,23 +258,23 @@ module aux::stake {
         // the real balance of the reward coin should always be >= the virtual remaining balance
         assert!(coin::value(&pool.reward) >= pool.reward_remaining, E_INTERNAL_ERROR);
 
-        if (time_amount_ms > 0 && time_increase) {
+        if (time_amount_us > 0 && time_increase) {
             // If the pool has expired, start the reward period from now
             if (now >= pool.end_time) {
                 pool.start_time = now;
-                pool.end_time = now + time_amount_ms;
+                pool.end_time = now + time_amount_us;
             } else {
-                pool.end_time = pool.end_time + time_amount_ms;
+                pool.end_time = pool.end_time + time_amount_us;
             }
         // TODO: should we allow this?
-        } else if (time_amount_ms > 0 && !time_increase) {
-            assert!(time_amount_ms < pool.end_time, E_INVALID_DURATION);
-            pool.end_time = pool.end_time - time_amount_ms;
+        } else if (time_amount_us > 0 && !time_increase) {
+            assert!(time_amount_us < pool.end_time, E_INVALID_DURATION);
+            pool.end_time = pool.end_time - time_amount_us;
             assert!(pool.end_time > now, E_INVALID_DURATION);
         };
         if (pool.end_time > now) {
-            assert!(pool.end_time - pool.start_time <= MAX_DURATION_MS, E_INVALID_DURATION);
-            assert!(pool.end_time - pool.start_time >= MIN_DURATION_MS, E_INVALID_DURATION);
+            assert!(pool.end_time - pool.start_time <= MAX_DURATION_US, E_INVALID_DURATION);
+            assert!(pool.end_time - pool.start_time >= MIN_DURATION_US, E_INVALID_DURATION);
         };
 
         event::emit_event<ModifyPoolEvent<S, R>>(
@@ -300,13 +299,13 @@ module aux::stake {
             pool.last_update_time = now;
             return
         };
-        let duration_ms = if (now <= pool.end_time) {
+        let duration_us = if (now <= pool.end_time) {
             now - pool.last_update_time
         } else {
             pool.end_time - pool.last_update_time
         };
 
-        let duration_reward = (duration_ms as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
+        let duration_reward = (duration_us as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
         pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / (total_stake as u128);
         pool.reward_remaining = pool.reward_remaining - (duration_reward as u64);
         // the real balance of the reward coin should always be >= the virtual remaining balance
@@ -317,7 +316,7 @@ module aux::stake {
     }
 
     /// Deposit stake coin to the incentive pool to start earning rewards
-    public entry fun deposit<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserInfos {
+    public entry fun deposit<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserPositions {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
         // assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         // let pool = borrow_global_mut<Pool<S, R>>(@aux);
@@ -332,18 +331,18 @@ module aux::stake {
         let stake = coin::withdraw<S>(sender, amount);
         coin::merge(&mut pool.stake, stake);
 
-        // Update UserInfo
+        // Update UserPosition
         let sender_addr = signer::address_of(sender);
-        if (!exists<UserInfos<S, R>>(sender_addr)) {
-            move_to(sender, UserInfos<S, R> {
-                user_infos: table::new()
+        if (!exists<UserPositions<S, R>>(sender_addr)) {
+            move_to(sender, UserPositions<S, R> {
+                positions: table::new()
             })
         };
-        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
-        let exists = table::contains(&user_infos.user_infos, id);
+        let positions = borrow_global_mut<UserPositions<S, R>>(sender_addr);
+        let exists = table::contains(&positions.positions, id);
         let deposit_event = if (!exists) {
             let reward_debt = (amount as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
-            table::add(&mut user_infos.user_infos, id, UserInfo<S, R> {
+            table::add(&mut positions.positions, id, UserPosition<S, R> {
                 amount_staked: amount,
                 reward_debt
             });
@@ -359,27 +358,27 @@ module aux::stake {
                 acc_reward_per_share: pool.acc_reward_per_share
             }
         } else {
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, id);
+            let user_pos = table::borrow_mut(&mut positions.positions, id);
 
             // Distribute pending rewards
-            let pending_reward = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_info.reward_debt;
+            let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
             let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
             if (!coin::is_account_registered<R>(sender_addr)) {
                 coin::register<R>(sender);
             };
             coin::deposit(sender_addr, reward);
 
-            // Update UserInfo
-            user_info.amount_staked = user_info.amount_staked + amount;
-            user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
+            // Update UserPosition
+            user_pos.amount_staked = user_pos.amount_staked + amount;
+            user_pos.reward_debt = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
 
             DepositEvent {
                 pool_id: id,
                 user: sender_addr,
                 deposit_amount: amount,
                 reward_amount: (pending_reward as u64),
-                reward_debt: user_info.reward_debt,
-                amount_staked: user_info.amount_staked,
+                reward_debt: user_pos.reward_debt,
+                amount_staked: user_pos.amount_staked,
                 total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
                 acc_reward_per_share: pool.acc_reward_per_share
@@ -393,7 +392,7 @@ module aux::stake {
     }
 
     /// Withdraw stake coin from the incentive pool
-    public entry fun withdraw<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserInfos {
+    public entry fun withdraw<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserPositions {
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
 
         // check pool
@@ -406,18 +405,18 @@ module aux::stake {
 
         // check user info
         let sender_addr = signer::address_of(sender);
-        assert!(exists<UserInfos<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
-        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
-        assert!(table::contains(&user_infos.user_infos, id), E_USER_INFO_NOT_FOUND);
-        let user_info = table::borrow_mut(&mut user_infos.user_infos, id);
-        assert!(user_info.amount_staked >= amount, E_INVALID_WITHDRAW_AMOUNT);
+        assert!(exists<UserPositions<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let positions = borrow_global_mut<UserPositions<S, R>>(sender_addr);
+        assert!(table::contains(&positions.positions, id), E_USER_INFO_NOT_FOUND);
+        let user_pos = table::borrow_mut(&mut positions.positions, id);
+        assert!(user_pos.amount_staked >= amount, E_INVALID_WITHDRAW_AMOUNT);
 
         // update pool
         let now = timestamp::now_microseconds();
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let pending_reward = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_info.reward_debt;
+        let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
         let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
         if (!coin::is_account_registered<R>(sender_addr)) {
             coin::register<R>(sender);
@@ -425,8 +424,8 @@ module aux::stake {
         coin::deposit(sender_addr, reward);
 
         // Withdraw staked coin
-        user_info.amount_staked = user_info.amount_staked - amount;
-        user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
+        user_pos.amount_staked = user_pos.amount_staked - amount;
+        user_pos.reward_debt = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
         let unstake = coin::extract(&mut pool.stake, amount);
         coin::deposit(sender_addr, unstake);
 
@@ -437,8 +436,8 @@ module aux::stake {
                 user: sender_addr,
                 withdraw_amount: amount,
                 reward_amount: (pending_reward as u64),
-                reward_debt: user_info.reward_debt,
-                amount_staked: user_info.amount_staked,
+                reward_debt: user_pos.reward_debt,
+                amount_staked: user_pos.amount_staked,
                 total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
                 acc_reward_per_share: pool.acc_reward_per_share
@@ -447,7 +446,7 @@ module aux::stake {
     }
 
     /// Claim staking rewards without modifying staking position
-    public entry fun claim<S, R>(sender: &signer, id: u64) acquires Pools, UserInfos {
+    public entry fun claim<S, R>(sender: &signer, id: u64) acquires Pools, UserPositions {
         // check pool
         // assert!(exists<Pool<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         // let pool = borrow_global_mut<Pool<S, R>>(@aux);
@@ -458,23 +457,23 @@ module aux::stake {
 
         // check user info
         let sender_addr = signer::address_of(sender);
-        assert!(exists<UserInfos<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
-        let user_infos = borrow_global_mut<UserInfos<S, R>>(sender_addr);
-        assert!(table::contains(&user_infos.user_infos, id), E_USER_INFO_NOT_FOUND);
-        let user_info = table::borrow_mut(&mut user_infos.user_infos, id);
+        assert!(exists<UserPositions<S, R>>(sender_addr), E_USER_INFO_NOT_FOUND);
+        let positions = borrow_global_mut<UserPositions<S, R>>(sender_addr);
+        assert!(table::contains(&positions.positions, id), E_USER_INFO_NOT_FOUND);
+        let user_pos = table::borrow_mut(&mut positions.positions, id);
 
         // update pool
         let now = timestamp::now_microseconds();
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let pending_reward = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_info.reward_debt;
+        let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
         let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
         coin::deposit(sender_addr, reward);
         if (!coin::is_account_registered<R>(sender_addr)) {
             coin::register<R>(sender);
         };
-        user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
+        user_pos.reward_debt = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
 
         event::emit_event<ClaimEvent<S, R>>(
             &mut pools.claim_events,
@@ -482,7 +481,7 @@ module aux::stake {
                 pool_id: id,
                 user: sender_addr,
                 reward_amount: (pending_reward as u64),
-                reward_debt: user_info.reward_debt,
+                reward_debt: user_pos.reward_debt,
                 reward_remaining: pool.reward_remaining,
                 acc_reward_per_share: pool.acc_reward_per_share
             }
@@ -508,7 +507,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 9)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
+    fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -598,7 +597,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 11)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
+    fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -683,7 +682,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_deposit_withdraw_claim(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
+    fun test_deposit_withdraw_claim(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -738,10 +737,10 @@ module aux::stake {
             assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
             assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
             assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
-            assert!(user_info.reward_debt == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == 0, E_TEST_FAILURE);
         };
         // claim when no time has passed, reward amount should be 0
         claim<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id);
@@ -755,10 +754,10 @@ module aux::stake {
             assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
             assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
             assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
-            assert!(user_info.reward_debt == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == 0, E_TEST_FAILURE);
         };
 
         // TIME: start + 1
@@ -785,10 +784,10 @@ module aux::stake {
             reward_remaining = 1999999228396;
             assert!(pool.reward_remaining == reward_remaining, E_TEST_FAILURE);
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
-            assert!(user_info.reward_debt == (sender_reward as u128), E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == (sender_reward as u128), E_TEST_FAILURE);
         };
         // TIME: start + 2
         // fast forward another second and deposit 100 more -- reward amount should be exactly the same
@@ -818,20 +817,20 @@ module aux::stake {
             reward_remaining = 1999998456792;
             assert!(pool.reward_remaining == reward_remaining, E_TEST_FAILURE);
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 200, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(user_info.reward_debt == 3086416, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 200, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == 3086416, E_TEST_FAILURE);
         };
         // alice deposits 500
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, 500);
         {
-            let alice_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
-            let alice_user_info = table::borrow_mut(&mut alice_user_infos.user_infos, pool_id);
-            assert!(alice_user_info.amount_staked == 500, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(alice_user_info.reward_debt == 7716040, E_TEST_FAILURE);
+            let alice_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
+            let alice_user_pos = table::borrow_mut(&mut alice_positions.positions, pool_id);
+            assert!(alice_user_pos.amount_staked == 500, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(alice_user_pos.reward_debt == 7716040, E_TEST_FAILURE);
         };
 
         // TIME: start + 100
@@ -860,22 +859,22 @@ module aux::stake {
             sender_usdc = sender_usdc + sender_reward;
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
-            let sender_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let sender_user_info = table::borrow_mut(&mut sender_user_infos.user_infos, pool_id);
-            assert!(sender_user_info.amount_staked == 200, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(sender_user_info.reward_debt == 24691354, E_TEST_FAILURE);
+            let sender_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let sender_user_pos = table::borrow_mut(&mut sender_positions.positions, pool_id);
+            assert!(sender_user_pos.amount_staked == 200, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(sender_user_pos.reward_debt == 24691354, E_TEST_FAILURE);
 
             // let alice_reward = 500 * acc_reward_per_share / REWARD_PER_SHARE_MUL - alice_reward_debt;
             let alice_reward = 54012345;
             alice_usdc = alice_usdc + alice_reward;
             assert!(coin::balance<FakeCoin<USDC>>(alice_addr) == (alice_usdc as u64), coin::balance<FakeCoin<USDC>>(alice_addr));
 
-            let alice_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
-            let alice_user_info = table::borrow_mut(&mut alice_user_infos.user_infos, pool_id);
-            assert!(alice_user_info.amount_staked == 500, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(alice_user_info.reward_debt == 61728385, E_TEST_FAILURE);
+            let alice_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
+            let alice_user_pos = table::borrow_mut(&mut alice_positions.positions, pool_id);
+            assert!(alice_user_pos.amount_staked == 500, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(alice_user_pos.reward_debt == 61728385, E_TEST_FAILURE);
 
             // let reward_remaining = reward_au - (sender_usdc + (alice_usdc as u64));
             let reward_remaining = 1999922839509;
@@ -908,20 +907,20 @@ module aux::stake {
             sender_usdc = sender_usdc + sender_reward;
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
-            let sender_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let sender_user_info = table::borrow_mut(&mut sender_user_infos.user_infos, pool_id);
-            assert!(sender_user_info.amount_staked == 0, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(sender_user_info.reward_debt == 0, (sender_user_info.reward_debt as u64));
+            let sender_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let sender_user_pos = table::borrow_mut(&mut sender_positions.positions, pool_id);
+            assert!(sender_user_pos.amount_staked == 0, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (200 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(sender_user_pos.reward_debt == 0, (sender_user_pos.reward_debt as u64));
 
             // All alice info is the same since she didn't claim
             assert!(coin::balance<FakeCoin<USDC>>(alice_addr) == (alice_usdc as u64), coin::balance<FakeCoin<USDC>>(alice_addr));
 
-            let alice_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
-            let alice_user_info = table::borrow_mut(&mut alice_user_infos.user_infos, pool_id);
-            assert!(alice_user_info.amount_staked == 500, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(alice_user_info.reward_debt == 61728385, E_TEST_FAILURE);
+            let alice_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
+            let alice_user_pos = table::borrow_mut(&mut alice_positions.positions, pool_id);
+            assert!(alice_user_pos.amount_staked == 500, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(alice_user_pos.reward_debt == 61728385, E_TEST_FAILURE);
 
             // reward_remaining - duration_reward
             let reward_remaining = 1999845679016;
@@ -955,20 +954,20 @@ module aux::stake {
             sender_usdc = sender_usdc + sender_reward;
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
-            let sender_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let sender_user_info = table::borrow_mut(&mut sender_user_infos.user_infos, pool_id);
-            assert!(sender_user_info.amount_staked == 500, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(sender_user_info.reward_debt == 155423268, (sender_user_info.reward_debt as u64));
+            let sender_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let sender_user_pos = table::borrow_mut(&mut sender_positions.positions, pool_id);
+            assert!(sender_user_pos.amount_staked == 500, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(sender_user_pos.reward_debt == 155423268, (sender_user_pos.reward_debt as u64));
 
             // All alice info is the same since she didn't claim
             assert!(coin::balance<FakeCoin<USDC>>(alice_addr) == (alice_usdc as u64), coin::balance<FakeCoin<USDC>>(alice_addr));
 
-            let alice_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
-            let alice_user_info = table::borrow_mut(&mut alice_user_infos.user_infos, pool_id);
-            assert!(alice_user_info.amount_staked == 500, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(alice_user_info.reward_debt == 61728385, E_TEST_FAILURE);
+            let alice_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
+            let alice_user_pos = table::borrow_mut(&mut alice_positions.positions, pool_id);
+            assert!(alice_user_pos.amount_staked == 500, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (500 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(alice_user_pos.reward_debt == 61728385, E_TEST_FAILURE);
 
             // reward_remaining - duration_reward
             let reward_remaining = 1999807098770;
@@ -1004,11 +1003,11 @@ module aux::stake {
             sender_usdc = sender_usdc + sender_reward;
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
-            let sender_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let sender_user_info = table::borrow_mut(&mut sender_user_infos.user_infos, pool_id);
-            assert!(sender_user_info.amount_staked == 0, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (0 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(sender_user_info.reward_debt == 0, (sender_user_info.reward_debt as u64));
+            let sender_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let sender_user_pos = table::borrow_mut(&mut sender_positions.positions, pool_id);
+            assert!(sender_user_pos.amount_staked == 0, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (0 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(sender_user_pos.reward_debt == 0, (sender_user_pos.reward_debt as u64));
 
             // All alice info is the same since she didn't claim
             // let alice_reward = 500 * acc_reward_per_share / REWARD_PER_SHARE_MUL - alice_reward_debt;
@@ -1016,11 +1015,11 @@ module aux::stake {
             alice_usdc = alice_usdc + alice_reward;
             assert!(coin::balance<FakeCoin<USDC>>(alice_addr) == (alice_usdc as u64), coin::balance<FakeCoin<USDC>>(alice_addr));
 
-            let alice_user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
-            let alice_user_info = table::borrow_mut(&mut alice_user_infos.user_infos, pool_id);
-            assert!(alice_user_info.amount_staked == 0, E_TEST_FAILURE);
-            // assert!(user_info.reward_debt == (0 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
-            assert!(alice_user_info.reward_debt == 0, E_TEST_FAILURE);
+            let alice_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(alice_addr);
+            let alice_user_pos = table::borrow_mut(&mut alice_positions.positions, pool_id);
+            assert!(alice_user_pos.amount_staked == 0, E_TEST_FAILURE);
+            // assert!(user_pos.reward_debt == (0 * acc_reward_per_share / REWARD_PER_SHARE_MUL as u128), E_TEST_FAILURE);
+            assert!(alice_user_pos.reward_debt == 0, E_TEST_FAILURE);
 
             // reward_remaining - duration_reward
             assert!(reward_au - (alice_usdc + sender_usdc) <= 1, E_TEST_FAILURE);
@@ -1031,7 +1030,7 @@ module aux::stake {
     }
     #[expected_failure(abort_code = 9)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_remove_excess_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
+    fun test_cannot_remove_excess_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1085,10 +1084,10 @@ module aux::stake {
             assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
             assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
             assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
-            assert!(user_info.reward_debt == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == 0, E_TEST_FAILURE);
         };
 
         // TIME: start + 1
@@ -1100,7 +1099,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_modify_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
+    fun test_modify_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1154,10 +1153,10 @@ module aux::stake {
             assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
             assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
             assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
-            assert!(user_info.reward_debt == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.reward_debt == 0, E_TEST_FAILURE);
         };
 
         // TIME: start + 100
@@ -1196,11 +1195,11 @@ module aux::stake {
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
             // sender reward debt is equivalent to duration reward for the last duration
-            assert!(user_info.reward_debt == 0, (user_info.reward_debt as u64));
+            assert!(user_pos.reward_debt == 0, (user_pos.reward_debt as u64));
         };
         // TIME: start + 100
         // fast forward 100 second and claim reward
@@ -1229,11 +1228,11 @@ module aux::stake {
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
             // sender reward debt is equivalent to duration reward for the last duration
-            assert!(user_info.reward_debt == 77160493 + 115742229, (user_info.reward_debt as u64));
+            assert!(user_pos.reward_debt == 77160493 + 115742229, (user_pos.reward_debt as u64));
         };
         // TIME: end + 100
         timestamp::fast_forward_seconds(duration_seconds);
@@ -1261,11 +1260,11 @@ module aux::stake {
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
 
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 100, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
             // sender reward debt is equivalent to duration reward for the last duration
-            assert!(user_info.reward_debt == 3000000 * 1000000, (user_info.reward_debt as u64));
+            assert!(user_pos.reward_debt == 3000000 * 1000000, (user_pos.reward_debt as u64));
         };
         withdraw<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id, 100);
         sender_eth = sender_eth + 100;
@@ -1290,11 +1289,11 @@ module aux::stake {
             assert!(pool.last_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
             assert!(pool.reward_remaining == 1000000*1000000, E_TEST_FAILURE);
 
-            let user_infos = borrow_global_mut<UserInfos<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
-            let user_info = table::borrow_mut(&mut user_infos.user_infos, pool_id);
-            assert!(user_info.amount_staked == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 0, E_TEST_FAILURE);
             // sender reward debt is equivalent to duration reward for the last duration
-            assert!(user_info.reward_debt == 0, (user_info.reward_debt as u64));
+            assert!(user_pos.reward_debt == 0, (user_pos.reward_debt as u64));
         };
     }
 
