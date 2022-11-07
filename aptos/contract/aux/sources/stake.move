@@ -33,6 +33,7 @@ module aux::stake {
     const E_NOT_AUTHORIZED: u64 = 8;
     const E_INVALID_REWARD: u64 = 9;
     const E_TEST_FAILURE: u64 = 10;
+    const E_CANNOT_DELETE_POOL: u64 = 11;
 
     /***********/
     /* STRUCTS */
@@ -40,7 +41,12 @@ module aux::stake {
 
     struct Pools<phantom S, phantom R> has key {
         pools: Table<u64, Pool<S, R>>,
-        id: u64
+        next_id: u64,
+        create_pool_events: EventHandle<CreatePoolEvent<S, R>>,
+        deposit_events: EventHandle<DepositEvent<S, R>>,
+        withdraw_events: EventHandle<WithdrawEvent<S, R>>,
+        modify_pool_events: EventHandle<ModifyPoolEvent<S, R>>,
+        claim_events: EventHandle<ClaimEvent<S, R>>,
     }
 
     // TODO: rename
@@ -63,11 +69,6 @@ module aux::stake {
         reward: Coin<R>,
         last_update_time: u64,
         acc_reward_per_share: u128,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
-        create_pool_events: EventHandle<CreatePoolEvent<S, R>>,
-        deposit_events: EventHandle<DepositEvent<S, R>>,
-        withdraw_events: EventHandle<WithdrawEvent<S, R>>,
-        modify_pool_events: EventHandle<ModifyPoolEvent<S, R>>,
-        claim_events: EventHandle<ClaimEvent<S, R>>,
     }
 
     struct CreatePoolEvent<phantom S, phantom R> has store, drop {
@@ -145,7 +146,12 @@ module aux::stake {
                 &module_authority,
                 Pools<S, R> {
                     pools: table::new(),
-                    id: 0
+                    next_id: 0,
+                    create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
+                    deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
+                    withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
+                    modify_pool_events: account::new_event_handle<ModifyPoolEvent<S, R>>(&module_authority),
+                    claim_events: account::new_event_handle<ClaimEvent<S, R>>(&module_authority),
                 }
             )
         };
@@ -158,25 +164,61 @@ module aux::stake {
                 stake: coin::zero<S>(),
                 reward,
                 last_update_time: start_time,
-                acc_reward_per_share: 0,
-                create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
-                deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
-                withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
-                modify_pool_events: account::new_event_handle<ModifyPoolEvent<S, R>>(&module_authority),
-                claim_events: account::new_event_handle<ClaimEvent<S, R>>(&module_authority),
+                acc_reward_per_share: 0
         };
         event::emit_event<CreatePoolEvent<S, R>>(
-            &mut pool.create_pool_events,
+            &mut pools.create_pool_events,
             CreatePoolEvent {
-                pool_id: pools.id,
+                pool_id: pools.next_id,
                 start_time,
                 end_time,
                 reward_amount
             }
         );
-        table::add(&mut pools.pools, pools.id, pool);
-        pools.id = pools.id + 1;
-        pools.id - 1
+        table::add(&mut pools.pools, pools.next_id, pool);
+        pools.next_id = pools.next_id + 1;
+        pools.next_id - 1
+    }
+
+    /// Delete an expired and empty incentive pool.
+    public entry fun delete_empty_pool<S, R>(
+        sender: &signer,
+        id: u64
+    ) acquires Pools {
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, id), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, id);
+        let now = timestamp::now_microseconds();
+        update_pool(pool, now);
+
+        let sender_addr = signer::address_of(sender);
+        assert!(sender_addr == pool.creator, E_NOT_AUTHORIZED);
+        assert!(pool.reward_remaining == 0, E_CANNOT_DELETE_POOL);
+        assert!(coin::value(&(pool.reward)) <= 1, E_CANNOT_DELETE_POOL);
+        assert!(coin::value(&(pool.stake)) == 0, E_CANNOT_DELETE_POOL);
+        assert!(now > pool.end_time, E_CANNOT_DELETE_POOL);
+
+        let removed = table::remove(&mut pools.pools, id);
+        let Pool {
+            creator: _,
+            start_time: _,
+            end_time: _,
+            reward_remaining: _,
+            stake,
+            reward,
+            last_update_time: _,
+            acc_reward_per_share: _,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+        } = removed;
+
+        coin::destroy_zero(stake);
+
+        // There may be a single AU of reward remaining
+        if (coin::value(&reward) > 0) {
+            coin::deposit(sender_addr, reward);
+        } else {
+            coin::destroy_zero(reward);
+        };
     }
 
     public entry fun modify_pool<S, R>(
@@ -235,7 +277,7 @@ module aux::stake {
         assert!(pool.end_time - pool.start_time >= MIN_DURATION_MS, E_INVALID_DURATION);
 
         event::emit_event<ModifyPoolEvent<S, R>>(
-            &mut pool.modify_pool_events,
+            &mut pools.modify_pool_events,
             ModifyPoolEvent {
                 pool_id: id,
                 start_time: pool.start_time,
@@ -343,7 +385,7 @@ module aux::stake {
         };
 
         event::emit_event<DepositEvent<S, R>>(
-            &mut pool.deposit_events,
+            &mut pools.deposit_events,
             deposit_event
         );
     }
@@ -387,7 +429,7 @@ module aux::stake {
         coin::deposit(sender_addr, unstake);
 
         event::emit_event<WithdrawEvent<S, R>>(
-            &mut pool.withdraw_events,
+            &mut pools.withdraw_events,
             WithdrawEvent<S, R> {
                 pool_id: id,
                 user: sender_addr,
@@ -433,7 +475,7 @@ module aux::stake {
         user_info.reward_debt = (user_info.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL;
 
         event::emit_event<ClaimEvent<S, R>>(
-            &mut pool.claim_events,
+            &mut pools.claim_events,
             ClaimEvent<S, R> {
                 pool_id: id,
                 user: sender_addr,
