@@ -691,13 +691,10 @@ export class AuxClient {
     if (_.isUndefined(sender)) {
       throw new Error(`Error sending tx. Sender is undefined but required.`);
     }
-    if (!_.isUndefined(options.maxGasAmount)) {
-      console.log(this.serialize(options));
-    }
     const rawTransaction = await this.aptosClient.generateTransaction(
       sender.address(),
       payload,
-      this.serialize(options)
+      this.toSubmitTransactionRequest(options)
     );
     const signedTxn = await this.aptosClient.signTransaction(
       sender,
@@ -706,7 +703,7 @@ export class AuxClient {
     const pendingTxn = await this.aptosClient.submitTransaction(signedTxn);
     const userTxn = await this.aptosClient.waitForTransactionWithResult(
       pendingTxn.hash,
-      this.serialize(options)
+      this.toExtraArgs(options)
     );
     if (userTxn.type !== "user_transaction") {
       throw new WaitForTransactionError(
@@ -717,12 +714,9 @@ export class AuxClient {
     return userTxn as Types.UserTransaction;
   }
 
-  serialize(options: Partial<AuxClientOptions> = {}): Partial<
-    Types.SubmitTransactionRequest & {
-      timeoutSecs?: number;
-      checkSuccess?: boolean;
-    }
-  > {
+  toSubmitTransactionRequest(
+    options: Partial<AuxClientOptions>
+  ): Partial<Types.SubmitTransactionRequest> {
     return _.pickBy(
       {
         sender: this.options.sender?.address().toString(),
@@ -730,6 +724,17 @@ export class AuxClient {
         max_gas_amount: options?.maxGasAmount?.toString(),
         gas_unit_price: options?.gasUnitPrice?.toString(),
         expiration_timestamp_secs: options?.expirationTimestampSecs?.toString(),
+      },
+      _.negate(_.isUndefined)
+    );
+  }
+
+  toExtraArgs(options: Partial<AuxClientOptions>): Partial<{
+    timeoutSecs?: number;
+    checkSuccess?: boolean;
+  }> {
+    return _.pickBy(
+      {
         timeoutSecs: options?.timeoutSecs,
         checkSuccess: options?.checkSuccess,
       },
