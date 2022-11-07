@@ -466,6 +466,44 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
+    fun test_create_multiple_pools(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools {
+        setup_module_for_test(sender, aptos_framework);
+        let sender_addr = signer::address_of(sender);
+        let alice_addr = signer::address_of(alice);
+        if (!account::exists_at(alice_addr)) {
+            account::create_account_for_test(alice_addr);
+        };
+
+        let sender_eth = 5 * 100000000;
+        let alice_eth = sender_eth;
+        fake_coin::register_and_mint<USDC>(sender, 2000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
+        fake_coin::register_and_mint<USDC>(alice, 2000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
+        let sender_reward = coin::withdraw<FakeCoin<USDC>>(sender, 2000000 * 1000000);
+        let alice_reward = coin::withdraw<FakeCoin<USDC>>(alice, 1000000 * 1000000);
+
+        // Incentive:
+        // duration = 30 days = 30*24*3600*1000000 microseconds
+        // reward = 2e14 AU ETH
+        // reward per second = 77,160,493.82716049
+        let duration_seconds = 30*24*3600; // 30 days
+        let start_time = timestamp::now_microseconds();
+        let end_time = start_time + duration_seconds * 1000000;
+        let pool_id_1 = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, sender_reward, end_time);
+        let sender_usdc = 0;
+        assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
+        let pool_id_2 = create<FakeCoin<ETH>, FakeCoin<USDC>>(alice_addr, alice_reward, end_time);
+        assert!(pool_id_2 - pool_id_1 == 1, E_TEST_FAILURE);
+
+        let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+        let pool_1 = table::borrow_mut(&mut pools.pools, pool_id_1);
+        assert!(pool_1.reward_remaining == 2000000 * 1000000, E_TEST_FAILURE);
+        let pool_2 = table::borrow_mut(&mut pools.pools, pool_id_2);
+        assert!(pool_2.reward_remaining == 1000000 * 1000000, E_TEST_FAILURE);
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_deposit_withdraw_claim(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserInfos {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
