@@ -12,7 +12,7 @@ import BN from "bn.js";
 import * as SHA3 from "js-sha3";
 
 import _ from "lodash";
-import { PoolClient } from "./amm/pool";
+import { PoolClient } from "./pool/client";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
 import { AptosNetwork, AuxEnv } from "./env";
 import type { PoolInput } from "./graphql/generated/types";

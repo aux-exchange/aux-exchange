@@ -4,7 +4,7 @@
 import { AptosAccount, AptosClient, Types } from "aptos";
 import assert from "assert";
 import { AU, DU, Market, Vault } from "../src";
-import { PoolClient } from "../src/amm/pool";
+import { PoolClient } from "../src/pool/client";
 import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";

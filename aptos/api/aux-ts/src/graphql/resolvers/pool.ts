@@ -1,4 +1,4 @@
-import { PoolClient } from "../../amm/pool";
+import { PoolClient } from "../../pool/client";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
 import { auxClient } from "../client";
 import {

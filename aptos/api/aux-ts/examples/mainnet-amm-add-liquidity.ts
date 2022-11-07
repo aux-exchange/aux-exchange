@@ -4,7 +4,7 @@
  */
 import { AptosAccount, AptosClient } from "aptos";
 import { DU } from "../src";
-import { PoolClient } from "../src/amm/pool";
+import { PoolClient } from "../src/pool/client";
 import { AuxClient } from "../src/client";
 import { getAptosProfile } from "../src/env";
 

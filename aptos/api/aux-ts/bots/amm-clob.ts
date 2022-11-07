@@ -1,6 +1,6 @@
 import type { AptosAccount, Types } from "aptos";
 import { Logger } from "tslog";
-import { PoolClient } from "../src/amm/pool";
+import { PoolClient } from "../src/pool/client";
 import type { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";

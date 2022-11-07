@@ -7,7 +7,7 @@
 
 import _ from "lodash";
 import * as aux from "../../";
-import { PoolClient } from "../../amm/pool";
+import { PoolClient } from "../../pool/client";
 import { OrderType as AuxOrderType } from "../../clob/core/mutation";
 import { Bps, DU, Pct } from "../../units";
 import { auxClient } from "../client";

@@ -3,8 +3,8 @@ import axios from "axios";
 import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
-import { PoolClient } from "../../amm/pool";
-import type { ConstantProduct, SwapEvent } from "../../amm/schema";
+import { PoolClient } from "../../pool/client";
+import type { ConstantProduct, SwapEvent } from "../../pool/schema";
 import { ALL_FAKE_COINS } from "../../coin";
 import { auxClient, redisClient } from "../client";
 import {

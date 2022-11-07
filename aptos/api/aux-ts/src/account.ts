@@ -1,7 +1,7 @@
 import type { Types } from "aptos";
 import _ from "lodash";
-import { PoolClient } from "./amm/pool";
-import type { PoolInput, Position } from "./amm/schema";
+import { PoolClient } from "./pool/client";
+import type { PoolInput, Position } from "./pool/schema";
 import { AuxClient, notUndefined } from "./client";
 import type { OrderFillEvent, OrderPlacedEvent } from "./clob/core/events";
 import type { Order } from "./clob/core/query";

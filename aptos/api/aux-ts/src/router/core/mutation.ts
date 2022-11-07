@@ -9,7 +9,7 @@ import type {
   SwapCoinForExactCoinPayloadInput,
   SwapEvent,
   SwapExactCoinForCoinPayloadInput,
-} from "../../amm/schema";
+} from "../../pool/schema";
 import type { AuxClient, AuxClientOptions } from "../../client";
 import type { AuxTransaction } from "../../client";
 import { AU } from "../../units";

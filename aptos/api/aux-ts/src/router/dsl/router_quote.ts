@@ -1,5 +1,5 @@
 import { HexString, Types } from "aptos";
-import type { SwapEvent } from "../../amm/schema";
+import type { SwapEvent } from "../../pool/schema";
 import type { AuxTransaction } from "../../client";
 import { AtomicUnits, AU } from "../..//units";
 import type { AuxClient, CoinInfo } from "../../client";

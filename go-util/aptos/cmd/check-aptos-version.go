@@ -21,7 +21,7 @@ func checkAptosVersion() {
 
 	versionMatch := regexp.MustCompile(`(?m)^aptos 1\.0\.1$`)
 
-	output := getOrPanic(versionCmd.Output())
+	output := getOrPanic(versionCmd.result())
 
 	if !versionMatch.Match(output) {
 		orPanic(

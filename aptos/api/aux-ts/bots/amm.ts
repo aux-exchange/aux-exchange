@@ -1,7 +1,7 @@
 import type { AptosAccount, Types } from "aptos";
 import { Logger } from "tslog";
-import { PoolClient } from "../src/amm/pool";
-import type { ConstantProduct } from "../src/amm/schema";
+import { PoolClient } from "../src/pool/client";
+import type { ConstantProduct } from "../src/pool/schema";
 import type { AuxClient } from "../src/client";
 import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
 import { DecimalUnits, DU } from "../src/units";
