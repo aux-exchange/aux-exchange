@@ -539,11 +539,14 @@ export class PoolClient {
       }
       const slippageMultiplier =
         1 - (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
+      const minAmountAuOut = DU(quote.toNumber() * slippageMultiplier)
+        .toAtomicUnits(coinInfoOut.decimals)
+        .toString();
       payload = swapExactCoinForCoinPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
         exactAmountAuIn,
-        minAmountAuOut: (quote.toNumber() * slippageMultiplier).toString(),
+        minAmountAuOut,
       });
     }
 
@@ -613,11 +616,14 @@ export class PoolClient {
       }
       const slippageMultiplier =
         1 + (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
+      const maxAmountAuIn = DU(quote.toNumber() * slippageMultiplier)
+        .toAtomicUnits(coinInfoIn.decimals)
+        .toString();
       payload = swapCoinForExactCoinPayload(this.auxClient.moduleAddress, {
         coinTypeIn,
         coinTypeOut,
         exactAmountAuOut,
-        maxAmountAuIn: (quote.toNumber() * slippageMultiplier).toString(),
+        maxAmountAuIn,
       });
     }
 
