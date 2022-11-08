@@ -63,11 +63,6 @@ type SummaryMetrics {
   users7D: Int!
 }
 
-type EntryFunctionPayload {
-  function: String!
-  type_arguments: [String!]!
-  arugments: [String!]
-}
-
 scalar Address
+scalar EntryFunctionPayload
 scalar Timestamp
