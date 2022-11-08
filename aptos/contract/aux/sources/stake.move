@@ -16,8 +16,6 @@ module aux::stake {
     /*************/
     const MIN_DURATION_US: u64 = 3600 * 24 * 1000000; // 1 day
     const MAX_DURATION_US: u64 = 3600 * 24 * 365 * 1000000; // 1 year
-    const ST_COIN_DECIMALS: u8 = 8;
-    // const REWARD_PERIOD_US: u64 = 1000000; // 1 second
     const REWARD_PER_SHARE_MUL: u128 = 1000000000000; // 1e12
 
     /**********/
