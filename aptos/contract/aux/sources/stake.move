@@ -55,6 +55,17 @@ module aux::stake {
     struct UserPosition<phantom S, phantom R> has store {
         amount_staked: u64,
         reward_debt: u128
+        // From MasterChef:
+        // We do some fancy math here. Basically, any point in time, the amount of reward
+        // entitled to a user but is pending to be distributed is:
+        //
+        //   pending reward = (user.amount_staked * pool.acc_reward_per_share) - user.reward_debt
+        //
+        // Whenever a user deposits/withdraws staked coins to a pool or claims their reward, here's what happens:
+        //   1. The pool's `acc_reward_per_share` (and `last_reward_time`) gets updated.
+        //   2. User receives the pending reward sent to his/her address.
+        //   3. User's `amount_staked` gets updated.
+        //   4. User's `reward_debt` gets updated.
     }
 
     struct Pool<phantom S, phantom R> has store {
@@ -312,6 +323,11 @@ module aux::stake {
             pool.end_time = pool.end_time - time_amount_us;
             assert!(pool.end_time > now, E_INVALID_DURATION);
         };
+        // If any reward remains undistributed, the end time must be in the
+        // future so that the remaining reward can be distributed
+        if (pool.reward_remaining > 0) {
+            assert!(pool.end_time > now, E_INVALID_DURATION);
+        };
         if (pool.end_time > now) {
             assert!(pool.end_time - pool.start_time <= MAX_DURATION_US, E_INVALID_DURATION);
             assert!(pool.end_time - pool.start_time >= MIN_DURATION_US, E_INVALID_DURATION);
@@ -346,7 +362,9 @@ module aux::stake {
             pool.end_time - pool.last_update_time
         };
 
+        // total reward since last pool update
         let duration_reward = (duration_us as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
+        // add reward_per_share since last update to acc_reward_per_share
         pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / (total_stake as u128);
         pool.reward_remaining = pool.reward_remaining - (duration_reward as u64);
         // the real balance of the reward coin should always be >= the virtual remaining balance
