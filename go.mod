@@ -3,11 +3,11 @@ module github.com/aux-exchange/aux-exchange
 go 1.19
 
 require (
-	github.com/fardream/go-aptos v0.5.0
+	github.com/fardream/go-aptos v0.5.2
 	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-isatty v0.0.16
 	github.com/spf13/cobra v1.6.1
-	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
+	golang.org/x/exp v0.0.0-20221106115401-f9659909a136
 )
 
 require (
@@ -24,6 +24,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 )
