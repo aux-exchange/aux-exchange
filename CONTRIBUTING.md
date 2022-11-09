@@ -4,6 +4,10 @@ Come and build the decentralized universal exchange with us! :rocket:
 
 Fork this repo, make the changes, and send a PR to the main branch. Run into issues? Ping us on [discord](https://discord.gg/mxRa3fH72z) or [Telegram](https://t.me/AuxDAO) or raise an issue here on github.
 
+## Contributors on MS Windows
+
+**Contributors on MS Windows may have difficulties downloading or checking out the codes**: aux.exchange started on \*nix, and we are deep into the development cycle to find that `aux` is a reserved name on MS Windows ([see here for details](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)). We are still in a build-out phase, but will push out a reorganisation of the repo to fix this later. Stay tuned!.
+
 ## Prerequisite
 
 - rust
