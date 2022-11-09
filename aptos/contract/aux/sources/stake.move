@@ -77,6 +77,7 @@ module aux::stake {
         reward: Coin<R>,
         last_update_time: u64,
         acc_reward_per_share: u128,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+        undistributed_reward: u128 // total reward still undistributed, times REWARD_PER_SHARE_MUL
     }
 
     struct CreatePoolEvent<phantom S, phantom R> has store, drop {
@@ -179,7 +180,8 @@ module aux::stake {
                 stake: coin::zero<S>(),
                 reward,
                 last_update_time: start_time,
-                acc_reward_per_share: 0
+                acc_reward_per_share: 0,
+                undistributed_reward: (reward_amount as u128) * REWARD_PER_SHARE_MUL
         };
         event::emit_event<CreatePoolEvent<S, R>>(
             &mut pools.create_pool_events,
@@ -210,7 +212,7 @@ module aux::stake {
         let sender_addr = signer::address_of(sender);
         assert!(sender_addr == pool.authority, E_NOT_AUTHORIZED);
         assert!(pool.reward_remaining == 0, E_CANNOT_DELETE_POOL);
-        assert!(coin::value(&(pool.reward)) <= 1, E_CANNOT_DELETE_POOL);
+        assert!(pool.undistributed_reward == 0, E_CANNOT_DELETE_POOL);
         assert!(coin::value(&(pool.stake)) == 0, E_CANNOT_DELETE_POOL);
         assert!(now >= pool.end_time, E_CANNOT_DELETE_POOL);
 
@@ -224,6 +226,7 @@ module aux::stake {
             reward,
             last_update_time: _,
             acc_reward_per_share: _,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+            undistributed_reward: _
         } = removed;
 
         coin::destroy_zero(stake);
@@ -302,6 +305,7 @@ module aux::stake {
             };
             coin::deposit(sender_addr, reward);
             pool.reward_remaining = pool.reward_remaining - reward_amount;
+            pool.undistributed_reward = pool.undistributed_reward - (reward_amount as u128) * REWARD_PER_SHARE_MUL;
             if (pool.reward_remaining == 0) {
                 pool.end_time = now;
             }
@@ -419,7 +423,13 @@ module aux::stake {
             let user_pos = table::borrow_mut(&mut positions.positions, id);
 
             // Distribute pending rewards
-            let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
+            let new_reward_num = (user_pos.amount_staked as u128) * pool.acc_reward_per_share;
+            if (new_reward_num < pool.undistributed_reward) {
+                pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
+            } else {
+                pool.undistributed_reward = 0;
+            };
+            let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
             let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
             if (!coin::is_account_registered<R>(sender_addr)) {
                 coin::register<R>(sender);
@@ -473,7 +483,13 @@ module aux::stake {
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
+        let new_reward_num = (user_pos.amount_staked as u128) * pool.acc_reward_per_share;
+        if (new_reward_num < pool.undistributed_reward) {
+            pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
+        } else {
+            pool.undistributed_reward = 0;
+        };
+        let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
         let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
         if (!coin::is_account_registered<R>(sender_addr)) {
             coin::register<R>(sender);
@@ -522,7 +538,13 @@ module aux::stake {
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let pending_reward = (user_pos.amount_staked as u128) * pool.acc_reward_per_share / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
+        let new_reward_num = (user_pos.amount_staked as u128) * pool.acc_reward_per_share;
+        if (new_reward_num < pool.undistributed_reward) {
+            pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
+        } else {
+            pool.undistributed_reward = 0;
+        };
+        let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL - user_pos.reward_debt;
         let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
         coin::deposit(sender_addr, reward);
         if (!coin::is_account_registered<R>(sender_addr)) {
