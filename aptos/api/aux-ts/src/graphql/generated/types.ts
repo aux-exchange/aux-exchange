@@ -74,6 +74,19 @@ export type AddLiquidityInput = {
   useAuxAccount: Scalars['Boolean'];
 };
 
+export type AmmSummaryMetrics = {
+  __typename?: 'AmmSummaryMetrics';
+  TVL?: Maybe<Scalars['Float']>;
+  fee1w?: Maybe<Scalars['Float']>;
+  fee24h?: Maybe<Scalars['Float']>;
+  transactionCount1w?: Maybe<Scalars['Float']>;
+  transactionCount24h?: Maybe<Scalars['Float']>;
+  userCount1w?: Maybe<Scalars['Float']>;
+  userCount24h?: Maybe<Scalars['Float']>;
+  volume1w?: Maybe<Scalars['Float']>;
+  volume24h?: Maybe<Scalars['Float']>;
+};
+
 export type Balance = {
   __typename?: 'Balance';
   availableBalance: Scalars['String'];
@@ -463,6 +476,7 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<Account>;
   address: Scalars['Address'];
+  ammSummaryMetrics: AmmSummaryMetrics;
   coins: Array<CoinInfo>;
   market?: Maybe<Market>;
   markets: Array<Market>;
@@ -801,6 +815,7 @@ export type ResolversTypes = {
   AddLiquidity: ResolverTypeWrapper<AddLiquidity>;
   AddLiquidityInput: AddLiquidityInput;
   Address: ResolverTypeWrapper<Scalars['Address']>;
+  AmmSummaryMetrics: ResolverTypeWrapper<AmmSummaryMetrics>;
   Balance: ResolverTypeWrapper<Balance>;
   Bar: ResolverTypeWrapper<Bar>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -865,6 +880,7 @@ export type ResolversParentTypes = {
   AddLiquidity: AddLiquidity;
   AddLiquidityInput: AddLiquidityInput;
   Address: Scalars['Address'];
+  AmmSummaryMetrics: AmmSummaryMetrics;
   Balance: Balance;
   Bar: Bar;
   Boolean: Scalars['Boolean'];
@@ -944,6 +960,19 @@ export type AddLiquidityResolvers<ContextType = any, ParentType extends Resolver
 export interface AddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Address'], any> {
   name: 'Address';
 }
+
+export type AmmSummaryMetricsResolvers<ContextType = any, ParentType extends ResolversParentTypes['AmmSummaryMetrics'] = ResolversParentTypes['AmmSummaryMetrics']> = {
+  TVL?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  fee1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  fee24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  transactionCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  transactionCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type BalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Balance'] = ResolversParentTypes['Balance']> = {
   availableBalance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1131,6 +1160,7 @@ export type PythRatingResolvers<ContextType = any, ParentType extends ResolversP
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'owner'>>;
   address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  ammSummaryMetrics?: Resolver<ResolversTypes['AmmSummaryMetrics'], ParentType, ContextType>;
   coins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   market?: Resolver<Maybe<ResolversTypes['Market']>, ParentType, ContextType, RequireFields<QueryMarketArgs, 'marketInput'>>;
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
@@ -1260,6 +1290,7 @@ export type Resolvers<ContextType = any> = {
   Account?: AccountResolvers<ContextType>;
   AddLiquidity?: AddLiquidityResolvers<ContextType>;
   Address?: GraphQLScalarType;
+  AmmSummaryMetrics?: AmmSummaryMetricsResolvers<ContextType>;
   Balance?: BalanceResolvers<ContextType>;
   Bar?: BarResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;

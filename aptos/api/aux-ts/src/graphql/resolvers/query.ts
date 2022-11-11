@@ -20,6 +20,7 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
   SummaryMetrics,
+  AmmSummaryMetrics,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -162,6 +163,35 @@ export const query = {
       users7D: allUsers7D.size,
       users24H: allUsers24H.size,
     };
+  },
+
+  async ammSummaryMetrics(_parent: any): Promise<AmmSummaryMetrics> {
+    let getData = async function (
+      name: "tvl" | "volume" | "fee" | "usercount" | "txcount",
+      period: "1w" | "24h"
+    ): Promise<Maybe<number>> {
+      if (name === "tvl") {
+        const value = await redisClient.get(`amm-${name}`);
+        return value ? Number(value) : null;
+      } else {
+        const value = await redisClient.get(`amm-${name}-${period}`);
+        return value ? Number(value) : null;
+      }
+    };
+
+    const a: AmmSummaryMetrics = {
+      TVL: await getData("tvl", "1w"),
+      volume24h: await getData("volume", "24h"),
+      fee24h: await getData("fee", "24h"),
+      userCount24h: await getData("usercount", "24h"),
+      transactionCount24h: await getData("txcount", "24h"),
+      volume1w: await getData("volume", "1w"),
+      fee1w: await getData("fee", "1w"),
+      userCount1w: await getData("usercount", "1w"),
+      transactionCount1w: await getData("txcount", "1w"),
+    };
+
+    return a;
   },
 
   async coins(parent: any): Promise<CoinInfo[]> {
