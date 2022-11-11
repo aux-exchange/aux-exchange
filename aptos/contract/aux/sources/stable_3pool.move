@@ -52,7 +52,7 @@ module aux::stable_3pool {
 
     /// Balanced Reserve is stored with 18 decimals,
     /// while lp tokens only have 8 decimals.
-    const BALANCED_RESERVED_TO_LP_SCALER: u128 = 10000000000;
+    const BALANCED_RESERVED_TO_LP_SCALER: u128 = 1;
 
     /// Max U64, used to check if a u128 can be safely cast into u64
     const MAX_U64: u128 = 18446744073709551615;
@@ -61,7 +61,7 @@ module aux::stable_3pool {
     const LP_TOKEN_DECIMALS: u8 = 8;
 
     /// max coin decimal allowed is 8
-    const MAX_COIN_DECIMAL_ALLOWED: u8 = 10;
+    const MAX_COIN_DECIMAL_ALLOWED: u8 = 8;
 
     /// max amp
     const MAX_AMP: u128 = 2000;

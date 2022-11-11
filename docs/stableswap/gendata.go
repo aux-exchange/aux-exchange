@@ -55,8 +55,8 @@ func NewPoolGen(n int) *PoolGen {
 	r := &PoolGen{
 		N:          n,
 		LastIndex:  n - 1,
-		NPrecision: 18,
-		MaxDecimal: 10,
+		NPrecision: 8,
+		MaxDecimal: 8,
 
 		GenPermutation: false,
 
@@ -66,7 +66,7 @@ func NewPoolGen(n int) *PoolGen {
 
 		Precision: 1_000_000_000_000_000_000, // 1e18
 
-		BalanceScaler: 10_000_000_000, // 1e10
+		BalanceScaler: 1, // 1e10
 
 		MaxU64: 18_446_744_073_709_551_615,
 
@@ -109,16 +109,16 @@ func NewPoolGen(n int) *PoolGen {
 		r.NameTake = r.NameTake - 1
 	}
 
-	r.Decimals = []uint64{10}
-	for i := 1; i < 18; i++ {
+	r.Decimals = []uint64{1}
+	for i := 1; i <= 8; i++ {
 		last := r.Decimals[i-1]
 		r.Decimals = append(r.Decimals, last*10)
 	}
-	for i := 0; i < 9; i++ {
-		r.Decimals[i], r.Decimals[17-i] = r.Decimals[17-i], r.Decimals[i]
+	for i := 0; i < 4; i++ {
+		r.Decimals[i], r.Decimals[8-i] = r.Decimals[8-i], r.Decimals[i]
 	}
 
-	r.Decimals = r.Decimals[:r.MaxDecimal]
+	r.Decimals = r.Decimals[:(r.MaxDecimal + 1)]
 
 	r.CoinTypeList = strings.Join(coinTypes, ", ")
 

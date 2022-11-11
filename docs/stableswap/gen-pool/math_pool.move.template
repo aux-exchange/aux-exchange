@@ -1,7 +1,6 @@
 {{.WarningForManualEdit}}
 module aux::math_{{.N}}pool {
     use aux::uint256;
-
     const E_COIN_BALANCE_ZERO: u64 = 1001;
     const E_D_OVERFLOW: u64 = 1002;
     const E_FAIL_TO_CONVERGE: u64 = 1003;
@@ -40,27 +39,24 @@ module aux::math_{{.N}}pool {
         let i: u64 = 0;
         while (i < 256) {
             // calculate d_p = D^{n+1}/n^n/\prod x_i
-            let d_p = uint256::new(0, d);
+            let d_p = d;
 {{range .Xis}}            {
                 // d_p = d_p * D / n / x_i
-                d_p = uint256::multiply_underlying(d_p, d);
-                d_p = uint256::divide_underlying(d_p, x_{{.I}} * N_COINS);
+                d_p = d_p * d;
+                d_p = d_p / (x_{{.I}} * N_COINS);
             };
 {{end}}
-            let numerator =  uint256::multiply_underlying(d_p, N_COINS);
-            numerator = uint256::add_underlying(numerator, ann_sum);
-            numerator = uint256::multiply_underlying(numerator, d);
+            let numerator = d_p * N_COINS;
+            numerator = numerator + ann_sum;
+            numerator = numerator * d;
 
-            let denominator = uint256::multiply_underlying(d_p, N_COINS + 1);
-            denominator = uint256::add_underlying(denominator, d * ann);
-            denominator = uint256::subtract_underlying(denominator, d);
+            let denominator = d_p * (N_COINS + 1);
+            denominator = denominator + d * ann;
+            denominator = denominator - d;
 
             let d_prev = d;
 
-            let d_uint256 = uint256::divide(numerator, denominator);
-            assert!(!uint256::underlying_overflow(d_uint256), E_D_OVERFLOW);
-
-            d = uint256::downcast(d_uint256);
+            let d = numerator / denominator;
 
             if (d_prev >= d) {
                 if (d_prev - d <= 1) {

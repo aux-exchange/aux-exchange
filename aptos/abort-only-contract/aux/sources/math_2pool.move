@@ -6,7 +6,6 @@ module aux::math_2pool {
         false
     }
     use aux::uint256;
-
     const E_COIN_BALANCE_ZERO: u64 = 1001;
     const E_D_OVERFLOW: u64 = 1002;
     const E_FAIL_TO_CONVERGE: u64 = 1003;
@@ -51,32 +50,29 @@ module aux::math_2pool {
         let i: u64 = 0;
         while (i < 256) {
             // calculate d_p = D^{n+1}/n^n/\prod x_i
-            let d_p = uint256::new(0, d);
+            let d_p = d;
             {
                 // d_p = d_p * D / n / x_i
-                d_p = uint256::multiply_underlying(d_p, d);
-                d_p = uint256::divide_underlying(d_p, x_0 * N_COINS);
+                d_p = d_p * d;
+                d_p = d_p / (x_0 * N_COINS);
             };
             {
                 // d_p = d_p * D / n / x_i
-                d_p = uint256::multiply_underlying(d_p, d);
-                d_p = uint256::divide_underlying(d_p, x_1 * N_COINS);
+                d_p = d_p * d;
+                d_p = d_p / (x_1 * N_COINS);
             };
 
-            let numerator =  uint256::multiply_underlying(d_p, N_COINS);
-            numerator = uint256::add_underlying(numerator, ann_sum);
-            numerator = uint256::multiply_underlying(numerator, d);
+            let numerator = d_p * N_COINS;
+            numerator = numerator + ann_sum;
+            numerator = numerator * d;
 
-            let denominator = uint256::multiply_underlying(d_p, N_COINS + 1);
-            denominator = uint256::add_underlying(denominator, d * ann);
-            denominator = uint256::subtract_underlying(denominator, d);
+            let denominator = d_p * (N_COINS + 1);
+            denominator = denominator + d * ann;
+            denominator = denominator - d;
 
             let d_prev = d;
 
-            let d_uint256 = uint256::divide(numerator, denominator);
-            assert!(!uint256::underlying_overflow(d_uint256), E_D_OVERFLOW);
-
-            d = uint256::downcast(d_uint256);
+            let d = numerator / denominator;
 
             if (d_prev >= d) {
                 if (d_prev - d <= 1) {
@@ -189,25 +185,23 @@ module aux::math_2pool {
     public fun get_scaler(decimal: u8): u128 {
         assert!(is_not_emergency(), E_EMERGENCY_ABORT);
         if (decimal == 0) {
-            1000000000000000000
+            100000000
         } else if (decimal == 1) {
-            100000000000000000
+            10000000
         } else if (decimal == 2) {
-            10000000000000000
+            1000000
         } else if (decimal == 3) {
-            1000000000000000
+            100000
         } else if (decimal == 4) {
-            100000000000000
+            10000
         } else if (decimal == 5) {
-            10000000000000
+            1000
         } else if (decimal == 6) {
-            1000000000000
+            100
         } else if (decimal == 7) {
-            100000000000
+            10
         } else if (decimal == 8) {
-            10000000000
-        } else if (decimal == 9) {
-            1000000000
+            1
         } else {
             abort(E_COIN_DECIMAL_TOO_LARGE)
         }
