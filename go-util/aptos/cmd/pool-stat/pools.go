@@ -30,8 +30,9 @@ func (s *Stat) Reset() {
 }
 
 type SwapStat struct {
-	Last7Days   Stat `json:"last_7days"`
-	Last24Hours Stat `json:"last_24hours"`
+	Last7Days   Stat    `json:"last_7days"`
+	Last24Hours Stat    `json:"last_24hours"`
+	TVL         float64 `json:"tvl"`
 }
 
 type PoolStat struct {
@@ -44,15 +45,12 @@ type PoolStat struct {
 	RemoveEvents []*aptos.AuxAmm_RemoveLiquidityEvent `json:"-"`
 	SwapEvents   []*aptos.AuxAmm_SwapEvent            `json:"-"`
 
-	TVL float64 `json:"tvl"`
-
 	SwapStat
 }
 
 type AllPools struct {
 	Pools map[string]*PoolStat `json:"pools"`
 
-	TotalTVL float64 `json:"-"`
 	SwapStat `json:"total_stat"`
 }
 
@@ -100,9 +98,9 @@ func (ap *AllPools) FillTVL() {
 		}
 	}
 
-	ap.TotalTVL = 0
+	ap.TVL = 0
 	for _, pool := range ap.Pools {
-		ap.TotalTVL += pool.TVL
+		ap.TVL += pool.TVL
 	}
 }
 

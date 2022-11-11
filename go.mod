@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/fardream/go-aptos v0.6.1
+	github.com/go-redis/redis/v9 v9.0.0-rc.1
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-isatty v0.0.16
@@ -14,7 +15,9 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/goccy/go-yaml v1.9.6 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

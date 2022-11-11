@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/fardream/go-aptos/aptos"
 	"github.com/fardream/go-aptos/aptos/known"
+	"github.com/go-redis/redis/v9"
 	"github.com/google/go-cmp/cmp"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -31,7 +33,8 @@ func orPanic(err error) {
 func main() {
 	network := aptos.Mainnet
 	rpc := ""
-	initFile := ""
+	outputFile := ""
+	redisEndpoint := ""
 
 	cmd := cobra.Command{
 		Use:   "pool-stat",
@@ -40,18 +43,18 @@ func main() {
 
 	cmd.Flags().StringVarP(&rpc, "rpc-endpoint", "u", rpc, "rpc endpoint to query the events")
 	cmd.Flags().VarP(&network, "network", "n", "network to query")
-	cmd.Flags().StringVarP(&initFile, "data-file", "o", initFile, "data file used to store the data")
-	cmd.MarkFlagFilename(initFile)
-	cmd.MarkFlagRequired("data-file")
+	cmd.Flags().StringVarP(&outputFile, "data-file", "o", outputFile, "data file used to store the data")
+	cmd.Flags().StringVarP(&redisEndpoint, "redis-endpoint", "r", redisEndpoint, "redis endpoint to load the data")
+	cmd.MarkFlagFilename(outputFile)
 
 	cmd.Run = func(cmd *cobra.Command, args []string) {
-		mainfunc(network, rpc, initFile)
+		mainFunction(network, rpc, outputFile, redisEndpoint)
 	}
 
 	cmd.Execute()
 }
 
-func mainfunc(network aptos.Network, rpc string, initFile string) {
+func mainFunction(network aptos.Network, rpc, outputFile, redisEndpoint string) {
 	for _, usdSymbol := range []string{
 		"USDC",
 		"USDCso",
@@ -112,10 +115,13 @@ poolReadLoop:
 
 	pools.FillTVL()
 
-	orPanic(os.WriteFile(initFile, getOrPanic(json.MarshalIndent(pools, "", "  ")), 0o666))
+	if outputFile != "" {
+		orPanic(os.WriteFile(outputFile, getOrPanic(json.MarshalIndent(pools, "", "  ")), 0o666))
+	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT)
 	defer cancel()
+
 fillPoolLoop:
 	for _, pool := range pools.Pools {
 		pool.LoadSwaps(ctx, client)
@@ -128,8 +134,46 @@ fillPoolLoop:
 
 	pools.FillStat()
 
-	orPanic(os.WriteFile(initFile, getOrPanic(json.MarshalIndent(pools, "", "  ")), 0o666))
+	if outputFile != "" {
+		orPanic(os.WriteFile(outputFile, getOrPanic(json.MarshalIndent(pools, "", "  ")), 0o666))
+	}
 
+	if redisEndpoint != "" {
+		redisCtx, redisCtxCancel := context.WithTimeout(context.Background(), time.Minute)
+		defer redisCtxCancel()
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		})
+
+		for _, pool := range pools.Pools {
+			coinXTypeString := pool.CoinX.TokenType.Type.String()
+			coinYTypeString := pool.CoinY.TokenType.Type.String()
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-tvl", coinXTypeString, coinYTypeString), fmt.Sprintf("%f", pool.TVL), 0)
+
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-volume-24h", coinXTypeString, coinYTypeString), fmt.Sprintf("%f", pool.Last24Hours.Volume), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-fee-24h", coinXTypeString, coinYTypeString), fmt.Sprintf("%f", pool.Last24Hours.Fee), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-txcount-24h", coinXTypeString, coinYTypeString), fmt.Sprintf("%d", pool.Last24Hours.TransactionCount), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-usercount-24h", coinXTypeString, coinYTypeString), fmt.Sprintf("%d", pool.Last24Hours.UserCount), 0)
+
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-volume-1w", coinXTypeString, coinYTypeString), fmt.Sprintf("%f", pool.Last7Days.Volume), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-fee-1w", coinXTypeString, coinYTypeString), fmt.Sprintf("%f", pool.Last7Days.Fee), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-txcount-1w", coinXTypeString, coinYTypeString), fmt.Sprintf("%d", pool.Last7Days.TransactionCount), 0)
+			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-usercount-1w", coinXTypeString, coinYTypeString), fmt.Sprintf("%d", pool.Last7Days.UserCount), 0)
+		}
+
+		rdb.Set(redisCtx, "amm-tvl", fmt.Sprintf("%f", pools.TVL), 0)
+		rdb.Set(redisCtx, "amm-volume-24h", fmt.Sprintf("%f", pools.Last24Hours.Volume), 0)
+		rdb.Set(redisCtx, "amm-fee-24h", fmt.Sprintf("%f", pools.Last24Hours.Fee), 0)
+		rdb.Set(redisCtx, "amm-txcount-24h", fmt.Sprintf("%d", pools.Last24Hours.TransactionCount), 0)
+		rdb.Set(redisCtx, "amm-usercount-24h", fmt.Sprintf("%d", pools.Last24Hours.UserCount), 0)
+		rdb.Set(redisCtx, "amm-volume-1w", fmt.Sprintf("%f", pools.Last7Days.Volume), 0)
+		rdb.Set(redisCtx, "amm-fee-1w", fmt.Sprintf("%f", pools.Last7Days.Fee), 0)
+		rdb.Set(redisCtx, "amm-txcount-1w", fmt.Sprintf("%d", pools.Last7Days.TransactionCount), 0)
+		rdb.Set(redisCtx, "amm-usercount-1w", fmt.Sprintf("%d", pools.Last7Days.UserCount), 0)
+
+	}
 	table := tablewriter.NewWriter(os.Stdout)
 
 	table.SetHeader([]string{"Pool", "TVL", "Last 24 Hour Volume", "Last 24 Hour Fee", "Tx Count", "User Count", "Last 7 Day Volume", "Last 7 Day Fee", "Tx Count", "User Count"})
@@ -152,7 +196,7 @@ fillPoolLoop:
 
 	table.SetFooter([]string{
 		"Total",
-		formatter.Sprintf("%.2f", pools.TotalTVL),
+		formatter.Sprintf("%.2f", pools.TVL),
 		formatter.Sprintf("%.2f", pools.Last24Hours.Volume),
 		formatter.Sprintf("%.2f", pools.Last24Hours.Fee),
 		formatter.Sprintf("%d", pools.Last24Hours.TransactionCount),
