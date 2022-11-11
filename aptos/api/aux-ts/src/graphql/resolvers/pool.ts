@@ -1,6 +1,6 @@
 import { PoolClient } from "../../pool/client";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
-import { auxClient } from "../client";
+import { auxClient, redisClient } from "../client";
 import {
   AddLiquidity,
   Maybe,
@@ -287,4 +287,50 @@ export const pool = {
           : RatingColor.Green,
     };
   },
+  volume24h(parent: Pool): Promise<Maybe<number>> {
+    return stat("volume", parent, "24h");
+  },
+  fee24h(parent: Pool): Promise<Maybe<number>> {
+    return stat("fee", parent, "24h");
+  },
+  userCount24h(parent: Pool): Promise<Maybe<number>> {
+    return stat("usercount", parent, "24h");
+  },
+  transactionCount24h(parent: Pool): Promise<Maybe<number>> {
+    return stat("txcount", parent, "24h");
+  },
+  volume1w(parent: Pool): Promise<Maybe<Number>> {
+    return stat("volume", parent, "1w");
+  },
+  fee1w(parent: Pool): Promise<Maybe<number>> {
+    return stat("fee", parent, "1w");
+  },
+  userCount1w(parent: Pool): Promise<Maybe<number>> {
+    return stat("usercount", parent, "1w");
+  },
+  transactionCount1w(parent: Pool): Promise<Maybe<number>> {
+    return stat("txcount", parent, "1w");
+  },
+
+  tvl(parent: Pool): Promise<Maybe<Number>> {
+    return stat("tvl", parent, "1w");
+  },
 };
+
+async function stat(
+  name: "tvl" | "volume" | "fee" | "usercount" | "txcount",
+  pool: Pool,
+  period: "1w" | "24h"
+): Promise<Maybe<number>> {
+  if (name === "tvl") {
+    const value = await redisClient.get(
+      `amm-${pool.coinInfoX.coinType}-${pool.coinInfoY.coinType}-${name}`
+    );
+    return value ? Number(value) : null;
+  } else {
+    const value = await redisClient.get(
+      `amm-${pool.coinInfoX.coinType}-${pool.coinInfoY.coinType}-${name}-${period}`
+    );
+    return value ? Number(value) : null;
+  }
+}
