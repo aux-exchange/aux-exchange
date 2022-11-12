@@ -13,6 +13,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   Address: any;
+  EntryFunctionPayload: any;
   Timestamp: any;
 };
 
@@ -73,6 +74,19 @@ export type AddLiquidityInput = {
   useAuxAccount: Scalars['Boolean'];
 };
 
+export type AmmSummaryMetrics = {
+  __typename?: 'AmmSummaryMetrics';
+  TVL?: Maybe<Scalars['Float']>;
+  fee1w?: Maybe<Scalars['Float']>;
+  fee24h?: Maybe<Scalars['Float']>;
+  transactionCount1w?: Maybe<Scalars['Float']>;
+  transactionCount24h?: Maybe<Scalars['Float']>;
+  userCount1w?: Maybe<Scalars['Float']>;
+  userCount24h?: Maybe<Scalars['Float']>;
+  volume1w?: Maybe<Scalars['Float']>;
+  volume24h?: Maybe<Scalars['Float']>;
+};
+
 export type Balance = {
   __typename?: 'Balance';
   availableBalance: Scalars['String'];
@@ -126,13 +140,6 @@ export type DepositInput = {
   coinType: Scalars['String'];
   from: Scalars['Address'];
   to: Scalars['Address'];
-};
-
-export type EntryFunctionPayload = {
-  __typename?: 'EntryFunctionPayload';
-  arugments?: Maybe<Array<Scalars['String']>>;
-  function: Scalars['String'];
-  type_arguments: Array<Scalars['String']>;
 };
 
 export enum FeaturedStatus {
@@ -240,19 +247,19 @@ export type MarketInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addLiquidity: EntryFunctionPayload;
-  cancelOrder: EntryFunctionPayload;
-  createAuxAccount: EntryFunctionPayload;
-  createMarket: EntryFunctionPayload;
-  createPool: EntryFunctionPayload;
-  deposit: EntryFunctionPayload;
-  placeOrder: EntryFunctionPayload;
-  registerCoin: EntryFunctionPayload;
-  removeLiquidity: EntryFunctionPayload;
-  swapExactIn: EntryFunctionPayload;
-  swapExactOut: EntryFunctionPayload;
-  transfer: EntryFunctionPayload;
-  withdraw: EntryFunctionPayload;
+  addLiquidity: Scalars['EntryFunctionPayload'];
+  cancelOrder: Scalars['EntryFunctionPayload'];
+  createAuxAccount: Scalars['EntryFunctionPayload'];
+  createMarket: Scalars['EntryFunctionPayload'];
+  createPool: Scalars['EntryFunctionPayload'];
+  deposit: Scalars['EntryFunctionPayload'];
+  placeOrder: Scalars['EntryFunctionPayload'];
+  registerCoin: Scalars['EntryFunctionPayload'];
+  removeLiquidity: Scalars['EntryFunctionPayload'];
+  swapExactIn: Scalars['EntryFunctionPayload'];
+  swapExactOut: Scalars['EntryFunctionPayload'];
+  transfer: Scalars['EntryFunctionPayload'];
+  withdraw: Scalars['EntryFunctionPayload'];
 };
 
 
@@ -383,6 +390,8 @@ export type Pool = {
   coinInfoX: CoinInfo;
   coinInfoY: CoinInfo;
   featuredStatus: FeaturedStatus;
+  fee1w?: Maybe<Scalars['Float']>;
+  fee24h?: Maybe<Scalars['Float']>;
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
   priceX: Scalars['Float'];
@@ -391,6 +400,13 @@ export type Pool = {
   quoteExactOut: QuoteExactOut;
   removes: Array<RemoveLiquidity>;
   swaps: Array<Swap>;
+  transactionCount1w?: Maybe<Scalars['Float']>;
+  transactionCount24h?: Maybe<Scalars['Float']>;
+  tvl?: Maybe<Scalars['Float']>;
+  userCount1w?: Maybe<Scalars['Float']>;
+  userCount24h?: Maybe<Scalars['Float']>;
+  volume1w?: Maybe<Scalars['Float']>;
+  volume24h?: Maybe<Scalars['Float']>;
 };
 
 
@@ -460,6 +476,7 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<Account>;
   address: Scalars['Address'];
+  ammSummaryMetrics: AmmSummaryMetrics;
   coins: Array<CoinInfo>;
   market?: Maybe<Market>;
   markets: Array<Market>;
@@ -798,6 +815,7 @@ export type ResolversTypes = {
   AddLiquidity: ResolverTypeWrapper<AddLiquidity>;
   AddLiquidityInput: AddLiquidityInput;
   Address: ResolverTypeWrapper<Scalars['Address']>;
+  AmmSummaryMetrics: ResolverTypeWrapper<AmmSummaryMetrics>;
   Balance: ResolverTypeWrapper<Balance>;
   Bar: ResolverTypeWrapper<Bar>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -807,7 +825,7 @@ export type ResolversTypes = {
   CreatePoolInput: CreatePoolInput;
   Deposit: ResolverTypeWrapper<Deposit>;
   DepositInput: DepositInput;
-  EntryFunctionPayload: ResolverTypeWrapper<EntryFunctionPayload>;
+  EntryFunctionPayload: ResolverTypeWrapper<Scalars['EntryFunctionPayload']>;
   FeaturedStatus: FeaturedStatus;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   High24h: ResolverTypeWrapper<High24h>;
@@ -862,6 +880,7 @@ export type ResolversParentTypes = {
   AddLiquidity: AddLiquidity;
   AddLiquidityInput: AddLiquidityInput;
   Address: Scalars['Address'];
+  AmmSummaryMetrics: AmmSummaryMetrics;
   Balance: Balance;
   Bar: Bar;
   Boolean: Scalars['Boolean'];
@@ -871,7 +890,7 @@ export type ResolversParentTypes = {
   CreatePoolInput: CreatePoolInput;
   Deposit: Deposit;
   DepositInput: DepositInput;
-  EntryFunctionPayload: EntryFunctionPayload;
+  EntryFunctionPayload: Scalars['EntryFunctionPayload'];
   Float: Scalars['Float'];
   High24h: High24h;
   ID: Scalars['ID'];
@@ -942,6 +961,19 @@ export interface AddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
   name: 'Address';
 }
 
+export type AmmSummaryMetricsResolvers<ContextType = any, ParentType extends ResolversParentTypes['AmmSummaryMetrics'] = ResolversParentTypes['AmmSummaryMetrics']> = {
+  TVL?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  fee1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  fee24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  transactionCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  transactionCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type BalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Balance'] = ResolversParentTypes['Balance']> = {
   availableBalance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -973,12 +1005,9 @@ export type DepositResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type EntryFunctionPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EntryFunctionPayload'] = ResolversParentTypes['EntryFunctionPayload']> = {
-  arugments?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  function?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  type_arguments?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+export interface EntryFunctionPayloadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['EntryFunctionPayload'], any> {
+  name: 'EntryFunctionPayload';
+}
 
 export type High24hResolvers<ContextType = any, ParentType extends ResolversParentTypes['High24h'] = ResolversParentTypes['High24h']> = {
   baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1090,6 +1119,8 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   featuredStatus?: Resolver<ResolversTypes['FeaturedStatus'], ParentType, ContextType>;
+  fee1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  fee24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
   priceX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1098,6 +1129,13 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   quoteExactOut?: Resolver<ResolversTypes['QuoteExactOut'], ParentType, ContextType, RequireFields<PoolQuoteExactOutArgs, 'amountOut' | 'coinTypeOut'>>;
   removes?: Resolver<Array<ResolversTypes['RemoveLiquidity']>, ParentType, ContextType, Partial<PoolRemovesArgs>>;
   swaps?: Resolver<Array<ResolversTypes['Swap']>, ParentType, ContextType, Partial<PoolSwapsArgs>>;
+  transactionCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  transactionCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  tvl?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  userCount24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume1w?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  volume24h?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1122,6 +1160,7 @@ export type PythRatingResolvers<ContextType = any, ParentType extends ResolversP
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'owner'>>;
   address?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  ammSummaryMetrics?: Resolver<ResolversTypes['AmmSummaryMetrics'], ParentType, ContextType>;
   coins?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   market?: Resolver<Maybe<ResolversTypes['Market']>, ParentType, ContextType, RequireFields<QueryMarketArgs, 'marketInput'>>;
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
@@ -1251,11 +1290,12 @@ export type Resolvers<ContextType = any> = {
   Account?: AccountResolvers<ContextType>;
   AddLiquidity?: AddLiquidityResolvers<ContextType>;
   Address?: GraphQLScalarType;
+  AmmSummaryMetrics?: AmmSummaryMetricsResolvers<ContextType>;
   Balance?: BalanceResolvers<ContextType>;
   Bar?: BarResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;
   Deposit?: DepositResolvers<ContextType>;
-  EntryFunctionPayload?: EntryFunctionPayloadResolvers<ContextType>;
+  EntryFunctionPayload?: GraphQLScalarType;
   High24h?: High24hResolvers<ContextType>;
   LastTradePrice?: LastTradePriceResolvers<ContextType>;
   Level?: LevelResolvers<ContextType>;
@@ -1283,3 +1323,4 @@ export type Resolvers<ContextType = any> = {
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+

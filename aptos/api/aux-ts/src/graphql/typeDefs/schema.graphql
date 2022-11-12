@@ -2,6 +2,7 @@ type Query {
   address: Address!
   coins: [CoinInfo!]!
   summaryMetrics: SummaryMetrics!
+  ammSummaryMetrics: AmmSummaryMetrics!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
   market(marketInput: MarketInput!): Market
@@ -61,6 +62,18 @@ type SummaryMetrics {
   transactions7D: Int!
   users24H: Int!
   users7D: Int!
+}
+
+type AmmSummaryMetrics {
+  TVL: Float
+  volume24h: Float
+  fee24h: Float
+  userCount24h: Float
+  transactionCount24h: Float
+  volume1w: Float
+  fee1w: Float
+  userCount1w: Float
+  transactionCount1w: Float
 }
 
 scalar Address
