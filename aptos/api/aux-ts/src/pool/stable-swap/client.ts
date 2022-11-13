@@ -6,7 +6,7 @@ import type {
   AuxClientOptions,
   AuxTransaction,
   CoinInfo,
-} from "../client";
+} from "../../client";
 import {
   AnyUnits,
   AtomicUnits,
@@ -17,7 +17,7 @@ import {
   Pct,
   toAtomicUnits,
   toAtomicUnitsRatio,
-} from "../units";
+} from "../../units";
 import {
   AddApproximateLiquidityInput,
   addApproximateLiquidityPayload,
@@ -32,7 +32,7 @@ import {
   parseRawRemoveLiquidityEvent,
   parseRawSwapEvent,
   PoolEvent,
-  PoolInput,
+  ,
   Position,
   RawAddLiquidityEvent,
   RawPoolEvent,
@@ -58,7 +58,7 @@ import {
  * pools of 3 or more be introduced, users can expect a separate `NPool` (or similarly named)
  * client use.
  */
-export class PoolClient {
+export class StableSwapClient {
   static readonly defaultSlippage: Bps = new Bps(50);
 
   readonly auxClient: AuxClient;
@@ -233,7 +233,7 @@ export class PoolClient {
       coinTypeY: pool.coinInfoY.coinType,
       amountAuX,
       amountAuY,
-      maxSlippageBps: (slippage ?? PoolClient.defaultSlippage)
+      maxSlippageBps: (slippage ?? ConstantProductClient.defaultSlippage)
         .toBps()
         .toString(),
     };
@@ -556,7 +556,7 @@ export class PoolClient {
         }
       }
       const slippageMultiplier =
-        1 - (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
+        1 - (parameters.slippage ?? ConstantProductClient.defaultSlippage).toNumber();
       const minAmountAuOut = DU(quote.toNumber() * slippageMultiplier)
         .toAtomicUnits(coinInfoOut.decimals)
         .toString();
@@ -633,7 +633,7 @@ export class PoolClient {
         }
       }
       const slippageMultiplier =
-        1 + (parameters.slippage ?? PoolClient.defaultSlippage).toNumber();
+        1 + (parameters.slippage ?? ConstantProductClient.defaultSlippage).toNumber();
       const maxAmountAuIn = DU(quote.toNumber() * slippageMultiplier)
         .toAtomicUnits(coinInfoIn.decimals)
         .toString();
@@ -788,3 +788,4 @@ export class PoolClient {
     };
   }
 }
+g

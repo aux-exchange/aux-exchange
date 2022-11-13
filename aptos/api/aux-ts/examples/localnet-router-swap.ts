@@ -4,7 +4,7 @@
 import { AptosAccount, AptosClient, Types } from "aptos";
 import assert from "assert";
 import { AU, DU, Market, Vault } from "../src";
-import { PoolClient } from "../src/pool/client";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
 import { AuxClient, CoinInfo } from "../src/client";
 import type { OrderPlacedEvent } from "../src/clob/core/events";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
@@ -137,7 +137,7 @@ async function main() {
   /* CREATE POOL */
   /***************/
 
-  const poolClient = new PoolClient(auxClient, {
+  const poolClient = new ConstantProductClient(auxClient, {
     coinTypeX: btcCoinType,
     coinTypeY: usdcCoinType,
   });

@@ -1,7 +1,7 @@
 import type { Types } from "aptos";
 import _ from "lodash";
-import { PoolClient } from "./pool/client";
-import type { PoolInput, Position } from "./pool/schema";
+import { ConstantProductClient } from "./pool/constant-product/client";
+import type { ConstantProductInput, Position } from "./pool/constant-product/schema";
 import { AuxClient, notUndefined } from "./client";
 import type { OrderFillEvent, OrderPlacedEvent } from "./clob/core/events";
 import type { Order } from "./clob/core/query";
@@ -43,8 +43,8 @@ export default class AuxAccount {
   }
 
   // TODO: Support multiple positions in the pool.
-  poolPosition(poolInput: PoolInput): Promise<Position | undefined> {
-    return new PoolClient(this.auxClient, poolInput).position(this.owner);
+  poolPosition(poolInput: ConstantProductInput): Promise<Position | undefined> {
+    return new ConstantProductClient(this.auxClient, poolInput).position(this.owner);
   }
 
   async poolPositions(): Promise<Position[]> {
@@ -61,7 +61,7 @@ export default class AuxAccount {
         .map((resource) => resource.data as any)
         .map(async (positionResource) => {
           const [coinTypeX, coinTypeY] = positionResource.type;
-          const poolClient = new PoolClient(this.auxClient, {
+          const poolClient = new ConstantProductClient(this.auxClient, {
             coinTypeX: coinTypeX!,
             coinTypeY: coinTypeY!,
           });

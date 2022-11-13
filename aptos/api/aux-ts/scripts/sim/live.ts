@@ -4,8 +4,8 @@ import { AptosAccount, HexString, Types } from "aptos";
 import assert from "assert";
 import _ from "lodash";
 import { Market, Vault } from "../../src";
-import { PoolClient } from "../../src/pool/client";
-import type { SwapExactInInput } from "../../src/pool/schema";
+import { ConstantProductClient } from "../../src/pool/constant-product/client";
+import type { SwapExactInInput } from "../../src/pool/constant-product/schema";
 import { AuxClient } from "../../src/client";
 import { OrderType } from "../../src/clob/core/mutation";
 import { ALL_FAKE_COINS, ALL_FAKE_VOLATILES, FakeCoin } from "../../src/coin";
@@ -73,7 +73,7 @@ async function setupTrader(
 
 async function mirrorCoinbase(
   traders: Trader[],
-  pools: Record<string, PoolClient>,
+  pools: Record<string, ConstantProductClient>,
   markets: Record<string, Market>
 ) {
   await Promise.all(
@@ -238,7 +238,7 @@ function logTraders(traders: { address: string; privateKeyHex: string }[]) {
   setTimeout(() => logTraders(traders), 10000);
 }
 
-async function logPool(productId: string, poolClient: PoolClient) {
+async function logPool(productId: string, poolClient: ConstantProductClient) {
   const pool = await poolClient.query();
   console.log({
     productId,
@@ -325,11 +325,11 @@ async function main() {
     // "APT-USD": FakeCoin.AUX,
   };
 
-  const pools: Record<string, PoolClient> = Object.fromEntries(
+  const pools: Record<string, ConstantProductClient> = Object.fromEntries(
     Object.entries(convert).map(([productId, fakeCoin]) => {
       const coinTypeX = auxClient.getWrappedFakeCoinType(fakeCoin);
       const coinTypeY = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
-      const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+      const poolClient = new ConstantProductClient(auxClient, { coinTypeX, coinTypeY });
       return [productId, poolClient];
     })
   );

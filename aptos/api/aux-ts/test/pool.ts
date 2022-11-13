@@ -1,6 +1,6 @@
 import { AptosAccount } from "aptos";
 import { DU } from "../src";
-import { PoolClient } from "../src/pool/client";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
@@ -22,7 +22,7 @@ async function main() {
 
   const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
   const btcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.BTC);
-  const poolClient = new PoolClient(auxClient, {
+  const poolClient = new ConstantProductClient(auxClient, {
     coinTypeX: auxCoin,
     coinTypeY: btcCoin,
   });

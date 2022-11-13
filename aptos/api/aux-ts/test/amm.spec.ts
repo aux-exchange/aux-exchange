@@ -2,8 +2,8 @@ import { AptosAccount } from "aptos";
 import * as assert from "assert";
 import { describe, it } from "mocha";
 import { Vault } from "../src";
-import { PoolClient } from "../src/pool/client";
-import type { ConstantProduct } from "../src/pool/schema";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
+import type { ConstantProduct } from "../src/pool/constant-product/schema";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
@@ -29,7 +29,7 @@ describe("AMM tests", function () {
   });
   const auxAccountOwnerAddr = auxAccountOwner.address().toShortString();
 
-  const poolClient: PoolClient = new PoolClient(auxClient, {
+  const poolClient: ConstantProductClient = new ConstantProductClient(auxClient, {
     coinTypeX: auxCoin,
     coinTypeY: btcCoin,
   });

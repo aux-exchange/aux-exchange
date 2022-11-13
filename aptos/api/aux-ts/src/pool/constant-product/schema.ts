@@ -1,7 +1,7 @@
 import { HexString, Types } from "aptos";
 import BN from "bn.js";
-import type { CoinInfo } from "../client";
-import { AnyUnits, AtomicUnits, AU, Bps, DecimalUnits, Pct } from "../units";
+import type { CoinInfo } from "../../client";
+import { AnyUnits, AtomicUnits, AU, Bps, DecimalUnits, Pct } from "../../units";
 
 /****************/
 /* Pool schemas */
@@ -174,7 +174,7 @@ export function parseRawRemoveLiquidityEvent(
 /* Input schemas (Pool) */
 /************************/
 
-export interface PoolInput {
+export interface ConstantProductInput {
   coinTypeX: Types.MoveStructTag;
   coinTypeY: Types.MoveStructTag;
 }

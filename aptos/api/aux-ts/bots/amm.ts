@@ -1,7 +1,7 @@
 import type { AptosAccount, Types } from "aptos";
 import { Logger } from "tslog";
-import { PoolClient } from "../src/pool/client";
-import type { ConstantProduct } from "../src/pool/schema";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
+import type { ConstantProduct } from "../src/pool/constant-product/schema";
 import type { AuxClient } from "../src/client";
 import { COIN_MAPPING, USDC_ETH_WH } from "../src/coin";
 import { DecimalUnits, DU } from "../src/units";
@@ -61,7 +61,7 @@ export class FTXArbitrageStrategy {
   }
 
   async run() {
-    const poolClient = new PoolClient(this.client, {
+    const poolClient = new ConstantProductClient(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });

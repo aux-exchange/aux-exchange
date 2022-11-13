@@ -7,8 +7,8 @@ import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
-import { PoolClient } from "../src/pool/client";
-import type { ConstantProduct } from "../src/pool/schema";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
+import type { ConstantProduct } from "../src/pool/constant-product/schema";
 import * as core from "../src/router/core";
 import type Router from "../src/router/dsl/router";
 import type { RouterQuote } from "../src/router/dsl/router_quote";
@@ -42,7 +42,7 @@ describe("Router Core tests", function () {
   let market: Market;
 
   let pool: ConstantProduct;
-  let poolClient: PoolClient;
+  let poolClient: ConstantProductClient;
 
   let btcCoinInfo: CoinInfo;
   let usdcCoinInfo: CoinInfo;
@@ -109,7 +109,7 @@ describe("Router Core tests", function () {
     usdcCoinType = usdcCoinInfo.coinType;
     btcCoinType = btcCoinInfo.coinType;
 
-    poolClient = new PoolClient(auxClient, {
+    poolClient = new ConstantProductClient(auxClient, {
       coinTypeX: btcCoinType,
       coinTypeY: usdcCoinType,
     });
@@ -382,7 +382,7 @@ describe("Router DSL tests", function () {
   let market: Market;
 
   let pool: ConstantProduct;
-  let poolClient: PoolClient;
+  let poolClient: ConstantProductClient;
 
   let router: Router;
 
@@ -455,7 +455,7 @@ describe("Router DSL tests", function () {
     usdcCoinType = usdcCoinInfo.coinType;
     btcCoinType = btcCoinInfo.coinType;
 
-    poolClient = new PoolClient(auxClient, {
+    poolClient = new ConstantProductClient(auxClient, {
       coinTypeX: btcCoinType,
       coinTypeY: usdcCoinType,
     });
