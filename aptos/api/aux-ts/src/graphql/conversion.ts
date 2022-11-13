@@ -33,21 +33,44 @@ export function orderToOrder(
   };
 }
 
-export function orderEventToOrder(
-  orderEvent: OrderPlacedEvent | OrderFillEvent,
+export function orderPlacedEventToOrder(
+  orderEvent: OrderPlacedEvent,
   baseCoinInfo: CoinInfo,
   quoteCoinInfo: CoinInfo
 ): GqlOrder {
   const price = orderEvent.price
     .toDecimalUnits(quoteCoinInfo.decimals)
     .toNumber();
-  let quantity;
-  if (orderEvent.type === "OrderPlacedEvent") {
-    quantity = orderEvent.quantity;
-  } else {
-    quantity = orderEvent.baseQuantity;
-  }
-  quantity = quantity.toDecimalUnits(baseCoinInfo.decimals).toNumber();
+  const quantity = orderEvent.quantity
+    .toDecimalUnits(baseCoinInfo.decimals)
+    .toNumber();
+  return {
+    baseCoinType: baseCoinInfo.coinType,
+    quoteCoinType: quoteCoinInfo.coinType,
+    orderId: orderEvent.orderId.toString(),
+    owner: orderEvent.owner.toString(),
+    orderType: OrderType.Limit,
+    orderStatus: OrderStatus.Open,
+    side: orderEvent.isBid ? Side.Buy : Side.Sell,
+    auxBurned: 0,
+    time: orderEvent.timestamp.divn(1000).toString(),
+    price: orderEvent.price.toDecimalUnits(quoteCoinInfo.decimals).toNumber(),
+    quantity,
+    value: price * quantity,
+  };
+}
+
+export function orderFillEventToOrder(
+  orderEvent: OrderFillEvent,
+  baseCoinInfo: CoinInfo,
+  quoteCoinInfo: CoinInfo
+): GqlOrder {
+  const price = orderEvent.price
+    .toDecimalUnits(quoteCoinInfo.decimals)
+    .toNumber();
+  const quantity = orderEvent.baseQuantity
+    .toDecimalUnits(baseCoinInfo.decimals)
+    .toNumber();
   return {
     baseCoinType: baseCoinInfo.coinType,
     quoteCoinType: quoteCoinInfo.coinType,

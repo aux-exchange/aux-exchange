@@ -362,10 +362,7 @@ export async function openOrders(
     arguments: [owner],
   };
   simulator = simulator ?? auxClient.simulator;
-  const txResult = await auxClient.simulateTransaction(
-    payload,
-    simulator,
-  );
+  const txResult = await auxClient.simulateTransaction(payload, simulator);
   const event: RawOpenOrdersEvent = txResult.events[0]! as RawOpenOrdersEvent;
   if (_.isUndefined(event)) {
     return [];
@@ -393,37 +390,67 @@ export async function orderHistory(
   quoteCoinType: Types.MoveStructTag,
   owner: Types.Address | undefined,
   pagination?: { start: BN } | { limit: BN }
-): Promise<OrderPlacedEvent[]> {
-  const events = await orderPlacedEvents(
+): Promise<
+  { order: OrderPlacedEvent; status: "open" | "canceled" | "filled" }[]
+> {
+  const market_ = await market(auxClient, baseCoinType, quoteCoinType);
+  const orders = await orderPlacedEvents(
     auxClient,
     auxClient.moduleAddress,
-    await market(auxClient, baseCoinType, quoteCoinType),
+    market_,
     pagination
   );
-  return events.filter(
-    (orderPlacedEvent) =>
-      _.isUndefined(owner) || orderPlacedEvent.owner.hex() === owner
+  const fills = await orderFillEvents(
+    auxClient,
+    auxClient.moduleAddress,
+    market_,
+    pagination
   );
+  const fillIds = new Set(fills.map((order) => order.orderId.toString()));
+  const cancels = await orderCancelEvents(
+    auxClient,
+    auxClient.moduleAddress,
+    market_,
+    pagination
+  );
+  const cancelIds = new Set(cancels.map((order) => order.orderId.toString()));
+  const orderEvents: {
+    order: OrderPlacedEvent;
+    status: "open" | "canceled" | "filled";
+  }[] = orders.map((order) => {
+    const orderId = order.orderId.toString();
+    if (fillIds.has(orderId)) {
+      return { order, status: "filled" };
+    } else if (cancelIds.has(orderId)) {
+      return { order, status: "canceled" };
+    } else {
+      return { order, status: "open" };
+    }
+  });
+  if (_.isUndefined(owner)) {
+    return orderEvents;
+  }
+  return orderEvents.filter((order) => order.order.owner.hex() === owner);
 }
 
-export async function tradeHistory(
+export async function fillHistory(
   auxClient: AuxClient,
   baseCoinType: Types.MoveStructTag,
   quoteCoinType: Types.MoveStructTag,
   owner: Types.Address | undefined,
   pagination?: { start: BN } | { limit: BN }
 ): Promise<OrderFillEvent[]> {
-  return (
-    await orderFillEvents(
-      auxClient,
-      auxClient.moduleAddress,
-      await market(auxClient, baseCoinType, quoteCoinType),
-      pagination
-    )
-  ).filter(
-    (orderFillEvent) =>
-      _.isUndefined(owner) || orderFillEvent.owner.hex() === owner
+  const fills = await orderFillEvents(
+    auxClient,
+    auxClient.moduleAddress,
+    await market(auxClient, baseCoinType, quoteCoinType),
+    pagination
   );
+  if (_.isUndefined(owner)) {
+    // return all events for the market
+    return fills;
+  }
+  return fills.filter((orderFillEvent) => orderFillEvent.owner.hex() === owner);
 }
 
 export async function markets(

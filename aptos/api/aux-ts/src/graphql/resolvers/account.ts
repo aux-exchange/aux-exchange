@@ -4,7 +4,7 @@ import { AU } from "../../";
 import AuxAccount from "../../account";
 import { parseTypeArgs } from "../../client";
 import { auxClient } from "../client";
-import { orderEventToOrder, orderToOrder } from "../conversion";
+import { orderPlacedEventToOrder, orderFillEventToOrder, orderToOrder } from "../conversion";
 import type {
   Account,
   AccountIsCoinRegisteredArgs,
@@ -212,7 +212,7 @@ export const account = {
         const market = await aux.Market.read(auxClient, marketInput);
         const orders = await account.orderHistory(marketInput);
         return orders.map((order) =>
-          orderEventToOrder(order, market.baseCoinInfo, market.quoteCoinInfo)
+          orderPlacedEventToOrder(order.order, market.baseCoinInfo, market.quoteCoinInfo)
         );
       })
     );
@@ -230,7 +230,7 @@ export const account = {
         const market = await aux.Market.read(auxClient, marketInput);
         const fills = await account.tradeHistory(marketInput);
         return fills.map((fill) =>
-          orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+          orderFillEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
         );
       })
     );

@@ -426,7 +426,9 @@ export default class Market implements core.query.Market {
   async orderHistory(
     owner: Types.Address,
     pagination?: { start: BN } | { limit: BN }
-  ): Promise<OrderPlacedEvent[]> {
+  ): Promise<
+    { order: OrderPlacedEvent; status: "open" | "canceled" | "filled" }[]
+  > {
     return core.query.orderHistory(
       this.auxClient,
       this.baseCoinInfo.coinType,
@@ -437,15 +439,15 @@ export default class Market implements core.query.Market {
   }
 
   /**
-   * Returns trades for the given trader.
+   * Returns fills for the given trader.
    * @param owner
    * @returns
    */
-  async tradeHistory(
+  async fillHistory(
     owner?: Types.Address,
     pagination?: { start: BN } | { limit: BN }
   ): Promise<OrderFillEvent[]> {
-    return core.query.tradeHistory(
+    return core.query.fillHistory(
       this.auxClient,
       this.baseCoinInfo.coinType,
       this.quoteCoinInfo.coinType,
