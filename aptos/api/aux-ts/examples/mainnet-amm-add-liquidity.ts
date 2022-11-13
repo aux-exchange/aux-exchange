@@ -4,7 +4,7 @@
  */
 import { AptosAccount, AptosClient } from "aptos";
 import { DU } from "../src";
-import { PoolClient } from "../src/pool/client";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
 import { AuxClient } from "../src/client";
 import { getAptosProfile } from "../src/env";
 
@@ -22,7 +22,7 @@ async function main() {
   const tAPT =
     "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114::staked_aptos_coin::StakedAptosCoin";
 
-  const poolClient = await new PoolClient(auxClient, {
+  const poolClient = await new ConstantProductClient(auxClient, {
     coinTypeX: APT,
     coinTypeY: tAPT,
   });

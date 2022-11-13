@@ -1,4 +1,4 @@
-import { PoolClient } from "../../pool/client";
+import { ConstantProductClient } from "../../pool/constant-product/client";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
 import { auxClient, redisClient } from "../client";
 import {
@@ -32,7 +32,7 @@ export const pool = {
 
   async swaps({ coinInfoX, coinInfoY }: Pool): Promise<Swap[]> {
     const [coinTypeX, coinTypeY] = [coinInfoX.coinType, coinInfoY.coinType];
-    const swaps = await new PoolClient(auxClient, {
+    const swaps = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).swapEvents();
@@ -54,7 +54,7 @@ export const pool = {
   },
 
   async adds(parent: Pool): Promise<AddLiquidity[]> {
-    const addLiquiditys = await new PoolClient(auxClient, {
+    const addLiquiditys = await new ConstantProductClient(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
     }).addLiquidityEvents();
@@ -74,7 +74,7 @@ export const pool = {
   },
 
   async removes(parent: Pool): Promise<RemoveLiquidity[]> {
-    const removeLiquiditys = await new PoolClient(auxClient, {
+    const removeLiquiditys = await new ConstantProductClient(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
     }).removeLiquidityEvents();
@@ -97,7 +97,7 @@ export const pool = {
     parent: Pool,
     { owner }: PoolPositionArgs
   ): Promise<Maybe<Position>> {
-    const position = await new PoolClient(auxClient, {
+    const position = await new ConstantProductClient(auxClient, {
       coinTypeX: parent.coinInfoX.coinType,
       coinTypeY: parent.coinInfoY.coinType,
     }).position(owner);

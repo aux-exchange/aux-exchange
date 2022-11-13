@@ -1,6 +1,6 @@
 import type { AptosAccount, Types } from "aptos";
 import { Logger } from "tslog";
-import { PoolClient } from "../src/pool/client";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
 import type { AuxClient } from "../src/client";
 import { OrderType, STPActionType } from "../src/clob/core/mutation";
 import Market from "../src/clob/dsl/market";
@@ -132,7 +132,7 @@ export class AUXArbitrageStrategy {
     }
     const market = maybeMarket as Market;
 
-    const poolClient = new PoolClient(this.client, {
+    const poolClient = new ConstantProductClient(this.client, {
       coinTypeX: this.baseCoin,
       coinTypeY: USDC_ETH_WH,
     });

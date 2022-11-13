@@ -15,7 +15,7 @@ import _ from "lodash";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
 import { AptosNetwork, AuxEnv } from "./env";
 import type { PoolInput } from "./graphql/generated/types";
-import { PoolClient } from "./pool/client";
+import { ConstantProductClient } from "./pool/constant-product/client";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
@@ -151,8 +151,8 @@ export class AuxClient {
     }
   }
 
-  pool(poolInput: PoolInput): PoolClient {
-    return new PoolClient(this, poolInput);
+  pool(poolInput: PoolInput): ConstantProductClient {
+    return new ConstantProductClient(this, poolInput);
   }
 
   async pools(): Promise<PoolInput[]> {

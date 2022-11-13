@@ -3,8 +3,8 @@ import axios from "axios";
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
-import { PoolClient } from "../../pool/client";
-import type { ConstantProduct } from "../../pool/schema";
+import { ConstantProductClient } from "../../pool/constant-product/client";
+import type { ConstantProduct } from "../../pool/constant-product/schema";
 import { auxClient, redisClient } from "../client";
 import {
   Account,
@@ -143,7 +143,7 @@ export const query = {
   },
 
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
-    const poolClient = await new PoolClient(auxClient, poolInput).transpose();
+    const poolClient = await new ConstantProductClient(auxClient, poolInput).transpose();
     const pool = await poolClient.query();
     const coins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
@@ -159,7 +159,7 @@ export const query = {
       : await auxClient.pools();
     const pools = await Promise.all(
       poolInputs.map((poolInput) =>
-        new PoolClient(auxClient, poolInput).query()
+        new ConstantProductClient(auxClient, poolInput).query()
       )
     );
     const hippoCoins = await coinsWithoutLiquidity();

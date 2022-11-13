@@ -7,7 +7,7 @@
 import { AptosAccount, AptosClient } from "aptos";
 import axios from "axios";
 import { AU, DU } from "../src";
-import { PoolClient } from "../src/pool/client";
+import { ConstantProductClient } from "../src/pool/constant-product/client";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 
@@ -67,7 +67,7 @@ async function setupTrader(): Promise<void> {
 }
 
 async function tradeAMM(): Promise<void> {
-  let poolClient = new PoolClient(auxClient, {
+  let poolClient = new ConstantProductClient(auxClient, {
     coinTypeX: auxClient.getWrappedFakeCoinType(FakeCoin.BTC),
     coinTypeY: auxClient.getWrappedFakeCoinType(FakeCoin.USDC),
   });

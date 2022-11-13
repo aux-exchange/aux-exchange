@@ -7,7 +7,7 @@
 
 import _ from "lodash";
 import * as aux from "../../";
-import { PoolClient } from "../../pool/client";
+import { ConstantProductClient } from "../../pool/constant-product/client";
 import { OrderType as AuxOrderType } from "../../clob/core/mutation";
 import { Bps, DU, Pct } from "../../units";
 import { auxClient } from "../client";
@@ -39,7 +39,7 @@ export const mutation = {
 
   async createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
     const { coinTypeX, coinTypeY } = createPoolInput.poolInput;
-    const poolClient = await new PoolClient(auxClient, {
+    const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
@@ -59,7 +59,7 @@ export const mutation = {
       },
     }: MutationSwapExactInArgs
   ) {
-    const poolClient = await new PoolClient(auxClient, {
+    const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
@@ -89,7 +89,7 @@ export const mutation = {
       },
     }: MutationSwapExactOutArgs
   ) {
-    const poolClient = await new PoolClient(auxClient, {
+    const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
@@ -115,7 +115,7 @@ export const mutation = {
       },
     }: MutationAddLiquidityArgs
   ) {
-    const poolClient = await new PoolClient(auxClient, {
+    const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
@@ -143,7 +143,7 @@ export const mutation = {
       },
     }: MutationRemoveLiquidityArgs
   ) {
-    const poolClient = await new PoolClient(auxClient, {
+    const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
