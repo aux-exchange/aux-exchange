@@ -157,22 +157,19 @@ module aux::constant_product {
         ctx: &mut TxContext
     ) {
         transfer::transfer(
-            add_liquidity(self, coin_x, coin_y, 0, ctx),
+            mint(self, coin_x, coin_y, 0, ctx),
             tx_context::sender(ctx)
         );
     }
 
 
-    /// TODO
-    /// 
-    /// "slippage_bps" parameter for the AMM
-    /// the idea would be when you `add_liquidity` (aka `add_liquidity`) you would check for slippage
+    /// TODO slippage
     /// 
     /// say you tolerate 1% slippage, so adding 100 SUI and 1 USDC, you provide between
     /// 
     /// 99 SUI / 1 USDC
     /// 100 SUI / 0.99 USDC
-    public fun add_liquidity<X, Y, W>(
+    public fun mint<X, Y, W>(
         self: &mut Pool<X, Y, W>,
         coin_x: Coin<X>,
         coin_y: Coin<Y>,
@@ -197,7 +194,7 @@ module aux::constant_product {
             let share_x = (x * lp_supply) / pool_x;
             let share_y = (y * lp_supply) / pool_y;
             // TODO slippage
-            math::min(share_x, share_y)  // add_liquidity favorably to the pool
+            math::min(share_x, share_y)  // mint favorably to the pool
         };
         coin::join(&mut self.reserve_x, coin_x);
         coin::join(&mut self.reserve_y, coin_y);
@@ -272,128 +269,155 @@ module aux::constant_product_tests {
 
     const ETestFailure: u64 = 0;
 
-    // fun create_for_testing(scenario: &mut Scenario) {
-    //     let ctx = test_scenario::ctx(scenario);
-    //     constant_product::create_pool<ETH, USDC, WITNESS>(
-    //         WITNESS {},
-    //         0,
-    //         ctx
-    //     );
-    // }
+    fun create_for_testing(scenario: &mut Scenario) {
+        let ctx = test_scenario::ctx(scenario);
+        constant_product::create_pool<ETH, USDC, WITNESS>(
+            WITNESS {},
+            0,
+            ctx
+        );
+    }
     
-    // fun add_liquidity_for_testing(
-    //     scenario: &mut Scenario,
-    //     pool: &mut Pool<ETH, USDC, WITNESS>,
-    //     amount_x: u64,
-    //     amount_y: u64
-    // ): Coin<LP<ETH, USDC, WITNESS>> {
-    //     let ctx = test_scenario::ctx(scenario);
-    //     let lp = constant_product::add_liquidity(
-    //         pool,
-    //         coin::mint_for_testing<ETH>(amount_x, ctx),
-    //         coin::mint_for_testing<USDC>(amount_y, ctx),
-    //         0,
-    //         ctx
-    //     );
-    //     lp
-    // }
+    fun mint_for_testing(
+        scenario: &mut Scenario,
+        pool: &mut Pool<ETH, USDC, WITNESS>,
+        amount_x: u64,
+        amount_y: u64
+    ): Coin<LP<ETH, USDC, WITNESS>> {
+        let ctx = test_scenario::ctx(scenario);
+        let lp = constant_product::mint(
+            pool,
+            coin::mint_for_testing<ETH>(amount_x, ctx),
+            coin::mint_for_testing<USDC>(amount_y, ctx),
+            0,
+            ctx
+        );
+        lp
+    }
 
-    // #[test]
-    // fun test_create() {
-    //     let scenario = test_scenario::begin(AUX);
-    //     {
-    //         create_for_testing(&mut scenario)
-    //     };
+    fun burn_for_testing(
+        scenario: &mut Scenario,
+        pool: &mut Pool<ETH, USDC, WITNESS>,
+        amount_lp: u64,
+    ): Coin<LP<ETH, USDC, WITNESS>> {
+        let ctx = test_scenario::ctx(scenario);
+        let lp = constant_product::burn(
+            pool,
+            coin::mint_for_testing<LP<ETH, USDC>>(amount_lp, ctx),
+            ctx
+        );
+        lp
+    }
 
-    //     test_scenario::next_tx(&mut scenario, AUX);
-    //     {
-    //         let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+    #[test]
+    fun test_create() {
+        let scenario = test_scenario::begin(AUX);
+        {
+            create_for_testing(&mut scenario)
+        };
 
-    //         // pool should be initialized to empty on creation
-    //         assert!(coin::value(constant_product::reserve_x(&pool)) == 0, 0);
-    //         assert!(coin::value(constant_product::reserve_y(&pool)) == 0, 0);
-    //         assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 0, 0);
-    //         test_scenario::return_shared(pool);
-    //     };
+        test_scenario::next_tx(&mut scenario, AUX);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
 
-    //     test_scenario::end(scenario);
-    // }
+            // pool should be initialized to empty on creation
+            assert!(coin::value(constant_product::reserve_x(&pool)) == 0, 0);
+            assert!(coin::value(constant_product::reserve_y(&pool)) == 0, 0);
+            assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 0, 0);
+            test_scenario::return_shared(pool);
+        };
 
-    // #[test]
-    // fun test_add_liquidity_empty() {
-    //     let scenario = test_scenario::begin(AUX);
-    //     {
-    //         create_for_testing(&mut scenario);
-    //     };
+        test_scenario::end(scenario);
+    }
 
-    //     test_scenario::next_tx(&mut scenario, AUX);
-    //     {
-    //         let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
-    //         let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 100, 400);
-    //         assert!(coin::value(&lp) == 200, 0);
-    //         assert!(coin::value(constant_product::reserve_x(&pool)) == 100, ETestFailure);
-    //         assert!(coin::value(constant_product::reserve_y(&pool)) == 400, ETestFailure);
-    //         assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 200, 0);
-    //         coin::destroy_for_testing(lp);
-    //         test_scenario::return_shared(pool);
-    //     };
+    #[test]
+    fun test_mint_empty() {
+        let scenario = test_scenario::begin(AUX);
+        {
+            create_for_testing(&mut scenario);
+        };
 
-    //     test_scenario::end(scenario);
-    // }
+        test_scenario::next_tx(&mut scenario, AUX);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+            let lp = mint_for_testing(&mut scenario, &mut pool, 100, 400);
+            assert!(coin::value(&lp) == 200, 0);
+            assert!(coin::value(constant_product::reserve_x(&pool)) == 100, ETestFailure);
+            assert!(coin::value(constant_product::reserve_y(&pool)) == 400, ETestFailure);
+            assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 200, 0);
+            coin::destroy_for_testing(lp);
+            test_scenario::return_shared(pool);
+        };
 
-    // #[test]
-    // fun test_mint_nonempty() {
-    //     let scenario = &mut test_scenario::begin(&@0x1);
-    //     create_for_testing(scenario);
+        test_scenario::end(scenario);
+    }
 
-    //     test_scenario::next_tx(scenario, &LP);
-    //     let (self, lp_tokens) = mint_for_testing(scenario);
-    //     coin::destroy_for_testing(lp_tokens);
-    //     test_scenario::return_shared(scenario, pool);
+    #[test]
+    fun test_mint_nonempty() {
+        let scenario = test_scenario::begin(AUX);
+        {
+            create_for_testing(&mut scenario);
+        };
 
-    //     // purposely add_liquidity twice for non-empty
-    //     test_scenario::next_tx(scenario, &LP);
-    //     let (self, lp_tokens) = mint_for_testing(scenario);
-    //     let pool_mut = test_scenario::borrow_mut(&mut pool);
+        test_scenario::next_tx(&mut scenario, AUX);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+            let lp = mint_for_testing(&mut scenario, &mut pool, 100, 400);
+            coin::destroy_for_testing(lp);
+            test_scenario::return_shared(pool);
+        };
 
-    //     assert!(constant_product::reserves_x(pool_mut) == 2 * BASE_SUPPLY, ETestFailure);
-    //     assert!(constant_product::reserves_y(pool_mut) == 2 * QUOTE_SUPPLY, ETestFailure);
-    //     // the liquidity invariant L = sqrt(x * y) should hold
-    //     let liquidity = math::sqrt(2 * BASE_SUPPLY * 2 * QUOTE_SUPPLY);
-    //     assert!(constant_product::lp_reserves(pool_mut) == liquidity, ETestFailure);
+        test_scenario::next_tx(&mut scenario, AUX);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+            let lp = mint_for_testing(&mut scenario, &mut pool, 100, 400);
+            assert!(coin::value(&lp) == 200, 0);
+            assert!(coin::value(constant_product::reserve_x(&pool)) == 2 * 100, ETestFailure);
+            assert!(coin::value(constant_product::reserve_y(&pool)) == 2 * 400, ETestFailure);
+            assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 2 * 200, 0);
+            coin::destroy_for_testing(lp);
+            test_scenario::return_shared(pool);
+        };
 
-    //     coin::destroy_for_testing(lp_tokens);
-    //     test_scenario::return_shared(scenario, pool);
-    // }
+        test_scenario::end(scenario);
+    }
     
-    // #[test]
-    // fun test_burn_some() {
-    //     let scenario = &mut test_scenario::begin(&@0x1);
-    //     create_for_testing(scenario);
+    #[test]
+    fun test_burn_some() {
+        let scenario = test_scenario::begin(AUX);
+        {
+            create_for_testing(&mut scenario);
+        };
 
-    //     test_scenario::next_tx(scenario, &LP);
-    //     let (self, lp_tokens) = mint_for_testing(scenario);
-    //     coin::destroy_for_testing(lp_tokens);
-    //     test_scenario::return_shared(scenario, pool);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+            let lp = mint_for_testing(&mut scenario, &mut pool, 100, 400);
+            coin::destroy_for_testing(lp);
+            test_scenario::return_shared(pool);
+        };
 
-    //     test_scenario::next_tx(scenario, &LP);
-    //     let pool = test_scenario::take_shared<Pool<Base, Quote, Witness>>(scenario);
-    //     let pool_mut = test_scenario::borrow_mut(&mut pool);
-    //     let ctx = test_scenario::ctx(scenario);
-    //     let (coin_x, coin_y) = constant_product::burn(
-    //         pool_mut,
-    //         coin::mint_for_testing(100, ctx), // burn half the LP tokens
-    //         ctx
-    //     );
+        test_scenario::next_tx(&mut scenario, AUX);
+        {
+            let pool = test_scenario::take_shared<Pool<ETH, USDC, WITNESS>>(&mut scenario);
+            coin::mint_for_testing
+            let (coin_x, coin_y) = constant_product::burn(
+                &mut pool,
+                coin::split(&mut lp, 100, &mut test_scenario::ctx(scenario)),
+                &mut test_scenario::ctx(scenario)
+            );
+            assert!(coin::value(&lp) == 100, 0);
+            assert!(coin::value(&coin_x) == 50, ETestFailure);
+            assert!(coin::value(&coin_y) == 200, ETestFailure);
+            assert!(coin::value(constant_product::reserve_x(&pool)) == 50, ETestFailure);
+            assert!(coin::value(constant_product::reserve_y(&pool)) == 200, ETestFailure);
+            coin::destroy_for_testing(coin_x);
+            coin::destroy_for_testing(coin_y);
+            coin::destroy_for_testing(lp);
+            test_scenario::return_shared(pool);
+        };
 
-    //     assert!(coin::value(&coin_x) == 50, ETestFailure);
-    //     assert!(coin::value(&coin_y) == 200, ETestFailure);
-    //     assert!(constant_product::lp_reserves(pool_mut) == 100, ETestFailure);
-
-    //     coin::destroy_for_testing(coin_x);
-    //     coin::destroy_for_testing(coin_y);
-    //     test_scenario::return_shared(scenario, pool);
-    // }
+        test_scenario::end(scenario);
+    }
 
     // #[test]
     // fun test_burn_all() {
