@@ -171,10 +171,14 @@ export const query = {
       period: "1w" | "24h"
     ): Promise<Maybe<number>> {
       if (name === "tvl") {
-        const value = await redisClient.get(`amm-${name}`);
+        const value = await redisClient.get(
+          `amm-all-${auxClient.moduleAddress}-${name}`
+        );
         return value ? Number(value) : null;
       } else {
-        const value = await redisClient.get(`amm-${name}-${period}`);
+        const value = await redisClient.get(
+          `amm-all-${auxClient.moduleAddress}-${name}-${period}`
+        );
         return value ? Number(value) : null;
       }
     };
