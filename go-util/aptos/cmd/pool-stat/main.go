@@ -66,6 +66,9 @@ func mainFunction(network aptos.Network, rpc, outputFile, redisEndpoint string) 
 		"zUSDT",
 	} {
 		coinType := known.GetCoinInfoBySymbol(network, usdSymbol)
+		if coinType == nil {
+			continue
+		}
 		allStables[usdSymbol] = coinType
 		PriceBySymbol[usdSymbol] = 1
 		PriceByTypeTag[coinType.TokenType.Type.String()] = 1
@@ -142,9 +145,7 @@ fillPoolLoop:
 		redisCtx, redisCtxCancel := context.WithTimeout(context.Background(), time.Minute)
 		defer redisCtxCancel()
 		rdb := redis.NewClient(&redis.Options{
-			Addr:     "localhost:6379",
-			Password: "", // no password set
-			DB:       0,  // use default DB
+			Addr: redisEndpoint,
 		})
 
 		for _, pool := range pools.Pools {
@@ -163,15 +164,15 @@ fillPoolLoop:
 			rdb.Set(redisCtx, fmt.Sprintf("amm-%s-%s-usercount-1w", coinXTypeString, coinYTypeString), fmt.Sprintf("%d", pool.Last7Days.UserCount), 0)
 		}
 
-		rdb.Set(redisCtx, "amm-tvl", fmt.Sprintf("%f", pools.TVL), 0)
-		rdb.Set(redisCtx, "amm-volume-24h", fmt.Sprintf("%f", pools.Last24Hours.Volume), 0)
-		rdb.Set(redisCtx, "amm-fee-24h", fmt.Sprintf("%f", pools.Last24Hours.Fee), 0)
-		rdb.Set(redisCtx, "amm-txcount-24h", fmt.Sprintf("%d", pools.Last24Hours.TransactionCount), 0)
-		rdb.Set(redisCtx, "amm-usercount-24h", fmt.Sprintf("%d", pools.Last24Hours.UserCount), 0)
-		rdb.Set(redisCtx, "amm-volume-1w", fmt.Sprintf("%f", pools.Last7Days.Volume), 0)
-		rdb.Set(redisCtx, "amm-fee-1w", fmt.Sprintf("%f", pools.Last7Days.Fee), 0)
-		rdb.Set(redisCtx, "amm-txcount-1w", fmt.Sprintf("%d", pools.Last7Days.TransactionCount), 0)
-		rdb.Set(redisCtx, "amm-usercount-1w", fmt.Sprintf("%d", pools.Last7Days.UserCount), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-tvl", auxConfig.Address.String()), fmt.Sprintf("%f", pools.TVL), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-volume-24h", auxConfig.Address.String()), fmt.Sprintf("%f", pools.Last24Hours.Volume), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-fee-24h", auxConfig.Address.String()), fmt.Sprintf("%f", pools.Last24Hours.Fee), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-txcount-24h", auxConfig.Address.String()), fmt.Sprintf("%d", pools.Last24Hours.TransactionCount), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-usercount-24h", auxConfig.Address.String()), fmt.Sprintf("%d", pools.Last24Hours.UserCount), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-volume-1w", auxConfig.Address.String()), fmt.Sprintf("%f", pools.Last7Days.Volume), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-fee-1w", auxConfig.Address.String()), fmt.Sprintf("%f", pools.Last7Days.Fee), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-txcount-1w", auxConfig.Address.String()), fmt.Sprintf("%d", pools.Last7Days.TransactionCount), 0)
+		rdb.Set(redisCtx, fmt.Sprintf("amm-all-%s-usercount-1w", auxConfig.Address.String()), fmt.Sprintf("%d", pools.Last7Days.UserCount), 0)
 
 	}
 	table := tablewriter.NewWriter(os.Stdout)
