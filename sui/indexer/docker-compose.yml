@@ -1,0 +1,56 @@
+version: '3.9'
+services:
+  redpanda:
+    image: docker.redpanda.com/vectorized/redpanda:v22.3.1
+    container_name: redpanda
+    command:
+      - redpanda
+      - start
+      - --smp
+      - '1'
+      - --reserve-memory
+      - 0M
+      - --overprovisioned
+      - --set redpanda.empty_seed_starts_cluster=false
+      - --seeds "redpanda-1:33145"
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+      - --pandaproxy-addr
+      - PLAINTEXT://0.0.0.0:28082,OUTSIDE://0.0.0.0:8082
+      - --advertise-pandaproxy-addr
+      - PLAINTEXT://redpanda:28082,OUTSIDE://localhost:8082
+    ports:
+      - 8081:8081
+      - 8082:8082
+      - 9092:9092
+      - 28082:28082
+      - 29092:29092
+    healthcheck:
+      {
+        test: curl -f localhost:9644/v1/status/ready,
+        interval: 1s,
+        start_period: 30s
+      }
+  materialized:
+    image: materialize/materialized:v0.31.0
+    container_name: materialized
+    command: -w1
+    ports:
+      - 6875:6875
+  mzcli:
+    image: materialize/cli:v0.31.0
+    container_name: mzcli
+  clickhouse-server:
+    image: yandex/clickhouse-server:22.10.2.11
+    container_name: clickhouse-server
+    ports:
+      - 9001:9000
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+  clickhouse-client:
+    image: yandex/clickhouse-server:21.3.20.1
+    container_name: clickhouse-client

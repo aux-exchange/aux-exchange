@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "dydx-kappature"
+version = "0.1.0"
+description = ""
+authors = ["Charles Li <charles.dt.li@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+dask = {extras = ["dataframe"], version = "^2022.6.0"}
+SQLAlchemy = "^1.4.37"
+psycopg2 = "^2.9.3"
+pandas = "^1.4.2"
+jupyterlab = "^3.4.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
