@@ -13,7 +13,7 @@ import { WebSocketServer } from "ws";
 import { account } from "./resolvers/account";
 import { market } from "./resolvers/market";
 import { mutation } from "./resolvers/mutation";
-import { pool } from "./resolvers/pool";
+import { pool } from "./resolvers/constant-product";
 import { query } from "./resolvers/query";
 import { subscription } from "./resolvers/subscription";
 import cors from "cors";

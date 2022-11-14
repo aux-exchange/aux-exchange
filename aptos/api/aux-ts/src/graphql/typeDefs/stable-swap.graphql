@@ -1,0 +1,59 @@
+type StableSwapPool {
+  coinInfos: [CoinInfo!]!
+  coinInfoLP: CoinInfo!
+  amounts: [CoinInfo!]!
+  amountLP: Float!
+  feePercent: Float!
+  featuredStatus: FeaturedStatus!
+  swaps(owner: Address, first: Int, offset: Int): [StableSwapSwap!]!
+  adds(owner: Address, first: Int, offset: Int): [StableSwapAddLiquidity!]!
+  removes(owner: Address, first: Int, offset: Int): [StableSwapRemoveLiquidity!]!
+  position(owner: Address!): StableSwapPosition
+  quoteExactIn(
+    coinTypeIn: String!
+    coinTypeOut: String!
+    amountIn: Float!
+    slippagePct: Float
+  ): QuoteExactIn!
+  quoteExactOut(
+    coinTypeIn: String!
+    coinTypeOut: String!
+    amountOut: Float!
+    slippagePct: Float
+  ): QuoteExactOut!
+  summaryStatistics: PoolSummaryStatistics!
+}
+
+type StableSwapPosition {
+  coinInfos: [CoinInfo!]!
+  amounts: [CoinInfo!]!
+  coinInfoLP: CoinInfo!
+  amountLP: Float!
+  share: Float!
+}
+
+type StableSwapSwap {
+  coinInfoIn: CoinInfo!
+  coinInfoOut: CoinInfo!
+  amountIn: Float!
+  amountOut: Float!
+  time: Timestamp!
+}
+
+type StableSwapAddLiquidity {
+  coinInfos: [CoinInfo!]!
+  amountsAdded: [Float!]!
+  amountMintedLP: Float!
+  time: Timestamp!
+}
+
+type StableSwapRemoveLiquidity {
+  coinInfos: [CoinInfo!]!
+  amountsRemoved: [Float!]!
+  amountBurnedLP: Float!
+  time: Timestamp!
+}
+
+input StableSwapPoolInput {
+  coinTypes: [String!]!
+}
