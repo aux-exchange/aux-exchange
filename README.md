@@ -26,11 +26,11 @@ with the AMM and CLOB through typescript.
 
 ## Quickstart
 
-See [Quickstart](./Quickstart.md) for tutorials on how to run a local instance or in a container.
+See [Quickstart](./CONTRIBUTING.md#Quickstart) for tutorials on how to run a local instance or in a container.
 
 ## Deployment
 
-See [deployment](./Deployment.md) for how to deploy the contract.
+See [deployment](./CONTRIBUTING.md#Deployment) for how to deploy the contract.
 
 ## Addresses
 
