@@ -14,7 +14,10 @@
   - [Deployer](#deployer)
     - [Constraints](#constraints)
     - [Details](#details)
-  - [DApp Deployment (UI + GraphQL)](#dapp-deployment-ui--graphql)
+  - [DApp Development (UI + GraphQL)](#dapp-development-ui--graphql)
+    - [GraphQL](#graphql)
+    - [Indexer](#indexer)
+    - [Deployment](#deployment-1)
     - [Hard vs. rolling restart](#hard-vs-rolling-restart)
     - [Update the UIs (optional)](#update-the-uis-optional)
     - [Bouncing the processes](#bouncing-the-processes)
@@ -262,7 +265,24 @@ A very convoluted way of redeploying to a resource account and allow it to self-
     }
     ```
 
-## DApp Deployment (UI + GraphQL)
+## DApp Development (UI + GraphQL)
+
+### GraphQL
+
+`APTOS_NETWORK=mainnet yarn start:graphql`
+
+- Update/add the appropriate schema in: `typeDefs`
+- Run `yarn codegen:graphql` from the `aux-ts` directory
+- Update/add resolvers in `resolvers`
+
+### Indexer
+
+Make sure you have Redis running on the box you're starting the indexer on.
+
+`APTOS_NETWORK=mainnet yarn start:indexer`
+
+
+### Deployment
 
 Push to one of the following branches. This can be `main` or your own branch.
 

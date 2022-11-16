@@ -5,12 +5,7 @@
   - [Fees and Rebates](#fees-and-rebates)
   - [Start Trading](#start-trading)
   - [Typescript SDK](#typescript-sdk)
-  - [GraphQL](#graphql)
-  - [Indexer](#indexer)
   - [Addresses](#addresses)
-  - [Deployer](#deployer)
-    - [Constraints](#constraints)
-    - [Details](#details)
   - [Contributing to AUX](#contributing-to-aux)
     - [Quickstart](#quickstart)
     - [Deployment](#deployment)
@@ -48,19 +43,6 @@ with the AMM and CLOB through typescript.
 
 In particular, we recommend starting with `devnet-amm-instructions.ts`.
 
-## GraphQL
-
-`APTOS_NETWORK=mainnet yarn start:graphql`
-
-- Update/add the appropriate schema in: `typeDefs`
-- Run `yarn codegen:graphql` from the `aux-ts` directory
-- Update/add resolvers in `resolvers`
-
-## Indexer
-
-First, start up Redis locally.
-
-`APTOS_NETWORK=mainnet yarn start:indexer`
 
 ## Addresses
 
