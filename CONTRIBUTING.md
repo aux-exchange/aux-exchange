@@ -35,6 +35,10 @@ Install the following tools (if not already installed).
   yarn set version berry
   echo 'nvm use 18; corepack enable' >> ~/.bashrc
   ```
+- yarn
+  ```sh
+  yarn install
+  ```
 
 Aptos cli is also needed, after rust is installed. Either use the pre-compiled binaries following the instructures from [here](https://aptos.dev/cli-tools/aptos-cli-tool/install-aptos-cli), 
 or build from source with:
