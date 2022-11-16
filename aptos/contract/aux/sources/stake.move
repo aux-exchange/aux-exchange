@@ -173,39 +173,45 @@ module aux::stake {
 
     struct CreatePoolEvent<phantom S, phantom R> has store, drop {
         pool_id: u64,
+        authority: address,
         start_time: u64,
         end_time: u64,
-        reward_amount: u64
+        reward_amount: u64,
+        timestamp: u64
     }
 
     struct DepositEvent<phantom S, phantom R> has store, drop {
         pool_id: u64,
         user: address,
         deposit_amount: u64,
-        reward_amount: u64,
-        amount_staked: u64,
+        user_reward_amount: u64,
+        user_amount_staked: u64,
         total_amount_staked: u64,
         reward_remaining: u64,
-        acc_reward_per_share: u128
+        acc_reward_per_share: u128,
+        timestamp: u64
     }
 
     struct WithdrawEvent<phantom S, phantom R> has store, drop {
         pool_id: u64,
         user: address,
         withdraw_amount: u64,
-        reward_amount: u64,
-        amount_staked: u64,
+        user_reward_amount: u64,
+        user_amount_staked: u64,
         total_amount_staked: u64,
         reward_remaining: u64,
-        acc_reward_per_share: u128
+        acc_reward_per_share: u128,
+        timestamp: u64
     }
 
     struct ClaimEvent<phantom S, phantom R> has store, drop {
         pool_id: u64,
         user: address,
         reward_amount: u64,
+        total_amount_staked: u64,
         reward_remaining: u64,
-        acc_reward_per_share: u128
+        acc_reward_per_share: u128,
+        timestamp: u64
     }
 
     struct ModifyPoolEvent<phantom S, phantom R> has store, drop {
@@ -215,7 +221,8 @@ module aux::stake {
         end_time: u64,
         reward_remaining: u64,
         total_amount_staked: u64,
-        acc_reward_per_share: u128
+        acc_reward_per_share: u128,
+        timestamp: u64
     }
 
     /*******************/
@@ -304,7 +311,8 @@ module aux::stake {
                 end_time: pool.end_time,
                 reward_remaining: pool.reward_remaining,
                 total_amount_staked: coin::value(&pool.stake),
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         );
     }
@@ -381,7 +389,8 @@ module aux::stake {
                 end_time: pool.end_time,
                 reward_remaining: pool.reward_remaining,
                 total_amount_staked: coin::value(&pool.stake),
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         );
     }
@@ -419,11 +428,12 @@ module aux::stake {
                 pool_id: id,
                 user: sender_addr,
                 deposit_amount: amount,
-                reward_amount: 0,
-                amount_staked: amount,
+                user_reward_amount: 0,
+                user_amount_staked: amount,
                 total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         } else {
             let user_pos = table::borrow_mut(&mut positions.positions, id);
@@ -439,11 +449,12 @@ module aux::stake {
                 pool_id: id,
                 user: sender_addr,
                 deposit_amount: amount,
-                reward_amount: (pending_reward as u64),
-                amount_staked: user_pos.amount_staked,
+                user_reward_amount: (pending_reward as u64),
+                user_amount_staked: user_pos.amount_staked,
                 total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         };
 
@@ -491,11 +502,12 @@ module aux::stake {
                 pool_id: id,
                 user: sender_addr,
                 withdraw_amount: amount,
-                reward_amount: (pending_reward as u64),
-                amount_staked: user_pos.amount_staked,
+                user_reward_amount: (pending_reward as u64),
+                user_amount_staked: user_pos.amount_staked,
                 total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         );
     }
@@ -528,8 +540,10 @@ module aux::stake {
                 pool_id: id,
                 user: sender_addr,
                 reward_amount: (pending_reward as u64),
+                total_amount_staked: coin::value(&pool.stake),
                 reward_remaining: pool.reward_remaining,
-                acc_reward_per_share: pool.acc_reward_per_share
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
             }
         );
     }
@@ -578,9 +592,11 @@ module aux::stake {
             &mut pools.create_pool_events,
             CreatePoolEvent {
                 pool_id: pools.next_id,
+                authority: authority,
                 start_time,
                 end_time,
-                reward_amount
+                reward_amount,
+                timestamp: start_time
             }
         );
         table::add(&mut pools.pools, pools.next_id, pool);
