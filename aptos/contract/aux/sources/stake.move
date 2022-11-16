@@ -169,7 +169,6 @@ module aux::stake {
         reward: Coin<R>,
         last_update_time: u64,
         acc_reward_per_share: u128,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
-        undistributed_reward: u128 // total reward still undistributed, times REWARD_PER_SHARE_MUL
     }
 
     struct CreatePoolEvent<phantom S, phantom R> has store, drop {
@@ -219,9 +218,9 @@ module aux::stake {
         acc_reward_per_share: u128
     }
 
-    /*************/
-    /* FUNCTIONS */
-    /*************/
+    /*******************/
+    /* ENTRY FUNCTIONS */
+    /*******************/
 
     /// Entry function to create a new incentive pool for `S` staked coin and `R` reward coin
     /// `reward_amount` will be transferred from `sender` to the pool
@@ -235,56 +234,6 @@ module aux::stake {
         create<S, R>(signer::address_of(sender), reward, end_time);
     }
 
-    /// Non-entry function to create a new incentive pool for `S` staked coin and `R` reward coin
-    /// `authority` is the address of signer that can modify the pool.
-    /// `reward` must be the exact amount of total reward desired for the pool.
-    /// `end_time` should be specified as microseconds from the UNIX epoch
-    public fun create<S, R>(authority: address, reward: Coin<R>, end_time: u64): u64 acquires Pools {
-        let start_time = timestamp::now_microseconds();
-        assert!(end_time - start_time >= MIN_DURATION_US, E_INVALID_DURATION);
-        assert!(end_time - start_time <= MAX_DURATION_US, E_INVALID_DURATION);
-        let reward_amount = coin::value(&reward);
-        assert!(reward_amount != 0, E_INVALID_REWARD);
-        let module_authority = authority::get_signer_self();
-        if (!exists<Pools<S, R>>(@aux)) {
-            move_to<Pools<S, R>>(
-                &module_authority,
-                Pools<S, R> {
-                    pools: table::new(),
-                    next_id: 0,
-                    create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
-                    deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
-                    withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
-                    modify_pool_events: account::new_event_handle<ModifyPoolEvent<S, R>>(&module_authority),
-                    claim_events: account::new_event_handle<ClaimEvent<S, R>>(&module_authority),
-                }
-            )
-        };
-        let pools = borrow_global_mut<Pools<S, R>>(@aux);
-        let pool = Pool {
-                authority,
-                start_time,
-                end_time,
-                reward_remaining: reward_amount,
-                stake: coin::zero<S>(),
-                reward,
-                last_update_time: start_time,
-                acc_reward_per_share: 0,
-                undistributed_reward: (reward_amount as u128) * REWARD_PER_SHARE_MUL
-        };
-        event::emit_event<CreatePoolEvent<S, R>>(
-            &mut pools.create_pool_events,
-            CreatePoolEvent {
-                pool_id: pools.next_id,
-                start_time,
-                end_time,
-                reward_amount
-            }
-        );
-        table::add(&mut pools.pools, pools.next_id, pool);
-        pools.next_id = pools.next_id + 1;
-        pools.next_id - 1
-    }
 
     /// Delete an expired and empty incentive pool.
     public entry fun delete_empty_pool<S, R>(
@@ -301,7 +250,7 @@ module aux::stake {
         let sender_addr = signer::address_of(sender);
         assert!(sender_addr == pool.authority, E_NOT_AUTHORIZED);
         assert!(pool.reward_remaining == 0, E_CANNOT_DELETE_POOL);
-        assert!(pool.undistributed_reward == 0, E_CANNOT_DELETE_POOL);
+        // checking stake == 0 ensures all pending rewards have been claimed
         assert!(coin::value(&(pool.stake)) == 0, E_CANNOT_DELETE_POOL);
         assert!(now >= pool.end_time, E_CANNOT_DELETE_POOL);
 
@@ -315,7 +264,6 @@ module aux::stake {
             reward,
             last_update_time: _,
             acc_reward_per_share: _,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
-            undistributed_reward: _
         } = removed;
 
         coin::destroy_zero(stake);
@@ -387,7 +335,6 @@ module aux::stake {
             coin::merge(&mut pool.reward, reward);
             pool.reward_remaining = pool.reward_remaining + reward_amount;
             // TODO
-            // pool.undistributed_reward = pool.undistributed_reward + reward_amount;
         } else if (reward_amount > 0 && !reward_increase) {
             assert!(pool.reward_remaining >= reward_amount, E_INVALID_REWARD);
             let reward = coin::extract(&mut pool.reward, reward_amount);
@@ -396,7 +343,6 @@ module aux::stake {
             };
             coin::deposit(sender_addr, reward);
             pool.reward_remaining = pool.reward_remaining - reward_amount;
-            pool.undistributed_reward = pool.undistributed_reward - (reward_amount as u128) * REWARD_PER_SHARE_MUL;
             if (pool.reward_remaining == 0) {
                 pool.end_time = now;
             }
@@ -412,7 +358,6 @@ module aux::stake {
             } else {
                 pool.end_time = pool.end_time + time_amount_us;
             }
-        // TODO: should we allow this?
         } else if (time_amount_us > 0 && !time_increase) {
             assert!(time_amount_us < pool.end_time, E_INVALID_DURATION);
             pool.end_time = pool.end_time - time_amount_us;
@@ -440,33 +385,6 @@ module aux::stake {
                 acc_reward_per_share: pool.acc_reward_per_share
             }
         );
-    }
-
-    fun update_pool<S, R>(pool: &mut Pool<S, R>, now: u64) {
-        if (now <= pool.last_update_time || pool.last_update_time >= pool.end_time) {
-            return
-        };
-        let total_stake = coin::value(&pool.stake);
-        if (total_stake == 0) {
-            pool.last_update_time = now;
-            return
-        };
-        let duration_us = if (now <= pool.end_time) {
-            now - pool.last_update_time
-        } else {
-            pool.end_time - pool.last_update_time
-        };
-
-        // total reward since last pool update
-        let duration_reward = (duration_us as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
-        // add reward_per_share since last update to acc_reward_per_share
-        pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / (total_stake as u128);
-        pool.reward_remaining = pool.reward_remaining - (duration_reward as u64);
-        // the real balance of the reward coin should always be >= the virtual remaining balance
-        assert!(coin::value(&pool.reward) >= pool.reward_remaining, E_INTERNAL_ERROR);
-
-        pool.last_update_time = now;
-
     }
 
     /// Deposit stake coin to the incentive pool to start earning rewards.
@@ -512,18 +430,7 @@ module aux::stake {
             let user_pos = table::borrow_mut(&mut positions.positions, id);
 
             // Distribute pending rewards
-            let new_reward_num = (user_pos.amount_staked as u128) * (pool.acc_reward_per_share - user_pos.last_acc_reward_per_share);
-            if (new_reward_num < pool.undistributed_reward) {
-                pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
-            } else {
-                pool.undistributed_reward = 0;
-            };
-            let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL;
-            let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
-            if (!coin::is_account_registered<R>(sender_addr)) {
-                coin::register<R>(sender);
-            };
-            coin::deposit(sender_addr, reward);
+            let pending_reward = distribute_pending_rewards(sender, user_pos, pool);
 
             // Update UserPosition
             user_pos.amount_staked = user_pos.amount_staked + amount;
@@ -571,18 +478,7 @@ module aux::stake {
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let new_reward_num = (user_pos.amount_staked as u128) * (pool.acc_reward_per_share - user_pos.last_acc_reward_per_share);
-        if (new_reward_num < pool.undistributed_reward) {
-            pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
-        } else {
-            pool.undistributed_reward = 0;
-        };
-        let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL;
-        let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
-        if (!coin::is_account_registered<R>(sender_addr)) {
-            coin::register<R>(sender);
-        };
-        coin::deposit(sender_addr, reward);
+        let pending_reward = distribute_pending_rewards(sender, user_pos, pool);
 
         // Withdraw staked coin
         user_pos.amount_staked = user_pos.amount_staked - amount;
@@ -625,19 +521,7 @@ module aux::stake {
         update_pool(pool, now);
 
         // Distribute pending rewards
-        let new_reward_num = (user_pos.amount_staked as u128) * (pool.acc_reward_per_share - user_pos.last_acc_reward_per_share);
-        if (new_reward_num < pool.undistributed_reward) {
-            pool.undistributed_reward = pool.undistributed_reward - new_reward_num;
-        } else {
-            pool.undistributed_reward = 0;
-        };
-        let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL;
-        let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
-        coin::deposit(sender_addr, reward);
-        if (!coin::is_account_registered<R>(sender_addr)) {
-            coin::register<R>(sender);
-        };
-        user_pos.last_acc_reward_per_share = pool.acc_reward_per_share;
+        let pending_reward = distribute_pending_rewards(sender, user_pos, pool);
 
         event::emit_event<ClaimEvent<S, R>>(
             &mut pools.claim_events,
@@ -650,6 +534,106 @@ module aux::stake {
             }
         );
     }
+
+    /********************/
+    /* PUBLIC FUNCTIONS */
+    /********************/
+
+    /// Non-entry function to create a new incentive pool for `S` staked coin and `R` reward coin
+    /// `authority` is the address of signer that can modify the pool.
+    /// `reward` must be the exact amount of total reward desired for the pool.
+    /// `end_time` should be specified as microseconds from the UNIX epoch
+    public fun create<S, R>(authority: address, reward: Coin<R>, end_time: u64): u64 acquires Pools {
+        let start_time = timestamp::now_microseconds();
+        assert!(end_time - start_time >= MIN_DURATION_US, E_INVALID_DURATION);
+        assert!(end_time - start_time <= MAX_DURATION_US, E_INVALID_DURATION);
+        let reward_amount = coin::value(&reward);
+        assert!(reward_amount != 0, E_INVALID_REWARD);
+        let module_authority = authority::get_signer_self();
+        if (!exists<Pools<S, R>>(@aux)) {
+            move_to<Pools<S, R>>(
+                &module_authority,
+                Pools<S, R> {
+                    pools: table::new(),
+                    next_id: 0,
+                    create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
+                    deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
+                    withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
+                    modify_pool_events: account::new_event_handle<ModifyPoolEvent<S, R>>(&module_authority),
+                    claim_events: account::new_event_handle<ClaimEvent<S, R>>(&module_authority),
+                }
+            )
+        };
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        let pool = Pool {
+                authority,
+                start_time,
+                end_time,
+                reward_remaining: reward_amount,
+                stake: coin::zero<S>(),
+                reward,
+                last_update_time: start_time,
+                acc_reward_per_share: 0,
+        };
+        event::emit_event<CreatePoolEvent<S, R>>(
+            &mut pools.create_pool_events,
+            CreatePoolEvent {
+                pool_id: pools.next_id,
+                start_time,
+                end_time,
+                reward_amount
+            }
+        );
+        table::add(&mut pools.pools, pools.next_id, pool);
+        pools.next_id = pools.next_id + 1;
+        pools.next_id - 1
+    }
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    fun update_pool<S, R>(pool: &mut Pool<S, R>, now: u64) {
+        if (now <= pool.last_update_time || pool.last_update_time >= pool.end_time) {
+            return
+        };
+        let total_stake = coin::value(&pool.stake);
+        if (total_stake == 0) {
+            pool.last_update_time = now;
+            return
+        };
+        let duration_us = if (now <= pool.end_time) {
+            now - pool.last_update_time
+        } else {
+            pool.end_time - pool.last_update_time
+        };
+
+        // total reward since last pool update
+        let duration_reward = (duration_us as u128) * (pool.reward_remaining as u128) / (pool.end_time - pool.last_update_time as u128);
+        // add reward_per_share since last update to acc_reward_per_share
+        pool.acc_reward_per_share = pool.acc_reward_per_share + duration_reward * REWARD_PER_SHARE_MUL / (total_stake as u128);
+        pool.reward_remaining = pool.reward_remaining - (duration_reward as u64);
+        // the real balance of the reward coin should always be >= the virtual remaining balance
+        assert!(coin::value(&pool.reward) >= pool.reward_remaining, E_INTERNAL_ERROR);
+
+        pool.last_update_time = now;
+
+    }
+
+    /// Distribute pending rewards (returns reward amount)
+    fun distribute_pending_rewards<S, R>(user: &signer, user_pos: &mut UserPosition<S, R>, pool: &mut Pool<S, R>): u64 {
+        let new_reward_num = (user_pos.amount_staked as u128) * (pool.acc_reward_per_share - user_pos.last_acc_reward_per_share);
+        let pending_reward = new_reward_num / REWARD_PER_SHARE_MUL;
+        let reward = coin::extract(&mut pool.reward, (pending_reward as u64));
+        let user_addr = signer::address_of(user);
+        coin::deposit(user_addr, reward);
+        if (!coin::is_account_registered<R>(user_addr)) {
+            coin::register<R>(user);
+        };
+        user_pos.last_acc_reward_per_share = pool.acc_reward_per_share;
+        (pending_reward as u64)
+    }
+
 
     /*********/
     /* TESTS */
@@ -1534,5 +1518,4 @@ module aux::stake {
             assert!(user_pos.last_acc_reward_per_share == pool.acc_reward_per_share, E_TEST_FAILURE);
         };
     }
-
 }
