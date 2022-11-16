@@ -1,5 +1,20 @@
 # AUX
 
+- [AUX](#aux)
+  - [Introduction](#introduction)
+  - [Fees and Rebates](#fees-and-rebates)
+  - [Start Trading](#start-trading)
+  - [Typescript SDK](#typescript-sdk)
+  - [Addresses](#addresses)
+  - [Contributing to AUX](#contributing-to-aux)
+    - [Quickstart](#quickstart)
+    - [Deployment](#deployment)
+
+    - [Quickstart](#quickstart)
+    - [Deployment](#deployment)
+
+## Introduction
+
 AUX is a decentralized exchange powered by Aptos. We support the following
 features:
 
@@ -19,18 +34,15 @@ features:
 
 Navigate to our [web app](https://aux.exchange) to start trading.
 
-## Using the API
+## Typescript SDK
+
+Also known as `aux-ts`.
 
 See [`aptos/api/aux-ts/examples`](./aptos/api/aux-ts/examples) for examples of interacting
 with the AMM and CLOB through typescript.
 
-## Quickstart
+In particular, we recommend starting with `devnet-amm-instructions.ts`.
 
-See [Quickstart](./CONTRIBUTING.md#Quickstart) for tutorials on how to run a local instance or in a container.
-
-## Deployment
-
-See [deployment](./CONTRIBUTING.md#Deployment) for how to deploy the contract.
 
 ## Addresses
 
@@ -43,6 +55,15 @@ See [deployment](./CONTRIBUTING.md#Deployment) for how to deploy the contract.
 | mainnet | deployer | [`0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c`](https://explorer.aptoslabs.com/account/0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c?network=mainnet) |
 | mainnet | aux      | [`0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541`](https://explorer.aptoslabs.com/account/0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541?network=mainnet) |
 
-## Contributing
+
+## Contributing to AUX
 
 See [Contributing](./CONTRIBUTING.md).
+
+### Quickstart
+
+See [Quickstart](./CONTRIBUTING.md#Quickstart) for tutorials on how to run a local instance or in a container.
+
+### Deployment
+
+See [deployment](./CONTRIBUTING.md#Deployment) for how to deploy the contract.
