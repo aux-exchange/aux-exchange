@@ -3,9 +3,9 @@ import axios from "axios";
 import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
+import { ALL_FAKE_COINS } from "../../coin";
 import { PoolClient } from "../../pool/client";
 import type { ConstantProduct, SwapEvent } from "../../pool/schema";
-import { ALL_FAKE_COINS } from "../../coin";
 import { auxClient, redisClient } from "../client";
 import {
   Account,
@@ -19,8 +19,7 @@ import {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
-  SummaryMetrics,
-  AmmSummaryMetrics,
+  SummaryStatistics,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -46,65 +45,24 @@ export const RESOLUTIONS = [
   "1w",
 ] as const;
 
-async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
-  if (process.env["APTOS_NETWORK"] === "devnet") {
-    return Promise.all(
-      [
-        [auxClient.getCoinInfo("0x1::aptos_coin::AptosCoin")],
-        ALL_FAKE_COINS.map((fakeCoin) => auxClient.getFakeCoinInfo(fakeCoin)),
-      ].flat()
-    );
-  }
-  let rawCoins = await redisClient.get("hippo-coin-list");
-  let coins;
-  if (_.isNull(rawCoins)) {
-    const url =
-      "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
-    coins = (await axios.get(url)).data;
-    await Promise.all([
-      redisClient.set("hippo-coin-list", JSON.stringify(coins)),
-      redisClient.expire("hippo-coin-list", 60),
-    ]);
-  } else {
-    coins = JSON.parse(rawCoins);
-  }
-
-  return coins.map((coin: any) => {
-    // The feature priority of a token is the max feature priority of the
-    // pools that include it.
-    const recognizedLiquidity = 0;
-    const auLiquidity = 0;
-    const priority = 0;
-    return {
-      coinType: coin.token_type.type,
-      decimals: coin.decimals,
-      name: coin.name,
-      symbol: coin.symbol,
-      priority,
-      recognizedLiquidity,
-      auLiquidity,
-    };
-  });
-}
-
 export const query = {
   address() {
     return auxClient.moduleAddress;
   },
 
-  async summaryMetrics(_parent: any): Promise<SummaryMetrics> {
+  async summaryStatistics(_parent: any): Promise<SummaryStatistics> {
     const poolInputs = await auxClient.pools();
     const now = Date.now();
     const nowMinus7D = now - 7 * 24 * 60 * 60 * 1000;
     const nowMinus24H = now - 24 * 60 * 60 * 1000;
 
-    let dollarTVL = 0;
-    let dollarVolume7D = 0;
-    let dollarVolume24H = 0;
-    let transactions7D = 0;
-    let transactions24H = 0;
-    let allUsers7D = new Set<string>();
-    let allUsers24H = new Set<string>();
+    let dollarTvl = 0;
+    let dollarVolume7d = 0;
+    let dollarVolume24h = 0;
+    let transactions7d = 0;
+    let transactions24h = 0;
+    let allUsers7d = new Set<string>();
+    let allUsers24h = new Set<string>();
 
     for (const { coinTypeX, coinTypeY } of poolInputs) {
       const poolClient = new PoolClient(auxClient, {
@@ -115,8 +73,8 @@ export const query = {
       if (pool === undefined) {
         continue;
       } else {
-        dollarTVL += getRecognizedTVL(coinTypeX, pool.amountX!.toNumber());
-        dollarTVL += getRecognizedTVL(coinTypeY, pool.amountY!.toNumber());
+        dollarTvl += getRecognizedTVL(coinTypeX, pool.amountX!.toNumber());
+        dollarTvl += getRecognizedTVL(coinTypeY, pool.amountY!.toNumber());
       }
 
       const allEvents = await poolClient.poolEvents({
@@ -142,31 +100,19 @@ export const query = {
             ).toNumber()
           );
           const tradeUSD = Math.max(inUSD, outUSD);
-          dollarVolume7D += tradeUSD;
-          transactions7D++;
-          allUsers7D.add(event.senderAddr.toString());
+          dollarVolume7d += tradeUSD;
+          transactions7d++;
+          allUsers7d.add(event.senderAddr.toString());
           if (eventMilliseconds >= nowMinus24H) {
-            dollarVolume24H += tradeUSD;
-            transactions24H++;
-            allUsers24H.add(event.senderAddr.toString());
+            dollarVolume24h += tradeUSD;
+            transactions24h++;
+            allUsers24h.add(event.senderAddr.toString());
           }
         }
       }
     }
 
-    return {
-      dollarTVL,
-      dollarVolume7D,
-      dollarVolume24H,
-      transactions7D,
-      transactions24H,
-      users7D: allUsers7D.size,
-      users24H: allUsers24H.size,
-    };
-  },
-
-  async ammSummaryMetrics(_parent: any): Promise<AmmSummaryMetrics> {
-    let getData = async function (
+    const getSummaryStatistic = async function (
       name: "tvl" | "volume" | "fee" | "usercount" | "txcount",
       period: "1w" | "24h"
     ): Promise<Maybe<number>> {
@@ -183,19 +129,26 @@ export const query = {
       }
     };
 
-    const a: AmmSummaryMetrics = {
-      TVL: await getData("tvl", "1w"),
-      volume24h: await getData("volume", "24h"),
-      fee24h: await getData("fee", "24h"),
-      userCount24h: await getData("usercount", "24h"),
-      transactionCount24h: await getData("txcount", "24h"),
-      volume1w: await getData("volume", "1w"),
-      fee1w: await getData("fee", "1w"),
-      userCount1w: await getData("usercount", "1w"),
-      transactionCount1w: await getData("txcount", "1w"),
+    return {
+      dollarTvl,
+      dollarVolume7d,
+      dollarVolume24h,
+      transactions7d,
+      transactions24h,
+      users7d: allUsers7d.size,
+      users24h: allUsers24h.size,
+      poolSummaryStatistics: {
+        tvl: await getSummaryStatistic("tvl", "1w"),
+        volume24h: await getSummaryStatistic("volume", "24h"),
+        fee24h: await getSummaryStatistic("fee", "24h"),
+        userCount24h: await getSummaryStatistic("usercount", "24h"),
+        transactionCount24h: await getSummaryStatistic("txcount", "24h"),
+        volume1w: await getSummaryStatistic("volume", "1w"),
+        fee1w: await getSummaryStatistic("fee", "1w"),
+        userCount1w: await getSummaryStatistic("usercount", "1w"),
+        transactionCount1w: await getSummaryStatistic("txcount", "1w"),
+      },
     };
-
-    return a;
   },
 
   async coins(parent: any): Promise<CoinInfo[]> {
@@ -259,6 +212,7 @@ export const query = {
     });
     return allCoins;
   },
+
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     let poolClient = new PoolClient(auxClient, poolInput);
     let pool;
@@ -282,6 +236,7 @@ export const query = {
     // @ts-ignore
     return formatPool(pool, coinTypeToHippoNameSymbol);
   },
+
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolInputs = args.poolInputs
       ? args.poolInputs
@@ -316,6 +271,15 @@ export const query = {
     // @ts-ignore
     return formattedPools;
   },
+
+  async stableSwapPool() {
+    return null;
+  },
+
+  async stableSwapPools() {
+    return [];
+  },
+
   async market(
     _parent: any,
     { marketInput }: QueryMarketArgs
@@ -515,4 +479,45 @@ function formatPool(
     recognizedLiquidity,
     auLiquidity,
   };
+}
+
+async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
+  if (process.env["APTOS_NETWORK"] === "devnet") {
+    return Promise.all(
+      [
+        [auxClient.getCoinInfo("0x1::aptos_coin::AptosCoin")],
+        ALL_FAKE_COINS.map((fakeCoin) => auxClient.getFakeCoinInfo(fakeCoin)),
+      ].flat()
+    );
+  }
+  let rawCoins = await redisClient.get("hippo-coin-list");
+  let coins;
+  if (_.isNull(rawCoins)) {
+    const url =
+      "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+    coins = (await axios.get(url)).data;
+    await Promise.all([
+      redisClient.set("hippo-coin-list", JSON.stringify(coins)),
+      redisClient.expire("hippo-coin-list", 60),
+    ]);
+  } else {
+    coins = JSON.parse(rawCoins);
+  }
+
+  return coins.map((coin: any) => {
+    // The feature priority of a token is the max feature priority of the
+    // pools that include it.
+    const recognizedLiquidity = 0;
+    const auLiquidity = 0;
+    const priority = 0;
+    return {
+      coinType: coin.token_type.type,
+      decimals: coin.decimals,
+      name: coin.name,
+      symbol: coin.symbol,
+      priority,
+      recognizedLiquidity,
+      auLiquidity,
+    };
+  });
 }

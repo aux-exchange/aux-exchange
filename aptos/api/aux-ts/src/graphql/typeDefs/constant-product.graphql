@@ -34,16 +34,7 @@ type Pool {
     amountOut: Float!
     slippagePct: Float
   ): QuoteExactOut!
-
-  tvl: Float
-  volume24h: Float
-  fee24h: Float
-  userCount24h: Float
-  transactionCount24h: Float
-  volume1w: Float
-  fee1w: Float
-  userCount1w: Float
-  transactionCount1w: Float
+  summaryStatistics: PoolSummaryStatistics!
 }
 
 type Position {
@@ -117,11 +108,11 @@ type QuoteExactIn {
   minAmountOut: Float!
   feeAmount: Float!
   feeCurrency: CoinInfo!
-  priceImpactPct: Float!
-  priceImpactRating: RatingColor!
+  feeAmountDollars: Float
   priceOut: Float!
   priceIn: Float!
-  feeAmountDollars: Float
+  priceImpactPct: Float!
+  priceImpactRating: RatingColor!
   pythRating: PythRating
 }
 
@@ -130,10 +121,10 @@ type QuoteExactOut {
   maxAmountIn: Float!
   maxFeeAmount: Float!
   feeCurrency: CoinInfo!
-  priceImpactPct: Float!
-  priceImpactRating: RatingColor!
+  maxFeeAmountDollars: Float
   priceOut: Float!
   priceIn: Float!
-  maxFeeAmountDollars: Float
+  priceImpactPct: Float!
+  priceImpactRating: RatingColor!
   pythRating: PythRating
 }

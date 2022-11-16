@@ -1,10 +1,11 @@
 type Query {
   address: Address!
+  summaryStatistics: SummaryStatistics!
   coins: [CoinInfo!]!
-  summaryMetrics: SummaryMetrics!
-  ammSummaryMetrics: AmmSummaryMetrics!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
+  stableSwapPool(poolInput: StableSwapPoolInput!): StableSwapPool
+  stableSwapPools(poolInputs: [StableSwapPoolInput!]): [StableSwapPool!]!
   market(marketInput: MarketInput!): Market
   markets(marketInputs: [MarketInput!]): [Market!]!
   account(owner: Address!): Account
@@ -54,18 +55,19 @@ type CoinInfo {
   symbol: String!
 }
 
-type SummaryMetrics {
-  dollarTVL: Float!
-  dollarVolume24H: Float!
-  dollarVolume7D: Float!
-  transactions24H: Int!
-  transactions7D: Int!
-  users24H: Int!
-  users7D: Int!
+type SummaryStatistics {
+  dollarTvl: Float!
+  dollarVolume24h: Float!
+  dollarVolume7d: Float!
+  transactions24h: Int!
+  transactions7d: Int!
+  users24h: Int!
+  users7d: Int!
+  poolSummaryStatistics: PoolSummaryStatistics
 }
 
-type AmmSummaryMetrics {
-  TVL: Float
+type PoolSummaryStatistics {
+  tvl: Float
   volume24h: Float
   fee24h: Float
   userCount24h: Float

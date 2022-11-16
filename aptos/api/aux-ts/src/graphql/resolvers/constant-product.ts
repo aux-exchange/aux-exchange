@@ -8,6 +8,7 @@ import {
   PoolPositionArgs,
   PoolQuoteExactInArgs,
   PoolQuoteExactOutArgs,
+  PoolSummaryStatistics,
   Position,
   QuoteExactIn,
   QuoteExactOut,
@@ -287,33 +288,27 @@ export const pool = {
           : RatingColor.Green,
     };
   },
-  volume24h(parent: Pool): Promise<Maybe<number>> {
-    return stat("volume", parent, "24h");
-  },
-  fee24h(parent: Pool): Promise<Maybe<number>> {
-    return stat("fee", parent, "24h");
-  },
-  userCount24h(parent: Pool): Promise<Maybe<number>> {
-    return stat("usercount", parent, "24h");
-  },
-  transactionCount24h(parent: Pool): Promise<Maybe<number>> {
-    return stat("txcount", parent, "24h");
-  },
-  volume1w(parent: Pool): Promise<Maybe<Number>> {
-    return stat("volume", parent, "1w");
-  },
-  fee1w(parent: Pool): Promise<Maybe<number>> {
-    return stat("fee", parent, "1w");
-  },
-  userCount1w(parent: Pool): Promise<Maybe<number>> {
-    return stat("usercount", parent, "1w");
-  },
-  transactionCount1w(parent: Pool): Promise<Maybe<number>> {
-    return stat("txcount", parent, "1w");
-  },
-
-  tvl(parent: Pool): Promise<Maybe<Number>> {
-    return stat("tvl", parent, "1w");
+  async summaryStatistics(parent: Pool): Promise<PoolSummaryStatistics> {
+    const volume24h = await stat("volume", parent, "24h");
+    const fee24h = await stat("fee", parent, "24h");
+    const userCount24h = await stat("usercount", parent, "24h");
+    const transactionCount24h = await stat("txcount", parent, "24h");
+    const volume1w = await stat("volume", parent, "1w");
+    const fee1w = await stat("fee", parent, "1w");
+    const userCount1w = await stat("usercount", parent, "1w");
+    const transactionCount1w = await stat("txcount", parent, "1w");
+    const tvl = await stat("tvl", parent, "1w");
+    return {
+      tvl,
+      volume24h,
+      fee24h,
+      userCount24h,
+      transactionCount24h,
+      volume1w,
+      fee1w,
+      userCount1w,
+      transactionCount1w,
+    };
   },
 };
 
