@@ -1,12 +1,8 @@
 import _ from "lodash";
 import * as aux from "../../";
-import {
-  ALL_USD_STABLES,
-  COIN_MAPPING,
-  fakeMapping
-} from "../../coin";
+import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
 import { auxClient, pythClient, redisClient } from "../client";
-import { orderEventToOrder, orderToOrder } from "../conversion";
+import { orderPlacedEventToOrder, orderFillEventToOrder, orderToOrder } from "../conversion";
 import {
   Bar,
   Market,
@@ -21,7 +17,7 @@ import {
   Order,
   PythRating,
   Resolution as GqlResolution,
-  Side
+  Side,
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
 
@@ -115,7 +111,7 @@ export const market = {
     });
     const orders = await market.orderHistory(owner);
     return orders.map((order) =>
-      orderEventToOrder(order, market.baseCoinInfo, market.quoteCoinInfo)
+      orderPlacedEventToOrder(order.order, market.baseCoinInfo, market.quoteCoinInfo)
     );
   },
   async tradeHistory(
@@ -126,11 +122,11 @@ export const market = {
       baseCoinType: parent.baseCoinInfo.coinType,
       quoteCoinType: parent.quoteCoinInfo.coinType,
     });
-    const fills = await market.tradeHistory(owner);
+    const fills = await market.fillHistory(owner);
     return fills
       .filter((fill) => fill.sequenceNumber.toNumber() % 2 === 0)
       .map((fill) =>
-        orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+        orderFillEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
       );
   },
   high24h(parent: Market): Promise<Maybe<number>> {

@@ -5,11 +5,11 @@ import { AuxClient } from "../client";
 import type { Types } from "aptos";
 import { RedisPubSub } from "graphql-redis-subscriptions";
 import _ from "lodash";
-import { orderEventToOrder } from "../graphql/conversion";
-import type { MarketInput, Maybe, Side } from "../graphql/generated/types";
-import { Resolution, RESOLUTIONS } from "../graphql/resolvers/query";
-import { resolutionToSeconds } from "../graphql/resolvers/market";
 import { AuxEnv } from "../env";
+import { orderFillEventToOrder } from "../graphql/conversion";
+import type { MarketInput, Maybe, Side } from "../graphql/generated/types";
+import { resolutionToSeconds } from "../graphql/resolvers/market";
+import { Resolution, RESOLUTIONS } from "../graphql/resolvers/query";
 
 const auxEnv = new AuxEnv();
 const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
@@ -171,7 +171,7 @@ async function publishMarketEvents(
   const trades = fills
     .filter((fill) => fill.sequenceNumber.toNumber() % 2 === 0)
     .map((fill) =>
-      orderEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
+      orderFillEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
     )
     .map((fill) => _.pick(fill, "side", "price", "quantity", "value", "time"));
   await publishTrades(trades, { baseCoinType, quoteCoinType });

@@ -76,13 +76,13 @@ export default class AuxAccount {
     return market.openOrders(this.owner);
   }
 
-  async orderHistory(marketInput: MarketInput): Promise<OrderPlacedEvent[]> {
+  async orderHistory(marketInput: MarketInput): Promise<{ order: OrderPlacedEvent; status: "open" | "canceled" | "filled" }[]> {
     const market = await Market.read(this.auxClient, marketInput);
     return market.orderHistory(this.owner);
   }
 
   async tradeHistory(marketInput: MarketInput): Promise<OrderFillEvent[]> {
     const market = await Market.read(this.auxClient, marketInput);
-    return market.tradeHistory(this.owner);
+    return market.fillHistory(this.owner);
   }
 }
