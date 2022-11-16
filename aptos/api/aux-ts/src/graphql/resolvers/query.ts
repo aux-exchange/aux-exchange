@@ -1,11 +1,10 @@
 import type { Types } from "aptos";
 import axios from "axios";
-import { BN } from "bn.js";
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
 import { PoolClient } from "../../pool/client";
-import type { ConstantProduct, SwapEvent } from "../../pool/schema";
+import type { ConstantProduct } from "../../pool/schema";
 import { auxClient, redisClient } from "../client";
 import {
   Account,
@@ -19,7 +18,7 @@ import {
   QueryMarketsArgs,
   QueryPoolArgs,
   QueryPoolsArgs,
-  SummaryStatistics,
+  PoolSummaryStatistics,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -50,68 +49,7 @@ export const query = {
     return auxClient.moduleAddress;
   },
 
-  async summaryStatistics(_parent: any): Promise<SummaryStatistics> {
-    const poolInputs = await auxClient.pools();
-    const now = Date.now();
-    const nowMinus7D = now - 7 * 24 * 60 * 60 * 1000;
-    const nowMinus24H = now - 24 * 60 * 60 * 1000;
-
-    let dollarTvl = 0;
-    let dollarVolume7d = 0;
-    let dollarVolume24h = 0;
-    let transactions7d = 0;
-    let transactions24h = 0;
-    let allUsers7d = new Set<string>();
-    let allUsers24h = new Set<string>();
-
-    for (const { coinTypeX, coinTypeY } of poolInputs) {
-      const poolClient = new PoolClient(auxClient, {
-        coinTypeX,
-        coinTypeY,
-      });
-      const pool = await poolClient.query();
-      if (pool === undefined) {
-        continue;
-      } else {
-        dollarTvl += getRecognizedTVL(coinTypeX, pool.amountX!.toNumber());
-        dollarTvl += getRecognizedTVL(coinTypeY, pool.amountY!.toNumber());
-      }
-
-      const allEvents = await poolClient.poolEvents({
-        start: new BN(0),
-      });
-      for (const poolEvent of allEvents) {
-        if (poolEvent.kind === "SwapEvent") {
-          const event = poolEvent as SwapEvent;
-          const eventMilliseconds = event.timestamp.toNumber() / 1000;
-          if (eventMilliseconds < nowMinus7D) {
-            continue;
-          }
-          const inUSD = getRecognizedTVL(
-            event.coinTypeIn,
-            (
-              await auxClient.toDecimalUnits(event.coinTypeIn, event.amountIn)
-            ).toNumber()
-          );
-          const outUSD = getRecognizedTVL(
-            event.coinTypeOut,
-            (
-              await auxClient.toDecimalUnits(event.coinTypeOut, event.amountOut)
-            ).toNumber()
-          );
-          const tradeUSD = Math.max(inUSD, outUSD);
-          dollarVolume7d += tradeUSD;
-          transactions7d++;
-          allUsers7d.add(event.senderAddr.toString());
-          if (eventMilliseconds >= nowMinus24H) {
-            dollarVolume24h += tradeUSD;
-            transactions24h++;
-            allUsers24h.add(event.senderAddr.toString());
-          }
-        }
-      }
-    }
-
+  async summaryStatistics(_parent: any): Promise<PoolSummaryStatistics> {
     const getSummaryStatistic = async function (
       name: "tvl" | "volume" | "fee" | "usercount" | "txcount",
       period: "1w" | "24h"
@@ -130,24 +68,15 @@ export const query = {
     };
 
     return {
-      dollarTvl,
-      dollarVolume7d,
-      dollarVolume24h,
-      transactions7d,
-      transactions24h,
-      users7d: allUsers7d.size,
-      users24h: allUsers24h.size,
-      poolSummaryStatistics: {
-        tvl: await getSummaryStatistic("tvl", "1w"),
-        volume24h: await getSummaryStatistic("volume", "24h"),
-        fee24h: await getSummaryStatistic("fee", "24h"),
-        userCount24h: await getSummaryStatistic("usercount", "24h"),
-        transactionCount24h: await getSummaryStatistic("txcount", "24h"),
-        volume1w: await getSummaryStatistic("volume", "1w"),
-        fee1w: await getSummaryStatistic("fee", "1w"),
-        userCount1w: await getSummaryStatistic("usercount", "1w"),
-        transactionCount1w: await getSummaryStatistic("txcount", "1w"),
-      },
+      tvl: await getSummaryStatistic("tvl", "1w"),
+      volume24h: await getSummaryStatistic("volume", "24h"),
+      fee24h: await getSummaryStatistic("fee", "24h"),
+      userCount24h: await getSummaryStatistic("usercount", "24h"),
+      transactionCount24h: await getSummaryStatistic("txcount", "24h"),
+      volume1w: await getSummaryStatistic("volume", "1w"),
+      fee1w: await getSummaryStatistic("fee", "1w"),
+      userCount1w: await getSummaryStatistic("usercount", "1w"),
+      transactionCount1w: await getSummaryStatistic("txcount", "1w"),
     };
   },
 

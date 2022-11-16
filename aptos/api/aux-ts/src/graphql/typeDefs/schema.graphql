@@ -1,9 +1,9 @@
 type Query {
   address: Address!
-  summaryStatistics: SummaryStatistics!
   coins: [CoinInfo!]!
   pool(poolInput: PoolInput!): Pool
   pools(poolInputs: [PoolInput!]): [Pool!]!
+  summaryStatistics: PoolSummaryStatistics!
   stableSwapPool(poolInput: StableSwapPoolInput!): StableSwapPool
   stableSwapPools(poolInputs: [StableSwapPoolInput!]): [StableSwapPool!]!
   market(marketInput: MarketInput!): Market
@@ -53,17 +53,6 @@ type CoinInfo {
   decimals: Float!
   name: String!
   symbol: String!
-}
-
-type SummaryStatistics {
-  dollarTvl: Float!
-  dollarVolume24h: Float!
-  dollarVolume7d: Float!
-  transactions24h: Int!
-  transactions7d: Int!
-  users24h: Int!
-  users7d: Int!
-  poolSummaryStatistics: PoolSummaryStatistics
 }
 
 type PoolSummaryStatistics {

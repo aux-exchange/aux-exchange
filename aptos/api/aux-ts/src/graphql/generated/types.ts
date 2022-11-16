@@ -65,6 +65,7 @@ export type AddLiquidity = {
   amountAddedY: Scalars['Float'];
   amountMintedLP: Scalars['Float'];
   time: Scalars['Timestamp'];
+  version: Scalars['String'];
 };
 
 export type AddLiquidityInput = {
@@ -386,6 +387,7 @@ export type Pool = {
   removes: Array<RemoveLiquidity>;
   summaryStatistics: PoolSummaryStatistics;
   swaps: Array<Swap>;
+  type: Scalars['String'];
 };
 
 
@@ -475,7 +477,7 @@ export type Query = {
   pools: Array<Pool>;
   stableSwapPool?: Maybe<StableSwapPool>;
   stableSwapPools: Array<StableSwapPool>;
-  summaryStatistics: SummaryStatistics;
+  summaryStatistics: PoolSummaryStatistics;
 };
 
 
@@ -563,6 +565,7 @@ export type RemoveLiquidity = {
   amountRemovedX: Scalars['Float'];
   amountRemovedY: Scalars['Float'];
   time: Scalars['Timestamp'];
+  version: Scalars['String'];
 };
 
 export type RemoveLiquidityInput = {
@@ -755,18 +758,6 @@ export type SubscriptionVolume24hArgs = {
   marketInputs?: InputMaybe<Array<MarketInput>>;
 };
 
-export type SummaryStatistics = {
-  __typename?: 'SummaryStatistics';
-  dollarTvl: Scalars['Float'];
-  dollarVolume7d: Scalars['Float'];
-  dollarVolume24h: Scalars['Float'];
-  poolSummaryStatistics?: Maybe<PoolSummaryStatistics>;
-  transactions7d: Scalars['Int'];
-  transactions24h: Scalars['Int'];
-  users7d: Scalars['Int'];
-  users24h: Scalars['Int'];
-};
-
 export type Swap = {
   __typename?: 'Swap';
   amountIn: Scalars['Float'];
@@ -774,6 +765,7 @@ export type Swap = {
   coinInfoIn: CoinInfo;
   coinInfoOut: CoinInfo;
   time: Scalars['Timestamp'];
+  version: Scalars['String'];
 };
 
 export type SwapExactInInput = {
@@ -967,7 +959,6 @@ export type ResolversTypes = {
   StableSwapSwap: ResolverTypeWrapper<StableSwapSwap>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
-  SummaryStatistics: ResolverTypeWrapper<SummaryStatistics>;
   Swap: ResolverTypeWrapper<Swap>;
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
@@ -1031,7 +1022,6 @@ export type ResolversParentTypes = {
   StableSwapSwap: StableSwapSwap;
   String: Scalars['String'];
   Subscription: {};
-  SummaryStatistics: SummaryStatistics;
   Swap: Swap;
   SwapExactInInput: SwapExactInInput;
   SwapExactOutInput: SwapExactOutInput;
@@ -1067,6 +1057,7 @@ export type AddLiquidityResolvers<ContextType = any, ParentType extends Resolver
   amountAddedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountMintedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1228,6 +1219,7 @@ export type PoolResolvers<ContextType = any, ParentType extends ResolversParentT
   removes?: Resolver<Array<ResolversTypes['RemoveLiquidity']>, ParentType, ContextType, Partial<PoolRemovesArgs>>;
   summaryStatistics?: Resolver<ResolversTypes['PoolSummaryStatistics'], ParentType, ContextType>;
   swaps?: Resolver<Array<ResolversTypes['Swap']>, ParentType, ContextType, Partial<PoolSwapsArgs>>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1272,7 +1264,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
   stableSwapPool?: Resolver<Maybe<ResolversTypes['StableSwapPool']>, ParentType, ContextType, RequireFields<QueryStableSwapPoolArgs, 'poolInput'>>;
   stableSwapPools?: Resolver<Array<ResolversTypes['StableSwapPool']>, ParentType, ContextType, Partial<QueryStableSwapPoolsArgs>>;
-  summaryStatistics?: Resolver<ResolversTypes['SummaryStatistics'], ParentType, ContextType>;
+  summaryStatistics?: Resolver<ResolversTypes['PoolSummaryStatistics'], ParentType, ContextType>;
 };
 
 export type QuoteExactInResolvers<ContextType = any, ParentType extends ResolversParentTypes['QuoteExactIn'] = ResolversParentTypes['QuoteExactIn']> = {
@@ -1314,6 +1306,7 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
   amountRemovedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountRemovedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1381,24 +1374,13 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   volume24h?: SubscriptionResolver<ResolversTypes['Volume24h'], "volume24h", ParentType, ContextType, Partial<SubscriptionVolume24hArgs>>;
 };
 
-export type SummaryStatisticsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SummaryStatistics'] = ResolversParentTypes['SummaryStatistics']> = {
-  dollarTvl?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  dollarVolume7d?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  dollarVolume24h?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  poolSummaryStatistics?: Resolver<Maybe<ResolversTypes['PoolSummaryStatistics']>, ParentType, ContextType>;
-  transactions7d?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transactions24h?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  users7d?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  users24h?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type SwapResolvers<ContextType = any, ParentType extends ResolversParentTypes['Swap'] = ResolversParentTypes['Swap']> = {
   amountIn?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountOut?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   coinInfoIn?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoOut?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1477,7 +1459,6 @@ export type Resolvers<ContextType = any> = {
   StableSwapRemoveLiquidity?: StableSwapRemoveLiquidityResolvers<ContextType>;
   StableSwapSwap?: StableSwapSwapResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
-  SummaryStatistics?: SummaryStatisticsResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   Trade?: TradeResolvers<ContextType>;

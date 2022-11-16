@@ -10,6 +10,7 @@ enum FeaturedStatus {
 }
 
 type Pool {
+  type: String!
   coinInfoX: CoinInfo!
   coinInfoY: CoinInfo!
   coinInfoLP: CoinInfo!
@@ -82,6 +83,7 @@ input SwapExactOutInput {
 }
 
 type Swap {
+  version: String!
   coinInfoIn: CoinInfo!
   coinInfoOut: CoinInfo!
   amountIn: Float!
@@ -90,6 +92,7 @@ type Swap {
 }
 
 type AddLiquidity {
+  version: String!
   amountAddedX: Float!
   amountAddedY: Float!
   amountMintedLP: Float!
@@ -97,6 +100,7 @@ type AddLiquidity {
 }
 
 type RemoveLiquidity {
+  version: String!
   amountRemovedX: Float!
   amountRemovedY: Float!
   amountBurnedLP: Float!
