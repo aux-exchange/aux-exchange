@@ -397,6 +397,7 @@ function formatPool(
   }
 
   return {
+    type: new PoolClient(auxClient, {coinTypeX: coinInfoX.coinType, coinTypeY: coinInfoY.coinType}).type,
     coinInfoX,
     coinInfoY,
     coinInfoLP: pool.coinInfoLP,
