@@ -39,6 +39,10 @@ Install the following tools (if not already installed).
   ```sh
   yarn install
   ```
+- rust support softwares
+  ```sh
+  sudo apt install build-essential clang pkg-config libssl-dev
+  ```
 
 Aptos cli is also needed, after rust is installed. Either use the pre-compiled binaries following the instructures from [here](https://aptos.dev/cli-tools/aptos-cli-tool/install-aptos-cli), 
 or build from source with:
@@ -61,7 +65,7 @@ RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-la
 
 ### Local Development Quickstart
 
-Make sure you have installed the above pre-requisites.
+Make sure you have installed the above pre-requisites and `local` profile setup (you can initiate one by running the `aptos init` command).
 
 1. Setup Aptos and deploy AUX to localnet:
 
