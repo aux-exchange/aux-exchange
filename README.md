@@ -1,34 +1,31 @@
 # AUX
 
+- [AUX](#aux)
+  - [Introduction](#introduction)
+  - [Fees and Rebates](#fees-and-rebates)
+  - [Start Trading](#start-trading)
+  - [Typescript SDK](#typescript-sdk)
+  - [GraphQL](#graphql)
+  - [Indexer](#indexer)
+  - [Addresses](#addresses)
+  - [Deployer](#deployer)
+    - [Constraints](#constraints)
+    - [Details](#details)
+  - [Contributing to AUX](#contributing-to-aux)
+    - [Quickstart](#quickstart)
+    - [Deployment](#deployment)
+
+    - [Quickstart](#quickstart)
+    - [Deployment](#deployment)
+
+## Introduction
+
 AUX is a decentralized exchange powered by Aptos. We support the following
 features:
 
 - Liquidity pools (AMM)
 - Central limit order book (CLOB)
 - Router for best execution between AMM and CLOB
-
-## Table of Contents
-
-- [Fees and Rebates](#fees-and-rebates)
-- [Start Trading](#start-trading)
-- [Typescript SDK](#typescript-sdk)
-  - [Quickstart](#quickstart)
-  - [Walkthrough](#walkthrough)
-- [GraphQL](#graphql)
-- [Indexer](#indexer)
-- [Deployment](#deployment)
-  - [Hard vs. rolling restart](#hard-vs-rolling-restart)
-  - [Update the UIs (optional)](#update-the-uis-optional)
-  - [Bouncing the processes](#bouncing-the-processes)
-    - [Rolling restart](#rolling-restart)
-    - [Hard restart](#hard-restart)
-- [Addresses](#addresses)
-- [Deployer](#deployer)
-  - [Constraints](#constraints)
-  - [Details](#details)
-- [Contributing to AUX](#contributing-to-aux)
-  - [Quickstart](#quickstart-1)
-  - [Deployment](#deployment-1)
 
 ## Fees and Rebates
 
@@ -64,46 +61,6 @@ In particular, we recommend starting with `devnet-amm-instructions.ts`.
 First, start up Redis locally.
 
 `APTOS_NETWORK=mainnet yarn start:indexer`
-
-## Deployment
-
-Push to one of the following branches. This can be `main` or your own branch.
-
-- `origin/mainnet`
-- `origin/mainnet-beta`
-- `origin/testnet`
-- `origin/devnet`
-
-Inside the prod box, `cd` into the corresponding directory (e.g. `aux-exchange-mainnet-beta`),
-into the `aux-ts` folder, and run this:
-
-### Hard vs. rolling restart
-
-`./scripts/deploy/rolling_restart.sh mainnet-beta`
-`./scripts/deploy/hard_restart.sh mainnet-beta`
-
-This will `cd aux-exchange-mainnet`, `git checkout origin/mainnet` and restart PM2 process group named `mainnet`.
-
-Hard restart has more downtime but is cleaner.
-
-### Update the UIs (optional)
-
-If you changed the UI, then to deploy a new version of frontend (UI) you need to:
-
-- in your local `aux-exchange` repo, inside `aux-ts` run `./scripts/update_uis.sh`
-
-### Bouncing the processes
-
-#### Rolling restart
-
-`./rolling_restart.sh <branch>`
-
-Example: `./rolling_restart.sh mainnet`
-Example: `./rolling_restart.sh devnet`
-
-#### Hard restart
-
-`./hard_restart.sh <branch>`
 
 ## Addresses
 

@@ -1,12 +1,27 @@
 # Contributing
 
+- [Contributing](#contributing)
+  - [Prerequisites](#prerequisites)
+  - [Structure of the Code](#structure-of-the-code)
+  - [Contract](#contract)
+    - [Local Development Quickstart](#local-development-quickstart)
+    - [Local Development Quickstart with Podman](#local-development-quickstart-with-podman)
+  - [Deployment](#deployment)
+    - [Account/Address necessary](#accountaddress-necessary)
+    - [Set up Aptos Profile](#set-up-aptos-profile)
+    - [First Time Deploy](#first-time-deploy)
+    - [Update](#update)
+  - [DApp Deployment (UI + GraphQL)](#dapp-deployment-ui--graphql)
+    - [Hard vs. rolling restart](#hard-vs-rolling-restart)
+    - [Update the UIs (optional)](#update-the-uis-optional)
+    - [Bouncing the processes](#bouncing-the-processes)
+      - [Rolling restart](#rolling-restart)
+      - [Hard restart](#hard-restart)
+  - [Contributors on MS Windows](#contributors-on-ms-windows)
+
 Come and build the decentralized universal exchange with us! :rocket:
 
 Fork this repo, make the changes, and send a PR to the main branch. Run into issues? Ping us on [discord](https://discord.gg/mxRa3fH72z) or [Telegram](https://t.me/AuxDAO) or raise an issue here on github.
-
-## Contributors on MS Windows
-
-**Contributors on MS Windows may have difficulties downloading or checking out the codes**: aux.exchange started on \*nix, and we are deep into the development cycle to find that `aux` is a reserved name on MS Windows ([see here for details](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)). We are still in a build-out phase, but will push out a reorganisation of the repo to fix this later. Stay tuned!.
 
 ## Prerequisites
 
@@ -44,8 +59,9 @@ Install the following tools (if not already installed).
   sudo apt install build-essential clang pkg-config libssl-dev
   ```
 
-Aptos cli is also needed, after rust is installed. Either use the pre-compiled binaries following the instructures from [here](https://aptos.dev/cli-tools/aptos-cli-tool/install-aptos-cli), 
+Aptos cli is also needed, after rust is installed. Either use the pre-compiled binaries following the instructures from [here](https://aptos.dev/cli-tools/aptos-cli-tool/install-aptos-cli),
 or build from source with:
+
 ```sh
 RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-labs/aptos-core.git --rev <LATEST_RELEASE_TAG> aptos
 ```
@@ -61,7 +77,7 @@ RUSTFLAGS="--cfg tokio_unstable" cargo install --git https://github.com/aptos-la
 - [go-util](./go-util) contains deploy/code-gen utilities.
 - [docs](./docs/) contains documentation on math behind some of the contracts.
 
-## Quickstart
+## Contract
 
 ### Local Development Quickstart
 
@@ -112,7 +128,7 @@ Given an owner address, the aux address can be verified by the following go bina
 go run ./go-util/aptos/cmd/calculate-resource-address -a "<owner-address>" -s aux
 ```
 
-#### Set up Aptos Profile
+### Set up Aptos Profile
 
 A global aptos profile for the desired network should be initialized before deployment.
 
@@ -135,11 +151,9 @@ profiles:
 
 If the profile is not there, you can initiate one by using the `aptos init` command.
 
-### Deployment
-
 During the deployment process, the `setup-aux` command will delete the `.move` folder in the user's home directory (to remove all downloaded move dependencies) and `build` folder in the contract directory (to remove all compiled codes).
 
-#### First Time Deploy
+### First Time Deploy
 
 **IF aux resource account is not created yet and the contract is not deployed**, use the following command to create the resource account and deploy the contract
 
@@ -147,10 +161,54 @@ During the deployment process, the `setup-aux` command will delete the `.move` f
 go run ./go-util/aptos/cmd/setup-aux --network devnet # network to deploy
 ```
 
-#### Update
+### Update
 
 **IF aux resource account is created and the contract is already deployed**, do an update
 
 ```sh
 go run ./go-util/aptos/cmd/setup-aux --network devnet --redeploy # require redeploy
 ```
+
+## DApp Deployment (UI + GraphQL)
+
+Push to one of the following branches. This can be `main` or your own branch.
+
+- `origin/mainnet`
+- `origin/mainnet-beta`
+- `origin/testnet`
+- `origin/devnet`
+
+Inside the prod box, `cd` into the corresponding directory (e.g. `aux-exchange-mainnet-beta`),
+into the `aux-ts` folder, and run this:
+
+### Hard vs. rolling restart
+
+`./scripts/deploy/rolling_restart.sh mainnet-beta`
+`./scripts/deploy/hard_restart.sh mainnet-beta`
+
+This will `cd aux-exchange-mainnet`, `git checkout origin/mainnet` and restart PM2 process group named `mainnet`.
+
+Hard restart has more downtime but is cleaner.
+
+### Update the UIs (optional)
+
+If you changed the UI, then to deploy a new version of frontend (UI) you need to:
+
+- in your local `aux-exchange` repo, inside `aux-ts` run `./scripts/update_uis.sh`
+
+### Bouncing the processes
+
+#### Rolling restart
+
+`./rolling_restart.sh <branch>`
+
+Example: `./rolling_restart.sh mainnet`
+Example: `./rolling_restart.sh devnet`
+
+#### Hard restart
+
+`./hard_restart.sh <branch>`
+
+## Contributors on MS Windows
+
+**Contributors on MS Windows may have difficulties downloading or checking out the codes**: aux.exchange started on \*nix, and we are deep into the development cycle to find that `aux` is a reserved name on MS Windows ([see here for details](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)). We are still in a build-out phase, but will push out a reorganisation of the repo to fix this later. Stay tuned!.
