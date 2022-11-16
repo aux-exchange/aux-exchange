@@ -15,6 +15,7 @@
     - [Constraints](#constraints)
     - [Details](#details)
   - [DApp Development (UI + GraphQL)](#dapp-development-ui--graphql)
+    - [Deploy to devnet step-by-step](#deploy-to-devnet-step-by-step)
     - [GraphQL](#graphql)
     - [Indexer](#indexer)
     - [Deployment](#deployment-1)
@@ -267,6 +268,20 @@ A very convoluted way of redeploying to a resource account and allow it to self-
 
 ## DApp Development (UI + GraphQL)
 
+### Deploy to devnet step-by-step
+
+```sh
+git push origin feat/my-new-feature:devnet -f
+
+ssh ... # deployment box
+
+cd ~/aux-exchange-devnet/aptos/api/aux-ts
+
+./scripts/deploy/hard_restart.sh devnet
+
+# You're done!
+```
+
 ### GraphQL
 
 `APTOS_NETWORK=mainnet yarn start:graphql`
@@ -280,7 +295,6 @@ A very convoluted way of redeploying to a resource account and allow it to self-
 Make sure you have Redis running on the box you're starting the indexer on.
 
 `APTOS_NETWORK=mainnet yarn start:indexer`
-
 
 ### Deployment
 

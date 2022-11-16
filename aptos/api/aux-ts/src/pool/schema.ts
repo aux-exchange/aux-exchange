@@ -41,6 +41,7 @@ export interface PoolEvent {
 
 export interface SwapEvent extends PoolEvent {
   kind: "SwapEvent";
+  version: string;
   senderAddr: HexString;
   coinTypeIn: Types.MoveStructTag;
   coinTypeOut: Types.MoveStructTag;
@@ -53,6 +54,7 @@ export interface SwapEvent extends PoolEvent {
 
 export interface AddLiquidityEvent extends PoolEvent {
   kind: "AddLiquidityEvent";
+  version: string;
   xCoinType: Types.MoveStructTag;
   yCoinType: Types.MoveStructTag;
   xAdded: AtomicUnits;
@@ -62,6 +64,7 @@ export interface AddLiquidityEvent extends PoolEvent {
 
 export interface RemoveLiquidityEvent extends PoolEvent {
   kind: "RemoveLiquidityEvent";
+  version: string;
   xCoinType: Types.MoveStructTag;
   yCoinType: Types.MoveStructTag;
   xRemoved: AtomicUnits;
@@ -75,6 +78,7 @@ export interface RawPoolEvent extends Types.Event {
 
 export interface RawSwapEvent extends RawPoolEvent {
   kind: "RawSwapEvent";
+  version: string;
   data: {
     timestamp: Types.U128;
     sender_addr: Types.Address;
@@ -90,6 +94,7 @@ export interface RawSwapEvent extends RawPoolEvent {
 
 export interface RawAddLiquidityEvent extends RawPoolEvent {
   kind: "RawAddLiquidityEvent";
+  version: string;
   data: {
     timestamp: Types.U128;
     x_coin_type: Types.MoveStructTag;
@@ -102,6 +107,7 @@ export interface RawAddLiquidityEvent extends RawPoolEvent {
 
 export interface RawRemoveLiquidityEvent extends RawPoolEvent {
   kind: "RawRemoveLiquidityEvent";
+  version: string;
   data: {
     timestamp: Types.U128;
     x_coin_type: Types.MoveStructTag;
@@ -115,6 +121,7 @@ export interface RawRemoveLiquidityEvent extends RawPoolEvent {
 export function parseRawSwapEvent(event: RawSwapEvent): SwapEvent {
   return {
     kind: "SwapEvent",
+    version: event.version,
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
     timestamp: new BN(event.data.timestamp),
@@ -134,6 +141,7 @@ export function parseRawAddLiquidityEvent(
 ): AddLiquidityEvent {
   return {
     kind: "AddLiquidityEvent",
+    version: event.version,
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
     timestamp: new BN(event.data.timestamp),
@@ -150,6 +158,7 @@ export function parseRawRemoveLiquidityEvent(
 ): RemoveLiquidityEvent {
   return {
     kind: "RemoveLiquidityEvent",
+    version: event.version,
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
     timestamp: new BN(event.data.timestamp),
@@ -190,7 +199,7 @@ export interface SwapExactOutInput {
         slippage?: Pct | Bps;
       }
     | { maxAmountIn: AnyUnits }
-    | { maxAmountIn: AnyUnits; maxAmountInPerOut: AnyUnits }
+    | { maxAmountIn: AnyUnits; maxAmountInPerOut: AnyUnits };
 }
 
 export interface SlippageInput {
