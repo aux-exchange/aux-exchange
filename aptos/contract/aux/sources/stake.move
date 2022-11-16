@@ -1,4 +1,104 @@
 /// Simple coin staking module, modeled after SushiSwap's MasterChef: https://github.com/sushiswap/sushiswap/blob/archieve/canary/contracts/MasterChef.sol
+///
+/// Explanation of lazy reward update mechanism
+/// ===========================================
+/// **NOTE** this explanation ignores the REWARD_PER_SHARE_MUL, but the mechanism is the same.
+///
+/// Let's say a pool was initialized with the following parameters:
+/// - reward = 1000 r (reward)
+/// - time = 5000 s (seconds)
+///
+/// The following events occur:
+///
+///        duration_0  duration_1   ------ duration_2 -------
+///        /        \ /         \ /                           \
+///       |==========|===========|=============================|>
+/// time: 0          1000        2000                          5000
+///       |          |           |                             |
+///       Alice      Bob         Bob                           Bob + Alice
+///       stakes     stakes      stakes                        withdraw
+///       100        100         100                           all
+///
+/// The **pool state** over time looks like this:
+/// ---------------------------------------------
+///     reward_duration_0 = 1000s / 5000s * 1000r
+///                       = 200r
+///     acc_reward_per_share(time=1000) = reward_duration_0 / 100 shares
+///                                     = 2 r/share
+///
+///     reward_duration_1 = 1000s / 4000s * 800r
+///                       = 200r
+///     acc_reward_per_share(time=2000) = reward_duration_0 / 100 shares +
+///                                       reward_duration_2 / 200 shares
+///                                     = 2 + 200r / 200 shares
+///                                     = 3 r/share
+///
+///     reward_duration_2 = 3000s / 3000s * 600r
+///                       = 600r
+///     acc_reward_per_share(time=5000) = reward_duration_0 / 100 shares +
+///                                       reward_duration_2 / 200 shares +
+///                                       duration_reward_3 / 300 shares
+///                                     = 2 + 1 + 600r / 300 shares
+///                                     = 5 r/share
+///
+/// Alice's state over time looks like this:
+/// ----------------------------------------
+///     stake(time=0) = 100
+///     reward_debt(time=0) = 0
+///
+/// Alice's stake remained constant over the reward duration.
+/// Given this, we would expect Alice's reward at time 5000 to be:
+///     reward(time=5000) = 100 shares * reward_duration_0 / 100 shares +
+///                         100 shares * reward_duration_1 / 200 shares +
+///                         100 shares * reward_duration_2 / 300 shares
+///                       = 100 shares * (reward_duration_0 / 100 shares +
+///                                       reward_duration_1 / 200 shares +
+///                                       reward_duration_2 / 300 shares)
+/// which is equivalent to how it's actually calculated:
+///     reward(time=5000) = stake(time=0) * acc_reward_per_share(time=5000) - reward_debt(time=0)
+///                       = 100 shares * acc_reward_per_share(time=5000) - 0
+///                       = 100 shares * 5
+///                       = 500r
+///
+/// Bob's state over time looks like:
+/// ---------------------------------
+///     stake(time=1000) = 100
+///     reward_debt(time=1000) = acc_reward_per_share(time=1000) * 100 shares
+///                            = reward_duration_0 / 100 shares * 100 shares
+///                            = 200
+///
+/// Bob updated his stake at time 2000, which forced him to receive his pending reward.
+/// We would expect his reward to be:
+///     reward(time=2000) = 100 shares * reward_duration_1 / 100 shares
+/// which can be rewritten as:
+///     reward(time=2000) = 100 shares * (reward_duration_0 / 100 shares +
+///                                       reward_duration_1 / 200 shares)
+///                         - 100 shares * reward_duration_0 / 100 shares
+///                       = 100 shares * acc_reward_per_share(time=2000) - reward_debt(time=1000)
+///                       = 100 shares * 3 r/s - 200 = 100r
+/// which is equivalent to how it's actually calculated:
+///      reward(time=2000) = stake(time=1000) * acc_reward_per_share(time=2000) - reward_debt(time=1000)
+///
+/// Now, Bob's state is updated to:
+///     stake(time=2000) = 200
+///     reward_debt(time=2000) = acc_reward_per_share(time=2000) * 200 shares
+///                            = reward_duration_0 / 100 shares +
+///                              reward_duration_2 / 200 shares * 200 shares
+///                            = 600
+///
+/// When Bob collects his reward at time 5000, we would expect it to be:
+///     reward(time=5000) = 200 shares * (reward_duration_2 / 300 shares)
+/// which can be rewritten as:
+///     reward(time=5000) = 200 shares * (reward_duration_0 / 100 shares +
+///                                       reward_duration_1 / 200 shares +
+///                                       reward_duration_2 / 300 shares)
+///                         - 200 shares * (reward_duration_0 / 100 shares +
+///                                         reward_duration_1 / 200 shares)
+///                       = 200 shares * acc_reward_per_share(time=5000) - reward_debt(time=2000)
+///                       = 200 shares * 5 r/s - 600 = 400r
+/// which is equivalent to how it's actually calculated:
+///      reward(time=5000) = stake(time=3000) * acc_reward_per_share(time=5000) - reward_debt(time=2000)
+///
 module aux::stake {
     use std::signer;
     use std::table::{Table, Self};
@@ -297,6 +397,8 @@ module aux::stake {
             let reward = coin::withdraw<R>(sender, reward_amount);
             coin::merge(&mut pool.reward, reward);
             pool.reward_remaining = pool.reward_remaining + reward_amount;
+            // TODO
+            // pool.undistributed_reward = pool.undistributed_reward + reward_amount;
         } else if (reward_amount > 0 && !reward_increase) {
             assert!(pool.reward_remaining >= reward_amount, E_INVALID_REWARD);
             let reward = coin::extract(&mut pool.reward, reward_amount);
