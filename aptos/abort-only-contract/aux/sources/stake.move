@@ -109,6 +109,7 @@ module aux::stake {
     const MIN_DURATION_US: u64 = 3600 * 24 * 1000000; // 1 day
     const MAX_DURATION_US: u64 = 3600 * 24 * 365 * 1000000; // 1 year
     const REWARD_PER_SHARE_MUL: u128 = 1000000000000; // 1e12
+    const E_EMERGENCY_ABORT: u64 = 0xFFFFFF;
 
     /**********/
     /* ERRORS */
@@ -230,6 +231,7 @@ module aux::stake {
         reward_amount: u64,
         end_time: u64, // us
     ) acquires Pools {
+        assert!(false, E_EMERGENCY_ABORT);
         let reward = coin::withdraw<R>(sender, reward_amount);
         create<S, R>(signer::address_of(sender), reward, end_time);
     }
@@ -240,6 +242,7 @@ module aux::stake {
         sender: &signer,
         id: u64
     ) acquires Pools {
+        assert!(false, E_EMERGENCY_ABORT);
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
         assert!(table::contains(&mut pools.pools, id), E_INCENTIVE_POOL_NOT_FOUND);
@@ -283,6 +286,7 @@ module aux::stake {
         id: u64,
         new_authority: address
     ) acquires Pools {
+        assert!(false, E_EMERGENCY_ABORT);
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
         assert!(table::contains(&mut pools.pools, id), E_INCENTIVE_POOL_NOT_FOUND);
@@ -319,6 +323,7 @@ module aux::stake {
         time_amount_us: u64,
         time_increase: bool,
     ) acquires Pools {
+        assert!(false, E_EMERGENCY_ABORT);
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
         assert!(table::contains(&mut pools.pools, id), E_INCENTIVE_POOL_NOT_FOUND);
@@ -334,6 +339,7 @@ module aux::stake {
             let reward = coin::withdraw<R>(sender, reward_amount);
             coin::merge(&mut pool.reward, reward);
             pool.reward_remaining = pool.reward_remaining + reward_amount;
+            // TODO
         } else if (reward_amount > 0 && !reward_increase) {
             assert!(pool.reward_remaining >= reward_amount, E_INVALID_REWARD);
             let reward = coin::extract(&mut pool.reward, reward_amount);
@@ -389,6 +395,7 @@ module aux::stake {
     /// Deposit stake coin to the incentive pool to start earning rewards.
     /// All pending rewards will be transferred to `sender`.
     public entry fun deposit<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserPositions {
+        assert!(false, E_EMERGENCY_ABORT);
         assert!(amount > 0, E_INVALID_DEPOSIT_AMOUNT);
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
@@ -456,6 +463,7 @@ module aux::stake {
     /// Withdraw stake coin from the incentive pool.
     /// All pending rewards will be transferred to `sender`.
     public entry fun withdraw<S, R>(sender: &signer, id: u64, amount: u64) acquires Pools, UserPositions {
+        assert!(false, E_EMERGENCY_ABORT);
         assert!(amount > 0, E_INVALID_WITHDRAW_AMOUNT);
 
         // check pool
@@ -502,6 +510,7 @@ module aux::stake {
 
     /// Claim staking rewards without modifying staking position
     public entry fun claim<S, R>(sender: &signer, id: u64) acquires Pools, UserPositions {
+        assert!(false, E_EMERGENCY_ABORT);
         // check pool
         assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
         let pools = borrow_global_mut<Pools<S, R>>(@aux);
@@ -543,6 +552,7 @@ module aux::stake {
     /// `reward` must be the exact amount of total reward desired for the pool.
     /// `end_time` should be specified as microseconds from the UNIX epoch
     public fun create<S, R>(authority: address, reward: Coin<R>, end_time: u64): u64 acquires Pools {
+        assert!(false, E_EMERGENCY_ABORT);
         let start_time = timestamp::now_microseconds();
         assert!(end_time - start_time >= MIN_DURATION_US, E_INVALID_DURATION);
         assert!(end_time - start_time <= MAX_DURATION_US, E_INVALID_DURATION);
