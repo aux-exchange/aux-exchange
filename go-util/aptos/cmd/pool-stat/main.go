@@ -101,8 +101,8 @@ poolReadLoop:
 			continue poolReadLoop
 		}
 
-		coinX := known.GetCoinInfo(network, resourceType.GenericTypeParameters[0])
-		coinY := known.GetCoinInfo(network, resourceType.GenericTypeParameters[1])
+		coinX := known.GetCoinInfo(network, resourceType.GenericTypeParameters[0].Struct)
+		coinY := known.GetCoinInfo(network, resourceType.GenericTypeParameters[1].Struct)
 		name := fmt.Sprintf("%s-%s", coinX.Symbol, coinY.Symbol)
 
 		DecimalByType[coinX.TokenType.Type.String()] = getDecimal(coinX.Decimals)
