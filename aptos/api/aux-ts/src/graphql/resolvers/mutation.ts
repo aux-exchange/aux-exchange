@@ -120,7 +120,7 @@ export const mutation = {
       coinTypeY,
     }).transpose();
     useAuxAccount = useAuxAccount ?? false;
-    return poolClient.addLiquidity(
+    const tx = await poolClient.addLiquidity(
       {
         amountX: DU(amountX),
         amountY: DU(amountY),
@@ -130,6 +130,7 @@ export const mutation = {
         simulate: true,
       }
     );
+    return tx.transaction.payload;
   },
 
   async removeLiquidity(
