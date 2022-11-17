@@ -62,40 +62,48 @@ export class StableSwapClient {
   static readonly defaultSlippage: Bps = new Bps(50);
 
   readonly auxClient: AuxClient;
+  readonly kind: "2pool" | "3pool"
   readonly type: Types.MoveStructTag;
-  readonly coinTypeX: Types.MoveStructTag;
-  readonly coinTypeY: Types.MoveStructTag;
+  readonly coinTypes: Types.MoveStructTag[];
   readonly coinTypeLP: Types.MoveStructTag;
 
   /********************/
   /* Public functions */
   /********************/
 
-  constructor(auxClient: AuxClient, { coinTypeX, coinTypeY }: PoolInput) {
+  constructor(auxClient: AuxClient, coinTypes: Types.MoveStructTag[]) {
     this.auxClient = auxClient;
-    this.type = `${auxClient.moduleAddress}::amm::Pool<${coinTypeX}, ${coinTypeY}>`;
-    this.coinTypeX = coinTypeX;
-    this.coinTypeY = coinTypeY;
-    this.coinTypeLP = `${auxClient.moduleAddress}::amm::LP<${coinTypeX}, ${coinTypeY}>`;
+    if (coinTypes.length === 2) {
+      this.kind = "2pool"
+      this.type = `${auxClient.moduleAddress}::stable_2pool::Pool<${coinTypes[0]}, ${coinTypes[1]}>`;
+    this.coinTypeLP = `${auxClient.moduleAddress}::stable_2pool::LP<${coinTypes[0]}, ${coinTypes[1]}>`;
+    } else if (coinTypes.length === 3) {
+      this.kind = "3pool"
+      this.type = `${auxClient.moduleAddress}::stable_3pool::Pool<${coinTypes[0]}, ${coinTypes[1]}, ${coinTypes[2]}>`;
+      this.coinTypeLP = `${auxClient.moduleAddress}::stable_3pool::LP<${coinTypes[0]}, ${coinTypes[1]}, ${coinTypes[2]}>`;
+    } else {
+      throw new Error("Unsupported number of coinTypes.");
+    }
+    this.coinTypes = coinTypes;
   }
 
-  async transpose(): Promise<PoolClient> {
-    try {
-      await this.query();
-      return this;
-    } catch {
-      const transposed = new PoolClient(this.auxClient, {
-        coinTypeX: this.coinTypeY,
-        coinTypeY: this.coinTypeX,
-      });
-      try {
-        await transposed.query(); // allow exception to propagate
-        return transposed;
-      } catch {
-        throw new Error(`Unable to find pool using ${this} or ${transposed}.`);
-      }
-    }
-  }
+  // async transpose(): Promise<StableSwapClient> {
+  //   try {
+  //     await this.query();
+  //     return this;
+  //   } catch {
+  //     const transposed = new StableSwapClient(this.auxClient, {
+  //       coinTypeX: this.coinTypeY,
+  //       coinTypeY: this.coinTypeX,
+  //     });
+  //     try {
+  //       await transposed.query(); // allow exception to propagate
+  //       return transposed;
+  //     } catch {
+  //       throw new Error(`Unable to find pool using ${this} or ${transposed}.`);
+  //     }
+  //   }
+  // }
 
   /**
    * Loads and parses resources and events associated with a pool.
