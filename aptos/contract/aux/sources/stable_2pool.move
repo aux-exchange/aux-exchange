@@ -8,6 +8,7 @@ module aux::stable_2pool {
     use aptos_std::event::{Self, EventHandle};
     use aptos_framework::coin::{Self, Coin};
     use aptos_framework::account;
+    use aptos_framework::timestamp;
 
     use aux::authority;
     use aux::math_2pool as pool_math;
@@ -103,6 +104,8 @@ module aux::stable_2pool {
 
     struct SwapEvent<phantom Coin0, phantom Coin1> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
+
 
         before_reserve_0: u64,
         after_reserve_0: u64,
@@ -129,6 +132,7 @@ module aux::stable_2pool {
 
     struct AddLiquidityEvent<phantom Coin0, phantom Coin1> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
 
         before_reserve_0: u64,
         after_reserve_0: u64,
@@ -151,6 +155,7 @@ module aux::stable_2pool {
 
     struct RemoveLiquidityEvent<phantom Coin0, phantom Coin1> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
 
         before_reserve_0: u64,
         after_reserve_0: u64,
@@ -177,6 +182,7 @@ module aux::stable_2pool {
     }
 
     struct FeeMoveEvent<phantom Coin0, phantom Coin1> has store, drop {
+        timestamp_microseconds: u64,
         before_reserve_0: u64,
         after_reserve_0: u64,
         fee_moved_0: u64,
@@ -386,6 +392,7 @@ module aux::stable_2pool {
         event::emit_event<FeeMoveEvent<Coin0, Coin1>>(
             &mut borrow_global_mut<FeeMoveEventHolder<Coin0, Coin1>>(@aux).fee_move_events,
             FeeMoveEvent<Coin0, Coin1>{
+                timestamp_microseconds: timestamp::now_microseconds(),
                 before_reserve_0,
                 after_reserve_0,
                 fee_moved_0,
@@ -483,6 +490,7 @@ module aux::stable_2pool {
             &mut borrow_global_mut<AddLiquidityEventHolder<Coin0, Coin1>>(@aux).add_liquidity_events,
             AddLiquidityEvent<Coin0, Coin1> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 before_reserve_0,
                 after_reserve_0,
@@ -602,6 +610,7 @@ module aux::stable_2pool {
             &mut borrow_global_mut<RemoveLiquidityEventHolder<Coin0, Coin1>>(@aux).remove_liquidity_events,
             RemoveLiquidityEvent<Coin0, Coin1> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 lp_burnt,
                 before_balanced_reserve,
@@ -684,6 +693,7 @@ module aux::stable_2pool {
             &mut borrow_global_mut<RemoveLiquidityEventHolder<Coin0, Coin1>>(@aux).remove_liquidity_events,
             RemoveLiquidityEvent<Coin0, Coin1> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 lp_burnt,
                 before_balanced_reserve,
@@ -836,6 +846,7 @@ module aux::stable_2pool {
             &mut borrow_global_mut<SwapEventHolder<Coin0, Coin1>>(@aux).swap_events,
             SwapEvent<Coin0, Coin1>{
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 before_reserve_0,
                 after_reserve_0,
@@ -972,6 +983,7 @@ module aux::stable_2pool {
             &mut borrow_global_mut<SwapEventHolder<Coin0, Coin1>>(@aux).swap_events,
             SwapEvent<Coin0, Coin1>{
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 before_reserve_0,
                 after_reserve_0,

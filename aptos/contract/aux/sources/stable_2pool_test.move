@@ -4,6 +4,7 @@ module aux::stable_2pool_test {
     use std::option;
     use aptos_framework::coin;
     use aptos_framework::account;
+    use aptos_framework::timestamp;
 
     use aux::authority;
     use aux::util;
@@ -144,17 +145,18 @@ module aux::stable_2pool_test {
     }
 
     #[test_only]
-    public fun setup_module_for_test(sender: &signer) {
+    public fun setup_module_for_test(sender: &signer, aptos_framework: &signer) {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
         deployer::deployer::create_resource_account(sender, b"amm");
         authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
         fake_coin::initialize_for_test(&authority::get_signer(sender));
     }
 
-    #[test(sender = @0x5e7c3)]
-    public fun test_create_pool(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_create_pool(sender: &signer, aptos_framework: &signer) {
         let signer_addr = signer::address_of(sender);
         account::create_account_for_test(signer_addr);
-        setup_module_for_test(sender);
+        setup_module_for_test(sender, aptos_framework);
         let resource_account_addr = util::create_resource_account_addr(signer_addr, b"amm");
         assert!(resource_account_addr == @aux, ETEST_FAILED);
 
@@ -174,12 +176,12 @@ module aux::stable_2pool_test {
     }
 
     #[test_only]
-    fun one_time_setup(sender: &signer, sender_init_x: u64, sender_init_y: u64) {
+    fun one_time_setup(sender: &signer, sender_init_x: u64, sender_init_y: u64, aptos_framework:&signer) {
         let sender_addr = signer::address_of(sender);
         if (!account::exists_at(sender_addr)) {
             account::create_account_for_test(sender_addr);
         };
-        setup_module_for_test(sender);
+        setup_module_for_test(sender, aptos_framework);
         assert!(signer::address_of(&authority::get_signer(sender)) == @aux, ETEST_FAILED);
         aux::fake_coin::register<USDC>(sender);
         aux::fake_coin::register<USDT>(sender);
@@ -191,14 +193,15 @@ module aux::stable_2pool_test {
     }
 
     #[test_only]
-    fun setup_pool_for_test(sender: &signer, fee_bps: u64, sender_init_x: u64, sender_init_y: u64, current_A: u128) {
-        one_time_setup(sender, sender_init_x, sender_init_y);
+    fun setup_pool_for_test(sender: &signer, fee_bps: u64, sender_init_x: u64, sender_init_y: u64, current_A: u128, aptos_framework: &signer) {
+        one_time_setup(sender, sender_init_x, sender_init_y, aptos_framework);
         create_pool<FakeCoin<USDC>, FakeCoin<USDT>>(sender, fee_bps, current_A, 1, 1);
     }
 
-    #[test(sender = @0x5e7c3)]
-    public fun test_add_initial_liquidity(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_add_initial_liquidity(sender: &signer, aptos_framework: &signer) {
         use aux::fake_coin::{init_module_for_testing, register_and_mint, BTC, FakeCoin};
+        timestamp::set_time_has_started_for_testing(aptos_framework);
 
         let sender_addr = signer::address_of(sender);
         if (!account::exists_at(sender_addr)) {
@@ -230,12 +233,12 @@ module aux::stable_2pool_test {
         add_liquidity<FakeCoin<USDC>, FakeCoin<BTC>>(sender, 200000, 200000000);
     }
 
-    #[test(sender = @0x5e7c3)]
-    public fun test_add_liquidity(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_add_liquidity(sender: &signer, aptos_framework: &signer) {
 
         let sender_addr = signer::address_of(sender);
 
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
@@ -279,12 +282,12 @@ module aux::stable_2pool_test {
                 coin::balance<stable_2pool::LP<FakeCoin<USDC>, FakeCoin<USDT>>>(sender_addr));
     }
 
-    #[test(sender = @0x5e7c3)]
-    public fun test_add_liquidity_small(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    public fun test_add_liquidity_small(sender: &signer, aptos_framework: &signer) {
 
         let sender_addr = signer::address_of(sender);
 
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
@@ -312,10 +315,10 @@ module aux::stable_2pool_test {
                 coin::balance<stable_2pool::LP<FakeCoin<USDC>, FakeCoin<USDT>>>(sender_addr));
     }
 
-    #[test(sender = @0x5e7c3, liquidity_provider = @0x12345)]
-    fun test_reset_pool(sender: &signer, liquidity_provider: &signer) {
+    #[test(sender = @0x5e7c3, liquidity_provider = @0x12345, aptos_framework = @0x1)]
+    fun test_reset_pool(sender: &signer, liquidity_provider: &signer, aptos_framework: &signer) {
 
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         let lp_addr = signer::address_of(liquidity_provider);
         account::create_account_for_test(lp_addr);
@@ -338,11 +341,11 @@ module aux::stable_2pool_test {
         reset_pool<FakeCoin<USDC>, FakeCoin<USDT>>(sender);
     }
 
-    #[test(sender = @0x5e7c3)]
-    fun test_swap_first(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_swap_first(sender: &signer, aptos_framework: &signer) {
         let sender_addr = signer::address_of(sender);
 
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         add_liquidity<FakeCoin<USDC>, FakeCoin<USDT>>(sender, 1000, 4000);
 
@@ -384,10 +387,10 @@ module aux::stable_2pool_test {
         };
     }
 
-    #[test(sender = @0x5e7c3)]
-    fun test_remove_liquidity(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_remove_liquidity(sender: &signer, aptos_framework: &signer) {
         let sender_addr = signer::address_of(sender);
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
@@ -427,10 +430,10 @@ module aux::stable_2pool_test {
         assert!(coin::balance<FakeCoin<USDT>>(sender_addr) == 9198, coin::balance<FakeCoin<USDT>>(sender_addr) );
     }
 
-    #[test(sender = @0x5e7c3)]
-    fun test_swap_and_remove_liquidity(sender: &signer) {
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_swap_and_remove_liquidity(sender: &signer, aptos_framework: &signer) {
         let sender_addr = signer::address_of(sender);
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         add_liquidity<FakeCoin<USDC>, FakeCoin<USDT>>(sender, 1000, 4000);
         assert!(coin::balance<stable_2pool::LP<FakeCoin<USDC>, FakeCoin<USDT>>>(sender_addr) == 499181,
@@ -466,10 +469,10 @@ module aux::stable_2pool_test {
     // Test error cases
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     #[expected_failure(abort_code = 1)]
-    fun test_cannot_create_duplicate_pool(sender: &signer) {
+    fun test_cannot_create_duplicate_pool(sender: &signer, aptos_framework: &signer) {
         let signer_addr = signer::address_of(sender);
         account::create_account_for_test(signer_addr);
-        setup_module_for_test(sender);
+        setup_module_for_test(sender, aptos_framework);
         aux::aux_coin::initialize_aux_coin(sender);
         aux::aux_coin::initialize_aux_test_coin(sender);
 
@@ -479,10 +482,10 @@ module aux::stable_2pool_test {
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     #[expected_failure(abort_code = 1)]
-    fun test_cannot_create_duplicate_reverse_pool(sender: &signer) {
+    fun test_cannot_create_duplicate_reverse_pool(sender: &signer, aptos_framework: &signer) {
         let signer_addr = signer::address_of(sender);
         account::create_account_for_test(signer_addr);
-        setup_module_for_test(sender);
+        setup_module_for_test(sender, aptos_framework);
         aux::aux_coin::initialize_aux_coin(sender);
         aux::aux_coin::initialize_aux_test_coin(sender);
 
@@ -492,19 +495,19 @@ module aux::stable_2pool_test {
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     #[expected_failure]
-    fun test_type_args_wrong_order(sender: &signer) {
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+    fun test_type_args_wrong_order(sender: &signer, aptos_framework: &signer) {
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         // wrong order
         add_liquidity<FakeCoin<USDT>, FakeCoin<USDC>>(sender, 1, 10);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    fun test_add_liquidity_remove_liquidity(sender: &signer) {
+    fun test_add_liquidity_remove_liquidity(sender: &signer, aptos_framework: &signer) {
 
         let sender_addr = signer::address_of(sender);
 
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
         let aux_bal = coin::balance<FakeCoin<USDC>>(sender_addr);
         let test_bal = coin::balance<FakeCoin<USDT>>(sender_addr);
 
@@ -604,11 +607,11 @@ module aux::stable_2pool_test {
     #[test_only]
     fun test_swap_helper<CoinX, CoinY, CoinIn, CoinOut>(
         sender: &signer,
-        _aptos_framework: &signer,
-        input: &SwapHelperInput
+        aptos_framework: &signer,
+        input: &SwapHelperInput,
     ) {
         if (!account::exists_at(signer::address_of(sender))) {
-            one_time_setup(sender, 200000000, 200000000);
+            one_time_setup(sender, 200000000, 200000000, aptos_framework);
         };
         create_pool<CoinX, CoinY>(sender, input.fee_bps, 85, 1, 1);
 
@@ -824,13 +827,14 @@ module aux::stable_2pool_test {
         test_swap_helper<FakeCoin<USDT>, FakeCoin<USDC>, FakeCoin<USDC>, FakeCoin<USDT>>(sender, aptos_framework, &input);
     }
 
-    #[test(sender = @0x5e7c3)]
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_add_liquidity_with_slippage_tolerance(
         sender: &signer,
+        aptos_framework: &signer
     ) {
 
         let sender_addr = signer::address_of(sender);
-        setup_pool_for_test(sender, 0, 10000, 10000, 85);
+        setup_pool_for_test(sender, 0, 10000, 10000, 85, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
@@ -878,14 +882,15 @@ module aux::stable_2pool_test {
     }
 
 
-    #[test(sender = @0x5e7c3)]
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_stable_curve_frax(
-        sender: &signer
+        sender: &signer,
+        aptos_framework: &signer
     ) {
         // emulate https://curve.fi/fraxusdc
         let decimal = 1000000;
         let sender_addr = signer::address_of(sender);
-        setup_pool_for_test(sender, 4, 10000000 * decimal, 10000000 * decimal, 1500);
+        setup_pool_for_test(sender, 4, 10000000 * decimal, 10000000 * decimal, 1500, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
@@ -926,14 +931,15 @@ module aux::stable_2pool_test {
         assert!(coin::balance<FakeCoin<USDT>>(sender_addr) == 5999999880989, coin::balance<FakeCoin<USDT>>(sender_addr));
     }
 
-    #[test(sender = @0x5e7c3)]
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     public fun test_stable_curve_steth(
         sender: &signer,
+        aptos_framework: &signer,
     ) {
         // emulate https://curve.fi/steth
         let decimal = 100000000;
         let sender_addr = signer::address_of(sender);
-        setup_pool_for_test(sender, 4, 10 * decimal, 10 * decimal, 50);
+        setup_pool_for_test(sender, 4, 10 * decimal, 10 * decimal, 50, aptos_framework);
 
         {
             let pool = get_pool<FakeCoin<USDC>, FakeCoin<USDT>>();
