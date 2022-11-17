@@ -11,6 +11,7 @@ module aux::stable_3pool_test {
     use std::signer;
     use aptos_framework::account;
     use aptos_framework::coin;
+    use aptos_framework::timestamp;
 
     use deployer::deployer::create_resource_account;
 
@@ -40,8 +41,9 @@ module aux::stable_3pool_test {
         fake_coin::initialize_for_test(aux);
     }
 
-    #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x124)]
-    fun test_3pool(sender: &signer, aux: &signer, alice: &signer, bob: &signer) {
+    #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x124, aptos_framework = @0x1)]
+    fun test_3pool(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
         setup(sender, aux, alice, bob);
 
         let alice_addr = signer::address_of(alice);

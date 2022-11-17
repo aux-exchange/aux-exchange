@@ -7,6 +7,7 @@ module aux::stable_{{.N}}pool {
     use aptos_std::event::{Self, EventHandle};
     use aptos_framework::coin::{Self, Coin};
     use aptos_framework::account;
+    use aptos_framework::timestamp;
 
     use aux::authority;
     use aux::math_{{.N}}pool as pool_math;
@@ -96,6 +97,8 @@ module aux::stable_{{.N}}pool {
 
     struct SwapEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
+
 {{range .Xis}}
         before_reserve_{{.I}}: u64,
         after_reserve_{{.I}}: u64,
@@ -115,6 +118,7 @@ module aux::stable_{{.N}}pool {
 
     struct AddLiquidityEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
 
 {{range .Xis}}        before_reserve_{{.I}}: u64,
         after_reserve_{{.I}}: u64,
@@ -135,6 +139,7 @@ module aux::stable_{{.N}}pool {
 
     struct RemoveLiquidityEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
         sender: address,
+        timestamp_microseconds: u64,
 
 {{range .Xis}}        before_reserve_{{.I}}: u64,
         after_reserve_{{.I}}: u64,
@@ -157,6 +162,7 @@ module aux::stable_{{.N}}pool {
     }
 
     struct FeeMoveEvent<{{range .Xis}}phantom Coin{{.I}}{{if .NotLast}}, {{end}}{{end}}> has store, drop {
+        timestamp_microseconds: u64,
 {{range .Xis}}        before_reserve_{{.I}}: u64,
         after_reserve_{{.I}}: u64,
         fee_moved_{{.I}}: u64,
@@ -333,6 +339,7 @@ module aux::stable_{{.N}}pool {
         event::emit_event<FeeMoveEvent<{{.CoinTypeList}}>>(
             &mut borrow_global_mut<FeeMoveEventHolder<{{.CoinTypeList}}>>(@aux).fee_move_events,
             FeeMoveEvent<{{.CoinTypeList}}>{
+                timestamp_microseconds: timestamp::now_microseconds(),
                 {{range .Xis}}before_reserve_{{.I}},
                 after_reserve_{{.I}},
                 fee_moved_{{.I}},
@@ -421,6 +428,7 @@ module aux::stable_{{.N}}pool {
             &mut borrow_global_mut<AddLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).add_liquidity_events,
             AddLiquidityEvent<{{.CoinTypeList}}> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
 {{range .Xis}}                before_reserve_{{.I}},
                 after_reserve_{{.I}},
@@ -518,6 +526,7 @@ module aux::stable_{{.N}}pool {
             &mut borrow_global_mut<RemoveLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).remove_liquidity_events,
             RemoveLiquidityEvent<{{.CoinTypeList}}> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 lp_burnt,
                 before_balanced_reserve,
@@ -582,6 +591,7 @@ module aux::stable_{{.N}}pool {
             &mut borrow_global_mut<RemoveLiquidityEventHolder<{{.CoinTypeList}}>>(@aux).remove_liquidity_events,
             RemoveLiquidityEvent<{{.CoinTypeList}}> {
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 
                 lp_burnt,
                 before_balanced_reserve,
@@ -681,6 +691,7 @@ module aux::stable_{{.N}}pool {
             &mut borrow_global_mut<SwapEventHolder<{{.CoinTypeList}}>>(@aux).swap_events,
             SwapEvent<{{.CoinTypeList}}>{
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 {{range .Xis}}
                 before_reserve_{{.I}},
                 after_reserve_{{.I}},
@@ -771,6 +782,7 @@ module aux::stable_{{.N}}pool {
             &mut borrow_global_mut<SwapEventHolder<{{.CoinTypeList}}>>(@aux).swap_events,
             SwapEvent<{{.CoinTypeList}}>{
                 sender,
+                timestamp_microseconds: timestamp::now_microseconds(),
 {{range .Xis}}
                 before_reserve_{{.I}},
                 after_reserve_{{.I}},
