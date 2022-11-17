@@ -72,7 +72,7 @@ export type AddLiquidityInput = {
   amountX: Scalars['Float'];
   amountY: Scalars['Float'];
   poolInput: PoolInput;
-  useAuxAccount: Scalars['Boolean'];
+  useAuxAccount?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type Balance = {
@@ -571,7 +571,7 @@ export type RemoveLiquidity = {
 export type RemoveLiquidityInput = {
   amountLP: Scalars['Float'];
   poolInput: PoolInput;
-  useAuxAccount: Scalars['Boolean'];
+  useAuxAccount?: InputMaybe<Scalars['Boolean']>;
 };
 
 export enum Resolution {

@@ -29,23 +29,23 @@ import {
 } from "../generated/types";
 
 export const mutation = {
-  createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
-    const { coinTypeX, coinTypeY } = createPoolInput.poolInput;
-    const poolClient = new PoolClient(auxClient, {
-      coinTypeX,
-      coinTypeY,
-    });
-    return poolClient.create({
-      fee: new Bps(Number(createPoolInput.feeBasisPoints)),
-    });
-  },
-
   registerCoin(_parent: any, { registerCoinInput }: MutationRegisterCoinArgs) {
     return {
       function: `0x1::managed_coin::register`,
       type_arguments: [registerCoinInput.coinType],
       arguments: [],
     };
+  },
+
+  async createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
+    const { coinTypeX, coinTypeY } = createPoolInput.poolInput;
+    const poolClient = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
+    return poolClient.create({
+      fee: new Bps(Number(createPoolInput.feeBasisPoints)),
+    });
   },
 
   async swapExactIn(
@@ -59,7 +59,10 @@ export const mutation = {
       },
     }: MutationSwapExactInArgs
   ) {
-    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const poolClient = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
     const exactAmountIn = DU(amountIn);
     const parameters = _.isNil(slippagePct)
       ? {}
@@ -86,7 +89,10 @@ export const mutation = {
       },
     }: MutationSwapExactOutArgs
   ) {
-    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const poolClient = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
     const exactAmountOut = DU(amountOut);
     const parameters = _.isNil(slippagePct)
       ? {}
@@ -109,7 +115,11 @@ export const mutation = {
       },
     }: MutationAddLiquidityArgs
   ) {
-    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const poolClient = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
+    useAuxAccount = useAuxAccount ?? false;
     return poolClient.addLiquidity(
       {
         amountX: DU(amountX),
@@ -132,7 +142,11 @@ export const mutation = {
       },
     }: MutationRemoveLiquidityArgs
   ) {
-    const poolClient = new PoolClient(auxClient, { coinTypeX, coinTypeY });
+    const poolClient = await new PoolClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
+    useAuxAccount = useAuxAccount ?? false;
     const tx = await poolClient.removeLiquidity(
       { amountLP: DU(amountLP), useAuxAccount },
       { simulate: true }
