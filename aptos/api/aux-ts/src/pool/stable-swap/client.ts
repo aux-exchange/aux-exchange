@@ -111,31 +111,49 @@ export class StableSwapClient {
    * Make sure to call this after pool operations to refresh your local state.
    */
   async query() {
-    const [coinInfoX, coinInfoY, coinInfoLP] = await Promise.all([
-      this.auxClient.getCoinInfo(this.coinTypeX),
-      this.auxClient.getCoinInfo(this.coinTypeY),
-      this.auxClient.getCoinInfo(this.coinTypeLP, true), // refresh the LP token supply
-    ]);
+    const coinInfoLP = 
+      await this.auxClient.getCoinInfo(this.coinTypeLP, true); // refresh the LP token supply
+    const coinInfos = await Promise.all(this.coinTypes.map((coinType) => this.auxClient.getCoinInfo(coinType)));
     const resource = await this.auxClient.aptosClient.getAccountResource(
       this.auxClient.moduleAddress,
       this.type
     );
     const rawPool = resource.data as any;
+    const amounts = [];
+    const kind = this.kind;
+    switch (kind) {
+      case "2pool":
+        amounts.push(new AtomicUnits(rawPool.reserve_0.value).toDecimalUnits(
+          coinInfos[0]!.decimals
+        ));
+        amounts.push(new AtomicUnits(rawPool.reserve_1.value).toDecimalUnits(
+          coinInfos[1]!.decimals
+        ));
+        break;
+      case "3pool":
+        amounts.push(new AtomicUnits(rawPool.reserve_0.value).toDecimalUnits(
+          coinInfos[0]!.decimals
+        ));
+        amounts.push(new AtomicUnits(rawPool.reserve_1.value).toDecimalUnits(
+          coinInfos[1]!.decimals
+        ));
+        amounts.push(new AtomicUnits(rawPool.reserve_2.value).toDecimalUnits(
+          coinInfos[2]!.decimals
+        ));
+        break;
+      default:
+        const _exhaustiveCheck: never = kind;
+        return _exhaustiveCheck;
+    }
     return {
-      fee: new Bps(rawPool.fee_bps),
-      coinInfoX: coinInfoX,
-      coinInfoY: coinInfoY,
+      coinInfos,
       coinInfoLP: coinInfoLP,
-      timestamp: new BN.BN(rawPool.timestamp),
-      amountX: new AtomicUnits(rawPool.x_reserve.value).toDecimalUnits(
-        coinInfoX.decimals
-      ),
-      amountY: new AtomicUnits(rawPool.y_reserve.value).toDecimalUnits(
-        coinInfoY.decimals
-      ),
+      amounts,
       amountLP: new AtomicUnits(
         coinInfoLP.supply[0]!.integer.vec[0]!.value
       ).toDecimalUnits(coinInfoLP.decimals),
+      fee: new Bps(rawPool.fee_numerator / 10000000000),
+      timestamp: new BN.BN(rawPool.timestamp),
     };
   }
 
@@ -147,8 +165,7 @@ export class StableSwapClient {
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<Types.MoveStructTag>> {
     const input = {
-      coinTypeX: this.coinTypeX,
-      coinTypeY: this.coinTypeY,
+      coinTypes: this.coinTypes,
       feeBps: (fee.toNumber() * 10000).toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
@@ -407,12 +424,10 @@ export class StableSwapClient {
         : amountLP.toNumber() / pool.amountLP.toNumber();
     return {
       owner,
-      coinInfoX: pool.coinInfoX,
-      coinInfoY: pool.coinInfoY,
+      coinInfos: pool.coinInfos,
       coinInfoLP: pool.coinInfoLP,
       // do ops in AU then convert
-      amountX: DU(share * pool.amountX.toNumber()),
-      amountY: DU(share * pool.amountY.toNumber()),
+      amounts: pool.amounts.map((amount) => DU(share * amount.toNumber())),
       amountLP,
       share,
     };
