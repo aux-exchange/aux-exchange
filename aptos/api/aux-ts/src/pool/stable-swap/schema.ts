@@ -1,6 +1,6 @@
 import { HexString, Types } from "aptos";
 import BN from "bn.js";
-import type { CoinInfo } from "../../client";
+import { CoinInfo, parseTypeArgs } from "../../client";
 import { AnyUnits, AtomicUnits, AU, Bps, DecimalUnits, Pct } from "../../units";
 
 /****************/
@@ -49,14 +49,14 @@ export interface SwapEvent extends PoolEvent {
 
 export interface AddLiquidityEvent extends PoolEvent {
   kind: "AddLiquidityEvent";
-  coinTypes: [Types.MoveStructTag];
+  coinTypes: Types.MoveStructTag[];
   amountsAdded: AtomicUnits[];
   amountMintedLP: AtomicUnits;
 }
 
 export interface RemoveLiquidityEvent extends PoolEvent {
   kind: "RemoveLiquidityEvent";
-  coinTypes: [Types.MoveStructTag];
+  coinTypes: Types.MoveStructTag[];
   amountsRemoved: AtomicUnits[];
   amountBurnedLP: AtomicUnits;
 }
@@ -76,10 +76,12 @@ export interface RawSwapEvent {
   };
 }
 
-export interface Raw2PoolAddLiquidityEvent {
+export interface Raw2PoolAddLiquidityEvent extends Types.Event {
   kind: "Raw2PoolAddLiquidityEvent";
+  type: Types.MoveStructTag;
   data: {
     sender: Types.Address;
+    timestamp: Types.U128;
     before_reserve_0: Types.U64;
     after_reserve_0: Types.U64;
     before_reserve_1: Types.U64;
@@ -92,10 +94,11 @@ export interface Raw2PoolAddLiquidityEvent {
   };
 }
 
-export interface Raw3PoolAddLiquidityEvent {
+export interface Raw3PoolAddLiquidityEvent extends Types.Event {
   kind: "Raw3PoolAddLiquidityEvent";
   data: {
     sender: Types.Address;
+    timestamp: Types.U128;
     before_reserve_0: Types.U64;
     after_reserve_0: Types.U64;
     before_reserve_1: Types.U64;
@@ -139,19 +142,32 @@ export function parseRawSwapEvent(event: RawSwapEvent): SwapEvent {
   };
 }
 
-export function parseRawAddLiquidityEvent(
-  event: RawAddLiquidityEvent
+export function parseRaw2PoolAddLiquidityEvent(
+  event: Raw2PoolAddLiquidityEvent
 ): AddLiquidityEvent {
   return {
     kind: "AddLiquidityEvent",
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
     timestamp: new BN(event.data.timestamp),
-    xCoinType: event.data.x_coin_type,
-    yCoinType: event.data.y_coin_type,
-    xAdded: AU(event.data.x_added_au),
-    yAdded: AU(event.data.y_added_au),
-    lpMinted: AU(event.data.lp_minted_au),
+    coinTypes: parseTypeArgs(event.type),
+    amountsAdded: [
+      AU(
+        new BN(event.data.after_reserve_0).sub(
+          new BN(event.data.before_reserve_0)
+        )
+      ),
+      AU(
+        new BN(event.data.after_reserve_1).sub(
+          new BN(event.data.before_reserve_1)
+        )
+      ),
+    ],
+    amountMintedLP: AU(
+      new BN(event.data.after_lp_tokens_supply).sub(
+        new BN(event.data.before_lp_tokens_supply)
+      )
+    ),
   };
 }
 
