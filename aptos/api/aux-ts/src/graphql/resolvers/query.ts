@@ -143,21 +143,8 @@ export const query = {
   },
 
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
-    let poolClient = new PoolClient(auxClient, poolInput);
-    let pool;
-    try {
-      pool = await poolClient.query();
-    } catch {
-      poolClient = new PoolClient(auxClient, {
-        coinTypeX: poolInput.coinTypeY,
-        coinTypeY: poolInput.coinTypeX,
-      });
-      try {
-        pool = await poolClient.query();
-      } catch {
-        return null;
-      }
-    }
+    const poolClient = await new PoolClient(auxClient, poolInput).transpose();
+    const pool = await poolClient.query();
     const coins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
       coins.map((coin) => [coin.coinType, [coin.name, coin.symbol]])
@@ -397,7 +384,10 @@ function formatPool(
   }
 
   return {
-    type: new PoolClient(auxClient, {coinTypeX: coinInfoX.coinType, coinTypeY: coinInfoY.coinType}).type,
+    type: new PoolClient(auxClient, {
+      coinTypeX: coinInfoX.coinType,
+      coinTypeY: coinInfoY.coinType,
+    }).type,
     coinInfoX,
     coinInfoY,
     coinInfoLP: pool.coinInfoLP,

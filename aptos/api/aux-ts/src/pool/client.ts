@@ -79,6 +79,24 @@ export class PoolClient {
     this.coinTypeLP = `${auxClient.moduleAddress}::amm::LP<${coinTypeX}, ${coinTypeY}>`;
   }
 
+  async transpose(): Promise<PoolClient> {
+    try {
+      await this.query();
+      return this;
+    } catch {
+      const transposed = new PoolClient(this.auxClient, {
+        coinTypeX: this.coinTypeY,
+        coinTypeY: this.coinTypeX,
+      });
+      try {
+        await transposed.query(); // allow exception to propagate
+        return transposed;
+      } catch {
+        throw new Error(`Unable to find pool using ${this} or ${transposed}.`);
+      }
+    }
+  }
+
   /**
    * Loads and parses resources and events associated with a pool.
    *
