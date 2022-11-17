@@ -20,8 +20,7 @@ export interface Position {
   owner: Types.Address;
   coinInfos: CoinInfo[];
   coinInfoLP: CoinInfo;
-  amountX: DecimalUnits;
-  amountY: DecimalUnits;
+  amounts: DecimalUnits[];
   amountLP: DecimalUnits;
   share: number;
 }
@@ -51,24 +50,18 @@ export interface SwapEvent extends PoolEvent {
 export interface AddLiquidityEvent extends PoolEvent {
   kind: "AddLiquidityEvent";
   coinTypes: [Types.MoveStructTag];
-  xAdded: AtomicUnits;
-  yAdded: AtomicUnits;
-  lpMinted: AtomicUnits;
+  amountsAdded: AtomicUnits[];
+  amountMintedLP: AtomicUnits;
 }
 
 export interface RemoveLiquidityEvent extends PoolEvent {
   kind: "RemoveLiquidityEvent";
   coinTypes: [Types.MoveStructTag];
-  xRemoved: AtomicUnits;
-  yRemoved: AtomicUnits;
-  lpBurned: AtomicUnits;
+  amountsRemoved: AtomicUnits[];
+  amountBurnedLP: AtomicUnits;
 }
 
-export interface RawPoolEvent extends Types.Event {
-  kind: "RawSwapEvent" | "RawAddLiquidityEvent" | "RawRemoveLiquidityEvent";
-}
-
-export interface RawSwapEvent extends RawPoolEvent {
+export interface RawSwapEvent {
   kind: "RawSwapEvent";
   data: {
     timestamp: Types.U128;
@@ -83,19 +76,41 @@ export interface RawSwapEvent extends RawPoolEvent {
   };
 }
 
-export interface RawAddLiquidityEvent extends RawPoolEvent {
-  kind: "RawAddLiquidityEvent";
+export interface Raw2PoolAddLiquidityEvent {
+  kind: "Raw2PoolAddLiquidityEvent";
   data: {
-    timestamp: Types.U128;
-    x_coin_type: Types.MoveStructTag;
-    y_coin_type: Types.MoveStructTag;
-    x_added_au: Types.U64;
-    y_added_au: Types.U64;
-    lp_minted_au: Types.U64;
+    sender: Types.Address;
+    before_reserve_0: Types.U64;
+    after_reserve_0: Types.U64;
+    before_reserve_1: Types.U64;
+    after_reserve_1: Types.U64;
+    before_balanced_reserve: Types.U128;
+    after_balanced_reserve: Types.U128;
+    amp: Types.U128;
+    before_lp_tokens_supply: Types.U128;
+    after_lp_tokens_supply: Types.U128;
   };
 }
 
-export interface RawRemoveLiquidityEvent extends RawPoolEvent {
+export interface Raw3PoolAddLiquidityEvent {
+  kind: "Raw3PoolAddLiquidityEvent";
+  data: {
+    sender: Types.Address;
+    before_reserve_0: Types.U64;
+    after_reserve_0: Types.U64;
+    before_reserve_1: Types.U64;
+    after_reserve_1: Types.U64;
+    before_reserve_2: Types.U64;
+    after_reserve_2: Types.U64;
+    before_balanced_reserve: Types.U128;
+    after_balanced_reserve: Types.U128;
+    amp: Types.U128;
+    before_lp_tokens_supply: Types.U128;
+    after_lp_tokens_supply: Types.U128;
+  };
+}
+
+export interface Raw2PoolRemoveLiquidityEvent {
   kind: "RawRemoveLiquidityEvent";
   data: {
     timestamp: Types.U128;

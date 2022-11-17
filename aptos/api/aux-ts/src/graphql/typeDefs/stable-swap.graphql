@@ -1,7 +1,7 @@
 type StableSwapPool {
   coinInfos: [CoinInfo!]!
   coinInfoLP: CoinInfo!
-  amounts: [CoinInfo!]!
+  amounts: [Float!]!
   amountLP: Float!
   feePercent: Float!
   featuredStatus: FeaturedStatus!
@@ -26,7 +26,7 @@ type StableSwapPool {
 
 type StableSwapPosition {
   coinInfos: [CoinInfo!]!
-  amounts: [CoinInfo!]!
+  amounts: [Float!]!
   coinInfoLP: CoinInfo!
   amountLP: Float!
   share: Float!
