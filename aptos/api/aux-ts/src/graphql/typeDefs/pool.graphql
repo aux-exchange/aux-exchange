@@ -1,0 +1,33 @@
+input CreatePoolInputV2 {
+  poolInput: PoolInput!
+  feeBasisPoints: String!
+}
+
+input AddLiquidityInputV2 {
+  poolInput: PoolInput!
+  amountX: Float!
+  amountY: Float!
+  useAuxAccount: Boolean
+}
+
+input RemoveLiquidityInputV2 {
+  poolInput: PoolInput!
+  amountLP: Float!
+  useAuxAccount: Boolean
+}
+
+input SwapExactInInputV2 {
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  amountIn: Float!
+  quoteAmountOut: Float!
+  slippagePct: Float
+}
+
+input SwapExactOutInput {
+  poolInput: PoolInput!
+  coinTypeOut: String!
+  amountOut: Float!
+  quoteAmountIn: Float!
+  slippagePct: Float
+}

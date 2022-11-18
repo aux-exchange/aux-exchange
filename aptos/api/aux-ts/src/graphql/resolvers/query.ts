@@ -188,14 +188,6 @@ export const query = {
     return formattedPools;
   },
 
-  async stableSwapPool() {
-    return null;
-  },
-
-  async stableSwapPools() {
-    return [];
-  },
-
   async market(
     _parent: any,
     { marketInput }: QueryMarketArgs
@@ -384,7 +376,7 @@ function formatPool(
   }
 
   return {
-    type: new PoolClient(auxClient, {
+    type: new ConstantProductClient(auxClient, {
       coinTypeX: coinInfoX.coinType,
       coinTypeY: coinInfoY.coinType,
     }).type,
