@@ -156,7 +156,7 @@ export class StableSwapClient {
   /**
    * Create a pool, specifying a swap fee. This fee goes entirely to LPs.
    */
-   async create(
+  async create(
     { fee }: { fee: Pct | Bps },
     amp: number,
     options: Partial<AuxClientOptions> = {}
@@ -243,7 +243,7 @@ export class StableSwapClient {
    *   round down to match the ratio and refund any unused coin.
    * - Pool mints and transfers LP tokens to sender, representing their position.
    */
-   async addLiquidity(
+  async addLiquidity(
     { amounts, minLP }: AddLiquidityInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<AddLiquidityEvent>> {
@@ -269,7 +269,7 @@ export class StableSwapClient {
    * - Pool burns LP tokens and transfers amounts X and Y to the sender, derived from the current
    *   pool ratio.
    */
-   async removeLiquidity(
+  async removeLiquidity(
     {
       amountLP,
     }: { amountLP: AnyUnits; useAuxAccount?: boolean },
