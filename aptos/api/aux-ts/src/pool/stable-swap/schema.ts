@@ -61,10 +61,10 @@ export interface RemoveLiquidityEvent extends PoolEvent {
   amountBurnedLP: AtomicUnits;
 }
 
-export interface RawSwapEvent {
+export interface RawSwapEvent extends Types.Event {
   kind: "RawSwapEvent";
   data: {
-    timestamp: Types.U128;
+    timestamp_microseconds: Types.U64;
     sender_addr: Types.Address;
     in_coin_type: Types.MoveStructTag;
     out_coin_type: Types.MoveStructTag;
@@ -76,12 +76,13 @@ export interface RawSwapEvent {
   };
 }
 
+
 export interface Raw2PoolAddLiquidityEvent extends Types.Event {
   kind: "Raw2PoolAddLiquidityEvent";
   type: Types.MoveStructTag;
   data: {
     sender: Types.Address;
-    timestamp: Types.U128;
+    timestamp_microseconds: Types.U64;
     before_reserve_0: Types.U64;
     after_reserve_0: Types.U64;
     before_reserve_1: Types.U64;
@@ -98,7 +99,7 @@ export interface Raw3PoolAddLiquidityEvent extends Types.Event {
   kind: "Raw3PoolAddLiquidityEvent";
   data: {
     sender: Types.Address;
-    timestamp: Types.U128;
+    timestamp_microseconds: Types.U64;
     before_reserve_0: Types.U64;
     after_reserve_0: Types.U64;
     before_reserve_1: Types.U64;
@@ -113,15 +114,51 @@ export interface Raw3PoolAddLiquidityEvent extends Types.Event {
   };
 }
 
-export interface Raw2PoolRemoveLiquidityEvent {
-  kind: "RawRemoveLiquidityEvent";
+export interface Raw2PoolRemoveLiquidityEvent extends Types.Event{
+  kind: "RemoveLiquidityEvent";
   data: {
-    timestamp: Types.U128;
-    x_coin_type: Types.MoveStructTag;
-    y_coin_type: Types.MoveStructTag;
-    x_removed_au: Types.U64;
-    y_removed_au: Types.U64;
-    lp_burned_au: Types.U64;
+    sender: Types.Address;
+    timestamp_microseconds: Types.U64;
+    before_reserve_0:Types.U64;
+    after_reserve_0: Types.U64;
+    fee_0: Types.U64;
+    withdraw_0: Types.U64;
+    before_reserve_1: Types.U64;
+    after_reserve_1: Types.U64;
+    fee_1: Types.U64;
+    withdraw_1: Types.U64;
+    before_reserve_2:Types.U128;
+    after_reserve2: Types.U128;
+    amp: Types.U128;
+    before_lp_tokens_supply: Types.U128;
+    after_lp_tokens_supply: Types.U128;
+    lp_burnt: Types.U64;
+    };
+}
+
+export interface Raw3PoolRemoveLiquidityEvent extends Types.Event{
+  kind: "RemoveLiquidityEvent";
+  data: {
+    sender: Types.Address;
+    timestamp_microseconds: Types.U64;
+    before_reserve_0: Types.U64;
+    after_reserve_0: Types.U64;
+    fee_0: Types.U64;
+    withdraw_0: Types.U64;
+    before_reserve_1: Types.U64;
+    after_reserve_1: Types.U64;
+    fee_1: Types.U64;
+    withdraw_1: Types.U64;
+    before_reserve_2: Types.U64;
+    after_reserve_2: Types.U64;
+    fee_2: Types.U64;
+    withdraw_2: Types.U64;
+    before_balanced_reserve: Types.U128;
+    after_balanced_reserve: Types.U128;
+    amp: Types.U128;
+    before_lp_tokens_supply: Types.U128;
+    after_lp_tokens_supply: Types.U128;
+    lp_burnt: Types.U64;
   };
 }
 
@@ -130,7 +167,7 @@ export function parseRawSwapEvent(event: RawSwapEvent): SwapEvent {
     kind: "SwapEvent",
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
-    timestamp: new BN(event.data.timestamp),
+    timestamp: new BN(event.data.timestamp_microseconds),
     senderAddr: new HexString(event.data.sender_addr),
     coinTypeIn: event.data.in_coin_type,
     coinTypeOut: event.data.out_coin_type,
@@ -149,7 +186,7 @@ export function parseRaw2PoolAddLiquidityEvent(
     kind: "AddLiquidityEvent",
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
-    timestamp: new BN(event.data.timestamp),
+    timestamp: new BN(event.data.timestamp_microseconds),
     coinTypes: parseTypeArgs(event.type),
     amountsAdded: [
       AU(
@@ -171,19 +208,101 @@ export function parseRaw2PoolAddLiquidityEvent(
   };
 }
 
-export function parseRawRemoveLiquidityEvent(
-  event: RawRemoveLiquidityEvent
+export function parseRaw3PoolAddLiquidityEvent(
+  event: Raw3PoolAddLiquidityEvent
+): AddLiquidityEvent {
+  return {
+    kind: "AddLiquidityEvent",
+    type: event.type,
+    sequenceNumber: new BN(event.sequence_number),
+    timestamp: new BN(event.data.timestamp_microseconds),
+    coinTypes: parseTypeArgs(event.type),
+    amountsAdded: [
+      AU(
+        new BN(event.data.after_reserve_0).sub(
+          new BN(event.data.before_reserve_0)
+        )
+      ),
+      AU(
+        new BN(event.data.after_reserve_1).sub(
+          new BN(event.data.before_reserve_1)
+        )
+      ),
+      AU(
+        new BN(event.data.after_reserve_2).sub(
+          new BN(event.data.before_reserve_2)
+        )
+      ),
+    ],
+    amountMintedLP: AU(
+      new BN(event.data.after_lp_tokens_supply).sub(
+        new BN(event.data.before_lp_tokens_supply)
+      )
+    ),
+  };
+
+}
+
+export function parseRaw2PoolRemoveLiquidityEvent(
+  event: Raw2PoolRemoveLiquidityEvent
 ): RemoveLiquidityEvent {
   return {
     kind: "RemoveLiquidityEvent",
     type: event.type,
     sequenceNumber: new BN(event.sequence_number),
-    timestamp: new BN(event.data.timestamp),
-    xCoinType: event.data.x_coin_type,
-    yCoinType: event.data.y_coin_type,
-    xRemoved: AU(event.data.x_removed_au),
-    yRemoved: AU(event.data.y_removed_au),
-    lpBurned: AU(event.data.lp_burned_au),
+    timestamp: new BN(event.data.timestamp_microseconds),
+    coinTypes: parseTypeArgs(event.type),
+    amountsRemoved: [
+      AU(
+        new BN(event.data.before_reserve_0).sub(
+          new BN(event.data.after_reserve_0)
+        )
+      ),
+      AU(
+        new BN(event.data.before_reserve_1).sub(
+          new BN(event.data.after_reserve_1)
+        )
+      ),
+    ],
+    amountBurnedLP: AU(
+      new BN(event.data.before_lp_tokens_supply).sub(
+        new BN(event.data.after_lp_tokens_supply)
+      )
+    ),
+  };
+}
+
+export function parseRaw3PoolRemoveLiquidityEvent(
+  event: Raw3PoolRemoveLiquidityEvent
+): RemoveLiquidityEvent {
+  return {
+    kind: "RemoveLiquidityEvent",
+    type: event.type,
+    sequenceNumber: new BN(event.sequence_number),
+    timestamp: new BN(event.data.timestamp_microseconds),
+    coinTypes: parseTypeArgs(event.type),
+    amountsRemoved: [
+      AU(
+        new BN(event.data.before_reserve_0).sub(
+          new BN(event.data.after_reserve_0)
+        )
+      ),
+      AU(
+        new BN(event.data.before_reserve_1).sub(
+          new BN(event.data.after_reserve_1)
+        )
+      ),
+      AU(
+        new BN(event.data.before_reserve_2).sub(
+          new BN(event.data.after_reserve_2)
+        )
+      ),
+    ],
+    amountBurnedLP: AU(
+      new BN(event.data.before_lp_tokens_supply).sub(
+        new BN(event.data.after_lp_tokens_supply)
+      )
+    ),
   };
 }
 
@@ -191,11 +310,9 @@ export function parseRawRemoveLiquidityEvent(
 /* Input schemas (Pool) */
 /************************/
 
-export interface ConstantProductInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
+export interface StableSwapInput {
+  coinTypes: Types.MoveStructTag[];
 }
-
 export type SwapInput = SwapExactInInput | SwapExactOutInput;
 
 export interface SwapExactInInput {
@@ -235,13 +352,10 @@ export interface AddExactLiquidityInput {
   amountY: AnyUnits;
 }
 
-export interface AddApproximateLiquidityInput {
-  maxX: AnyUnits;
-  maxY: AnyUnits;
-  minLP?: AnyUnits;
-  maxPoolLP?: AnyUnits;
-  minPoolX?: AnyUnits;
-  minPoolY?: AnyUnits;
+export interface AddLiquidityInput {
+  amounts: AnyUnits[];
+  minLP: Types.U64;
+  useAuxAccount?: Boolean;
 }
 
 /********************************/
@@ -253,9 +367,11 @@ export function createPoolPayload(
   input: CreatePoolPayloadInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${moduleAddress}::amm::create_pool`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [input.feeBps],
+    function: (input.coinTypes.length == 2)
+      ? `${moduleAddress}::stable_2pool::create_pool`
+      : `${moduleAddress}::stable_3pool::create_pool`,
+    type_arguments: input.coinTypes,
+    arguments: [input.feeBps, input.amp],
   };
 }
 
@@ -317,49 +433,11 @@ export function addLiquidityPayload(
   input: AddLiquidityPayloadInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${moduleAddress}::amm::add_liquidity`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [input.amountAuX, input.amountAuY, input.maxSlippageBps],
-  };
-}
-
-export function addExactLiquidityPayload(
-  moduleAddress: Types.Address,
-  input: AddExactLiquidityPayloadInput
-): Types.EntryFunctionPayload {
-  return {
-    function: `${moduleAddress}::amm::add_exact_liquidity`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [input.amountAuX, input.amountAuY],
-  };
-}
-
-export function addApproximateLiquidityPayload(
-  moduleAddress: Types.Address,
-  input: AddApproximateLiquidityPayloadInput
-): Types.EntryFunctionPayload {
-  return {
-    function: `${moduleAddress}::amm::add_approximate_liquidity`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [
-      input.maxAuX,
-      input.maxAuY,
-      input.minAuLP,
-      input.maxPoolAuLP,
-      input.minPoolAuX,
-      input.minPoolAuY,
-    ],
-  };
-}
-
-export function addLiquidityWithAccountPayload(
-  moduleAddress: Types.Address,
-  input: AddLiquidityPayloadInput
-): Types.EntryFunctionPayload {
-  return {
-    function: `${moduleAddress}::amm::add_liquidity_with_aux_account`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [input.amountAuX, input.amountAuY, input.maxSlippageBps],
+    function: (input.coinTypes.length == 2)
+      ? `${moduleAddress}::stable_2pool::add_liquidity`
+      : `${moduleAddress}::stable_3pool::add_liquidity`,
+    type_arguments: input.coinTypes,
+    arguments: input.amountAus.concat(input.minLP),
   };
 }
 
@@ -368,19 +446,10 @@ export function removeLiquidityPayload(
   input: RemoveLiquidityPayloadInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${moduleAddress}::amm::remove_liquidity`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
-    arguments: [input.amountAuLP],
-  };
-}
-
-export function removeLiquidityWithAccountPayload(
-  moduleAddress: Types.Address,
-  input: RemoveLiquidityPayloadInput
-): Types.EntryFunctionPayload {
-  return {
-    function: `${moduleAddress}::amm::remove_liquidity_with_aux_account`,
-    type_arguments: [input.coinTypeX, input.coinTypeY],
+    function: (input.coinTypes.length == 2)
+      ? `${moduleAddress}::stable_2pool::remove_liquidity`
+      : `${moduleAddress}::stable_3pool::remove_liquidity`,
+    type_arguments: input.coinTypes,
     arguments: [input.amountAuLP],
   };
 }
@@ -401,9 +470,9 @@ export function resetPoolPayload(
 /****************************************/
 
 export interface CreatePoolPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
+  coinTypes: Types.MoveStructTag[];
   feeBps: Types.U64;
+  amp: Types.U64;
 }
 
 export interface SwapPayloadInput {
@@ -437,38 +506,16 @@ export interface SwapCoinForExactCoinLimitPayloadInput
 }
 
 export interface AddLiquidityPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
-  amountAuX: Types.U64;
-  amountAuY: Types.U64;
-  maxSlippageBps: Types.U64;
-}
-
-export interface AddExactLiquidityPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
-  amountAuX: Types.U64;
-  amountAuY: Types.U64;
-}
-
-export interface AddApproximateLiquidityPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
-  maxAuX: Types.U64;
-  maxAuY: Types.U64;
-  minAuLP: Types.U64;
-  maxPoolAuLP: Types.U64;
-  minPoolAuX: Types.U64;
-  minPoolAuY: Types.U64;
+  coinTypes: Types.MoveStructTag[];
+  amountAus: Types.U64[];
+  minLP: Types.U64;
 }
 
 export interface RemoveLiquidityPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
+  coinTypes: Types.MoveStructTag[];
   amountAuLP: Types.U64;
 }
 
 export interface ResetPoolPayloadInput {
-  coinTypeX: Types.MoveStructTag;
-  coinTypeY: Types.MoveStructTag;
+  coinTypes: Types.MoveStructTag[];
 }

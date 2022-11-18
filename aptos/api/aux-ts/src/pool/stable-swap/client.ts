@@ -19,36 +19,32 @@ import {
   toAtomicUnitsRatio,
 } from "../../units";
 import {
-  AddApproximateLiquidityInput,
-  addApproximateLiquidityPayload,
-  AddExactLiquidityInput,
-  addExactLiquidityPayload,
   AddLiquidityEvent,
   AddLiquidityInput,
   addLiquidityPayload,
-  addLiquidityWithAccountPayload,
   createPoolPayload,
-  parseRawAddLiquidityEvent,
-  parseRawRemoveLiquidityEvent,
+  parseRaw2PoolAddLiquidityEvent,
+  parseRaw3PoolAddLiquidityEvent,
+  parseRaw2PoolRemoveLiquidityEvent,
+  parseRaw3PoolRemoveLiquidityEvent,
   parseRawSwapEvent,
   PoolEvent,
-  ,
   Position,
-  RawAddLiquidityEvent,
-  RawPoolEvent,
-  RawRemoveLiquidityEvent,
+  Raw2PoolAddLiquidityEvent,
+  Raw3PoolAddLiquidityEvent,
+  Raw2PoolRemoveLiquidityEvent,
+  // Raw3PoolRemoveLiquidityEvent
   RawSwapEvent,
   RemoveLiquidityEvent,
   removeLiquidityPayload,
-  removeLiquidityWithAccountPayload,
   resetPoolPayload,
-  swapCoinForExactCoinLimitPayload,
-  swapCoinForExactCoinPayload,
-  SwapEvent,
-  swapExactCoinForCoinLimitPayload,
-  swapExactCoinForCoinPayload,
-  SwapExactInInput,
-  SwapExactOutInput,
+  swapCoinForExactCoinLimitPayload, 
+  //swapCoinForExactCoinPayload,
+  //SwapEvent,
+  //swapExactCoinForCoinLimitPayload,
+  //swapExactCoinForCoinPayload,
+  //SwapExactInInput,
+  //SwapExactOutInput,
 } from "./schema";
 
 /**
@@ -160,13 +156,15 @@ export class StableSwapClient {
   /**
    * Create a pool, specifying a swap fee. This fee goes entirely to LPs.
    */
-  async create(
+   async create(
     { fee }: { fee: Pct | Bps },
+    amp: number,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<Types.MoveStructTag>> {
     const input = {
       coinTypes: this.coinTypes,
       feeBps: (fee.toNumber() * 10000).toString(),
+      amp: amp.toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       createPoolPayload(this.auxClient.moduleAddress, input),
@@ -177,7 +175,6 @@ export class StableSwapClient {
       result: this.type,
     };
   }
-
   /**
    * Swaps the input coin for the output coin. This can be specified either as:
    * 1. "exact in" => swap an exact amount of input coin for some minimum amount of output coin.
@@ -246,112 +243,35 @@ export class StableSwapClient {
    *   round down to match the ratio and refund any unused coin.
    * - Pool mints and transfers LP tokens to sender, representing their position.
    */
-  async addLiquidity(
-    { amountX, amountY, slippage, useAuxAccount }: AddLiquidityInput,
+   async addLiquidity(
+    { amounts, minLP }: AddLiquidityInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    const pool = await this.query();
-    const amountAuX = toAtomicUnits(amountX, pool.coinInfoX.decimals).toU64();
-    const amountAuY = toAtomicUnits(amountY, pool.coinInfoY.decimals).toU64();
+    const pool = await this.query();    
+    let zip = (amt: AnyUnits[], coinInfo: CoinInfo[]) => amt.map((a, i) => toAtomicUnits(a, coinInfo[i].decimals).toU64());
+    const amountAus = zip(amounts, pool.coinInfos);
     const input = {
-      coinTypeX: pool.coinInfoX.coinType,
-      coinTypeY: pool.coinInfoY.coinType,
-      amountAuX,
-      amountAuY,
-      maxSlippageBps: (slippage ?? ConstantProductClient.defaultSlippage)
-        .toBps()
-        .toString(),
+      coinTypes: pool.coinInfos.map(x => x.coinType),
+      amountAus: amountAus, 
+      minLP,
     };
-    const payload =
-      useAuxAccount ?? false
-        ? addLiquidityWithAccountPayload(this.auxClient.moduleAddress, input)
-        : addLiquidityPayload(this.auxClient.moduleAddress, input);
+    
+    const payload = addLiquidityPayload(this.auxClient.moduleAddress, input);
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       payload,
       options
     );
-    return this.parseAddLiquidityTransaction(transaction);
+    return this.parseAddLiquidityTransaction(transaction, input.coinTypes.length);
   }
-
-  /**
-   * Adds the exact liquidity to the pool. If the amounts do not match the pool ratio, tx fails.
-   */
-  async addExactLiquidity(
-    { amountX, amountY }: AddExactLiquidityInput,
-    options: Partial<AuxClientOptions> = {}
-  ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    const pool = await this.query();
-    const amountAuX = toAtomicUnits(amountX, pool.coinInfoX.decimals).toU64();
-    const amountAuY = toAtomicUnits(amountY, pool.coinInfoY.decimals).toU64();
-    const input = {
-      amountAuX,
-      amountAuY,
-      coinTypeX: pool.coinInfoX.coinType,
-      coinTypeY: pool.coinInfoY.coinType,
-    };
-    const transaction = await this.auxClient.sendOrSimulateTransaction(
-      addExactLiquidityPayload(this.auxClient.moduleAddress, input),
-      options
-    );
-    return this.parseAddLiquidityTransaction(transaction);
-  }
-
-  /**
-   * Adds liquidity to the pool.
-   *
-   * - The amount added may deviate from the ratio in the pool.
-   * - Any rounding is advantageous to the pool.
-   * - maxX and maxY are the upper limits on what will be added to the pool.
-   * - minLP is the minimum required amount of LP token that the user will receive in order for the
-   *   transaction to pass.
-   * - maxPoolLP is the maximum LP of the pool *after* your contribution has been accounted for.
-   * - minPoolX and minPoolY are the minimum X and Y in the pool *after* your contribution has been
-   *   accounted for.
-   *
-   * If any of these conditions fail, the `addApproximateLiquidity` tx will fail.
-   */
-  async addApproximateLiquidity(
-    {
-      maxX,
-      maxY,
-      minLP,
-      maxPoolLP,
-      minPoolX,
-      minPoolY,
-    }: AddApproximateLiquidityInput,
-    options: Partial<AuxClientOptions> = {}
-  ): Promise<AuxTransaction<AddLiquidityEvent>> {
-    const pool = await this.query();
-    const input = {
-      coinTypeX: pool.coinInfoX.coinType,
-      coinTypeY: pool.coinInfoY.coinType,
-      maxAuX: toAtomicUnits(maxX, pool.coinInfoX.decimals).toString(),
-      maxAuY: toAtomicUnits(maxY, pool.coinInfoY.decimals).toString(),
-      minAuLP: toAtomicUnits(minLP, pool.coinInfoLP.decimals).toString(),
-      maxPoolAuLP: toAtomicUnits(
-        maxPoolLP,
-        pool.coinInfoLP.decimals
-      ).toString(),
-      minPoolAuX: toAtomicUnits(minPoolX, pool.coinInfoX.decimals).toString(),
-      minPoolAuY: toAtomicUnits(minPoolY, pool.coinInfoY.decimals).toString(),
-    };
-    const transaction = await this.auxClient.sendOrSimulateTransaction(
-      addApproximateLiquidityPayload(this.auxClient.moduleAddress, input),
-      options
-    );
-    return this.parseAddLiquidityTransaction(transaction);
-  }
-
   /**
    * Removes liquidity from the pool.
    * - Sender transfers LP tokens to the pool.
    * - Pool burns LP tokens and transfers amounts X and Y to the sender, derived from the current
    *   pool ratio.
    */
-  async removeLiquidity(
+   async removeLiquidity(
     {
       amountLP,
-      useAuxAccount,
     }: { amountLP: AnyUnits; useAuxAccount?: boolean },
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<RemoveLiquidityEvent>> {
@@ -362,20 +282,16 @@ export class StableSwapClient {
     ).toU64();
     const input = {
       amountAuLP,
-      coinTypeX: pool.coinInfoX.coinType,
-      coinTypeY: pool.coinInfoY.coinType,
+      coinTypes: pool.coinInfos.map(x => x.coinType),
       coinInfoLP: pool.coinInfoLP,
     };
-    const payload =
-      useAuxAccount ?? false
-        ? removeLiquidityWithAccountPayload(this.auxClient.moduleAddress, input)
-        : removeLiquidityPayload(this.auxClient.moduleAddress, input);
     const transaction = await this.auxClient.sendOrSimulateTransaction(
-      payload,
+      removeLiquidityPayload(this.auxClient.moduleAddress, input),
       options
     );
-    return this.parseRemoveLiquidityTransaction(transaction);
+    return this.parseRemoveLiquidityTransaction(transaction, input.coinTypes.length);
   }
+
 
   /**
    * Drain the pool of the locked LP tokens from the initial addLiquidity. Only succeeds when all
@@ -760,23 +676,41 @@ export class StableSwapClient {
   }
 
   private parseAddLiquidityTransaction(
-    transaction: Types.UserTransaction
+    transaction: Types.UserTransaction, 
+    poolSize: number,
   ): AuxTransaction<AddLiquidityEvent> {
-    return this.parsePoolTransaction(
-      transaction,
-      `${this.auxClient.moduleAddress}::amm::AddLiquidityEvent`,
-      parseRawAddLiquidityEvent
-    );
+    if (poolSize == 2) {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_2pool::AddLiquidityEvent`,
+        parseRaw2PoolAddLiquidityEvent
+      );
+    } else {
+        return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_3pool::AddLiquidityEvent`,
+        parseRaw3PoolAddLiquidityEvent
+      );
+    };
   }
 
   private parseRemoveLiquidityTransaction(
-    transaction: Types.UserTransaction
+    transaction: Types.UserTransaction, 
+    poolSize: number,
   ): AuxTransaction<RemoveLiquidityEvent> {
-    return this.parsePoolTransaction(
-      transaction,
-      `${this.auxClient.moduleAddress}::amm::RemoveLiquidityEvent`,
-      parseRawRemoveLiquidityEvent
-    );
+    if (poolSize == 2) {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_2pool::RemoveLiquidityEvent`,
+        parseRaw2PoolRemoveLiquidityEvent
+      );  
+    } else {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_3pool::RemoveLiquidityEvent`,
+        parseRaw3PoolRemoveLiquidityEvent
+      );
+    }
   }
 
   private parsePoolTransaction<
