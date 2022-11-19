@@ -235,10 +235,10 @@ module aux::stake {
     public entry fun create_with_signer<S, R>(
         sender: &signer,
         reward_amount: u64,
-        end_time: u64, // us
+        duration_us: u64, // us
     ) acquires Pools {
         let reward = coin::withdraw<R>(sender, reward_amount);
-        create<S, R>(signer::address_of(sender), reward, end_time);
+        create<S, R>(signer::address_of(sender), reward, duration_us);
     }
 
 
@@ -301,6 +301,47 @@ module aux::stake {
         update_pool(pool, now);
 
         pool.authority = new_authority;
+
+        event::emit_event<ModifyPoolEvent<S, R>>(
+            &mut pools.modify_pool_events,
+            ModifyPoolEvent {
+                pool_id: id,
+                authority: pool.authority,
+                start_time: pool.start_time,
+                end_time: pool.end_time,
+                reward_remaining: pool.reward_remaining,
+                total_amount_staked: coin::value(&pool.stake),
+                acc_reward_per_share: pool.acc_reward_per_share,
+                timestamp: now
+            }
+        );
+    }
+
+    /// End reward early by removing all remaining reward from the pool.
+    /// Can only be called by stake pool authority.
+    public entry fun end_reward_early<S, R>(
+        sender: &signer,
+        id: u64
+    ) acquires Pools {
+        assert!(exists<Pools<S, R>>(@aux), E_INCENTIVE_POOL_NOT_FOUND);
+        let pools = borrow_global_mut<Pools<S, R>>(@aux);
+        assert!(table::contains(&mut pools.pools, id), E_INCENTIVE_POOL_NOT_FOUND);
+        let pool = table::borrow_mut(&mut pools.pools, id);
+
+        let sender_addr = signer::address_of(sender);
+        assert!(sender_addr == pool.authority, E_NOT_AUTHORIZED);
+
+        let now = timestamp::now_microseconds();
+        update_pool(pool, now);
+
+        // transfer remaining reward to sender
+        let reward = coin::extract(&mut pool.reward, pool.reward_remaining);
+        if (!coin::is_account_registered<R>(sender_addr)) {
+            coin::register<R>(sender);
+        };
+        coin::deposit(sender_addr, reward);
+        pool.reward_remaining = 0;
+        pool.end_time = now;
 
         event::emit_event<ModifyPoolEvent<S, R>>(
             &mut pools.modify_pool_events,
@@ -556,10 +597,11 @@ module aux::stake {
     /// `authority` is the address of signer that can modify the pool.
     /// `reward` must be the exact amount of total reward desired for the pool.
     /// `end_time` should be specified as microseconds from the UNIX epoch
-    public fun create<S, R>(authority: address, reward: Coin<R>, end_time: u64): u64 acquires Pools {
+    public fun create<S, R>(authority: address, reward: Coin<R>, duration_us: u64): u64 acquires Pools {
         let start_time = timestamp::now_microseconds();
-        assert!(end_time - start_time >= MIN_DURATION_US, E_INVALID_DURATION);
-        assert!(end_time - start_time <= MAX_DURATION_US, E_INVALID_DURATION);
+        assert!(duration_us >= MIN_DURATION_US, E_INVALID_DURATION);
+        assert!(duration_us <= MAX_DURATION_US, E_INVALID_DURATION);
+        let end_time = start_time + duration_us;
         let reward_amount = coin::value(&reward);
         assert!(reward_amount != 0, E_INVALID_REWARD);
         let module_authority = authority::get_signer_self();
@@ -1411,7 +1453,7 @@ module aux::stake {
             // sender reward debt is equivalent to duration reward for the last duration
             assert!(user_pos.last_acc_reward_per_share == 0, (user_pos.last_acc_reward_per_share as u64));
         };
-        // TIME: start + 100
+        // TIME: start + 200
         // fast forward 100 second and claim reward
         timestamp::fast_forward_seconds(100);
         claim<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id);
@@ -1531,6 +1573,111 @@ module aux::stake {
             assert!(user_pos.amount_staked == 0, E_TEST_FAILURE);
             // sender reward debt is equivalent to duration reward for the last duration
             assert!(user_pos.last_acc_reward_per_share == pool.acc_reward_per_share, E_TEST_FAILURE);
+        };
+    }
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
+    fun test_end_reward_early(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
+        setup_module_for_test(sender, aptos_framework);
+        let sender_addr = signer::address_of(sender);
+        let alice_addr = signer::address_of(alice);
+        if (!account::exists_at(alice_addr)) {
+            account::create_account_for_test(alice_addr);
+        };
+
+        let sender_eth = 5 * 100000000;
+        let alice_eth = sender_eth;
+        fake_coin::register_and_mint<USDC>(sender, 3000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
+        fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
+        fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
+        let reward_au = 2000000 * 1000000;
+        let reward_remaining = reward_au;
+        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
+
+        // Incentive:
+        // duration = 30 days = 30*24*3600*1000000 microseconds
+        // reward = 2e14 AU ETH
+        // reward per second = 77,160,493.82716049
+        let duration_seconds = 30*24*3600; // 30 days
+        let start_time = timestamp::now_microseconds();
+        let end_time = start_time + duration_seconds * 1000000;
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let sender_usdc = 1000000 * 1000000;
+        assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
+        {
+            let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            let pool = table::borrow_mut(&mut pools.pools, pool_id);
+            assert!(pool.authority == sender_addr, E_TEST_FAILURE);
+            assert!(pool.start_time == start_time, E_TEST_FAILURE);
+            assert!(pool.end_time == end_time, E_TEST_FAILURE);
+            assert!(pool.reward_remaining == reward_remaining, E_TEST_FAILURE);
+            assert!(coin::value(&pool.stake) == 0, E_TEST_FAILURE);
+            assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
+            assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
+            assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
+        };
+
+        // Sender stakes 100 au ETH
+        deposit<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id, 100);
+        {
+            sender_eth = sender_eth - 100;
+            assert!(coin::balance<FakeCoin<ETH>>(sender_addr) == sender_eth, E_TEST_FAILURE);
+            let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            let pool = table::borrow_mut(&mut pools.pools, pool_id);
+            assert!(pool.reward_remaining == reward_remaining, E_TEST_FAILURE);
+            assert!(coin::value(&pool.stake) == 100, E_TEST_FAILURE);
+            assert!(coin::value(&pool.reward) == reward_au, E_TEST_FAILURE);
+            assert!(pool.last_update_time == start_time, E_TEST_FAILURE);
+            assert!(pool.acc_reward_per_share == 0, E_TEST_FAILURE);
+            let positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 100, E_TEST_FAILURE);
+            assert!(user_pos.last_acc_reward_per_share == 0, E_TEST_FAILURE);
+        };
+
+        // TIME: start + 100
+        // fast forward 100 second and modify reward
+        timestamp::fast_forward_seconds(100);
+        // add $1M to reward
+        end_reward_early<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id);
+        {
+            let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            let pool = table::borrow_mut(&mut pools.pools, pool_id);
+            let acc_reward_per_share = 771604930000000000;
+            assert!(pool.acc_reward_per_share == acc_reward_per_share, (pool.acc_reward_per_share as u64));
+            assert!(pool.last_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+            reward_remaining = 1999922839507;
+            sender_usdc = sender_usdc + reward_remaining;
+            std::debug::print<u64>(&sender_usdc);
+            assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, coin::balance<FakeCoin<USDC>>(sender_addr));
+            assert!(pool.reward_remaining == 0, E_TEST_FAILURE);
+            assert!(coin::value(&pool.reward) == reward_au - reward_remaining, E_TEST_FAILURE);
+            assert!(pool.authority == sender_addr, E_TEST_FAILURE);
+            assert!(pool.start_time == start_time, E_TEST_FAILURE);
+            assert!(pool.end_time == timestamp::now_microseconds(), E_TEST_FAILURE);
+            assert!(coin::value(&pool.stake) == 100, E_TEST_FAILURE);
+        };
+
+        // TIME: start + 100
+        // withdraw stake
+        withdraw<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id, 100);
+        {
+            let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
+            let pool = table::borrow_mut(&mut pools.pools, pool_id);
+
+            let sender_reward = 77160493;
+            sender_usdc = sender_usdc + sender_reward;
+            assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
+            // reward + update time changed; all other values should stay the same
+            assert!(coin::value(&pool.stake) == 0, E_TEST_FAILURE);
+            sender_eth = sender_eth + 100;
+            assert!(coin::balance<FakeCoin<ETH>>(sender_addr) == sender_eth, E_TEST_FAILURE);
+
+            let sender_positions = borrow_global_mut<UserPositions<FakeCoin<ETH>, FakeCoin<USDC>>>(sender_addr);
+            let user_pos = table::borrow_mut(&mut sender_positions.positions, pool_id);
+            assert!(user_pos.amount_staked == 0, E_TEST_FAILURE);
+            assert!(user_pos.last_acc_reward_per_share == pool.acc_reward_per_share, (user_pos.last_acc_reward_per_share as u64));
         };
     }
 }
