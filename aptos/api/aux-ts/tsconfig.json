@@ -5,7 +5,7 @@
     "resolveJsonModule": true,
 
     // emit
-    "declaration": true,
+    "declaration": false,
     "outDir": "./build",
     "removeComments": true,
     "sourceMap": true,
