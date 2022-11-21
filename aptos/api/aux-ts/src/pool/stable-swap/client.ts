@@ -11,12 +11,19 @@ import {
   createPool3PoolPayload,
   parseRaw2PoolAddLiquidityEvent,
   parseRaw2PoolRemoveLiquidityEvent,
+  parseRaw2PoolSwapEvent,
   parseRaw3PoolAddLiquidityEvent,
   parseRaw3PoolRemoveLiquidityEvent,
   PoolEvent,
   removeLiquidity2PoolPayload,
   removeLiquidity3PoolPayload,
   RemoveLiquidityEvent,
+  swapCoinForExactCoin2PoolPayload,
+  SwapEvent,
+  swapExactCoinForCoin2PoolPayload,
+  SwapExactInInput,
+  SwapExactOutInput,
+  SwapInput,
 } from "./schema";
 
 /**
@@ -55,23 +62,6 @@ export class StableSwapClient {
     this.coinTypes = coinTypes;
   }
 
-  // async transpose(): Promise<StableSwapClient> {
-  //   try {
-  //     await this.query();
-  //     return this;
-  //   } catch {
-  //     const transposed = new StableSwapClient(this.auxClient, {
-  //       coinTypeX: this.coinTypeY,
-  //       coinTypeY: this.coinTypeX,
-  //     });
-  //     try {
-  //       await transposed.query(); // allow exception to propagate
-  //       return transposed;
-  //     } catch {
-  //       throw new Error(`Unable to find pool using ${this} or ${transposed}.`);
-  //     }
-  //   }
-  // }
 
   /**
    * Loads and parses resources and events associated with a pool.
@@ -153,14 +143,15 @@ export class StableSwapClient {
         ? createPool2PoolPayload(this.auxClient.moduleAddress, {
             coinType0: input.coinTypes[0]!,
             coinType1: input.coinTypes[1]!,
-            feeNumerator: new BN(fee.toBps()).muln(10000000000).toString(),
+            // BN multiplication not working
+            feeNumerator: (new BN(fee.toBps()).mul(new BN(10_000_000_000))).toString(),
             amp: amp.toString(),
           })
         : createPool3PoolPayload(this.auxClient.moduleAddress, {
             coinType0: input.coinTypes[0]!,
             coinType1: input.coinTypes[1]!,
             coinType2: input.coinTypes[2]!,
-            feeNumerator: new BN(fee.toBps()).muln(10000000000).toString(),
+            feeNumerator: (new BN(fee.toBps()).mul(new BN(10_000_000_000))).toString(),
             amp: amp.toString(),
           }),
       options
@@ -169,6 +160,16 @@ export class StableSwapClient {
       transaction,
       result: this.type,
     };
+  }
+
+  async swap(
+    input: SwapInput,
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<SwapEvent>> {
+    if ("coinTypeIn" in input) {
+      return this.swapExactIn(input, options);
+    }
+    return this.swapExactOut(input, options);
   }
 
   /**
@@ -261,6 +262,94 @@ export class StableSwapClient {
   /*********************/
   /* Private functions */
   /*********************/
+
+  private async swapExactIn(
+    { coinTypeIn, exactAmountIn, parameters }: SwapExactInInput,
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<SwapEvent>> {
+    parameters = parameters ?? {};
+    const coinInfoIn = await this.auxClient.getCoinInfo(coinTypeIn);
+    const coinInfoOut = await this.auxClient.getCoinInfo(
+      coinTypeIn === this.coinTypes[0]!
+        ? this.coinTypes[1]!
+        : this.coinTypes[0]!
+    );
+    const exactAmountAuIn = toAtomicUnits(
+      exactAmountIn,
+      coinInfoIn.decimals
+    ).toString();
+
+    const [coin0Amount, coin1Amount] =
+      coinTypeIn === this.coinTypes[0]
+        ? [exactAmountAuIn, "0"]
+        : ["0", exactAmountAuIn];
+
+    let payload;
+    payload = swapExactCoinForCoin2PoolPayload(this.auxClient.moduleAddress, {
+      coinType0: this.coinTypes[0]!,
+      coinType1: this.coinTypes[1]!,
+      coin0Amount,
+      coin1Amount,
+      outCoinIndex: coinTypeIn === this.coinTypes[0]! ? 1 : 0,
+      minQuantityOut: toAtomicUnits(
+        parameters.minAmountOut,
+        coinInfoOut.decimals
+      ).toString(),
+    });
+    const transaction = await this.auxClient.sendOrSimulateTransaction(
+      payload,
+      options
+    );
+    return this.parsePoolTransaction(
+      transaction,
+      `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
+      parseRaw2PoolSwapEvent
+    );
+  }
+
+  private async swapExactOut(
+    { coinTypeOut, exactAmountOut, parameters }: SwapExactOutInput,
+    options: Partial<AuxClientOptions> = {}
+  ): Promise<AuxTransaction<SwapEvent>> {
+    parameters = parameters ?? {};
+    const coinInfoIn = await this.auxClient.getCoinInfo(
+      coinTypeOut === this.coinTypes[1]!
+        ? this.coinTypes[0]!
+        : this.coinTypes[1]!
+    );
+    const coinInfoOut = await this.auxClient.getCoinInfo(coinTypeOut);
+    const exactAmountAuOut = toAtomicUnits(
+      exactAmountOut,
+      coinInfoIn.decimals
+    ).toString();
+
+    const [requestedQuantity0, requestedQuantity1] =
+      coinTypeOut === this.coinTypes[1]
+        ? ["0", exactAmountAuOut]
+        : [exactAmountAuOut, "0"];
+
+    let payload;
+    payload = swapCoinForExactCoin2PoolPayload(this.auxClient.moduleAddress, {
+      coinType0: this.coinTypes[0]!,
+      coinType1: this.coinTypes[1]!,
+      requestedQuantity0,
+      requestedQuantity1,
+      inCoinIndex: coinTypeOut === this.coinTypes[1]! ? 0 : 1,
+      maxInCoinAmount: toAtomicUnits(
+        parameters.maxAmountIn,
+        coinInfoOut.decimals
+      ).toString(),
+    });
+    const transaction = await this.auxClient.sendOrSimulateTransaction(
+      payload,
+      options
+    );
+    return this.parsePoolTransaction(
+      transaction,
+      `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
+      parseRaw2PoolSwapEvent
+    );
+  }
 
   private parseAddLiquidityTransaction(
     transaction: Types.UserTransaction
