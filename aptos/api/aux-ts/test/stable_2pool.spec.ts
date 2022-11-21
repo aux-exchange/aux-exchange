@@ -58,7 +58,7 @@ describe.only("Stable 2pool tests", function () {
   });
   
   // create USDC-USDT stableswap pool. 
-  it("createPool", async function () {
+  it.only("createPool", async function () {
     let tx = await poolClient.create({ fee: new Bps(0) }, 85);
     pool = await poolClient.query();
     assert.ok(
