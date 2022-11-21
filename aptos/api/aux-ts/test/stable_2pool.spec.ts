@@ -7,7 +7,7 @@ import type { StableSwap } from "../src/pool/stable-swap/schema";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
-import { AU, Bps , DU} from "../src/units";
+import { AU, Bps} from "../src/units";
 // import { toSafeInteger } from "lodash";
 
 describe.only("Stable 2pool tests", function () {
@@ -99,6 +99,7 @@ describe.only("Stable 2pool tests", function () {
     }
   });
   
+  // Off by digits. 
   it("removeLiquidity", async function () {
     const removedLPAmount = AU(399_100);
     const [expectedUSDCAmount, expectedUSDTAmount, expectedLPAmount] = [201, 802, 100_081];
