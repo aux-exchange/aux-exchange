@@ -49,6 +49,7 @@ import {
   swapExactCoinForCoinPayload,
   SwapExactInInput,
   SwapExactOutInput,
+  SwapInput,
 } from "./schema";
 
 /**
@@ -208,11 +209,11 @@ export class ConstantProductClient {
    * price.
    */
   async swap(
-    input: SwapExactInInput | SwapExactOutInput,
+    input: SwapInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
     if ("coinTypeIn" in input) {
-      return this.swapExactInPayload(input, options);
+      return this.swapExactIn(input, options);
     }
     return this.swapExactOut(input, options);
   }
@@ -507,7 +508,7 @@ export class ConstantProductClient {
   /* Private functions */
   /*********************/
 
-  private async swapExactInPayload(
+  private async swapExactIn(
     { coinTypeIn, exactAmountIn, parameters }: SwapExactInInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
