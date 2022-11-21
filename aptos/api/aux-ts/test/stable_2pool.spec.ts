@@ -7,7 +7,7 @@ import type { StableSwap } from "../src/pool/stable-swap/schema";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
-import { AU, Bps, DU } from "../src/units";
+import { AU, Bps , DU} from "../src/units";
 // import { toSafeInteger } from "lodash";
 
 describe.only("Stable 2pool tests", function () {
@@ -73,7 +73,7 @@ describe.only("Stable 2pool tests", function () {
     {
       let amounts = [AU("1000"), AU("4000")]
       let tx = await poolClient.addLiquidity(
-        {amounts: amounts, minLP: "0"},
+        {amounts: amounts, minLP: AU("0")},
       );
       assert.ok(
         tx.transaction.success,
@@ -98,10 +98,9 @@ describe.only("Stable 2pool tests", function () {
       );
     }
   });
-
-
+  
   it("removeLiquidity", async function () {
-    const removedLPAmount = DU(399_100);
+    const removedLPAmount = AU(399_100);
     const [expectedUSDCAmount, expectedUSDTAmount, expectedLPAmount] = [201, 802, 100_081];
     await poolClient.removeLiquidity({
       amountLP: removedLPAmount,
@@ -109,6 +108,7 @@ describe.only("Stable 2pool tests", function () {
 
     pool = await poolClient.query();
     const [usdcAmount, usdtAmount] = pool.amounts;
+    console.log(usdcAmount!.toNumber(), usdtAmount!.toNumber(), pool.amountLP.toNumber());
     assert.equal(usdcAmount!.toNumber(), expectedUSDCAmount);
     assert.equal(usdtAmount!.toNumber(), expectedUSDTAmount);
     assert.equal(pool.amountLP.toNumber(), expectedLPAmount);
@@ -118,7 +118,7 @@ describe.only("Stable 2pool tests", function () {
     pool = await poolClient.query();
     await Promise.all([
       assert.ok(await poolClient.swapEvents()),
-      assert.ok(await poolClient.addLiquidityEvents()),
+          assert.ok(await poolClient.addLiquidityEvents()),
       assert.ok(await poolClient.removeLiquidityEvents()),
     ]);
   });
