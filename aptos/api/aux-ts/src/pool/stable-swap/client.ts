@@ -19,8 +19,10 @@ import {
   removeLiquidity3PoolPayload,
   RemoveLiquidityEvent,
   swapCoinForExactCoin2PoolPayload,
+  swapCoinForExactCoin3PoolPayload,
   SwapEvent,
   swapExactCoinForCoin2PoolPayload,
+  swapExactCoinForCoin3PoolPayload,
   SwapExactInInput,
   SwapExactOutInput,
   SwapInput,
@@ -164,7 +166,7 @@ export class StableSwapClient {
     input: SwapInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
-    if ("coinTypeIn" in input) {
+    if ("exactAmountIn" in input) {
       return this.swapExactIn(input, options);
     }
     return this.swapExactOut(input, options);
@@ -262,38 +264,62 @@ export class StableSwapClient {
   /*********************/
 
   private async swapExactIn(
-    { coinTypeIn, exactAmountIn, parameters }: SwapExactInInput,
+    { coinTypeIn, coinTypeOut, exactAmountIn, parameters }: SwapExactInInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
     parameters = parameters ?? {};
     const coinInfoIn = await this.auxClient.getCoinInfo(coinTypeIn);
-    const coinInfoOut = await this.auxClient.getCoinInfo(
-      coinTypeIn === this.coinTypes[0]!
-        ? this.coinTypes[1]!
-        : this.coinTypes[0]!
-    );
+    const coinInfoOut = await this.auxClient.getCoinInfo(coinTypeOut);
     const exactAmountAuIn = toAtomicUnits(
       exactAmountIn,
       coinInfoIn.decimals
     ).toString();
 
-    const [coin0Amount, coin1Amount] =
-      coinTypeIn === this.coinTypes[0]
-        ? [exactAmountAuIn, "0"]
-        : ["0", exactAmountAuIn];
-
     let payload;
-    payload = swapExactCoinForCoin2PoolPayload(this.auxClient.moduleAddress, {
-      coinType0: this.coinTypes[0]!,
-      coinType1: this.coinTypes[1]!,
-      coin0Amount,
-      coin1Amount,
-      outCoinIndex: coinTypeIn === this.coinTypes[0]! ? 1 : 0,
-      minQuantityOut: toAtomicUnits(
-        parameters.minAmountOut,
-        coinInfoOut.decimals
-      ).toString(),
-    });
+    if (this.kind === "2pool") {
+      const [coin0Amount, coin1Amount] =
+        coinTypeIn === this.coinTypes[0]
+          ? [exactAmountAuIn, "0"]
+          : ["0", exactAmountAuIn];
+
+      payload = swapExactCoinForCoin2PoolPayload(this.auxClient.moduleAddress, {
+        coinType0: this.coinTypes[0]!,
+        coinType1: this.coinTypes[1]!,
+        coin0Amount,
+        coin1Amount,
+        outCoinIndex: coinTypeIn === this.coinTypes[0]! ? 1 : 0,
+        minQuantityOut: toAtomicUnits(
+          parameters.minAmountOut,
+          coinInfoOut.decimals
+        ).toString(),
+      });
+    } else {
+      const [coin0Amount, coin1Amount, coin2Amount] =
+        coinTypeIn === this.coinTypes[0]!
+          ? [exactAmountAuIn, "0", "0"]
+          : coinTypeIn === this.coinTypes[1]!
+          ? ["0", exactAmountAuIn, "0"]
+          : ["0", "0", exactAmountAuIn];
+
+      payload = swapExactCoinForCoin3PoolPayload(this.auxClient.moduleAddress, {
+        coinType0: this.coinTypes[0]!,
+        coinType1: this.coinTypes[1]!,
+        coinType2: this.coinTypes[1]!,
+        coin0Amount,
+        coin1Amount,
+        coin2Amount,
+        outCoinIndex:
+          coinTypeOut === this.coinTypes[0]!
+            ? 0
+            : coinTypeOut === this.coinTypes[1]
+            ? 1
+            : 2,
+        minQuantityOut: toAtomicUnits(
+          parameters.minAmountOut,
+          coinInfoOut.decimals
+        ).toString(),
+      });
+    }
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       payload,
       options
@@ -306,38 +332,62 @@ export class StableSwapClient {
   }
 
   private async swapExactOut(
-    { coinTypeOut, exactAmountOut, parameters }: SwapExactOutInput,
+    { coinTypeIn, coinTypeOut, exactAmountOut, parameters }: SwapExactOutInput,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<SwapEvent>> {
     parameters = parameters ?? {};
-    const coinInfoIn = await this.auxClient.getCoinInfo(
-      coinTypeOut === this.coinTypes[1]!
-        ? this.coinTypes[0]!
-        : this.coinTypes[1]!
-    );
+    const coinInfoIn = await this.auxClient.getCoinInfo(coinTypeIn);
     const coinInfoOut = await this.auxClient.getCoinInfo(coinTypeOut);
     const exactAmountAuOut = toAtomicUnits(
       exactAmountOut,
       coinInfoIn.decimals
     ).toString();
 
-    const [requestedQuantity0, requestedQuantity1] =
-      coinTypeOut === this.coinTypes[1]
-        ? ["0", exactAmountAuOut]
-        : [exactAmountAuOut, "0"];
-
     let payload;
-    payload = swapCoinForExactCoin2PoolPayload(this.auxClient.moduleAddress, {
-      coinType0: this.coinTypes[0]!,
-      coinType1: this.coinTypes[1]!,
-      requestedQuantity0,
-      requestedQuantity1,
-      inCoinIndex: coinTypeOut === this.coinTypes[1]! ? 0 : 1,
-      maxInCoinAmount: toAtomicUnits(
-        parameters.maxAmountIn,
-        coinInfoOut.decimals
-      ).toString(),
-    });
+    if (this.kind === "2pool") {
+      const [requestedQuantity0, requestedQuantity1] =
+        coinTypeOut === this.coinTypes[1]
+          ? ["0", exactAmountAuOut]
+          : [exactAmountAuOut, "0"];
+
+      payload = swapCoinForExactCoin2PoolPayload(this.auxClient.moduleAddress, {
+        coinType0: this.coinTypes[0]!,
+        coinType1: this.coinTypes[1]!,
+        requestedQuantity0,
+        requestedQuantity1,
+        inCoinIndex: coinTypeIn === this.coinTypes[0]! ? 0 : 1,
+        maxInCoinAmount: toAtomicUnits(
+          parameters.maxAmountIn,
+          coinInfoOut.decimals
+        ).toString(),
+      });
+    } else {
+      const [requestedQuantity0, requestedQuantity1, requestedQuantity2] =
+        coinTypeOut === this.coinTypes[0]
+          ? [exactAmountAuOut, "0", "0"]
+          : coinTypeOut === this.coinTypes[1]
+          ? ["0", exactAmountAuOut, "0"]
+          : ["0", "0", exactAmountAuOut];
+
+      payload = swapCoinForExactCoin3PoolPayload(this.auxClient.moduleAddress, {
+        coinType0: this.coinTypes[0]!,
+        coinType1: this.coinTypes[1]!,
+        coinType2: this.coinTypes[2]!,
+        requestedQuantity0,
+        requestedQuantity1,
+        requestedQuantity2,
+        inCoinIndex:
+          coinTypeIn === this.coinTypes[0]!
+            ? 0
+            : coinTypeIn === this.coinTypes[1]
+            ? 1
+            : 2,
+        maxInCoinAmount: toAtomicUnits(
+          parameters.maxAmountIn,
+          coinInfoOut.decimals
+        ).toString(),
+      });
+    }
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       payload,
       options

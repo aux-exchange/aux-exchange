@@ -403,11 +403,13 @@ export type SwapInput = SwapExactInInput | SwapExactOutInput;
 
 export interface SwapExactInInput {
   coinTypeIn: Types.MoveStructTag;
+  coinTypeOut: Types.MoveStructTag;
   exactAmountIn: AnyUnits;
   parameters: { minAmountOut: AnyUnits };
 }
 
 export interface SwapExactOutInput {
+  coinTypeIn: Types.MoveStructTag;
   coinTypeOut: Types.MoveStructTag;
   exactAmountOut: AnyUnits;
   parameters: { maxAmountIn: AnyUnits };
