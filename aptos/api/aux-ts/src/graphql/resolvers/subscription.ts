@@ -104,8 +104,8 @@ function poolInputsFilterFn(
     _.isUndefined(poolInputs) ||
     _.some(
       poolInputs,
-      ({ coinTypeX, coinTypeY }) =>
-        coinTypeX === payload.coinTypeX && coinTypeY === payload.coinTypeY
+      ({ coinTypes }) =>
+        coinTypes[0] === payload.coinTypeX && coinTypes[1] === payload.coinTypeY
     )
   );
 }

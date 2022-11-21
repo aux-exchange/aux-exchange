@@ -14,8 +14,8 @@ import * as SHA3 from "js-sha3";
 import _ from "lodash";
 import { APTOS_COIN_TYPE, FakeCoin } from "./coin";
 import { AptosNetwork, AuxEnv } from "./env";
-import type { PoolInput } from "./graphql/generated/types";
 import { ConstantProductClient } from "./pool/constant-product/client";
+import type { ConstantProductInput } from "./pool/constant-product/schema";
 import Router from "./router/dsl/router";
 import { AnyUnits, AtomicUnits, AU, DecimalUnits } from "./units";
 
@@ -151,11 +151,11 @@ export class AuxClient {
     }
   }
 
-  pool(poolInput: PoolInput): ConstantProductClient {
+  constantProduct(poolInput: ConstantProductInput): ConstantProductClient {
     return new ConstantProductClient(this, poolInput);
   }
 
-  async pools(): Promise<PoolInput[]> {
+  async pools(): Promise<ConstantProductInput[]> {
     const resources = await this.aptosClient.getAccountResources(
       this.moduleAddress
     );

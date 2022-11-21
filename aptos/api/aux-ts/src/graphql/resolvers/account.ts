@@ -33,6 +33,7 @@ export const account = {
     );
     return coinStore !== undefined;
   },
+
   async registeredCoins(parent: Account): Promise<RegisteredCoinInfo[]> {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
@@ -50,6 +51,7 @@ export const account = {
       registered: coinTypes.has(coin.coinType),
     }));
   },
+
   async walletBalances(parent: Account): Promise<Balance[]> {
     const resources = await auxClient.aptosClient.getAccountResources(
       parent.address
@@ -80,6 +82,7 @@ export const account = {
     );
     return balances.filter((i) => i !== undefined) as Balance[];
   },
+
   async balances(parent: Account): Promise<Balance[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const balances = await account.balances();
@@ -104,6 +107,7 @@ export const account = {
     );
     return allBalances.filter((i) => i !== undefined) as Balance[];
   },
+
   async deposits(parent: Account): Promise<Deposit[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const deposits = await account.deposits();
@@ -118,6 +122,7 @@ export const account = {
       amount: deposit.data.amount.toNumber(),
     }));
   },
+
   async withdrawals(parent: Account): Promise<Withdrawal[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const withdrawals = await account.withdrawals();
@@ -131,6 +136,7 @@ export const account = {
       amount: withdrawal.data.amount.toNumber(),
     }));
   },
+
   async transfers(parent: Account): Promise<Transfer[]> {
     const account = new AuxAccount(auxClient, parent.address);
     const transfers = await account.transfers();
@@ -145,6 +151,7 @@ export const account = {
       amount: transfer.data.amount.toNumber(),
     }));
   },
+
   async poolPositions(
     parent: Account,
     { poolInputs }: AccountPoolPositionsArgs
@@ -158,20 +165,21 @@ export const account = {
         _.some(
           poolInputs,
           (poolInput) =>
-            poolInput.coinTypeX === auxPosition.coinInfoX.coinType &&
-            poolInput.coinTypeY === auxPosition.coinInfoY.coinType
+            poolInput.coinTypes[0] === auxPosition.coinInfoX.coinType &&
+            poolInput.coinTypes[1] === auxPosition.coinInfoY.coinType
         )
       )
       .map((auxPosition) => {
         const pos = auxPosition!;
         return {
           ...pos,
-          amountX: pos.amountX.toNumber(),
-          amountY: pos.amountY.toNumber(),
+          coinInfos: [pos.coinInfoX, pos.coinInfoY],
+          amounts: [pos.amountX.toNumber(), pos.amountY.toNumber()],
           amountLP: pos.amountLP.toNumber(),
         };
       });
   },
+
   async openOrders(
     parent: Account,
     args: AccountOpenOrdersArgs
@@ -200,6 +208,7 @@ export const account = {
     );
     return orderss.flat();
   },
+
   async orderHistory(
     parent: Account,
     args: AccountOrderHistoryArgs
@@ -218,6 +227,7 @@ export const account = {
     );
     return orderss.flat();
   },
+
   async tradeHistory(
     parent: Account,
     args: AccountTradeHistoryArgs
