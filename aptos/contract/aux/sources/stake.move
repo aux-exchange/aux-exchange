@@ -1574,9 +1574,9 @@ module aux::stake {
 
         let sender_eth = 5 * 100000000;
         let alice_eth = sender_eth;
-        fake_coin::register_and_mint<USDC>(sender, 3000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<USDC>(sender, 3000000 * 1000000); // 3M USDC
         fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
-        fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
+        fake_coin::register_and_mint<USDC>(alice, 0); // 0 USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward_remaining = reward_au;
@@ -1584,13 +1584,13 @@ module aux::stake {
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
-        // reward = 2e14 AU ETH
+        // reward = 2e14 AU USDC
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
         let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
-        let sender_usdc = 1000000 * 1000000;
+        let sender_usdc = 1000000 * 1000000; // 1M = 3M - 2M
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
         {
             let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
@@ -1631,10 +1631,10 @@ module aux::stake {
         {
             let pools = borrow_global_mut<Pools<FakeCoin<ETH>, FakeCoin<USDC>>>(@aux);
             let pool = table::borrow_mut(&mut pools.pools, pool_id);
-            let acc_reward_per_share = 771604930000000000;
+            let acc_reward_per_share = 771604930000000000; // 77,160,493 * 1e12 / 100
             assert!(pool.acc_reward_per_share == acc_reward_per_share, (pool.acc_reward_per_share as u64));
             assert!(pool.last_update_time == timestamp::now_microseconds(), E_TEST_FAILURE);
-            reward_remaining = 1999922839507;
+            reward_remaining = 1999922839507; // 2e12 - 77,160,493
             sender_usdc = sender_usdc + reward_remaining;
             std::debug::print<u64>(&sender_usdc);
             assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, coin::balance<FakeCoin<USDC>>(sender_addr));

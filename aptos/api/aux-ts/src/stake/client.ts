@@ -213,7 +213,7 @@ export class StakePoolClient {
   /*******************/
 
   /**
-   * Create a stake pool, specifying reward amount and end time.
+   * Create a stake pool, specifying reward amount and duration.
    */
   async create(
     {
