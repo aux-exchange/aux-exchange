@@ -1,0 +1,16 @@
+input StakePoolInput {
+  coinTypeStake: String!
+  coinTypeReward: String!
+  poolId: Int!
+}
+
+type StakePool {
+  type: String!
+  coinInfoStake: CoinInfo!
+  coinInfoReward: CoinInfo!
+  authority: String!
+  startTimeUs: Int!
+  endTimeUs: Int!
+  amountStake: Float!
+  rewardRemaining: Float!
+}
