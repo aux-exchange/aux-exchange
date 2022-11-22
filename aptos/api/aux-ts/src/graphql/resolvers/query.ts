@@ -165,7 +165,7 @@ export const query = {
     const poolInputs = args.poolInputs
       ? args.poolInputs
       : (await auxClient.pools()).map((input) => ({
-          coinTypes: [input.coinTypeX, input.coinTypeY]
+          coinTypes: [input.coinTypeX, input.coinTypeY],
         }));
     const pools = await Promise.all(
       poolInputs.map((poolInput) =>
@@ -192,9 +192,12 @@ export const query = {
           getFeaturedPriority(lhs.featuredStatus)
         );
       }
+      // @ts-ignore
       if (lhs.recognizedLiquidity != rhs.recognizedLiquidity) {
+        // @ts-ignore
         return rhs.recognizedLiquidity - lhs.recognizedLiquidity;
       }
+      // @ts-ignore
       return rhs.auLiquidity - lhs.auLiquidity;
     });
     // @ts-ignore
@@ -241,6 +244,7 @@ export const query = {
       },
     };
   },
+
   async markets(_parent: any, args: QueryMarketsArgs): Promise<Market[]> {
     const markets = await aux.clob.core.query.markets(auxClient);
     const marketInputs = args.marketInputs;
@@ -339,7 +343,7 @@ function getFeaturedPriority(status: FeaturedStatus): number {
 function formatPool(
   pool: ConstantProduct,
   coinTypeToHippoNameSymbol: Record<Types.Address, [string, string]>
-) {
+): Pool {
   let featuredStatus = FeaturedStatus.None;
   for (const [x, y] of PROMOTED_POOLS) {
     if (
@@ -393,16 +397,16 @@ function formatPool(
       coinTypeX: coinInfoX.coinType,
       coinTypeY: coinInfoY.coinType,
     }).type,
-    coinInfoX,
-    coinInfoY,
+    coinInfos: [coinInfoX, coinInfoY],
     coinInfoLP: pool.coinInfoLP,
-    amountX: pool.amountX.toNumber(),
-    amountY: pool.amountY.toNumber(),
+    amounts: [pool.amountX.toNumber(), pool.amountY.toNumber()],
     amountLP: pool.amountLP.toNumber(),
     feePercent: pool.fee.toPercent(),
     featuredStatus,
-    recognizedLiquidity,
+    // @ts-ignore
     auLiquidity,
+    // @ts-ignore
+    recognizedLiquidity,
   };
 }
 
