@@ -230,7 +230,7 @@ export class StakePoolClient {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
       rewardAmount: rewardAmountAu.toU64(),
-      endTimeUs: durationUs.toString(),
+      durationUs: durationUs.toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       createStakePoolPayload(this.auxClient.moduleAddress, input),

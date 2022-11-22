@@ -349,7 +349,7 @@ export function createStakePoolPayload(
   return {
     function: `${moduleAddress}::stake::create_with_signer`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.rewardAmount, input.endTimeUs],
+    arguments: [input.rewardAmount, input.durationUs],
   };
 }
 
@@ -469,7 +469,7 @@ export interface CreateStakePoolPayloadInput {
   coinTypeStake: Types.MoveStructTag;
   coinTypeReward: Types.MoveStructTag;
   rewardAmount: Types.U64;
-  endTimeUs: Types.U64;
+  durationUs: Types.U64;
 }
 
 export interface DepositWithdrawPayloadInput {
