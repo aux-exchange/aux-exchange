@@ -707,6 +707,7 @@ module aux::stake {
         };
         fake_coin::init_module_for_testing(sender);
         timestamp::set_time_has_started_for_testing(aptos_framework);
+        timestamp::fast_forward_seconds(1000);
     }
 
     #[expected_failure(abort_code = 9)]
