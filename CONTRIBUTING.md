@@ -25,6 +25,7 @@
       - [Rolling restart](#rolling-restart)
       - [Hard restart](#hard-restart)
   - [Contributors on MS Windows](#contributors-on-ms-windows)
+  - [Typescript Examples](#typescript-examples)
 
 Come and build the decentralized universal exchange with us! :rocket:
 
@@ -336,3 +337,26 @@ Example: `./rolling_restart.sh devnet`
 ## Contributors on MS Windows
 
 **Contributors on MS Windows may have difficulties downloading or checking out the codes**: aux.exchange started on \*nix, and we are deep into the development cycle to find that `aux` is a reserved name on MS Windows ([see here for details](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file)). We are still in a build-out phase, but will push out a reorganisation of the repo to fix this later. Stay tuned!.
+
+## Typescript Examples
+
+To contribute a typescript example using the SDK:
+
+1. Add the example under `aptos/api/aux-ts/examples`
+2. Add a run script to `aptos/api/aux-ts/package.json`:
+
+  ```json
+  "scripts": {
+    "start:my-example": "APTOS_NETWORK=<devnet|localnet|mainnet> ts-node examples/my-example.ts"
+  }
+  ```
+
+3. Run the example from inside `aptos/api/aux-ts` with:
+
+  ```shell
+  yarn start:my-example
+  ```
+
+
+
+
