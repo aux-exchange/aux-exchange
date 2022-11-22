@@ -14,6 +14,7 @@ import {
   parseRaw2PoolSwapEvent,
   parseRaw3PoolAddLiquidityEvent,
   parseRaw3PoolRemoveLiquidityEvent,
+  parseRaw3PoolSwapEvent,
   PoolEvent,
   removeLiquidity2PoolPayload,
   removeLiquidity3PoolPayload,
@@ -300,11 +301,10 @@ export class StableSwapClient {
           : coinTypeIn === this.coinTypes[1]!
           ? ["0", exactAmountAuIn, "0"]
           : ["0", "0", exactAmountAuIn];
-
       payload = swapExactCoinForCoin3PoolPayload(this.auxClient.moduleAddress, {
         coinType0: this.coinTypes[0]!,
         coinType1: this.coinTypes[1]!,
-        coinType2: this.coinTypes[1]!,
+        coinType2: this.coinTypes[2]!,
         coin0Amount,
         coin1Amount,
         coin2Amount,
@@ -324,11 +324,22 @@ export class StableSwapClient {
       payload,
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
-      parseRaw2PoolSwapEvent
-    );
+
+    if (this.kind === "2pool") {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
+        parseRaw2PoolSwapEvent
+      );    
+    } else {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_3pool::SwapEvent`,
+        parseRaw3PoolSwapEvent
+      );    
+
+    }
+
   }
 
   private async swapExactOut(
@@ -392,11 +403,19 @@ export class StableSwapClient {
       payload,
       options
     );
-    return this.parsePoolTransaction(
-      transaction,
-      `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
-      parseRaw2PoolSwapEvent
-    );
+    if (this.kind === "2pool") {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_2pool::SwapEvent`,
+        parseRaw2PoolSwapEvent
+      );  
+    } else {
+      return this.parsePoolTransaction(
+        transaction,
+        `${this.auxClient.moduleAddress}::stable_3pool::SwapEvent`,
+        parseRaw3PoolSwapEvent
+      );  
+    }
   }
 
   private parseAddLiquidityTransaction(

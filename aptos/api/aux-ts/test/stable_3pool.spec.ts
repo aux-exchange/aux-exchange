@@ -7,11 +7,11 @@ import type { StableSwap } from "../src/pool/stable-swap/schema";
 import { AuxClient } from "../src/client";
 import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
-import { AU, Bps} from "../src/units";
+import { AU, Bps, DU} from "../src/units";
 //import { toString } from "lodash";
 // import { toSafeInteger } from "lodash";
 
-describe.only("Stable 3pool tests", function () {
+describe("Stable 3pool tests", function () {
   this.timeout(30000);
 
   const auxEnv = new AuxEnv();
@@ -24,7 +24,7 @@ describe.only("Stable 3pool tests", function () {
   auxClient.sender = moduleAuthority;
 
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
-  const usdtCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
+  const usdtCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDT);
   const usdcD8Coin = auxClient.getWrappedFakeCoinType(FakeCoin.USDCD8);
   const token_mul = 1_000_000;
 
@@ -46,7 +46,7 @@ describe.only("Stable 3pool tests", function () {
     await auxClient.registerAuxCoin();
     let tx = await auxClient.registerAndMintFakeCoin(
         FakeCoin.USDC,
-        AU(2_000_000 * token_mul)
+        AU(2_000_000_000 * token_mul)
     );
     assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
   });
@@ -55,7 +55,7 @@ describe.only("Stable 3pool tests", function () {
   it("mintUSDT", async function () {
     let tx = await auxClient.registerAndMintFakeCoin(
       FakeCoin.USDT,
-      AU(2_000_000 * token_mul)
+      AU(2_000_000_000 * token_mul)
     );
     assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
   });
@@ -64,7 +64,7 @@ describe.only("Stable 3pool tests", function () {
   it("mintUSDCD8", async function () {
     let tx = await auxClient.registerAndMintFakeCoin(
       FakeCoin.USDCD8,
-      AU(4_000_000 * token_mul)
+      AU(4_000_000_000 * token_mul)
     );
     assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
   });
@@ -115,53 +115,42 @@ describe.only("Stable 3pool tests", function () {
 
   it("swap Exact", async () => {
     {
+      pool = await poolClient.query();
       await poolClient.swap({
           coinTypeIn: usdcCoin,
           coinTypeOut: usdcD8Coin,
           exactAmountIn: AU(20 * token_mul),
           parameters: {minAmountOut: AU(0)},
-      });
+        },       
+        {
+          maxGasAmount: AU(1_000_000),
+        }
+      );
+      const expectedUSDCD8Amount = 3_502_459_828;
       pool = await poolClient.query();
       const usdcD8Amount = pool.amounts[2];
       const usdcD8Info = pool.coinInfos[2];
-      //assert.equal(
-      //  4_000 * token_mul - 496794979, 
-      //  usdcD8Amount!.toAtomicUnits(usdcD8Info!.decimals).toNumber()
-      //);
-      console.log(usdcD8Amount?.toAtomicUnits(usdcD8Info!.decimals).toNumber());
-
+      assert.equal(
+        expectedUSDCD8Amount,
+        usdcD8Amount!.toAtomicUnits(usdcD8Info!.decimals).toNumber()
+      );
    }
   });
+  
+  it("removeLiquidity", async () => {
+    {
+      pool = await poolClient.query();
+      const removedLPAmount = DU(1000);
+      await poolClient.removeLiquidity(
+        {amountLP: removedLPAmount,},
+        {maxGasAmount: AU(1_000_000),}
+      );
+      const [expectedUSDCAmount, expectedUSDTAmount, expectedUSDCD8Amount, expectedLPAmount] = [671_314_828, 1_316_303_583, 2_612_141_107, 192_527_494_605]
 
-  it("addLiquidity2", async () => {
-    { 
-      let amounts = [AU(980 * token_mul), AU(0 * token_mul), AU(2000 * token_mul * 100  - (3_502_459_828 + 745_193))];
-      let tx = await poolClient.addLiquidity(
-        {amounts: amounts, minLP: AU("0")},
-      );
-      assert.ok(
-        tx.transaction.success,
-        `${JSON.stringify(tx.transaction.vm_status, undefined, "  ")}`
-      );
-      const expectedLPAmount = 292_527_494_605 + 307_466_058_484;
-      let pool = await poolClient.query();
+      pool = await poolClient.query();
+      const [usdcAmount, usdtAmount, usdcD8Amount] = pool.amounts;
+      const [usdcInfo, usdtInfo, usdcD8Info] = pool.coinInfos;
       assert.equal(
-        expectedLPAmount,
-        pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber()
-      );
-    }
-  });
-    /*
-  it("removeLiquidity", async function () {
-    const removedLPAmount = AU(100_000);
-    await poolClient.removeLiquidity({
-      amountLP: removedLPAmount,
-    });
-    const [expectedUSDCAmount, expectedUSDTAmount, expectedLPAmount] = [802, 3198, 399181];
-    pool = await poolClient.query();
-    const [usdcAmount, usdtAmount] = pool.amounts;
-    const [usdcInfo, usdtInfo] = pool.coinInfos;
-    assert.equal(
         expectedUSDCAmount,
         usdcAmount!.toAtomicUnits(usdcInfo!.decimals).toNumber()
       );
@@ -170,9 +159,13 @@ describe.only("Stable 3pool tests", function () {
         usdtAmount!.toAtomicUnits(usdtInfo!.decimals).toNumber()
       );
       assert.equal(
+        expectedUSDCD8Amount,
+        usdcD8Amount!.toAtomicUnits(usdcD8Info!.decimals).toNumber()
+      );
+      assert.equal(
         expectedLPAmount,
         pool.amountLP.toAtomicUnits(pool.coinInfoLP.decimals).toNumber()
       );
+    }    
   });
-  */
 });
