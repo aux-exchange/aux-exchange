@@ -37,14 +37,18 @@ export const mutation = {
     };
   },
 
-  async createPool(_parent: any, { createPoolInput }: MutationCreatePoolArgs) {
-    const { coinTypeX, coinTypeY } = createPoolInput.poolInput;
+  async createPool(
+    _parent: any,
+    { createPoolInput: { poolInput, feeBasisPoints } }: MutationCreatePoolArgs
+  ) {
+    const coinTypeX = poolInput.coinTypes[0]!;
+    const coinTypeY = poolInput.coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
     return poolClient.create({
-      fee: new Bps(Number(createPoolInput.feeBasisPoints)),
+      fee: new Bps(Number(feeBasisPoints)),
     });
   },
 
@@ -54,11 +58,13 @@ export const mutation = {
       swapExactInInput: {
         coinTypeIn,
         amountIn,
-        poolInput: { coinTypeX, coinTypeY },
+        poolInput: { coinTypes },
         slippagePct,
       },
     }: MutationSwapExactInArgs
   ) {
+    const coinTypeX = coinTypes[0]!;
+    const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
@@ -84,11 +90,13 @@ export const mutation = {
       swapExactOutInput: {
         coinTypeOut,
         amountOut,
-        poolInput: { coinTypeX, coinTypeY },
+        poolInput: { coinTypes },
         slippagePct,
       },
     }: MutationSwapExactOutArgs
   ) {
+    const coinTypeX = coinTypes[0]!;
+    const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
@@ -108,17 +116,20 @@ export const mutation = {
     _parent: any,
     {
       addLiquidityInput: {
-        poolInput: { coinTypeX, coinTypeY },
-        amountX,
-        amountY,
+        poolInput: { coinTypes },
+        amounts,
         useAuxAccount,
       },
     }: MutationAddLiquidityArgs
   ) {
+    const coinTypeX = coinTypes[0]!;
+    const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,
     }).transpose();
+    const amountX = amounts[0]!;
+    const amountY = amounts[1]!;
     useAuxAccount = useAuxAccount ?? false;
     const tx = await poolClient.addLiquidity(
       {
@@ -137,12 +148,14 @@ export const mutation = {
     _parent: any,
     {
       removeLiquidityInput: {
-        poolInput: { coinTypeX, coinTypeY },
+        poolInput: { coinTypes },
         amountLP,
         useAuxAccount,
       },
     }: MutationRemoveLiquidityArgs
   ) {
+    const coinTypeX = coinTypes[0]!;
+    const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
       coinTypeX,
       coinTypeY,

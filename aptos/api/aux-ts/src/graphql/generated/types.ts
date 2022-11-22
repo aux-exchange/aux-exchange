@@ -13,6 +13,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   Address: any;
+  DecimalUnits: any;
   EntryFunctionPayload: any;
   Timestamp: any;
 };
@@ -61,16 +62,14 @@ export type AccountTradeHistoryArgs = {
 
 export type AddLiquidity = {
   __typename?: 'AddLiquidity';
-  amountAddedX: Scalars['Float'];
-  amountAddedY: Scalars['Float'];
   amountMintedLP: Scalars['Float'];
+  amountsAdded: Array<Scalars['Float']>;
   time: Scalars['Timestamp'];
   version: Scalars['String'];
 };
 
 export type AddLiquidityInput = {
-  amountX: Scalars['Float'];
-  amountY: Scalars['Float'];
+  amounts: Array<Scalars['Float']>;
   poolInput: PoolInput;
   useAuxAccount?: InputMaybe<Scalars['Boolean']>;
 };
@@ -114,6 +113,11 @@ export type CreatePoolInput = {
   feeBasisPoints: Scalars['String'];
   poolInput: PoolInput;
 };
+
+export enum Curve {
+  ConstantProduct = 'CONSTANT_PRODUCT',
+  StableSwap = 'STABLE_SWAP'
+}
 
 export type Deposit = {
   __typename?: 'Deposit';
@@ -372,16 +376,12 @@ export type Pool = {
   __typename?: 'Pool';
   adds: Array<AddLiquidity>;
   amountLP: Scalars['Float'];
-  amountX: Scalars['Float'];
-  amountY: Scalars['Float'];
+  amounts: Array<Scalars['Float']>;
   coinInfoLP: CoinInfo;
-  coinInfoX: CoinInfo;
-  coinInfoY: CoinInfo;
+  coinInfos: Array<CoinInfo>;
   featuredStatus: FeaturedStatus;
   feePercent: Scalars['Float'];
   position?: Maybe<Position>;
-  priceX: Scalars['Float'];
-  priceY: Scalars['Float'];
   quoteExactIn: QuoteExactIn;
   quoteExactOut: QuoteExactOut;
   removes: Array<RemoveLiquidity>;
@@ -406,12 +406,14 @@ export type PoolPositionArgs = {
 export type PoolQuoteExactInArgs = {
   amountIn: Scalars['Float'];
   coinTypeIn: Scalars['String'];
+  coinTypeOut: Scalars['String'];
   slippagePct?: InputMaybe<Scalars['Float']>;
 };
 
 
 export type PoolQuoteExactOutArgs = {
   amountOut: Scalars['Float'];
+  coinTypeIn: Scalars['String'];
   coinTypeOut: Scalars['String'];
   slippagePct?: InputMaybe<Scalars['Float']>;
 };
@@ -431,8 +433,8 @@ export type PoolSwapsArgs = {
 };
 
 export type PoolInput = {
-  coinTypeX: Scalars['String'];
-  coinTypeY: Scalars['String'];
+  coinTypes: Array<Scalars['String']>;
+  curve?: InputMaybe<Curve>;
 };
 
 export type PoolSummaryStatistics = {
@@ -451,11 +453,9 @@ export type PoolSummaryStatistics = {
 export type Position = {
   __typename?: 'Position';
   amountLP: Scalars['Float'];
-  amountX: Scalars['Float'];
-  amountY: Scalars['Float'];
+  amounts: Array<Scalars['Float']>;
   coinInfoLP: CoinInfo;
-  coinInfoX: CoinInfo;
-  coinInfoY: CoinInfo;
+  coinInfos: Array<CoinInfo>;
   share: Scalars['Float'];
 };
 
@@ -475,8 +475,6 @@ export type Query = {
   markets: Array<Market>;
   pool?: Maybe<Pool>;
   pools: Array<Pool>;
-  stableSwapPool?: Maybe<StableSwapPool>;
-  stableSwapPools: Array<StableSwapPool>;
   summaryStatistics: PoolSummaryStatistics;
 };
 
@@ -503,16 +501,6 @@ export type QueryPoolArgs = {
 
 export type QueryPoolsArgs = {
   poolInputs?: InputMaybe<Array<PoolInput>>;
-};
-
-
-export type QueryStableSwapPoolArgs = {
-  poolInput: StableSwapPoolInput;
-};
-
-
-export type QueryStableSwapPoolsArgs = {
-  poolInputs?: InputMaybe<Array<StableSwapPoolInput>>;
 };
 
 export type QuoteExactIn = {
@@ -562,8 +550,7 @@ export type RegisteredCoinInfo = {
 export type RemoveLiquidity = {
   __typename?: 'RemoveLiquidity';
   amountBurnedLP: Scalars['Float'];
-  amountRemovedX: Scalars['Float'];
-  amountRemovedY: Scalars['Float'];
+  amountsRemoved: Array<Scalars['Float']>;
   time: Scalars['Timestamp'];
   version: Scalars['String'];
 };
@@ -608,7 +595,7 @@ export type StableSwapPool = {
   __typename?: 'StableSwapPool';
   adds: Array<StableSwapAddLiquidity>;
   amountLP: Scalars['Float'];
-  amounts: Array<CoinInfo>;
+  amounts: Array<Scalars['Float']>;
   coinInfoLP: CoinInfo;
   coinInfos: Array<CoinInfo>;
   featuredStatus: FeaturedStatus;
@@ -663,14 +650,10 @@ export type StableSwapPoolSwapsArgs = {
   owner?: InputMaybe<Scalars['Address']>;
 };
 
-export type StableSwapPoolInput = {
-  coinTypes: Array<Scalars['String']>;
-};
-
 export type StableSwapPosition = {
   __typename?: 'StableSwapPosition';
   amountLP: Scalars['Float'];
-  amounts: Array<CoinInfo>;
+  amounts: Array<Scalars['Float']>;
   coinInfoLP: CoinInfo;
   coinInfos: Array<CoinInfo>;
   share: Scalars['Float'];
@@ -771,6 +754,7 @@ export type Swap = {
 export type SwapExactInInput = {
   amountIn: Scalars['Float'];
   coinTypeIn: Scalars['String'];
+  coinTypeOut: Scalars['String'];
   poolInput: PoolInput;
   quoteAmountOut: Scalars['Float'];
   slippagePct?: InputMaybe<Scalars['Float']>;
@@ -778,6 +762,7 @@ export type SwapExactInInput = {
 
 export type SwapExactOutInput = {
   amountOut: Scalars['Float'];
+  coinTypeIn: Scalars['String'];
   coinTypeOut: Scalars['String'];
   poolInput: PoolInput;
   quoteAmountIn: Scalars['Float'];
@@ -915,6 +900,8 @@ export type ResolversTypes = {
   CoinInfo: ResolverTypeWrapper<CoinInfo>;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
+  Curve: Curve;
+  DecimalUnits: ResolverTypeWrapper<Scalars['DecimalUnits']>;
   Deposit: ResolverTypeWrapper<Deposit>;
   DepositInput: DepositInput;
   EntryFunctionPayload: ResolverTypeWrapper<Scalars['EntryFunctionPayload']>;
@@ -953,7 +940,6 @@ export type ResolversTypes = {
   Side: Side;
   StableSwapAddLiquidity: ResolverTypeWrapper<StableSwapAddLiquidity>;
   StableSwapPool: ResolverTypeWrapper<StableSwapPool>;
-  StableSwapPoolInput: StableSwapPoolInput;
   StableSwapPosition: ResolverTypeWrapper<StableSwapPosition>;
   StableSwapRemoveLiquidity: ResolverTypeWrapper<StableSwapRemoveLiquidity>;
   StableSwapSwap: ResolverTypeWrapper<StableSwapSwap>;
@@ -985,6 +971,7 @@ export type ResolversParentTypes = {
   CoinInfo: CoinInfo;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
+  DecimalUnits: Scalars['DecimalUnits'];
   Deposit: Deposit;
   DepositInput: DepositInput;
   EntryFunctionPayload: Scalars['EntryFunctionPayload'];
@@ -1016,7 +1003,6 @@ export type ResolversParentTypes = {
   RemoveLiquidityInput: RemoveLiquidityInput;
   StableSwapAddLiquidity: StableSwapAddLiquidity;
   StableSwapPool: StableSwapPool;
-  StableSwapPoolInput: StableSwapPoolInput;
   StableSwapPosition: StableSwapPosition;
   StableSwapRemoveLiquidity: StableSwapRemoveLiquidity;
   StableSwapSwap: StableSwapSwap;
@@ -1053,9 +1039,8 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type AddLiquidityResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddLiquidity'] = ResolversParentTypes['AddLiquidity']> = {
-  amountAddedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountAddedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountMintedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  amountsAdded?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1087,6 +1072,10 @@ export type CoinInfoResolvers<ContextType = any, ParentType extends ResolversPar
   symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface DecimalUnitsScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DecimalUnits'], any> {
+  name: 'DecimalUnits';
+}
 
 export type DepositResolvers<ContextType = any, ParentType extends ResolversParentTypes['Deposit'] = ResolversParentTypes['Deposit']> = {
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1204,18 +1193,14 @@ export type OrderbookResolvers<ContextType = any, ParentType extends ResolversPa
 export type PoolResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pool'] = ResolversParentTypes['Pool']> = {
   adds?: Resolver<Array<ResolversTypes['AddLiquidity']>, ParentType, ContextType, Partial<PoolAddsArgs>>;
   amountLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  amounts?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  coinInfos?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   featuredStatus?: Resolver<ResolversTypes['FeaturedStatus'], ParentType, ContextType>;
   feePercent?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   position?: Resolver<Maybe<ResolversTypes['Position']>, ParentType, ContextType, RequireFields<PoolPositionArgs, 'owner'>>;
-  priceX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  priceY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  quoteExactIn?: Resolver<ResolversTypes['QuoteExactIn'], ParentType, ContextType, RequireFields<PoolQuoteExactInArgs, 'amountIn' | 'coinTypeIn'>>;
-  quoteExactOut?: Resolver<ResolversTypes['QuoteExactOut'], ParentType, ContextType, RequireFields<PoolQuoteExactOutArgs, 'amountOut' | 'coinTypeOut'>>;
+  quoteExactIn?: Resolver<ResolversTypes['QuoteExactIn'], ParentType, ContextType, RequireFields<PoolQuoteExactInArgs, 'amountIn' | 'coinTypeIn' | 'coinTypeOut'>>;
+  quoteExactOut?: Resolver<ResolversTypes['QuoteExactOut'], ParentType, ContextType, RequireFields<PoolQuoteExactOutArgs, 'amountOut' | 'coinTypeIn' | 'coinTypeOut'>>;
   removes?: Resolver<Array<ResolversTypes['RemoveLiquidity']>, ParentType, ContextType, Partial<PoolRemovesArgs>>;
   summaryStatistics?: Resolver<ResolversTypes['PoolSummaryStatistics'], ParentType, ContextType>;
   swaps?: Resolver<Array<ResolversTypes['Swap']>, ParentType, ContextType, Partial<PoolSwapsArgs>>;
@@ -1238,11 +1223,9 @@ export type PoolSummaryStatisticsResolvers<ContextType = any, ParentType extends
 
 export type PositionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Position'] = ResolversParentTypes['Position']> = {
   amountLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  amounts?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  coinInfoX?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  coinInfoY?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  coinInfos?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   share?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1262,8 +1245,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
   pool?: Resolver<Maybe<ResolversTypes['Pool']>, ParentType, ContextType, RequireFields<QueryPoolArgs, 'poolInput'>>;
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
-  stableSwapPool?: Resolver<Maybe<ResolversTypes['StableSwapPool']>, ParentType, ContextType, RequireFields<QueryStableSwapPoolArgs, 'poolInput'>>;
-  stableSwapPools?: Resolver<Array<ResolversTypes['StableSwapPool']>, ParentType, ContextType, Partial<QueryStableSwapPoolsArgs>>;
   summaryStatistics?: Resolver<ResolversTypes['PoolSummaryStatistics'], ParentType, ContextType>;
 };
 
@@ -1303,8 +1284,7 @@ export type RegisteredCoinInfoResolvers<ContextType = any, ParentType extends Re
 
 export type RemoveLiquidityResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveLiquidity'] = ResolversParentTypes['RemoveLiquidity']> = {
   amountBurnedLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountRemovedX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amountRemovedY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  amountsRemoved?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1321,7 +1301,7 @@ export type StableSwapAddLiquidityResolvers<ContextType = any, ParentType extend
 export type StableSwapPoolResolvers<ContextType = any, ParentType extends ResolversParentTypes['StableSwapPool'] = ResolversParentTypes['StableSwapPool']> = {
   adds?: Resolver<Array<ResolversTypes['StableSwapAddLiquidity']>, ParentType, ContextType, Partial<StableSwapPoolAddsArgs>>;
   amountLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amounts?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
+  amounts?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfos?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   featuredStatus?: Resolver<ResolversTypes['FeaturedStatus'], ParentType, ContextType>;
@@ -1337,7 +1317,7 @@ export type StableSwapPoolResolvers<ContextType = any, ParentType extends Resolv
 
 export type StableSwapPositionResolvers<ContextType = any, ParentType extends ResolversParentTypes['StableSwapPosition'] = ResolversParentTypes['StableSwapPosition']> = {
   amountLP?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  amounts?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
+  amounts?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType>;
   coinInfoLP?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfos?: Resolver<Array<ResolversTypes['CoinInfo']>, ParentType, ContextType>;
   share?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1433,6 +1413,7 @@ export type Resolvers<ContextType = any> = {
   Balance?: BalanceResolvers<ContextType>;
   Bar?: BarResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;
+  DecimalUnits?: GraphQLScalarType;
   Deposit?: DepositResolvers<ContextType>;
   EntryFunctionPayload?: GraphQLScalarType;
   High24h?: High24hResolvers<ContextType>;

@@ -88,7 +88,10 @@ export const query = {
     const allPools = await this.pools(parent, {});
     const coinInfo = new Map();
     for (const pool of allPools) {
-      for (const coin of [pool!.coinInfoX.coinType, pool!.coinInfoY.coinType]) {
+      for (const coin of [
+        pool!.coinInfos[0]!.coinType,
+        pool!.coinInfos[1]!.coinType,
+      ]) {
         if (!coinInfo.has(coin)) {
           coinInfo.set(coin, {
             recognizedLiquidity: (pool as any).recognizedLiquidity,
@@ -143,7 +146,12 @@ export const query = {
   },
 
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
-    const poolClient = await new ConstantProductClient(auxClient, poolInput).transpose();
+    const coinTypeX = poolInput.coinTypes[0]!;
+    const coinTypeY = poolInput.coinTypes[1]!;
+    const poolClient = await new ConstantProductClient(auxClient, {
+      coinTypeX,
+      coinTypeY,
+    }).transpose();
     const pool = await poolClient.query();
     const coins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
@@ -156,10 +164,15 @@ export const query = {
   async pools(_parent: any, args: QueryPoolsArgs): Promise<Pool[]> {
     const poolInputs = args.poolInputs
       ? args.poolInputs
-      : await auxClient.pools();
+      : (await auxClient.pools()).map((input) => ({
+          coinTypes: [input.coinTypeX, input.coinTypeY]
+        }));
     const pools = await Promise.all(
       poolInputs.map((poolInput) =>
-        new ConstantProductClient(auxClient, poolInput).query()
+        new ConstantProductClient(auxClient, {
+          coinTypeX: poolInput.coinTypes[0]!,
+          coinTypeY: poolInput.coinTypes[1]!,
+        }).query()
       )
     );
     const hippoCoins = await coinsWithoutLiquidity();

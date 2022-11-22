@@ -22,15 +22,9 @@ const PRICE_IMPACT_PCT_RED: number = 0.5;
 const PRICE_IMPACT_PCT_YELLOW: number = 0.2;
 
 export const pool = {
-  priceX(parent: Pool): number {
-    return parent.amountX === 0 ? 0 : parent.amountY / parent.amountX;
-  },
-
-  priceY(parent: Pool): number {
-    return parent.amountY === 0 ? 0 : parent.amountX / parent.amountY;
-  },
-
-  async swaps({ coinInfoX, coinInfoY }: Pool): Promise<Swap[]> {
+  async swaps({ coinInfos }: Pool): Promise<Swap[]> {
+    const coinInfoX = coinInfos[0]!;
+    const coinInfoY = coinInfos[1]!;
     const [coinTypeX, coinTypeY] = [coinInfoX.coinType, coinInfoY.coinType];
     const swaps = await new ConstantProductClient(auxClient, {
       coinTypeX,
@@ -54,18 +48,18 @@ export const pool = {
   },
 
   async adds(parent: Pool): Promise<AddLiquidity[]> {
+    const coinInfoX = parent.coinInfos[0]!;
+    const coinInfoY = parent.coinInfos[1]!;
     const addLiquiditys = await new ConstantProductClient(auxClient, {
-      coinTypeX: parent.coinInfoX.coinType,
-      coinTypeY: parent.coinInfoY.coinType,
+      coinTypeX: coinInfoX.coinType,
+      coinTypeY: coinInfoY.coinType,
     }).addLiquidityEvents();
     return addLiquiditys.map((addLiquidity) => ({
       ...addLiquidity,
-      amountAddedX: addLiquidity.xAdded
-        .toDecimalUnits(parent.coinInfoX.decimals)
-        .toNumber(),
-      amountAddedY: addLiquidity.yAdded
-        .toDecimalUnits(parent.coinInfoY.decimals)
-        .toNumber(),
+      amountsAdded: [
+        addLiquidity.xAdded.toDecimalUnits(coinInfoX.decimals).toNumber(),
+        addLiquidity.yAdded.toDecimalUnits(coinInfoY.decimals).toNumber(),
+      ],
       amountMintedLP: addLiquidity.lpMinted
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
@@ -74,18 +68,18 @@ export const pool = {
   },
 
   async removes(parent: Pool): Promise<RemoveLiquidity[]> {
+    const coinInfoX = parent.coinInfos[0]!;
+    const coinInfoY = parent.coinInfos[1]!;
     const removeLiquiditys = await new ConstantProductClient(auxClient, {
-      coinTypeX: parent.coinInfoX.coinType,
-      coinTypeY: parent.coinInfoY.coinType,
+      coinTypeX: coinInfoX.coinType,
+      coinTypeY: coinInfoY.coinType,
     }).removeLiquidityEvents();
     return removeLiquiditys.map((removeLiquidity) => ({
       ...removeLiquidity,
-      amountRemovedX: removeLiquidity.xRemoved
-        .toDecimalUnits(parent.coinInfoX.decimals)
-        .toNumber(),
-      amountRemovedY: removeLiquidity.yRemoved
-        .toDecimalUnits(parent.coinInfoY.decimals)
-        .toNumber(),
+      amountsRemoved: [
+        removeLiquidity.xRemoved.toDecimalUnits(coinInfoX.decimals).toNumber(),
+        removeLiquidity.yRemoved.toDecimalUnits(coinInfoY.decimals).toNumber(),
+      ],
       amountBurnedLP: removeLiquidity.lpBurned
         .toDecimalUnits(parent.coinInfoLP.decimals)
         .toNumber(),
@@ -97,15 +91,17 @@ export const pool = {
     parent: Pool,
     { owner }: PoolPositionArgs
   ): Promise<Maybe<Position>> {
+    const coinInfoX = parent.coinInfos[0]!;
+    const coinInfoY = parent.coinInfos[1]!;
     const position = await new ConstantProductClient(auxClient, {
-      coinTypeX: parent.coinInfoX.coinType,
-      coinTypeY: parent.coinInfoY.coinType,
+      coinTypeX: coinInfoX.coinType,
+      coinTypeY: coinInfoY.coinType,
     }).position(owner);
     return position
       ? {
           ...position,
-          amountX: position.amountX.toNumber(),
-          amountY: position.amountY.toNumber(),
+          coinInfos: [position.coinInfoX, position.coinInfoY],
+          amounts: [position.amountX.toNumber(), position.amountY.toNumber()],
           amountLP: position.amountLP.toNumber(),
         }
       : null;
@@ -115,22 +111,26 @@ export const pool = {
     parent: Pool,
     { coinTypeIn, amountIn, slippagePct }: PoolQuoteExactInArgs
   ): QuoteExactIn {
+    const coinInfoX = parent.coinInfos[0]!;
+    const coinInfoY = parent.coinInfos[1]!;
+    const amountX = parent.amounts[0]!;
+    const amountY = parent.amounts[1]!;
     const inReserve =
-      coinTypeIn === parent.coinInfoX.coinType
-        ? parent.amountX
-        : parent.amountY;
+      coinTypeIn === coinInfoX.coinType
+        ? amountX
+        : amountY;
     const outReserve =
-      coinTypeIn === parent.coinInfoX.coinType
-        ? parent.amountY
-        : parent.amountX;
+      coinTypeIn === coinInfoX.coinType
+        ? amountY
+        : amountX;
     const coinTypeOut =
-      coinTypeIn === parent.coinInfoX.coinType
-        ? parent.coinInfoY.coinType
-        : parent.coinInfoX.coinType;
+      coinTypeIn === coinInfoX.coinType
+        ? coinInfoY.coinType
+        : coinInfoX.coinType;
     const coinInfoIn =
-      coinTypeIn === parent.coinInfoX.coinType
-        ? parent.coinInfoX
-        : parent.coinInfoY;
+      coinTypeIn === coinInfoX.coinType
+        ? coinInfoX
+        : coinInfoY;
 
     if (inReserve === 0 || outReserve === 0) {
       throw new Error("Pool is empty");
@@ -203,19 +203,23 @@ export const pool = {
     parent: Pool,
     { coinTypeOut, amountOut, slippagePct }: PoolQuoteExactOutArgs
   ): QuoteExactOut {
+    const coinInfoX = parent.coinInfos[0]!;
+    const coinInfoY = parent.coinInfos[1]!;
+    const amountX = parent.amounts[0]!;
+    const amountY = parent.amounts[1]!;
     const inReserve =
-      coinTypeOut == parent.coinInfoY.coinType
-        ? parent.amountX
-        : parent.amountY;
+      coinTypeOut == coinInfoY.coinType
+        ? amountX
+        : amountY;
     const outReserve =
-      coinTypeOut == parent.coinInfoY.coinType
-        ? parent.amountY
-        : parent.amountX;
+      coinTypeOut == coinInfoY.coinType
+        ? amountY
+        : amountX;
 
     const coinInfoIn =
-      coinTypeOut === parent.coinInfoX.coinType
-        ? parent.coinInfoY
-        : parent.coinInfoX;
+      coinTypeOut === coinInfoX.coinType
+        ? coinInfoY
+        : coinInfoX;
 
     const coinTypeIn = coinInfoIn.coinType;
 
@@ -319,12 +323,12 @@ async function stat(
 ): Promise<Maybe<number>> {
   if (name === "tvl") {
     const value = await redisClient.get(
-      `amm-${pool.coinInfoX.coinType}-${pool.coinInfoY.coinType}-${name}`
+      `amm-${pool.coinInfos[0]!.coinType}-${pool.coinInfos[1]!.coinType}-${name}`
     );
     return value ? Number(value) : null;
   } else {
     const value = await redisClient.get(
-      `amm-${pool.coinInfoX.coinType}-${pool.coinInfoY.coinType}-${name}-${period}`
+      `amm-${pool.coinInfos[0]!.coinType}-${pool.coinInfos[1]!.coinType}-${name}-${period}`
     );
     return value ? Number(value) : null;
   }

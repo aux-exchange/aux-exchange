@@ -68,3 +68,4 @@ type PoolSummaryStatistics {
 scalar Address
 scalar EntryFunctionPayload
 scalar Timestamp
+scalar DecimalUnits
