@@ -730,9 +730,7 @@ module aux::stake {
         let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, 100);
 
@@ -761,9 +759,7 @@ module aux::stake {
         let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
 
         modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, 2000000 * 1000000, false, 0, false);
@@ -788,9 +784,7 @@ module aux::stake {
         let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
 
         modify_authority<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id, alice_addr);
@@ -821,9 +815,7 @@ module aux::stake {
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
         modify_authority<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, alice_addr);
     }
@@ -853,9 +845,7 @@ module aux::stake {
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
         delete_empty_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id);
     }
@@ -884,9 +874,7 @@ module aux::stake {
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
 
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, 100);
         // fast forward so alice accrues rewards
@@ -918,12 +906,10 @@ module aux::stake {
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        let start_time = timestamp::now_microseconds();
-        let end_time = start_time + duration_seconds * 1000000;
-        let pool_id_1 = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, sender_reward, end_time);
+        let pool_id_1 = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, sender_reward, duration_seconds * 1000000);
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
-        let pool_id_2 = create<FakeCoin<ETH>, FakeCoin<USDC>>(alice_addr, alice_reward, end_time);
+        let pool_id_2 = create<FakeCoin<ETH>, FakeCoin<USDC>>(alice_addr, alice_reward, duration_seconds * 1000000);
         assert!(pool_id_2 - pool_id_1 == 1, E_TEST_FAILURE);
 
         {
@@ -973,7 +959,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
         {
@@ -1305,7 +1291,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
         {
@@ -1374,7 +1360,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
         let sender_usdc = 1000000 * 1000000;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
         {
@@ -1603,7 +1589,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, end_time);
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
         let sender_usdc = 1000000 * 1000000;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
         {
@@ -1680,5 +1666,34 @@ module aux::stake {
             assert!(user_pos.amount_staked == 0, E_TEST_FAILURE);
             assert!(user_pos.last_acc_reward_per_share == pool.acc_reward_per_share, (user_pos.last_acc_reward_per_share as u64));
         };
+    }
+
+    #[expected_failure(abort_code = 1)]
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
+    fun test_cannot_end_pool_before_now(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pools, UserPositions {
+        setup_module_for_test(sender, aptos_framework);
+        let sender_addr = signer::address_of(sender);
+        let alice_addr = signer::address_of(alice);
+        if (!account::exists_at(alice_addr)) {
+            account::create_account_for_test(alice_addr);
+        };
+
+        let sender_eth = 5 * 100000000;
+        let alice_eth = sender_eth;
+        fake_coin::register_and_mint<USDC>(sender, 2000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
+        fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
+        fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
+        let reward_au = 2000000 * 1000000;
+        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
+
+        let duration_seconds = 30*24*3600; // 30 days
+        let pool_id = create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+
+        deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, pool_id, 100);
+
+        // fast forward so alice accrues rewards
+        timestamp::fast_forward_seconds(10);
+        modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(sender, pool_id, 0, false, duration_seconds * 1000000, false);
     }
 }
