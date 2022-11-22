@@ -4,7 +4,6 @@
 
 import type { Types } from "aptos";
 import type { AuxClient } from "./client";
-
 export const MOJO =
   "0x881ac202b1f1e6ad4efcff7a1d0579411533f2502417a19211cfc49751ddb5f4::coin::MOJO";
 export const APT = "0x1::aptos_coin::AptosCoin";
@@ -33,7 +32,6 @@ export const ALL_USD_STABLES = [
   USDT_WH,
   USDC_L0,
   USDT_L0,
-  USDA,
 ];
 
 export interface CoinMapping {
@@ -75,6 +73,7 @@ export enum FakeCoin {
   ETH = "ETH",
   SOL = "SOL",
   AUX = "AUX",
+  USDCD8 = "USDCD8",
 }
 
 /**

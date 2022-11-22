@@ -102,6 +102,7 @@ describe("Stable 2pool tests", function () {
   it("swap", async () => {
     await poolClient.swap({
         coinTypeIn: usdcCoin,
+        coinTypeOut: usdtCoin,
         exactAmountIn: AU(2),
         parameters: {minAmountOut: AU(2)},
     });

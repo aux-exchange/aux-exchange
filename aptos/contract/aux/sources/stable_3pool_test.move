@@ -84,7 +84,6 @@ module aux::stable_3pool_test {
         assert!(alice_lp_balance == 292527494605, alice_lp_balance);
 
         fake_coin::register_and_mint<USDC>(bob, 20 * token_mul);
-
         router_3pool::swap_exact_coin_for_coin<
             FakeCoin<USDC>,
             FakeCoin<USDT>,
