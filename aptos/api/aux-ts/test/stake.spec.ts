@@ -259,6 +259,11 @@ describe("Stake Pool tests", function () {
   });
 
   it("withdraw", async function () {
+    const userPosInit = await poolClient.queryUserPosition({
+      poolId: pool.poolId,
+      userAddress: senderAddr,
+    });
+    assert.equal(userPosInit.amountStaked.toNumber(), 500);
     const initStakeBalance = await auxClient.getCoinBalance({
       account: sender.address(),
       coinType: pool.coinInfoStake.coinType,
@@ -284,6 +289,11 @@ describe("Stake Pool tests", function () {
       finalStakeBalance.toNumber() - initStakeBalance.toNumber(),
       stakeAu
     );
+    const userPosFinal = await poolClient.queryUserPosition({
+      poolId: pool.poolId,
+      userAddress: senderAddr,
+    });
+    assert.equal(userPosFinal.amountStaked, 0);
   });
 
   it("deleteEmptyPool", async function () {
