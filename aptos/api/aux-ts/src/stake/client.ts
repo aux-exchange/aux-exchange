@@ -7,8 +7,7 @@ import type {
   AuxTransaction,
   CoinInfo,
 } from "../client";
-import { COIN_MAPPING } from "../coin";
-import { LATEST_PYTH_PRICE } from "../graphql/pyth";
+import { getUsdPrice } from "../graphql/pyth";
 import {
   AnyUnits,
   AtomicUnits,
@@ -136,26 +135,18 @@ export class StakePoolClient {
     const pool = await this.query(poolId);
     const currentTime = (await this.auxClient.aptosClient.getLedgerInfo())
       .ledger_timestamp;
-    const rewardPythSymbol = COIN_MAPPING.get(
-      this.coinInfoReward.coinType
-    )?.pythSymbol;
-    const stakePythSymbol = COIN_MAPPING.get(
-      this.coinInfoStake.coinType
-    )?.pythSymbol;
-    if (!!rewardPythSymbol && !!stakePythSymbol) {
-      const rewardPrice = LATEST_PYTH_PRICE.get(rewardPythSymbol);
-      const stakePrice = LATEST_PYTH_PRICE.get(stakePythSymbol);
-      if (!!rewardPrice && !!stakePrice) {
-        const remainingRewardUSD =
-          pool.rewardRemaining.toNumber() * rewardPrice;
-        const remainingDays = pool.endTime
-          .sub(new BN(currentTime))
-          .div(new BN(24 * 3600 * 1_000_000));
-        const dailyReward = remainingRewardUSD / remainingDays.toNumber();
-        const dailyRewardPerShare = dailyReward / pool.amountStaked.toNumber();
-        const dailyReturn = dailyRewardPerShare / stakePrice;
-        return dailyReturn * 365 * 100;
-      }
+    const rewardUsdPrice = await getUsdPrice(this.coinInfoReward.coinType);
+    const stakeUsdPrice = await getUsdPrice(this.coinInfoStake.coinType);
+    if (!!rewardUsdPrice && !!stakeUsdPrice) {
+      const remainingRewardUSD =
+        pool.rewardRemaining.toNumber() * rewardUsdPrice;
+      const remainingDays = pool.endTime
+        .sub(new BN(currentTime))
+        .div(new BN(24 * 3600 * 1_000_000));
+      const dailyReward = remainingRewardUSD / remainingDays.toNumber();
+      const dailyRewardPerShare = dailyReward / pool.amountStaked.toNumber();
+      const dailyReturn = dailyRewardPerShare / stakeUsdPrice;
+      return dailyReturn * 365 * 100;
     }
     return undefined;
   }

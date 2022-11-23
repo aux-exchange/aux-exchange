@@ -1,3 +1,4 @@
+import type { Types } from "aptos";
 import { ALL_USD_STABLES, COIN_MAPPING } from "../coin";
 import { PythRating, RatingColor } from "./generated/types";
 
@@ -27,6 +28,19 @@ export function getRecognizedTVL(coinType: string, amount: number): number {
   return 0;
 }
 
+export async function getUsdPrice(
+  coinType: Types.MoveStructTag
+): Promise<number | undefined> {
+  if (coinType in ALL_USD_STABLES) {
+    return 1.0;
+  } else {
+    const symbol = COIN_MAPPING.get(coinType)?.pythSymbol;
+    if (!!symbol) {
+      return LATEST_PYTH_PRICE.get(symbol);
+    }
+  }
+  return undefined;
+}
 export function generatePythRating({
   ratio,
   price,
