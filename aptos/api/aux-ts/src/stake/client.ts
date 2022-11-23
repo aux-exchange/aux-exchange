@@ -7,6 +7,8 @@ import type {
   AuxTransaction,
   CoinInfo,
 } from "../client";
+import { COIN_MAPPING } from "../coin";
+import { LATEST_PYTH_PRICE } from "../graphql/pyth";
 import {
   AnyUnits,
   AtomicUnits,
@@ -123,6 +125,39 @@ export class StakePoolClient {
       .toAtomicUnits(this.coinInfoStake.decimals)
       .toBN();
     return durationReward.mul(REWARD_PER_SHARE_MUL).divRound(stakeAu);
+  }
+
+  /**
+   * Returns current pool APR (dollar denominated)
+   * @param poolId
+   * @returns
+   */
+  async calcApr(poolId: number): Promise<number | undefined> {
+    const pool = await this.query(poolId);
+    const currentTime = (await this.auxClient.aptosClient.getLedgerInfo())
+      .ledger_timestamp;
+    const rewardPythSymbol = COIN_MAPPING.get(
+      this.coinInfoReward.coinType
+    )?.pythSymbol;
+    const stakePythSymbol = COIN_MAPPING.get(
+      this.coinInfoStake.coinType
+    )?.pythSymbol;
+    if (!!rewardPythSymbol && !!stakePythSymbol) {
+      const rewardPrice = LATEST_PYTH_PRICE.get(rewardPythSymbol);
+      const stakePrice = LATEST_PYTH_PRICE.get(stakePythSymbol);
+      if (!!rewardPrice && !!stakePrice) {
+        const remainingRewardUSD =
+          pool.rewardRemaining.toNumber() * rewardPrice;
+        const remainingDays = pool.endTime
+          .sub(new BN(currentTime))
+          .div(new BN(24 * 3600 * 1_000_000));
+        const dailyReward = remainingRewardUSD / remainingDays.toNumber();
+        const dailyRewardPerShare = dailyReward / pool.amountStaked.toNumber();
+        const dailyReturn = dailyRewardPerShare / stakePrice;
+        return dailyReturn * 365 * 100;
+      }
+    }
+    return undefined;
   }
 
   /**
