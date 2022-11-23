@@ -13,7 +13,7 @@ $$
 provides the price of coin $i$ in coin $j$ $p_{i,j}$
 
 $$
-p_{i,j}=-\frac{dx_j}{dx_i} = \frac{p_i}{p_j}
+p_{i,j}=-\frac{dx_j}{dx_i}
 $$
 
 A pool following this invariant will have constant price.
@@ -120,18 +120,18 @@ $$
 
 ## Add Liquidity
 
-As mentioned before, $D$ is the total amount of the coins when the pool is at equilibrium. The LP amount $g$ of the pool is proportional to the amount of $D$. When a user added liquidity to the pool, pool will calculate a new $D^\ast$, the new total LP amount will be $\frac{D^\ast}{D}g$, and the new coin amount issued will be $\frac{D^\ast}{D}g -g$
+As mentioned before, $D$ is the total amount of the coins when the pool is at equilibrium. The LP amount $g$ of the pool is proportional to the amount of $D$. When a user added liquidity to the pool, pool will calculate a new $D^\ast$, the new total LP amount will be $\frac{D^\ast}{D}g$, and the new coin amount issued will be $\frac{D^\ast}{D}g -g$. This is determined from the relationship $\frac{g^\ast}{g} = \frac{D^\ast}{D}$.
 
 ## Swap
 
 We can use the above equation to calculate the swap amount. However, this can also be solved iteratively with Newton Raphson method:
 
 $$
-f\left(x_i\right) = x_iAn^n\sum_j x_j + x_iD - x_iAn^nD-\frac{D^{n+1}}{n^n\prod_{j\neq i} x_j}
+f\left(x_i\right) = x_iAn^n\sum_j x_j + x_i^2An^n + x_iD - x_iAn^nD-\frac{D^{n+1}}{n^n\prod_{j\neq i} x_j}
 $$
 
 $$
-\frac{df}{dx_i} = An^n \sum_j x_j + An^nx_i + D-An^nD
+\frac{df}{dx_i} = An^n \sum_j x_j + 2An^nx_i + D-An^nD
 $$
 
 Therefore the next iteration of $x_i$, $x_i^\ast$
@@ -158,7 +158,7 @@ On aptos blockchain, coin values are stored in unsigned 64 bit integers. Most of
 
 ### Integer Math for Solving $D$
 
-Rewrite $D^\ast$ with $D_p=\frac{D^{n+1}}{n^n\prod_i x_i}$
+Rewrite $D^\ast$ with $D_p=\frac{D^n}{n^n\prod_i x_i}$
 
 $$
 D^\ast = \frac{D\left(nD_p + An^n\sum_i x_i\right)}{D\left(An^n - 1 \right)+\left(n+1\right)D_p}
@@ -231,11 +231,11 @@ Pool allows adding liquidity in any combination of coins (this is unlike constan
 - if the pool is empty, $D$ will be calculated, then lp coins will be calculated by dividing $D$ with $10^{10}$. Note the process of calculating $D$ requires all $x_i$ to be non-zero.
 - if the pool is not empty, the coin coins will be raised to 18 decimals and added to the reserve. A new $D^\ast$ will be calculated, and the new lp issued will be
 
-  $$
-  \Delta l = l^\ast - l = \frac{D^\ast \times l}{D} - l
-  $$
+$$
+\Delta l = l^\ast - l = \frac{D^\ast \times l}{D} - l
+$$
 
-  **Note**: making pool less balanced will yield less lp coins. For example, for a balanced pool of $10^{21}$ on each side of the pool and initial $D$ of $2\times 10^{21}$. Adding $9\times 10^{21}$ to one side will increase $D$ to approximately $10.67\times 10^{21}$ with a $A=15$. The LP providing the extra $9\times 10^{21}$ coins will only get $8.67\times 10^{21}$ back (or 4% less). This encourages LPs to contribute to the pool to make it more balanced.
+**Note**: making pool less balanced will yield less lp coins. For example, for a balanced pool of $10^{21}$ on each side of the pool and initial $D$ of $2\times 10^{21}$. Adding $9\times 10^{21}$ to one side will increase $D$ to approximately $10.67\times 10^{21}$ with a $A=15$. The LP providing the extra $9\times 10^{21}$ coins will only get $8.67\times 10^{21}$ back (or 4% less). This encourages LPs to contribute to the pool to make it more balanced.
 
 There is no fee for adding liquidity.
 
