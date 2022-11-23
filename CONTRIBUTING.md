@@ -272,13 +272,10 @@ A very convoluted way of redeploying to a resource account and allow it to self-
 
 ```sh
 git push origin feat/my-new-feature:devnet -f
-
-ssh ... # deployment box
-
-cd ~/aux-exchange-devnet/aptos/api/aux-ts
-
+ssh <YOUR USERNAME>@devbox
+ssh prod@<...>
+devnet  # aliases to cd ~/aux-exchange-devnet/aptos/api/aux-ts
 ./scripts/deploy/hard_restart.sh devnet
-
 # You're done!
 ```
 
