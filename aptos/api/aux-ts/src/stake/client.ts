@@ -1,5 +1,6 @@
 import type { Types } from "aptos";
 import BN from "bn.js";
+import * as assert from "assert";
 import _ from "lodash";
 import type {
   AuxClient,
@@ -131,19 +132,36 @@ export class StakePoolClient {
    * @param poolId
    * @returns
    */
-  async calcApr(poolId: number): Promise<number | undefined> {
-    const pool = await this.query(poolId);
-    const currentTime = (await this.auxClient.aptosClient.getLedgerInfo())
-      .ledger_timestamp;
-    const rewardUsdPrice = await getUsdPrice(this.coinInfoReward.coinType);
-    const stakeUsdPrice = await getUsdPrice(this.coinInfoStake.coinType);
+  async calcApr(
+    poolId: number,
+    poolState?: StakePool,
+    currentTimeUs?: BN
+  ): Promise<number | undefined> {
+    let pool = poolState;
+    if (!pool) {
+      pool = await this.query(poolId);
+    }
+    assert.ok(!!pool);
+    let currentTime = currentTimeUs;
+    if (!currentTime) {
+      currentTime = new BN(
+        (await this.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
+      );
+    }
+    const rewardUsdPrice = await getUsdPrice(
+      this.auxClient,
+      this.coinInfoReward.coinType
+    );
+    const stakeUsdPrice = await getUsdPrice(
+      this.auxClient,
+      this.coinInfoStake.coinType
+    );
     if (!!rewardUsdPrice && !!stakeUsdPrice) {
       const remainingRewardUSD =
         pool.rewardRemaining.toNumber() * rewardUsdPrice;
-      const remainingDays = pool.endTime
-        .sub(new BN(currentTime))
-        .div(new BN(24 * 3600 * 1_000_000));
-      const dailyReward = remainingRewardUSD / remainingDays.toNumber();
+      const remainingDays =
+        pool.endTime.sub(currentTime).toNumber() / (24 * 3600 * 1_000_000);
+      const dailyReward = remainingRewardUSD / remainingDays;
       const dailyRewardPerShare = dailyReward / pool.amountStaked.toNumber();
       const dailyReturn = dailyRewardPerShare / stakeUsdPrice;
       return dailyReturn * 365 * 100;

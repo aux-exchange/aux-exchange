@@ -311,7 +311,7 @@ function parseEventType(
   rewardCoinType: Types.MoveStructTag;
 } {
   const poolRegex = new RegExp(
-    `${moduleAddress}::stake::(?<event>.*)<(?<stake>.*), (?<reward>.*)>`
+    `${moduleAddress}::stake::(?<event>[a-zA-Z]+)<(?<stake>.*), (?<reward>.*)>`
   );
   const found = type.match(poolRegex);
   let stakeCoinType = found?.groups?.["stake"]!;

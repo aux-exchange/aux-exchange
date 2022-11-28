@@ -1,7 +1,12 @@
 import type { Types } from "aptos";
-import { ALL_USD_STABLES, COIN_MAPPING } from "../coin";
+import type { AuxClient } from "../client";
+import {
+  ALL_USD_STABLES,
+  COIN_MAPPING,
+  fakeMapping,
+  fakeStableTypes,
+} from "../coin";
 import { ConstantProductClient } from "../pool/constant-product/client";
-import { auxClient } from "./client";
 import { PythRating, RatingColor } from "./generated/types";
 
 export const LATEST_PYTH_PRICE = new Map<string, number>();
@@ -31,14 +36,22 @@ export function getRecognizedTVL(coinType: string, amount: number): number {
 }
 
 export async function getUsdPrice(
+  auxClient: AuxClient,
   coinType: Types.MoveStructTag
 ): Promise<number | undefined> {
-  if (coinType in ALL_USD_STABLES) {
+  const FAKE_STABLES = fakeStableTypes(auxClient);
+  if (ALL_USD_STABLES.includes(coinType) || FAKE_STABLES.includes(coinType)) {
     // if stable, return 1 (approx.)
     return 1.0;
   } else {
-    // Use Pyth price if available
+    // map fake coins
+    const FAKE_MAPPING = await fakeMapping(auxClient);
+    const newCoinType = FAKE_MAPPING.get(coinType);
+    if (!!newCoinType) {
+      coinType = newCoinType;
+    }
     const symbol = COIN_MAPPING.get(coinType)?.pythSymbol;
+    // Use Pyth price if available
     if (!!symbol) {
       return LATEST_PYTH_PRICE.get(symbol);
     } else {

@@ -29,7 +29,8 @@ describe("Stake Pool tests", function () {
   auxClient.sender = sender;
 
   // STAKE COIN
-  const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
+  // const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
+  const usdtCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDT);
   // REWARD COIN
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
 
@@ -46,7 +47,7 @@ describe("Stake Pool tests", function () {
   it("createStakePoolClient", async function () {
     poolClient = new StakePoolClient(auxClient, {
       coinInfoReward: await auxClient.getCoinInfo(usdcCoin),
-      coinInfoStake: await auxClient.getCoinInfo(auxCoin),
+      coinInfoStake: await auxClient.getCoinInfo(usdtCoin),
     });
     assert.ok(!!poolClient.coinInfoReward);
     assert.ok(!!poolClient.coinInfoStake);
@@ -63,12 +64,17 @@ describe("Stake Pool tests", function () {
     assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
   });
 
-  it("mintOther", async function () {
+  it("mintCoins", async function () {
     let tx = await auxClient.registerAndMintFakeCoin(
       FakeCoin.USDC,
       AU(2_000_000_000_000)
     );
     assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
+    let tx2 = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDT,
+      AU(2_000_000_000_000)
+    );
+    assert.ok(tx2.success, `${JSON.stringify(tx2, undefined, "  ")}`);
   });
 
   it("createStakePool", async function () {
@@ -127,6 +133,23 @@ describe("Stake Pool tests", function () {
     lastRewardRemaining = pool.rewardRemaining
       .toAtomicUnits(pool.coinInfoReward.decimals)
       .toNumber();
+
+    const currentTime = new BN(
+      (await poolClient.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
+    );
+    const daysRemaining =
+      pool.endTime.sub(currentTime).toNumber() / (3600 * 1000000 * 24);
+    const rewardRemaining = event.rewardRemaining;
+    const expectedApr =
+      (rewardRemaining
+        .toDecimalUnits(poolClient.coinInfoReward.decimals)
+        .toNumber() /
+        daysRemaining /
+        500) *
+      365 *
+      100;
+    const apr = await poolClient.calcApr(pool.poolId, pool, currentTime);
+    assert.equal(apr, expectedApr);
   });
 
   it("claim", async function () {
