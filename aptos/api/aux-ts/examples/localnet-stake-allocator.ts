@@ -148,13 +148,13 @@ async function calculateOptimalPositions(
   
   let x1Optimal = 0.;
   if (_s1 == 0.) {
-    x1Optimal = 0.01;
+    x1Optimal = 0.01 * M;
   } else if (_s2 == 0.) {
-    x1Optimal = 0.99;
+    x1Optimal = 0.99 * M;
   } else {
     let poolRewardPerShareAnnTotalOptimal: number = 0.;
     let x1: number = 0.;
-    while (x1 <= 1.) {
+    while (x1 <= M) {
       let poolRewardPerShareAnnTotal = await calculateRewardPerShareAnn(
         x1,
         r1,
@@ -165,10 +165,10 @@ async function calculateOptimalPositions(
         t2
       );
       if (poolRewardPerShareAnnTotal > poolRewardPerShareAnnTotalOptimal) {
-        x1Optimal = x1;
+        x1Optimal = x1 * M;
         poolRewardPerShareAnnTotalOptimal = poolRewardPerShareAnnTotal;
       }
-      x1 += 0.01;
+      x1 += 0.01 * M;
     }
   }
   
