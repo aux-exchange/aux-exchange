@@ -120,7 +120,7 @@ $$
 
 ## Add Liquidity
 
-As mentioned before, $D$ is the total amount of the coins when the pool is at equilibrium. The LP amount $g$ of the pool is proportional to the amount of $D$. When a user added liquidity to the pool, pool will calculate a new $D^*$, the new total LP amount will be $\frac{D^*}{D}g$, and the new token amount issued will be $\frac{D^*}{D}g -g$
+As mentioned before, $D$ is the total amount of the coins when the pool is at equilibrium. The LP amount $g$ of the pool is proportional to the amount of $D$. When a user added liquidity to the pool, pool will calculate a new $D^\ast$, the new total LP amount will be $\frac{D^\ast}{D}g$, and the new coin amount issued will be $\frac{D^\ast}{D}g -g$
 
 ## Swap
 
@@ -154,7 +154,7 @@ All operations on chain will done through integer math instead of float points. 
 
 The values of $D$, $x_i$'s will be stored as **unsigned 128 bit integer**.
 
-On aptos blockchain, coin values are stored in unsigned 64 bit integers. Most of stable coins have decimal of 6, and will multiply with $10^{12}$ before all the operations ($10^{12}$ is approximately $2^40$). 128 bit can express value up to $3.403\times 10^{20}$ for 18 decimals. Given that $x_i$'s have 6 decimals, the value will have upper ~24 bit all zeros.
+On aptos blockchain, coin values are stored in unsigned 64 bit integers. Most of stable coins have decimal of 6, and will multiply with $10^{12}$ before all the operations. 128 bit can express value up to $3.403\times 10^{20}$ for 18 decimals. Given that $x_i$'s have 6 decimals, the value will have upper ~24 bit all zeros.
 
 ### Integer Math for Solving $D$
 
@@ -168,8 +168,8 @@ $A$ and $n$ are unscaled, or zero decimals.
 
 $D_p$ is initialized with 18 decimals (set to $D$), and in each iteration it maintains 18 decimals
 
-- $D_p = D_p \times D$ ($D_p$ is now 36 decimals)
-- $D_p = D_p / n / x_i$ ($D_p$ is now 18 decimals)
+- $D_p = D_p \times D$, $D_p$ is now 36 decimals
+- $D_p = D_p / n / x_i$, $D_p$ is now 18 decimals
 
 $An^n\sum_i x_i$ is 18 decimals. Their sum multiplied by $D$ will produce 36 decimals - this is the numerator.
 
@@ -193,6 +193,84 @@ To calculate $C$, similar approach to $D_p$ is employed
 
 Finally
 
-- $C = C  \times D / A / n^n $ which multiply C with $D$, and then divided by $A$ and $n^n$, which maintains 36 decimals.
+- $C = C \times D / A / n^n$ which multiply C with $D$, and then divided by $A$ and $n^n$, which maintains 36 decimals.
 
 The numerator is now 36 decimals. It is easy to show that denominator is 18 decimals, and after the iteration $x_i^\ast$ is 18 decimals.
+
+## Fee Accounting
+
+All fees paid to the pool go to the liquidity providers. Fees are transferred into the separate fee line in the pool, and merged into `RewardDistributor` to distribute to LPs. When staking/unstaking, fee redeem tokens are returned/burned with lp coins.
+
+## Implementation
+
+- as in curve, all reserves are upscaled to 18 decimals. $D$ will also be stored with 18 decimals.
+- lp coins will have 8 decimals. Rounding may cause lp coin issued to be less than $D$ would indicate.
+- Fee rate is expressed as $f\times 10^{-10}$. However, at least one atomic unit of the coin must be paid for the fee if the fee rate is not zero. Fee always round up to the next atomic unit. (For example, fee will be 2 if fee rate is 15bps and and request amount is 1000).
+
+`stable_[n]pool.move` is the center of the smart contract and the main entry point , which defines the basic interactions of the pool. (`[n]` in the name of the module name indicates how many coins are in the pool.) `stable_[n]pool.move`' uses `aptos_framework::coin::Coin<T>` as deposit or withdraw medium. The basic functions defined in `stable_[n]pool.move` are:
+
+- `create_pool`: an entry function, used to create the pool.
+- `add_liquidity`: add liquidity to the pool.
+- `remove_liquidity_for_coin`: remove liquidity from the pool, the amounts of each coin in the pool are specified by the user.
+- `remove_liquidity`: remove liquidity from the pool follows the current ratio of the pool.
+- `swap_exact_coin_for_coin`: swap. Specify the input coin amounts, and let the contract calculate the output coin amount.
+- `swap_coin_for_exact_coin`: swap. Specify the output coin amounts, and let the contract calculate the necessary input coin amount.
+
+`router_[n]pool.move` provides entry function versions for those functions that take coin in `stable_[n]pool.move`, so users off-chain can interact with them. Every function besides `create_pool` has a copy in `router_[n]pool.move`. Those functions take a `signer` and the amount to be deposit or withdraw.
+
+`quoter_[n]pool.move` is a helper module that replicates the pool logic but with integers instead of `aptos_framework::coin::Coin<T>`s. Protocols can utilize the `quoter_[n]pool.move` to calculate swap amounts, lp coins necessary or minted etc. `stable_[n]pool.move` provides a `get_quoter` function for onchain users to obtain a quoter from the pool, which they can then use to perform the calculations.
+
+`math_[n]pool.move` contains the math for solving $D$ and $x_i$.
+
+### Adding Liquidity
+
+`add_liquidity` is used to add liquidity to a pool.
+
+Pool allows adding liquidity in any combination of coins (this is unlike constant product where the ratio of the coins is required to match the ratio that is currently in pool).
+
+- if the pool is empty, $D$ will be calculated, then lp coins will be calculated by dividing $D$ with $10^{10}$. Note the process of calculating $D$ requires all $x_i$ to be non-zero.
+- if the pool is not empty, the coin coins will be raised to 18 decimals and added to the reserve. A new $D^\ast$ will be calculated, and the new lp issued will be
+
+  $$
+  \Delta l = l^\ast - l = \frac{D^\ast \times l}{D} - l
+  $$
+
+  **Note**: making pool less balanced will yield less lp coins. For example, for a balanced pool of $10^{21}$ on each side of the pool and initial $D$ of $2\times 10^{21}$. Adding $9\times 10^{21}$ to one side will increase $D$ to approximately $10.67\times 10^{21}$ with a $A=15$. The LP providing the extra $9\times 10^{21}$ coins will only get $8.67\times 10^{21}$ back (or 4% less). This encourages LPs to contribute to the pool to make it more balanced.
+
+There is no fee for adding liquidity.
+
+### Swap with Input Specified
+
+User can either specify an input coin amount, and let the contract determine the output amount, or specify an output amount and let the contract determine the input account. `swap_exact_coin_for_coin` is the first case. The user can specify many input coins, but can only specify one output coin. The contract will take all the input coins, and calculate the new $x^\ast_i$ as specified above. Note the new reserve will be higher than $x^\ast_i$ above due to the fact that coins generally have less decimals than 18, and reserve is round up. The different $\Delta x$ will be dispensed from the reserve.
+
+The user needs to pay a fee on the output coin, which is charged on the amount the user will get, not the amount of $\Delta x$.
+
+$$
+\text{fee} = \frac{f \times \Delta x}{10^{10} + f}
+$$
+
+Note fee always rounds up. User will get the remaining.
+
+### Swap with Output Specified
+
+Alternatively, 'swap_coin_for_exact_coinf` allows the user to specify the output amounts of the many coins, and the contract will calculate the required amount of the one input coin. Note the fee calculation is the same, where the fee is charged on the amount that user got.
+
+$$
+\text{fee} = \frac{f \times \text{requested amount}}{10^{10}}
+$$
+
+Note, multiple fees are charged for multiple output coins.
+
+### Withdrawing Liquidity
+
+There are two options to withdraw liquidity from the pool. The first one, `remove_liquidity`, is fee free, but the lp can only specify the lp coin amount to burn. Alternatively, `remove_liquidity_for_coin` allows the user to specify coin amounts to withdraw, with a max lp coin amount to burn - however, this will incur the same fee as swap.
+
+## Code Generation
+
+In [root folder](../) of the repository, run the following command
+
+```sh
+go run ./docs/stableswap/gen-pool -n NUMBER_OF_COINS_IN_POOL -o path/to/sources/of/the/move/module
+```
+
+This will generate the set of files, `stable_[n]pool.move`, `router_[n]pool.move`, `quoter_[n]pool.move`, and `math_[n]pool.move`.
