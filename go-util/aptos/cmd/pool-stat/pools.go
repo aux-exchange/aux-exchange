@@ -72,7 +72,7 @@ var regexUSDC = regexp.MustCompile("-USDC$")
 func (ap *AllPools) FillTVL() {
 	for remaining, i := len(ap.Pools), 0; remaining > 0 && i < 256; i++ {
 		for _, pool := range ap.Pools {
-			if regexUSDC.MatchString(pool.CoinPair) && i == 0 {
+			if !regexUSDC.MatchString(pool.CoinPair) && i == 0 {
 				continue // for first loop, only check of USDC
 			}
 
