@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/fardream/go-aptos/aptos"
@@ -66,9 +67,15 @@ func getDecimal(n uint8) int64 {
 	return allDecimals[n]
 }
 
+var regexUSDC = regexp.MustCompile("-USDC$")
+
 func (ap *AllPools) FillTVL() {
 	for remaining, i := len(ap.Pools), 0; remaining > 0 && i < 256; i++ {
 		for _, pool := range ap.Pools {
+			if regexUSDC.MatchString(pool.CoinPair) && i == 0 {
+				continue // for first loop, only check of USDC
+			}
+
 			if pool.Pool.XReserve.Value == 0 || pool.Pool.YReserve.Value == 0 {
 				continue
 			}

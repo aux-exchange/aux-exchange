@@ -86,6 +86,8 @@ func mainFunction(network aptos.Network, rpc, outputFile, redisEndpoint string) 
 		Pools: make(map[string]*PoolStat),
 	}
 
+	known.ReloadHippoCoinRegistry(known.HippoCoinRegistryUrl)
+
 poolReadLoop:
 	for _, resource := range *auxResources.Parsed {
 		resourceType := resource.Type
@@ -103,6 +105,10 @@ poolReadLoop:
 
 		coinX := known.GetCoinInfo(network, resourceType.GenericTypeParameters[0].Struct)
 		coinY := known.GetCoinInfo(network, resourceType.GenericTypeParameters[1].Struct)
+		if coinX == nil || coinY == nil {
+			continue poolReadLoop
+		}
+
 		name := fmt.Sprintf("%s-%s", coinX.Symbol, coinY.Symbol)
 
 		DecimalByType[coinX.TokenType.Type.String()] = getDecimal(coinX.Decimals)
