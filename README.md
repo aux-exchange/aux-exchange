@@ -10,9 +10,6 @@
     - [Quickstart](#quickstart)
     - [Deployment](#deployment)
 
-    - [Quickstart](#quickstart)
-    - [Deployment](#deployment)
-
 ## Introduction
 
 AUX is a decentralized exchange powered by Aptos. We support the following
