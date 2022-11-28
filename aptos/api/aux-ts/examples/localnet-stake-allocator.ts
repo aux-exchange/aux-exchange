@@ -118,7 +118,7 @@ async function calculateRewardPerShareAnn(
 }
 
 // Calculate staker's optimal positions across two pools to maximize combined rewards
-// Brute-force search for now in 100 data point grid (no close-form solution)
+// Brute-force search for now in a 100 data point grid
 async function calculateOptimalPositions(
   poolIds: PoolRecords
 ): Promise<PoolRecords> {
