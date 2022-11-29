@@ -32,8 +32,13 @@ import {
   parseRawModifyPoolEvent,
   parseRawStakeDepositEvent,
   parseRawStakeWithdrawEvent,
+  RawClaimEvent,
+  RawCreatePoolEvent,
+  RawModifyPoolEvent,
+  RawStakeDepositEvent,
   RawStakePool,
   RawStakePoolEvent,
+  RawStakeWithdrawEvent,
   RawUserPosition,
   StakeDepositEvent,
   StakePool,
@@ -133,13 +138,12 @@ export class StakePoolClient {
    * @returns
    */
   async calcApr(
-    poolId: number,
     poolState?: StakePool,
     currentTimeUs?: BN
   ): Promise<number | undefined> {
     let pool = poolState;
     if (!pool) {
-      pool = await this.query(poolId);
+      pool = await this.query();
     }
     assert.ok(!!pool);
     let currentTime = currentTimeUs;
@@ -198,26 +202,150 @@ export class StakePoolClient {
    */
   async calcPendingUserReward({
     userAddress,
-    lastUserPositionState,
+    userPosition,
   }: {
     userAddress: Types.Address;
-    lastUserPositionState?: UserPosition;
+    userPosition?: UserPosition;
   }): Promise<DecimalUnits> {
-    let userPosition = lastUserPositionState;
-    if (!userPosition) {
-      userPosition = await this.queryUserPosition(userAddress);
+    let userPositionState = userPosition;
+    if (!userPositionState) {
+      userPositionState = await this.queryUserPosition(userAddress);
     }
     const accRewardPerShare = await this.calcAccRewardPerShare();
     return AU(
       accRewardPerShare
-        .sub(userPosition.lastAccRewardPerShare)
+        .sub(userPositionState.lastAccRewardPerShare)
         .mul(
-          userPosition.amountStaked
+          userPositionState.amountStaked
             .toAtomicUnits(this.coinInfoStake.decimals)
             .toBN()
         )
         .div(REWARD_PER_SHARE_MUL)
     ).toDecimalUnits(this.coinInfoReward.decimals);
+  }
+
+  async createEvents({
+    query,
+  }: {
+    query?: { start: BN } | { limit: BN };
+  }): Promise<CreatePoolEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "create_pool_events",
+      queryParameter
+    )) as RawCreatePoolEvent[];
+    const ret = events.map((e) =>
+      parseRawCreatePoolEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async depositEvents({
+    query,
+  }: {
+    query?: { start: BN } | { limit: BN };
+    poolId?: number | undefined;
+  }): Promise<StakeDepositEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "deposit_events",
+      queryParameter
+    )) as RawStakeDepositEvent[];
+    const ret = events.map((e) =>
+      parseRawStakeDepositEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async withdrawEvents({
+    query,
+  }: {
+    query?: { start: BN } | { limit: BN };
+    poolId?: number | undefined;
+  }): Promise<StakeWithdrawEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "withdraw_events",
+      queryParameter
+    )) as RawStakeWithdrawEvent[];
+    const ret = events.map((e) =>
+      parseRawStakeWithdrawEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async claimEvents({
+    query,
+  }: {
+    query?: { start: BN } | { limit: BN };
+    poolId?: number | undefined;
+  }): Promise<ClaimEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "claim_events",
+      queryParameter
+    )) as RawClaimEvent[];
+    const ret = events.map((e) =>
+      parseRawClaimEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async modifyPoolEvents({
+    query,
+  }: {
+    query?: { start: BN } | { limit: BN };
+    poolId?: number | undefined;
+  }): Promise<ModifyPoolEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "modify_pool_events",
+      queryParameter
+    )) as RawModifyPoolEvent[];
+    const ret = events.map((e) =>
+      parseRawModifyPoolEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
   }
 
   /*******************/
@@ -310,12 +438,12 @@ export class StakePoolClient {
     {
       rewardAmount,
       rewardIncrease,
-      timeAmount,
+      timeAmountUs,
       timeIncrease,
     }: {
       rewardAmount?: AnyUnits;
       rewardIncrease?: boolean;
-      timeAmount?: BN;
+      timeAmountUs?: BN;
       timeIncrease?: boolean;
     },
     options: Partial<AuxClientOptions> = {}
@@ -327,7 +455,7 @@ export class StakePoolClient {
         toAtomicUnits(rewardAmount, this.coinInfoReward.decimals).toU64() ??
         "0",
       rewardIncrease: rewardIncrease ?? false,
-      timeAmountUs: timeAmount?.toString() ?? "0",
+      timeAmountUs: timeAmountUs?.toString() ?? "0",
       timeIncrease: timeIncrease ?? false,
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(

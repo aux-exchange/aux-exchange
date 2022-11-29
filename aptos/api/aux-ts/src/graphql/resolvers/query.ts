@@ -5,6 +5,7 @@ import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
 import { ConstantProductClient } from "../../pool/constant-product/client";
 import type { ConstantProduct } from "../../pool/constant-product/schema";
+import { StakePoolClient } from "../../stake/client";
 import { auxClient, redisClient } from "../client";
 import {
   Account,
@@ -19,6 +20,8 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
   PoolSummaryStatistics,
+  QueryStakePoolArgs,
+  StakePool,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -328,7 +331,39 @@ export const query = {
       hasAuxAccount: auxAccount !== undefined,
     };
   },
+  async stakePool(
+    _parent: any,
+    { stakePoolInput }: QueryStakePoolArgs
+  ): Promise<Maybe<StakePool>> {
+    const coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    const coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const poolClient = await new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    const pool = await poolClient.query(stakePoolInput.poolId);
+
+    // @ts-ignore
+    return {
+      accRewardPerShare: pool.accRewardPerShare.toNumber(),
+      amountStake: pool.amountStaked.toNumber(),
+      authority: pool.authority,
+      coinInfoReward: pool.coinInfoReward,
+      coinInfoStake: pool.coinInfoStake,
+      startTimeUs: pool.startTime.toNumber(),
+      endTimeUs: pool.endTime.toNumber(),
+      rewardRemaining: pool.rewardRemaining.toNumber(),
+      lastUpdateTime: pool.lastUpdateTime.toNumber(),
+      type: poolClient.type,
+      id: pool.poolId,
+    };
+  },
 };
+
 function getFeaturedPriority(status: FeaturedStatus): number {
   switch (status) {
     case FeaturedStatus.None:

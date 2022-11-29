@@ -95,6 +95,20 @@ export type CancelOrderInput = {
   sender: Scalars['Address'];
 };
 
+export type ClaimEvent = {
+  __typename?: 'ClaimEvent';
+  accRewardPerShare: Scalars['Float'];
+  poolId: Scalars['Int'];
+  rewardCoinInfo: CoinInfo;
+  rewardRemaining: Scalars['Float'];
+  stakeCoinInfo: CoinInfo;
+  time: Scalars['Timestamp'];
+  totalAmountStaked: Scalars['Float'];
+  user: Scalars['Address'];
+  userRewardAmount: Scalars['Float'];
+  version: Scalars['String'];
+};
+
 export type CoinInfo = {
   __typename?: 'CoinInfo';
   coinType: Scalars['String'];
@@ -112,6 +126,24 @@ export type CreateMarketInput = {
 export type CreatePoolInput = {
   feeBasisPoints: Scalars['String'];
   poolInput: PoolInput;
+};
+
+export type CreateStakePoolEvent = {
+  __typename?: 'CreateStakePoolEvent';
+  authority: Scalars['Address'];
+  endTimeUs: Scalars['Int'];
+  poolId: Scalars['Int'];
+  rewardAmount: Scalars['Float'];
+  rewardCoinInfo: CoinInfo;
+  stakeCoinInfo: CoinInfo;
+  startTimeUs: Scalars['Int'];
+  time: Scalars['Timestamp'];
+  version: Scalars['String'];
+};
+
+export type CreateStakePoolInput = {
+  durationUs: Scalars['Int'];
+  rewardAmount: Scalars['Float'];
 };
 
 export enum Curve {
@@ -237,14 +269,54 @@ export type MarketInput = {
   quoteCoinType: Scalars['String'];
 };
 
+export type ModifyPoolEvent = {
+  __typename?: 'ModifyPoolEvent';
+  accRewardPerShare: Scalars['Float'];
+  authority: Scalars['Address'];
+  endTimeUs: Scalars['Int'];
+  poolId: Scalars['Int'];
+  rewardCoinInfo: CoinInfo;
+  rewardRemaining: Scalars['Float'];
+  stakeCoinInfo: CoinInfo;
+  startTimeUs: Scalars['Int'];
+  time: Scalars['Timestamp'];
+  totalAmountStaked: Scalars['Float'];
+  version: Scalars['String'];
+};
+
+export type ModifyStakeInput = {
+  amount: Scalars['Float'];
+  poolId: Scalars['Int'];
+};
+
+export type ModifyStakePoolAuthorityInput = {
+  newAuthority: Scalars['Address'];
+  poolId: Scalars['Int'];
+};
+
+export type ModifyStakePoolInput = {
+  poolId: Scalars['Int'];
+  rewardAmount?: InputMaybe<Scalars['Float']>;
+  rewardIncrease?: InputMaybe<Scalars['Boolean']>;
+  timeAmountUs?: InputMaybe<Scalars['Int']>;
+  timeIncrease?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addLiquidity: Scalars['EntryFunctionPayload'];
   cancelOrder: Scalars['EntryFunctionPayload'];
+  claimStakingReward: Scalars['EntryFunctionPayload'];
   createAuxAccount: Scalars['EntryFunctionPayload'];
   createMarket: Scalars['EntryFunctionPayload'];
   createPool: Scalars['EntryFunctionPayload'];
+  createStakePool: Scalars['EntryFunctionPayload'];
+  deleteEmptyStakePool: Scalars['EntryFunctionPayload'];
   deposit: Scalars['EntryFunctionPayload'];
+  depositStake: Scalars['EntryFunctionPayload'];
+  endStakePoolEarly: Scalars['EntryFunctionPayload'];
+  modifyStakePool: Scalars['EntryFunctionPayload'];
+  modifyStakePoolAuthority: Scalars['EntryFunctionPayload'];
   placeOrder: Scalars['EntryFunctionPayload'];
   registerCoin: Scalars['EntryFunctionPayload'];
   removeLiquidity: Scalars['EntryFunctionPayload'];
@@ -252,6 +324,7 @@ export type Mutation = {
   swapExactOut: Scalars['EntryFunctionPayload'];
   transfer: Scalars['EntryFunctionPayload'];
   withdraw: Scalars['EntryFunctionPayload'];
+  withdrawStake: Scalars['EntryFunctionPayload'];
 };
 
 
@@ -265,6 +338,11 @@ export type MutationCancelOrderArgs = {
 };
 
 
+export type MutationClaimStakingRewardArgs = {
+  poolId: Scalars['Int'];
+};
+
+
 export type MutationCreateMarketArgs = {
   createMarketInput: CreateMarketInput;
 };
@@ -275,8 +353,38 @@ export type MutationCreatePoolArgs = {
 };
 
 
+export type MutationCreateStakePoolArgs = {
+  createStakePoolInput: CreateStakePoolInput;
+};
+
+
+export type MutationDeleteEmptyStakePoolArgs = {
+  poolId: Scalars['Int'];
+};
+
+
 export type MutationDepositArgs = {
   depositInput: DepositInput;
+};
+
+
+export type MutationDepositStakeArgs = {
+  depositStakeInput: ModifyStakeInput;
+};
+
+
+export type MutationEndStakePoolEarlyArgs = {
+  poolId: Scalars['Int'];
+};
+
+
+export type MutationModifyStakePoolArgs = {
+  modifyStakePoolInput: ModifyStakePoolInput;
+};
+
+
+export type MutationModifyStakePoolAuthorityArgs = {
+  input: ModifyStakePoolAuthorityInput;
 };
 
 
@@ -312,6 +420,11 @@ export type MutationTransferArgs = {
 
 export type MutationWithdrawArgs = {
   withdrawInput: WithdrawInput;
+};
+
+
+export type MutationWithdrawStakeArgs = {
+  withdrawStakeInput: ModifyStakeInput;
 };
 
 export type Ohlcv = {
@@ -483,6 +596,8 @@ export type Query = {
   markets: Array<Market>;
   pool?: Maybe<Pool>;
   pools: Array<Pool>;
+  stakePool?: Maybe<StakePool>;
+  stakePools?: Maybe<Array<StakePool>>;
   summaryStatistics: PoolSummaryStatistics;
 };
 
@@ -509,6 +624,16 @@ export type QueryPoolArgs = {
 
 export type QueryPoolsArgs = {
   poolInputs?: InputMaybe<Array<PoolInput>>;
+};
+
+
+export type QueryStakePoolArgs = {
+  stakePoolInput: StakePoolInput;
+};
+
+
+export type QueryStakePoolsArgs = {
+  stakePoolInputs?: InputMaybe<Array<StakePoolInput>>;
 };
 
 export type QuoteExactIn = {
@@ -591,6 +716,110 @@ export enum Side {
   Sell = 'SELL'
 }
 
+<<<<<<< HEAD
+=======
+export type StakeDepositEvent = {
+  __typename?: 'StakeDepositEvent';
+  accRewardPerShare: Scalars['Float'];
+  poolId: Scalars['Int'];
+  rewardCoinInfo: CoinInfo;
+  rewardRemaining: Scalars['Float'];
+  stakeCoinInfo: CoinInfo;
+  time: Scalars['Timestamp'];
+  totalAmountStaked: Scalars['Float'];
+  user: Scalars['Address'];
+  userAmountStaked: Scalars['Float'];
+  userRewardAmount: Scalars['Float'];
+  version: Scalars['String'];
+};
+
+export type StakePool = {
+  __typename?: 'StakePool';
+  accRewardPerShare: Scalars['Int'];
+  amountStake: Scalars['Float'];
+  apr: Scalars['Float'];
+  authority: Scalars['String'];
+  claimEvents: Array<Maybe<ClaimEvent>>;
+  coinInfoReward: CoinInfo;
+  coinInfoStake: CoinInfo;
+  createEvents: Array<Maybe<CreateStakePoolEvent>>;
+  depositEvents: Array<Maybe<StakeDepositEvent>>;
+  endTimeUs: Scalars['Int'];
+  id: Scalars['Int'];
+  lastUpdateTime: Scalars['Int'];
+  modifyPoolEvents: Array<Maybe<ModifyPoolEvent>>;
+  pendingUserReward: Scalars['Float'];
+  rewardRemaining: Scalars['Float'];
+  startTimeUs: Scalars['Int'];
+  type: Scalars['String'];
+  userPosition: UserPosition;
+  withdrawEvents: Array<Maybe<StakeWithdrawEvent>>;
+};
+
+
+export type StakePoolClaimEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type StakePoolCreateEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type StakePoolDepositEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type StakePoolModifyPoolEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type StakePoolPendingUserRewardArgs = {
+  lastAccRewardPerShare?: InputMaybe<Scalars['Float']>;
+  owner: Scalars['Address'];
+};
+
+
+export type StakePoolUserPositionArgs = {
+  owner: Scalars['Address'];
+};
+
+
+export type StakePoolWithdrawEventsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+};
+
+export type StakePoolInput = {
+  coinTypeReward: Scalars['String'];
+  coinTypeStake: Scalars['String'];
+  poolId: Scalars['Int'];
+};
+
+export type StakeWithdrawEvent = {
+  __typename?: 'StakeWithdrawEvent';
+  accRewardPerShare: Scalars['Float'];
+  poolId: Scalars['Int'];
+  rewardCoinInfo: CoinInfo;
+  rewardRemaining: Scalars['Float'];
+  stakeCoinInfo: CoinInfo;
+  time: Scalars['Timestamp'];
+  totalAmountStaked: Scalars['Float'];
+  user: Scalars['Address'];
+  userAmountStaked: Scalars['Float'];
+  userRewardAmount: Scalars['Float'];
+  version: Scalars['String'];
+  withdrawAmount: Scalars['Float'];
+};
+
+>>>>>>> 0225a1a (graphql schemas and resolvers for stake pool)
 export type Subscription = {
   __typename?: 'Subscription';
   addLiquidity: AddLiquidity;
@@ -710,6 +939,15 @@ export type TransferInput = {
   to: Scalars['Address'];
 };
 
+export type UserPosition = {
+  __typename?: 'UserPosition';
+  amountStaked: Scalars['Float'];
+  coinInfoReward: CoinInfo;
+  coinInfoStake: CoinInfo;
+  lastAccRewardPerShare: Scalars['Int'];
+  owner: Scalars['Address'];
+};
+
 export type Volume24h = {
   __typename?: 'Volume24h';
   baseCoinType: Scalars['String'];
@@ -812,9 +1050,12 @@ export type ResolversTypes = {
   Bar: ResolverTypeWrapper<Bar>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CancelOrderInput: CancelOrderInput;
+  ClaimEvent: ResolverTypeWrapper<ClaimEvent>;
   CoinInfo: ResolverTypeWrapper<CoinInfo>;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
+  CreateStakePoolEvent: ResolverTypeWrapper<CreateStakePoolEvent>;
+  CreateStakePoolInput: CreateStakePoolInput;
   Curve: Curve;
   DecimalUnits: ResolverTypeWrapper<Scalars['DecimalUnits']>;
   Deposit: ResolverTypeWrapper<Deposit>;
@@ -830,6 +1071,10 @@ export type ResolversTypes = {
   Low24h: ResolverTypeWrapper<Low24h>;
   Market: ResolverTypeWrapper<Market>;
   MarketInput: MarketInput;
+  ModifyPoolEvent: ResolverTypeWrapper<ModifyPoolEvent>;
+  ModifyStakeInput: ModifyStakeInput;
+  ModifyStakePoolAuthorityInput: ModifyStakePoolAuthorityInput;
+  ModifyStakePoolInput: ModifyStakePoolInput;
   Mutation: ResolverTypeWrapper<{}>;
   Ohlcv: ResolverTypeWrapper<Ohlcv>;
   Order: ResolverTypeWrapper<Order>;
@@ -853,6 +1098,13 @@ export type ResolversTypes = {
   Resolution: Resolution;
   STPActionType: StpActionType;
   Side: Side;
+<<<<<<< HEAD
+=======
+  StakeDepositEvent: ResolverTypeWrapper<StakeDepositEvent>;
+  StakePool: ResolverTypeWrapper<StakePool>;
+  StakePoolInput: StakePoolInput;
+  StakeWithdrawEvent: ResolverTypeWrapper<StakeWithdrawEvent>;
+>>>>>>> 0225a1a (graphql schemas and resolvers for stake pool)
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   Swap: ResolverTypeWrapper<Swap>;
@@ -862,6 +1114,7 @@ export type ResolversTypes = {
   Trade: ResolverTypeWrapper<Trade>;
   Transfer: ResolverTypeWrapper<Transfer>;
   TransferInput: TransferInput;
+  UserPosition: ResolverTypeWrapper<UserPosition>;
   Volume24h: ResolverTypeWrapper<Volume24h>;
   Wallet: ResolverTypeWrapper<Wallet>;
   WithdrawInput: WithdrawInput;
@@ -878,9 +1131,12 @@ export type ResolversParentTypes = {
   Bar: Bar;
   Boolean: Scalars['Boolean'];
   CancelOrderInput: CancelOrderInput;
+  ClaimEvent: ClaimEvent;
   CoinInfo: CoinInfo;
   CreateMarketInput: CreateMarketInput;
   CreatePoolInput: CreatePoolInput;
+  CreateStakePoolEvent: CreateStakePoolEvent;
+  CreateStakePoolInput: CreateStakePoolInput;
   DecimalUnits: Scalars['DecimalUnits'];
   Deposit: Deposit;
   DepositInput: DepositInput;
@@ -894,6 +1150,10 @@ export type ResolversParentTypes = {
   Low24h: Low24h;
   Market: Market;
   MarketInput: MarketInput;
+  ModifyPoolEvent: ModifyPoolEvent;
+  ModifyStakeInput: ModifyStakeInput;
+  ModifyStakePoolAuthorityInput: ModifyStakePoolAuthorityInput;
+  ModifyStakePoolInput: ModifyStakePoolInput;
   Mutation: {};
   Ohlcv: Ohlcv;
   Order: Order;
@@ -911,6 +1171,13 @@ export type ResolversParentTypes = {
   RegisteredCoinInfo: RegisteredCoinInfo;
   RemoveLiquidity: RemoveLiquidity;
   RemoveLiquidityInput: RemoveLiquidityInput;
+<<<<<<< HEAD
+=======
+  StakeDepositEvent: StakeDepositEvent;
+  StakePool: StakePool;
+  StakePoolInput: StakePoolInput;
+  StakeWithdrawEvent: StakeWithdrawEvent;
+>>>>>>> 0225a1a (graphql schemas and resolvers for stake pool)
   String: Scalars['String'];
   Subscription: {};
   Swap: Swap;
@@ -920,6 +1187,7 @@ export type ResolversParentTypes = {
   Trade: Trade;
   Transfer: Transfer;
   TransferInput: TransferInput;
+  UserPosition: UserPosition;
   Volume24h: Volume24h;
   Wallet: Wallet;
   WithdrawInput: WithdrawInput;
@@ -970,11 +1238,38 @@ export type BarResolvers<ContextType = any, ParentType extends ResolversParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ClaimEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClaimEvent'] = ResolversParentTypes['ClaimEvent']> = {
+  accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  poolId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  totalAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  userRewardAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CoinInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['CoinInfo'] = ResolversParentTypes['CoinInfo']> = {
   coinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   decimals?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateStakePoolEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateStakePoolEvent'] = ResolversParentTypes['CreateStakePoolEvent']> = {
+  authority?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  poolId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rewardAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1046,13 +1341,35 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ModifyPoolEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ModifyPoolEvent'] = ResolversParentTypes['ModifyPoolEvent']> = {
+  accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  authority?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  poolId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  totalAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationAddLiquidityArgs, 'addLiquidityInput'>>;
   cancelOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCancelOrderArgs, 'cancelOrderInput'>>;
+  claimStakingReward?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationClaimStakingRewardArgs, 'poolId'>>;
   createAuxAccount?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType>;
   createMarket?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreateMarketArgs, 'createMarketInput'>>;
   createPool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreatePoolArgs, 'createPoolInput'>>;
+  createStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreateStakePoolArgs, 'createStakePoolInput'>>;
+  deleteEmptyStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDeleteEmptyStakePoolArgs, 'poolId'>>;
   deposit?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDepositArgs, 'depositInput'>>;
+  depositStake?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDepositStakeArgs, 'depositStakeInput'>>;
+  endStakePoolEarly?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationEndStakePoolEarlyArgs, 'poolId'>>;
+  modifyStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationModifyStakePoolArgs, 'modifyStakePoolInput'>>;
+  modifyStakePoolAuthority?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationModifyStakePoolAuthorityArgs, 'input'>>;
   placeOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationPlaceOrderArgs, 'placeOrderInput'>>;
   registerCoin?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRegisterCoinArgs, 'registerCoinInput'>>;
   removeLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationRemoveLiquidityArgs, 'removeLiquidityInput'>>;
@@ -1060,6 +1377,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   swapExactOut?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationSwapExactOutArgs, 'swapExactOutInput'>>;
   transfer?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationTransferArgs, 'transferInput'>>;
   withdraw?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationWithdrawArgs, 'withdrawInput'>>;
+  withdrawStake?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationWithdrawStakeArgs, 'withdrawStakeInput'>>;
 };
 
 export type OhlcvResolvers<ContextType = any, ParentType extends ResolversParentTypes['Ohlcv'] = ResolversParentTypes['Ohlcv']> = {
@@ -1151,6 +1469,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   markets?: Resolver<Array<ResolversTypes['Market']>, ParentType, ContextType, Partial<QueryMarketsArgs>>;
   pool?: Resolver<Maybe<ResolversTypes['Pool']>, ParentType, ContextType, RequireFields<QueryPoolArgs, 'poolInput'>>;
   pools?: Resolver<Array<ResolversTypes['Pool']>, ParentType, ContextType, Partial<QueryPoolsArgs>>;
+  stakePool?: Resolver<Maybe<ResolversTypes['StakePool']>, ParentType, ContextType, RequireFields<QueryStakePoolArgs, 'stakePoolInput'>>;
+  stakePools?: Resolver<Maybe<Array<ResolversTypes['StakePool']>>, ParentType, ContextType, Partial<QueryStakePoolsArgs>>;
   summaryStatistics?: Resolver<ResolversTypes['PoolSummaryStatistics'], ParentType, ContextType>;
 };
 
@@ -1196,6 +1516,63 @@ export type RemoveLiquidityResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+<<<<<<< HEAD
+=======
+export type StakeDepositEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['StakeDepositEvent'] = ResolversParentTypes['StakeDepositEvent']> = {
+  accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  poolId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  totalAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  userAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  userRewardAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StakePoolResolvers<ContextType = any, ParentType extends ResolversParentTypes['StakePool'] = ResolversParentTypes['StakePool']> = {
+  accRewardPerShare?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amountStake?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  apr?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  authority?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  claimEvents?: Resolver<Array<Maybe<ResolversTypes['ClaimEvent']>>, ParentType, ContextType, Partial<StakePoolClaimEventsArgs>>;
+  coinInfoReward?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  coinInfoStake?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  createEvents?: Resolver<Array<Maybe<ResolversTypes['CreateStakePoolEvent']>>, ParentType, ContextType, Partial<StakePoolCreateEventsArgs>>;
+  depositEvents?: Resolver<Array<Maybe<ResolversTypes['StakeDepositEvent']>>, ParentType, ContextType, Partial<StakePoolDepositEventsArgs>>;
+  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lastUpdateTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  modifyPoolEvents?: Resolver<Array<Maybe<ResolversTypes['ModifyPoolEvent']>>, ParentType, ContextType, Partial<StakePoolModifyPoolEventsArgs>>;
+  pendingUserReward?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<StakePoolPendingUserRewardArgs, 'owner'>>;
+  rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userPosition?: Resolver<ResolversTypes['UserPosition'], ParentType, ContextType, RequireFields<StakePoolUserPositionArgs, 'owner'>>;
+  withdrawEvents?: Resolver<Array<Maybe<ResolversTypes['StakeWithdrawEvent']>>, ParentType, ContextType, Partial<StakePoolWithdrawEventsArgs>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StakeWithdrawEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['StakeWithdrawEvent'] = ResolversParentTypes['StakeWithdrawEvent']> = {
+  accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  poolId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  totalAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  userAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  userRewardAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  withdrawAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+>>>>>>> 0225a1a (graphql schemas and resolvers for stake pool)
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   addLiquidity?: SubscriptionResolver<ResolversTypes['AddLiquidity'], "addLiquidity", ParentType, ContextType, Partial<SubscriptionAddLiquidityArgs>>;
   bar?: SubscriptionResolver<ResolversTypes['Bar'], "bar", ParentType, ContextType, RequireFields<SubscriptionBarArgs, 'resolution'>>;
@@ -1242,6 +1619,15 @@ export type TransferResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserPositionResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserPosition'] = ResolversParentTypes['UserPosition']> = {
+  amountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  coinInfoReward?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  coinInfoStake?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
+  lastAccRewardPerShare?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Volume24hResolvers<ContextType = any, ParentType extends ResolversParentTypes['Volume24h'] = ResolversParentTypes['Volume24h']> = {
   baseCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   quoteCoinType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1267,7 +1653,9 @@ export type Resolvers<ContextType = any> = {
   Address?: GraphQLScalarType;
   Balance?: BalanceResolvers<ContextType>;
   Bar?: BarResolvers<ContextType>;
+  ClaimEvent?: ClaimEventResolvers<ContextType>;
   CoinInfo?: CoinInfoResolvers<ContextType>;
+  CreateStakePoolEvent?: CreateStakePoolEventResolvers<ContextType>;
   DecimalUnits?: GraphQLScalarType;
   Deposit?: DepositResolvers<ContextType>;
   EntryFunctionPayload?: GraphQLScalarType;
@@ -1276,6 +1664,7 @@ export type Resolvers<ContextType = any> = {
   Level?: LevelResolvers<ContextType>;
   Low24h?: Low24hResolvers<ContextType>;
   Market?: MarketResolvers<ContextType>;
+  ModifyPoolEvent?: ModifyPoolEventResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Ohlcv?: OhlcvResolvers<ContextType>;
   Order?: OrderResolvers<ContextType>;
@@ -1289,12 +1678,20 @@ export type Resolvers<ContextType = any> = {
   QuoteExactOut?: QuoteExactOutResolvers<ContextType>;
   RegisteredCoinInfo?: RegisteredCoinInfoResolvers<ContextType>;
   RemoveLiquidity?: RemoveLiquidityResolvers<ContextType>;
+<<<<<<< HEAD
+=======
+  StakeDepositEvent?: StakeDepositEventResolvers<ContextType>;
+  StakePool?: StakePoolResolvers<ContextType>;
+  StakeWithdrawEvent?: StakeWithdrawEventResolvers<ContextType>;
+>>>>>>> 0225a1a (graphql schemas and resolvers for stake pool)
   Subscription?: SubscriptionResolvers<ContextType>;
   Swap?: SwapResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   Trade?: TradeResolvers<ContextType>;
   Transfer?: TransferResolvers<ContextType>;
+  UserPosition?: UserPositionResolvers<ContextType>;
   Volume24h?: Volume24hResolvers<ContextType>;
   Wallet?: WalletResolvers<ContextType>;
   Withdrawal?: WithdrawalResolvers<ContextType>;
 };
+

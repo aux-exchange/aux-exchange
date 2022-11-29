@@ -6,7 +6,14 @@ import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
 import { AU, DU } from "../src/units";
 import { StakePoolClient } from "../src/stake/client";
-import type { StakePool } from "../src/stake/schema";
+import type {
+  ClaimEvent,
+  CreatePoolEvent,
+  ModifyPoolEvent,
+  StakeDepositEvent,
+  StakePool,
+  StakeWithdrawEvent,
+} from "../src/stake/schema";
 import BN from "bn.js";
 
 describe("Stake Pool tests", function () {
@@ -210,11 +217,11 @@ describe("Stake Pool tests", function () {
 
   it("modifyPool", async function () {
     const rewardAmount = DU(1000);
-    const timeAmount = new BN(1_000_000 * 3600 * 24);
+    const timeAmountUs = new BN(1_000_000 * 3600 * 24);
     const modifyPoolResult = await poolClient.modifyPool({
       rewardAmount,
       rewardIncrease: true,
-      timeAmount,
+      timeAmountUs,
       timeIncrease: true,
     });
     assert.ok(modifyPoolResult.transaction.success);
@@ -232,7 +239,7 @@ describe("Stake Pool tests", function () {
         .toAtomicUnits(poolClient.coinInfoReward.decimals)
         .toNumber()
     );
-    assert.equal(pool.endTime, lastEndTime + timeAmount.toNumber());
+    assert.equal(pool.endTime, lastEndTime + timeAmountUs.toNumber());
     assert.equal(event.endTimeUs.toNumber(), pool.endTime.toNumber());
   });
 
@@ -317,6 +324,51 @@ describe("Stake Pool tests", function () {
       userAddress: senderAddr,
     });
     assert.equal(userPosFinal.amountStaked, 0);
+  });
+
+  it("createEvents", async function () {
+    const events = await poolClient.createEvents({ poolId: pool.poolId });
+    assert.equal(events.length, 1);
+    const createEvent: CreatePoolEvent = events[0]!;
+    assert.equal(createEvent.poolId, pool.poolId);
+  });
+
+  it("depositEvents", async function () {
+    const events = await poolClient.depositEvents({ poolId: pool.poolId });
+    assert.equal(events.length, 1);
+    const depositEvent: StakeDepositEvent = events[0]!;
+    assert.equal(depositEvent.user, senderAddr);
+  });
+
+  it("withdrawEvents", async function () {
+    const events = await poolClient.withdrawEvents({ poolId: pool.poolId });
+    assert.equal(events.length, 1);
+    const withdrawEvent: StakeWithdrawEvent = events[0]!;
+    assert.equal(withdrawEvent.user, senderAddr);
+  });
+
+  it("claimEvents", async function () {
+    const events = await poolClient.claimEvents({ poolId: pool.poolId });
+    assert.equal(events.length, 1);
+    const claimEvent: ClaimEvent = events[0]!;
+    assert.equal(claimEvent.user, senderAddr);
+  });
+
+  it("modifyPoolEvents", async function () {
+    const events = await poolClient.modifyPoolEvents({ poolId: pool.poolId });
+    assert.equal(events.length, 4);
+    let modifyPoolEvent: ModifyPoolEvent = events[0]!;
+    // last event modified authority back to sender
+    assert.equal(modifyPoolEvent.authority, senderAddr);
+    modifyPoolEvent = events[1]!;
+    assert.equal(
+      modifyPoolEvent.authority,
+      moduleAuthority.address().toShortString()
+    );
+    modifyPoolEvent = events[2]!;
+    assert.equal(modifyPoolEvent.authority, senderAddr);
+    modifyPoolEvent = events[3]!;
+    assert.equal(modifyPoolEvent.authority, senderAddr);
   });
 
   it("deleteEmptyPool", async function () {
