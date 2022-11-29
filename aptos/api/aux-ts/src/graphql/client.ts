@@ -16,7 +16,7 @@ export const redisClient = redis.createClient();
 redisClient.on("error", (err) => console.error("[Redis]", err));
 export const redisPubSub = new RedisPubSub();
 
-const connection = new Connection("https://solana-api.projectserum.com");
+const connection = new Connection("https://api.mainnet-beta.solana.com");
 const pythPublicKey = getPythProgramKeyForCluster("mainnet-beta");
 export const pythClient = new PythHttpClient(connection, pythPublicKey);
 export const pythConnection = new PythConnection(connection, pythPublicKey);
