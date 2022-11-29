@@ -88,7 +88,6 @@ export const market = {
       `${baseCoinInfo.coinType}-${quoteCoinInfo.coinType}-last-trade-price`
     );
   },
-
   async openOrders(
     parent: Market,
     { owner }: MarketOpenOrdersArgs
@@ -102,7 +101,6 @@ export const market = {
       orderToOrder(order, parent.baseCoinInfo, parent.quoteCoinInfo)
     );
   },
-
   async orderHistory(
     parent: Market,
     { owner }: MarketOrderHistoryArgs
@@ -116,7 +114,6 @@ export const market = {
       orderPlacedEventToOrder(order.order, market.baseCoinInfo, market.quoteCoinInfo)
     );
   },
-
   async tradeHistory(
     parent: Market,
     { owner }: MarketTradeHistoryArgs
@@ -132,19 +129,15 @@ export const market = {
         orderFillEventToOrder(fill, market.baseCoinInfo, market.quoteCoinInfo)
       );
   },
-
   high24h(parent: Market): Promise<Maybe<number>> {
     return analytic24h("high", parent);
   },
-
   async low24h(parent: Market): Promise<Maybe<number>> {
     return analytic24h("low", parent);
   },
-
   async volume24h(parent: Market): Promise<Maybe<number>> {
     return analytic24h("volume", parent);
   },
-
   isRoundLot(parent: Market, { quantity }: MarketIsRoundLotArgs): boolean {
     return aux
       .DU(quantity)
@@ -153,7 +146,6 @@ export const market = {
       .mod(aux.AU(parent.lotSizeString).toBN())
       .eqn(0);
   },
-
   isRoundTick(parent: Market, { quantity }: MarketIsRoundTickArgs): boolean {
     return aux
       .DU(quantity)
@@ -162,7 +154,6 @@ export const market = {
       .mod(aux.AU(parent.tickSizeString).toBN())
       .eqn(0);
   },
-
   async bars(
     { baseCoinInfo, quoteCoinInfo }: Market,
     { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
@@ -192,7 +183,6 @@ export const market = {
       .reverse()
       .value();
   },
-
   async pythRating(
     parent: Market,
     { price, side }: MarketPythRatingArgs
