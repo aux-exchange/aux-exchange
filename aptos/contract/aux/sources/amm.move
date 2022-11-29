@@ -2947,4 +2947,132 @@ module aux::amm {
         };
     }
 
+
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
+    fun test_can_withdraw_liquidity_same_coin_type_regression(sender: &signer, aptos_framework: &signer) acquires Pool {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+        let sender_addr = signer::address_of(sender);
+        account::create_account_for_test(sender_addr);
+        setup_module_for_test(sender);
+        let resource_account_addr = util::create_resource_account_addr(sender_addr, b"amm");
+        assert!(resource_account_addr == @aux, ETEST_FAILED);
+
+        aux::aux_coin::initialize_aux_coin(sender);
+
+        // Create pool with same coin avoiding create_pool checks
+        let amm_signer = &authority::get_signer_self();
+        let (lp_burn, lp_freeze, lp_mint) = coin::initialize<LP<AuxCoin, AuxCoin>>(
+            amm_signer,
+            lp_name<AuxCoin, AuxCoin>(),
+            lp_symbol<AuxCoin, AuxCoin>(),
+            LP_TOKEN_DECIMALS,
+            true // monitor_supply
+        );
+        coin::destroy_freeze_cap(lp_freeze);
+
+        if (!coin::is_account_registered<AuxCoin>(@aux)) {
+            coin::register<AuxCoin>(amm_signer);
+        };
+        if (!coin::is_account_registered<AuxCoin>(@aux)) {
+            coin::register<AuxCoin>(amm_signer);
+        };
+        if (!coin::is_account_registered<LP<AuxCoin, AuxCoin>>(@aux)) {
+            coin::register<LP<AuxCoin,AuxCoin>>(amm_signer);
+        };
+
+        let pool = Pool<AuxCoin, AuxCoin> {
+            frozen: false,
+            timestamp: timestamp::now_microseconds(),
+            fee_bps: 30,
+            swap_events: account::new_event_handle<SwapEvent>(amm_signer),
+            add_liquidity_events: account::new_event_handle<AddLiquidityEvent>(amm_signer),
+            remove_liquidity_events: account::new_event_handle<RemoveLiquidityEvent>(amm_signer),
+            x_reserve: coin::zero(),
+            y_reserve: coin::zero(),
+            lp_mint: lp_mint,
+            lp_burn: lp_burn,
+        };
+        move_to(amm_signer, pool);
+
+        // Mint aux coin
+        util::maybe_register_coin<AuxCoin>(sender);
+        assert!(coin::is_account_registered<AuxCoin>(sender_addr), ETEST_FAILED);
+
+        managed_coin::mint<AuxCoin>(&authority::get_signer(sender), sender_addr, 1000000000000);
+
+        // deposit liquidity
+        let sender_addr = signer::address_of(sender);
+        let aux_bal = coin::balance<AuxCoin>(sender_addr);
+
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxCoin>>(), 0);
+            assert!(x_reserve == 0, ETEST_FAILED);
+            assert!(y_reserve == 0, ETEST_FAILED);
+            assert!(pool_lp_au == 0, ETEST_FAILED);
+        };
+
+        let _ = sender_addr;
+        add_exact_liquidity<AuxCoin, AuxCoin>(sender, 1000, 4000);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxCoin>>(), 0);
+            assert!(x_reserve == 1000, ETEST_FAILED);
+            assert!(y_reserve == 4000, ETEST_FAILED);
+            assert!(pool_lp_au == 2000, ETEST_FAILED);
+        };
+        aux_bal = aux_bal - 5000;
+        assert!(coin::balance<AuxCoin>(sender_addr) == aux_bal, ETEST_FAILED);
+        assert!(coin::balance<LP<AuxCoin, AuxCoin>>(sender_addr) == (2000 - MIN_LIQUIDITY as u64),
+                ETEST_FAILED);
+
+        // Exact remove_liquidity.
+        remove_liquidity<AuxCoin, AuxCoin>(sender, 50);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxCoin>>(), 0);
+            assert!(x_reserve == 975, 1);
+            assert!(y_reserve == 3900, 1);
+            assert!(pool_lp_au == 1950, (pool_lp_au as u64));
+        };
+        aux_bal = aux_bal + 25 + 100;
+        assert!(coin::balance<AuxCoin>(sender_addr) == aux_bal, ETEST_FAILED);
+        assert!(coin::balance<LP<AuxCoin, AuxCoin>>(sender_addr) == (1950 - MIN_LIQUIDITY as u64),
+                ETEST_FAILED);
+
+        // Rounded remove_liquidity
+        remove_liquidity<AuxCoin, AuxCoin>(sender, 17);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxCoin>>(), 0);
+            assert!(x_reserve == 967, 1);
+            assert!(y_reserve == 3866, 1);
+            assert!(pool_lp_au == 1933, 1);
+        };
+        aux_bal = aux_bal + 8 + 34;
+        assert!(coin::balance<AuxCoin>(sender_addr) == aux_bal, ETEST_FAILED);
+        assert!(coin::balance<LP<AuxCoin, AuxCoin>>(sender_addr) == (1933 - MIN_LIQUIDITY as u64),
+                ETEST_FAILED);
+
+        // Total remove_liquidity
+        remove_liquidity<AuxCoin, AuxCoin>(sender, 1933 - MIN_LIQUIDITY);
+        {
+            let pool = borrow_global<Pool<AuxCoin, AuxCoin>>(@aux);
+            let x_reserve = coin::value(&pool.x_reserve);
+            let y_reserve = coin::value(&pool.y_reserve);
+            let pool_lp_au = option::get_with_default(&coin::supply<LP<AuxCoin, AuxCoin>>(), 0);
+            assert!(x_reserve == 501, x_reserve);
+            assert!(y_reserve == 2000, y_reserve);
+            assert!(pool_lp_au == (MIN_LIQUIDITY as u128), 1);
+        };
+    }
+
 }
