@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "start": "node lib/main.js"
+  },
+  "dependencies": {
+    "@certusone/wormhole-sdk": "^0.9.0",
+    "@certusone/wormhole-spydk": "^0.0.1",
+    "aptos": "^1.3.16"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}
