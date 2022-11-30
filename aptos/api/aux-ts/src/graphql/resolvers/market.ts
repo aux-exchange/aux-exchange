@@ -159,10 +159,6 @@ export const market = {
     { baseCoinInfo, quoteCoinInfo }: Market,
     { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
   ): Promise<Bar[]> {
-    if (firstDataRequest === false) {
-      // HACK (to handle TV request-loop)
-      return [];
-    }
     const key = `${baseCoinInfo.coinType}-${
       quoteCoinInfo.coinType
     }-bar-${resolutionToString(resolution)}`;
