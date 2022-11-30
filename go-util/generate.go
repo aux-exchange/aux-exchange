@@ -8,6 +8,5 @@ package aux_go_generate
 //go:generate go run github.com/fardream/gen-move-container@latest critbit -o ../aptos/contract/aux/sources/critbit.move -p aux -m critbit --use-aptos-table
 
 // abort-only-contract
-// must run this at the last one of the commands since this will copy all contract codes
-
-//go:generate go run ./cmd/move-abort -e authority.move -i ../aptos/contract/aux/sources -o ../aptos/abort-only-contract/aux/sources
+// Uncomment the below command to generate abort only contract
+// //go:generate go run ./cmd/move-abort -e authority.move -i ../aptos/contract/aux/sources -o ../aptos/abort-only-contract/aux/sources
