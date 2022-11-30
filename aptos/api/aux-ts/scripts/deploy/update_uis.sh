@@ -16,18 +16,17 @@ yarn build:aux
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
 
-# mainnet is pinned
-git checkout mainnet
-git pull
-rm -rf ./client
-cp -r ~/projects/aux-frontend/apps/aux/dist client
-git br -D chore/update-ui
-git checkout -b chore/update-ui
-git add .
-git commit -m "chore(ui): update"
-git push origin chore/update-ui:mainnet -f
+# create backups
+git tag -f origin/mainnet
+git tag -f origin/mainnet-beta
+git tag -f origin/testnet
+git tag -f origin/devnet
+git tag -f origin/devnet-beta
+git tag -f origin/vybe
+git tag -f origin/atrix
+git tag -f origin/mojito
 
-# mainnet-beta, testnet, devnet, devnet-beta deployed off latest `main`
+# deploy off latest `main`
 git checkout main
 git pull
 rm -rf ./client
@@ -36,6 +35,7 @@ git br -D chore/update-ui
 git checkout -b chore/update-ui
 git add .
 git commit -m "chore(ui): update"
+git push origin chore/update-ui:mainnet -f
 git push origin chore/update-ui:mainnet-beta -f
 git push origin chore/update-ui:testnet -f
 git push origin chore/update-ui:devnet -f
@@ -46,7 +46,7 @@ cd ~/projects/aux-frontend/apps/aux
 yarn build:vybe
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
-git checkout mainnet
+git checkout origin/mainnet
 rm -rf ./client
 cp -r ~/projects/aux-frontend/apps/aux/dist client
 git br -D vybe
@@ -60,7 +60,7 @@ cd ~/projects/aux-frontend/apps/aux
 yarn build:atrix
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
-git checkout mainnet
+git checkout origin/mainnet
 rm -rf ./client
 cp -r ~/projects/aux-frontend/apps/aux/dist client
 git br -D atrix
@@ -74,7 +74,7 @@ cd ~/projects/aux-frontend/apps/aux
 yarn build:mojito
 
 cd ~/projects/aux-exchange/aptos/api/aux-ts/src/graphql
-git checkout mainnet
+git checkout origin/mainnet
 rm -rf ./client
 cp -r ~/projects/aux-frontend/apps/aux/dist client
 git br -D mojito
