@@ -154,11 +154,13 @@ export const market = {
       .mod(aux.AU(parent.tickSizeString).toBN())
       .eqn(0);
   },
+
   async bars(
     { baseCoinInfo, quoteCoinInfo }: Market,
     { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
   ): Promise<Bar[]> {
     if (firstDataRequest === false) {
+      // HACK (to handle TV request-loop)
       return [];
     }
     const key = `${baseCoinInfo.coinType}-${
@@ -168,21 +170,18 @@ export const market = {
     let bars = rawBars.map((bar) => JSON.parse(bar));
 
     // if firstDataRequest override to now, otherwise filter for to
-    if (_.isNull(firstDataRequest) && !_.isNull(to) && !_.isUndefined(to)) {
+    if (!firstDataRequest && !_.isNil(to)) {
       bars = bars.filter((bar) => bar.time < to * 1000);
     }
-    if (!_.isNull(countBack) && !_.isUndefined(countBack)) {
-      bars = _.take(bars, countBack);
-    } else if (!_.isNull(from) && !_.isUndefined(from)) {
-      bars = bars.filter((bar) => bar.time >= Number(from) * 1000);
+    if (!_.isNil(countBack)) {
+      bars = _.takeRight(bars, countBack);
+    } else if (!_.isNil(from)) {
+      bars = bars.filter((bar) => bar.time >= from * 1000);
     }
 
-    return _(bars)
-      .reverse()
-      .sortedUniqBy((bar) => bar.time)
-      .reverse()
-      .value();
+    return _.sortedUniqBy(bars, (bar) => bar.time);
   },
+
   async pythRating(
     parent: Market,
     { price, side }: MarketPythRatingArgs
