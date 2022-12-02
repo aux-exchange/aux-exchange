@@ -16,6 +16,7 @@ contract AptosRelay is AptosRelayGetters {
     ) {
         setTokenBridgeAddress(tokenBridgeAddress_);
         setChainId(chainId_);
+        setOwner(msg.sender);
     }
 
     function transferTokens(
@@ -23,13 +24,12 @@ contract AptosRelay is AptosRelayGetters {
         uint256 tokenAmount,
         uint256 relayerFee,
         bytes32 receiverAddress,
-        uint256 maxSwapIn,
         uint64 nativeSwapAmount,
         uint32 nonce
     ) external {
         require(
-            tokenAmount >= relayerFee + maxSwapIn,
-            "insufficient tokenAmount to pay relayer and for swap"
+            tokenAmount >= relayerFee,
+            "insufficient tokenAmount to pay relayer"
         );
         require(
             isTokenRegistered(tokenAddress),
@@ -39,14 +39,13 @@ contract AptosRelay is AptosRelayGetters {
         (,bytes memory queriedDecimals) = tokenAddress.staticcall(abi.encodeWithSignature("decimals()"));
         uint8 decimals = abi.decode(queriedDecimals, (uint8));
 
-        uint256 normalizedRelayerFee = normalizeAmount(relayerFee, decimals);
-        uint256 normalizedMaxSwapIn = normalizeAmount(maxSwapIn, decimals);
-
+        uint256 _normalizedRelayerFee = normalizeAmount(relayerFee, decimals);
+        require(_normalizedRelayerFee <= type(uint64).max);
+        uint64 normalizedRelayerFee = uint64(_normalizedRelayerFee);
 
         bytes memory payload = abi.encodePacked(
             normalizedRelayerFee,
             receiverAddress,
-            normalizedMaxSwapIn,
             nativeSwapAmount
         );
 
