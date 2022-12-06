@@ -229,7 +229,11 @@ module aux::stake {
     /// Entry function to create a new incentive pool for `S` staked coin and `R` reward coin
     /// `reward_amount` will be transferred from `sender` to the pool
     /// `end_time` should be specified as microseconds from the UNIX epoch
-    public entry fun create<S, R>(authority: address, reward: Coin<R>, duration_us: u64) {
+    public entry fun create<S, R>(
+        sender: &signer,
+        reward_amount: u64,
+        duration_us: u64, // us
+    ) {
         // Only one pool can exist per stake coin. To double dip, a pool must be created for St<S>
         assert!(!coin::is_coin_initialized<St<S>>(), E_POOL_ALREADY_EXISTS);
         assert!(!exists<Pool<S, R>>(@aux), E_POOL_ALREADY_EXISTS);
@@ -237,9 +241,10 @@ module aux::stake {
         assert!(duration_us >= MIN_DURATION_US, E_INVALID_DURATION);
         assert!(duration_us <= MAX_DURATION_US, E_INVALID_DURATION);
         let end_time = start_time + duration_us;
-        let reward_amount = coin::value(&reward);
         assert!(reward_amount != 0, E_INVALID_REWARD);
         let module_authority = authority::get_signer_self();
+        let reward = coin::withdraw<R>(sender, reward_amount);
+        let authority = signer::address_of(sender);
 
         // Create Coin
         let name = string::utf8(b"");
@@ -305,7 +310,6 @@ module aux::stake {
             pool
         )
     }
-
 
     /// Delete an expired and empty incentive pool.
     public entry fun delete_empty_pool<S, R>(
@@ -718,7 +722,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -731,10 +734,9 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 100);
 
@@ -747,7 +749,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_modify_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -760,10 +761,9 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
 
         modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 2000000 * 1000000, false, 0, false);
@@ -772,7 +772,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_modify_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -785,10 +784,9 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         modify_authority<FakeCoin<ETH>, FakeCoin<USDC>>(sender, alice_addr);
         modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 2000000 * 1000000, false, 0, false);
@@ -798,7 +796,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_modify_authority_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -811,14 +808,13 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         modify_authority<FakeCoin<ETH>, FakeCoin<USDC>>(alice, alice_addr);
     }
@@ -828,7 +824,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_delete_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -841,14 +836,13 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         delete_empty_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice);
     }
@@ -857,7 +851,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -870,14 +863,13 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 100);
         // fast forward so alice accrues rewards
@@ -902,18 +894,17 @@ module aux::stake {
         fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
         fake_coin::register_and_mint<USDC>(alice, 2000000 * 1000000); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
-        let sender_reward = coin::withdraw<FakeCoin<USDC>>(sender, 2000000 * 1000000);
-        let alice_reward = coin::withdraw<FakeCoin<USDC>>(alice, 1000000 * 1000000);
+        let reward_au = 2000000 * 1000000;
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
         // reward = 2e14 AU ETH
         // reward per second = 77,160,493.82716049
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, sender_reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(alice_addr, alice_reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(alice, reward_au, duration_seconds * 1000000);
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
@@ -932,17 +923,15 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 2000000 * 1000000); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let sender_reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
-        let alice_reward = coin::withdraw<FakeCoin<USDC>>(alice, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
         let start_time = timestamp::now_microseconds();
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, sender_reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
-        create<St<FakeCoin<ETH>>, FakeCoin<USDC>>(alice_addr, alice_reward, duration_seconds * 1000000);
+        create<St<FakeCoin<ETH>>, FakeCoin<USDC>>(alice, reward_au, duration_seconds * 1000000);
         let alice_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(alice_addr) == alice_usdc, E_TEST_FAILURE);
 
@@ -1001,7 +990,6 @@ module aux::stake {
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward_remaining = reward_au;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
@@ -1010,7 +998,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
@@ -1320,7 +1308,6 @@ module aux::stake {
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward_remaining = reward_au;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
@@ -1329,7 +1316,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         let sender_usdc = 0;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
@@ -1389,7 +1376,6 @@ module aux::stake {
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward_remaining = reward_au;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
@@ -1398,7 +1384,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         let sender_usdc = 1000000 * 1000000;
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
@@ -1616,7 +1602,6 @@ module aux::stake {
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
         let reward_remaining = reward_au;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         // Incentive:
         // duration = 30 days = 30*24*3600*1000000 microseconds
@@ -1625,7 +1610,7 @@ module aux::stake {
         let duration_seconds = 30*24*3600; // 30 days
         let start_time = timestamp::now_microseconds();
         let end_time = start_time + duration_seconds * 1000000;
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         let sender_usdc = 1000000 * 1000000; // 1M = 3M - 2M
         assert!(coin::balance<FakeCoin<USDC>>(sender_addr) == sender_usdc, E_TEST_FAILURE);
@@ -1707,7 +1692,6 @@ module aux::stake {
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_end_pool_before_now(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
-        let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
             account::create_account_for_test(alice_addr);
@@ -1720,10 +1704,9 @@ module aux::stake {
         fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
         fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
         let reward_au = 2000000 * 1000000;
-        let reward = coin::withdraw<FakeCoin<USDC>>(sender, reward_au);
 
         let duration_seconds = 30*24*3600; // 30 days
-        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender_addr, reward, duration_seconds * 1000000);
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au, duration_seconds * 1000000);
 
         deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 100);
 
