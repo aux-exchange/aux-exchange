@@ -93,6 +93,8 @@
 ///
 module aux::stake {
     use std::signer;
+    use std::string;
+    use std::option;
 
     use aptos_framework::coin::{Coin, Self};
     use aptos_framework::timestamp;
@@ -129,6 +131,9 @@ module aux::stake {
     /* STRUCTS */
     /***********/
 
+    /// Wrapped staked coin type, used to rehyptohecate staked coins to support "double dip" rewards
+    struct St<phantom S> {}
+
     /// Stored at user's address once they open a staking position
     struct UserPosition<phantom S, phantom R> has key, store {
         amount_staked: u64,
@@ -155,6 +160,10 @@ module aux::stake {
         reward: Coin<R>,
         last_update_time: u64,
         acc_reward_per_share: u128,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+
+        // stake coin management
+        burn: coin::BurnCapability<St<S>>,
+        mint: coin::MintCapability<St<S>>,
 
         // events
         create_pool_events: EventHandle<CreatePoolEvent<S, R>>,
@@ -221,6 +230,8 @@ module aux::stake {
     /// `reward_amount` will be transferred from `sender` to the pool
     /// `end_time` should be specified as microseconds from the UNIX epoch
     public entry fun create<S, R>(authority: address, reward: Coin<R>, duration_us: u64) {
+        // Only one pool can exist per stake coin. To double dip, a pool must be created for St<S>
+        assert!(!coin::is_coin_initialized<St<S>>(), E_POOL_ALREADY_EXISTS);
         assert!(!exists<Pool<S, R>>(@aux), E_POOL_ALREADY_EXISTS);
         let start_time = timestamp::now_microseconds();
         assert!(duration_us >= MIN_DURATION_US, E_INVALID_DURATION);
@@ -229,6 +240,39 @@ module aux::stake {
         let reward_amount = coin::value(&reward);
         assert!(reward_amount != 0, E_INVALID_REWARD);
         let module_authority = authority::get_signer_self();
+
+        // Create Coin
+        let name = string::utf8(b"");
+        let stake_coin_name = coin::name<S>();
+        let name_len = string::length(&stake_coin_name);
+        let end = if (name_len > 30) {
+            30
+        } else {
+            name_len
+        };
+        string::append(&mut name, string::utf8(b"St"));
+        string::append(&mut name, string::sub_string(&stake_coin_name, 0, end));
+        let symbol = string::utf8(b"");
+        let stake_coin_symbol = coin::symbol<S>();
+        let symbol_len = string::length(&stake_coin_symbol);
+        let end = if (symbol_len > 8) {
+            8
+        } else {
+            symbol_len
+        };
+        string::append(&mut symbol, string::utf8(b"st"));
+        string::append(&mut symbol, string::sub_string(&stake_coin_symbol, 0, end));
+        let (burn, freeze, mint) = coin::initialize<St<S>>(
+            &module_authority,
+            name,
+            symbol,
+            coin::decimals<S>(),
+            true // monitor_supply
+        );
+        coin::destroy_freeze_cap(freeze);
+        if (!coin::is_account_registered<St<S>>(@aux)) {
+            coin::register<St<S>>(&module_authority);
+        };
         let pool = Pool {
                 authority,
                 start_time,
@@ -238,6 +282,8 @@ module aux::stake {
                 reward,
                 last_update_time: start_time,
                 acc_reward_per_share: 0,
+                burn,
+                mint,
                 create_pool_events: account::new_event_handle<CreatePoolEvent<S, R>>(&module_authority),
                 deposit_events: account::new_event_handle<DepositEvent<S, R>>(&module_authority),
                 withdraw_events: account::new_event_handle<WithdrawEvent<S, R>>(&module_authority),
@@ -277,6 +323,9 @@ module aux::stake {
         assert!(coin::value(&(pool.stake)) == 0, E_CANNOT_DELETE_POOL);
         assert!(now >= pool.end_time, E_CANNOT_DELETE_POOL);
 
+        // Ensure supply of stake coin is 0 (all has been burned via redemptions)
+        assert!(*option::borrow(&coin::supply<St<S>>()) == 0, E_CANNOT_DELETE_POOL);
+
         let Pool {
             authority: _,
             start_time: _,
@@ -286,12 +335,17 @@ module aux::stake {
             reward,
             last_update_time: _,
             acc_reward_per_share: _,  // accumulated Coin<R> per share, times REWARD_PER_SHARE_MUL.
+            mint,
+            burn,
             deposit_events,
             create_pool_events,
             claim_events,
             modify_pool_events,
             withdraw_events
         } = pool;
+
+        coin::destroy_mint_cap(mint);
+        coin::destroy_burn_cap(burn);
 
         event::destroy_handle<DepositEvent<S, R>>(deposit_events);
         event::destroy_handle<CreatePoolEvent<S, R>>(create_pool_events);
@@ -502,6 +556,14 @@ module aux::stake {
             }
         };
 
+        // Mint and deposit st coins
+        let st_coin = coin::mint(amount, &pool.mint);
+        if (!coin::is_account_registered<St<S>>(sender_addr)) {
+            coin::register<St<S>>(sender);
+        };
+        coin::deposit(sender_addr, st_coin);
+        assert!(*option::borrow(&coin::supply<St<S>>()) == (coin::value(&pool.stake) as u128), E_INTERNAL_ERROR);
+
         event::emit_event<DepositEvent<S, R>>(
             &mut pool.deposit_events,
             deposit_event
@@ -523,6 +585,10 @@ module aux::stake {
         let user_pos = borrow_global_mut<UserPosition<S, R>>(sender_addr);
         assert!(user_pos.amount_staked >= amount, E_INVALID_WITHDRAW_AMOUNT);
 
+        // withdraw and burn st coins
+        let st_coin = coin::withdraw<St<S>>(sender, amount);
+        coin::burn(st_coin, &pool.burn);
+
         // update pool
         let now = timestamp::now_microseconds();
         update_pool(pool, now);
@@ -535,6 +601,8 @@ module aux::stake {
         user_pos.last_acc_reward_per_share = pool.acc_reward_per_share;
         let unstake = coin::extract(&mut pool.stake, amount);
         coin::deposit(sender_addr, unstake);
+
+        assert!(*option::borrow(&coin::supply<St<S>>()) == (coin::value(&pool.stake) as u128), E_INTERNAL_ERROR);
 
         event::emit_event<WithdrawEvent<S, R>>(
             &mut pool.withdraw_events,
