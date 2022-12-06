@@ -133,6 +133,10 @@ module aux::stake {
 
     /// Wrapped staked coin type, used to rehyptohecate staked coins to support "double dip" rewards
     struct St<phantom S> {}
+    struct StInfo<phantom S> has key {
+        burn: coin::BurnCapability<St<S>>,
+        mint: coin::MintCapability<St<S>>
+    }
 
     /// Stored at user's address once they open a staking position
     struct UserPosition<phantom S, phantom R> has key, store {
@@ -233,9 +237,8 @@ module aux::stake {
         sender: &signer,
         reward_amount: u64,
         duration_us: u64, // us
-    ) {
+    ) acquires StInfo {
         // Only one pool can exist per stake coin. To double dip, a pool must be created for St<S>
-        assert!(!coin::is_coin_initialized<St<S>>(), E_POOL_ALREADY_EXISTS);
         assert!(!exists<Pool<S, R>>(@aux), E_POOL_ALREADY_EXISTS);
         let start_time = timestamp::now_microseconds();
         assert!(duration_us >= MIN_DURATION_US, E_INVALID_DURATION);
@@ -247,34 +250,45 @@ module aux::stake {
         let authority = signer::address_of(sender);
 
         // Create Coin
-        let name = string::utf8(b"");
-        let stake_coin_name = coin::name<S>();
-        let name_len = string::length(&stake_coin_name);
-        let end = if (name_len > 30) {
-            30
-        } else {
-            name_len
-        };
-        string::append(&mut name, string::utf8(b"St"));
-        string::append(&mut name, string::sub_string(&stake_coin_name, 0, end));
-        let symbol = string::utf8(b"");
-        let stake_coin_symbol = coin::symbol<S>();
-        let symbol_len = string::length(&stake_coin_symbol);
-        let end = if (symbol_len > 8) {
-            8
-        } else {
-            symbol_len
-        };
-        string::append(&mut symbol, string::utf8(b"st"));
-        string::append(&mut symbol, string::sub_string(&stake_coin_symbol, 0, end));
-        let (burn, freeze, mint) = coin::initialize<St<S>>(
-            &module_authority,
-            name,
-            symbol,
-            coin::decimals<S>(),
-            true // monitor_supply
-        );
-        coin::destroy_freeze_cap(freeze);
+        let (mint, burn) =
+            if (coin::is_coin_initialized<St<S>>()) {
+                assert!(exists<StInfo<S>>(@aux), E_POOL_ALREADY_EXISTS);
+                let StInfo {
+                    mint,
+                    burn
+                } = move_from<StInfo<S>>(@aux);
+                (mint, burn)
+            } else {
+                let name = string::utf8(b"");
+                let stake_coin_name = coin::name<S>();
+                let name_len = string::length(&stake_coin_name);
+                let end = if (name_len > 30) {
+                    30
+                } else {
+                    name_len
+                };
+                string::append(&mut name, string::utf8(b"St"));
+                string::append(&mut name, string::sub_string(&stake_coin_name, 0, end));
+                let symbol = string::utf8(b"");
+                let stake_coin_symbol = coin::symbol<S>();
+                let symbol_len = string::length(&stake_coin_symbol);
+                let end = if (symbol_len > 8) {
+                    8
+                } else {
+                    symbol_len
+                };
+                string::append(&mut symbol, string::utf8(b"st"));
+                string::append(&mut symbol, string::sub_string(&stake_coin_symbol, 0, end));
+                let (burn, freeze, mint) = coin::initialize<St<S>>(
+                    &module_authority,
+                    name,
+                    symbol,
+                    coin::decimals<S>(),
+                    true // monitor_supply
+                );
+                coin::destroy_freeze_cap(freeze);
+                (mint, burn)
+            };
         if (!coin::is_account_registered<St<S>>(@aux)) {
             coin::register<St<S>>(&module_authority);
         };
@@ -348,8 +362,10 @@ module aux::stake {
             withdraw_events
         } = pool;
 
-        coin::destroy_mint_cap(mint);
-        coin::destroy_burn_cap(burn);
+        let module_authority = authority::get_signer_self();
+        move_to(&module_authority, StInfo<S> { mint, burn});
+        // coin::destroy_mint_cap(mint);
+        // coin::destroy_burn_cap(burn);
 
         event::destroy_handle<DepositEvent<S, R>>(deposit_events);
         event::destroy_handle<CreatePoolEvent<S, R>>(create_pool_events);
@@ -720,7 +736,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 9)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition, StInfo {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -747,7 +763,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 8)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_modify_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
+    fun test_cannot_modify_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, StInfo {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -770,7 +786,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_modify_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
+    fun test_modify_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -794,7 +810,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 8)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_modify_authority_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
+    fun test_cannot_modify_authority_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -822,7 +838,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 8)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_delete_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool {
+    fun test_cannot_delete_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -849,7 +865,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 11)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
@@ -878,9 +894,45 @@ module aux::stake {
         delete_empty_pool<FakeCoin<ETH>, FakeCoin<USDC>>(sender);
     }
 
+    #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
+    fun test_delete_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
+        setup_module_for_test(sender, aptos_framework);
+        let alice_addr = signer::address_of(alice);
+        if (!account::exists_at(alice_addr)) {
+            account::create_account_for_test(alice_addr);
+        };
+
+        let sender_eth = 5 * 100000000;
+        let alice_eth = sender_eth;
+        fake_coin::register_and_mint<USDC>(sender, 2000000 * 1000000); // 2M USDC
+        fake_coin::register_and_mint<ETH>(sender, sender_eth); // 5 ETH
+        fake_coin::register_and_mint<USDC>(alice, 0); // 2M USDC
+        fake_coin::register_and_mint<ETH>(alice, alice_eth); // 5 ETH
+        let reward_au = 2000000 * 1000000;
+
+        // Incentive:
+        // duration = 30 days = 30*24*3600*1000000 microseconds
+        // reward = 2e14 AU ETH
+        // reward per second = 77,160,493.82716049
+        let duration_seconds = 30*24*3600; // 30 days
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au / 2, duration_seconds * 1000000);
+
+        deposit<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 100);
+        // fast forward so alice accrues rewards
+        timestamp::fast_forward_seconds(10);
+        end_reward_early<FakeCoin<ETH>, FakeCoin<USDC>>(sender);
+        withdraw<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 100);
+
+        delete_empty_pool<FakeCoin<ETH>, FakeCoin<USDC>>(sender);
+
+        // try creating same type of pool again
+        create<FakeCoin<ETH>, FakeCoin<USDC>>(sender, reward_au / 2, duration_seconds * 1000000);
+    }
+
+
     #[expected_failure(abort_code = 12)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_create_duplicate_pool(sender: &signer, aptos_framework: &signer, alice: &signer) {
+    fun test_cannot_create_duplicate_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -908,7 +960,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_double_dip(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_double_dip(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -973,7 +1025,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_deposit_withdraw_claim(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_deposit_withdraw_claim(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1291,7 +1343,7 @@ module aux::stake {
     }
     #[expected_failure(abort_code = 9)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_remove_excess_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_cannot_remove_excess_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1359,7 +1411,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_modify_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_modify_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1586,7 +1638,7 @@ module aux::stake {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_end_reward_early(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_end_reward_early(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let sender_addr = signer::address_of(sender);
         let alice_addr = signer::address_of(alice);
@@ -1690,7 +1742,7 @@ module aux::stake {
 
     #[expected_failure(abort_code = 1)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
-    fun test_cannot_end_pool_before_now(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition {
+    fun test_cannot_end_pool_before_now(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
         let alice_addr = signer::address_of(alice);
         if (!account::exists_at(alice_addr)) {
