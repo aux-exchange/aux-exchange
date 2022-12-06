@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
-import { auxClient, pythClient, redisClient } from "../client";
+import { auxClient, redisClient } from "../client";
 import { orderPlacedEventToOrder, orderFillEventToOrder, orderToOrder } from "../conversion";
 import {
   Bar,
@@ -195,12 +195,12 @@ export const market = {
       const pythSymbol = COIN_MAPPING.get(mappedBase)?.pythSymbol;
       if (pythSymbol !== undefined) {
         pythPrice = LATEST_PYTH_PRICE.get(pythSymbol);
-        if (pythPrice === undefined) {
-          const data = await pythClient.getData();
-          const pythPriceObj = data.productPrice.get(pythSymbol);
-          pythPrice = pythPriceObj!.price ?? pythPriceObj!.previousPrice;
-          LATEST_PYTH_PRICE.set(pythSymbol, pythPrice);
-        }
+        // if (pythPrice === undefined) {
+        //   const data = await pythClient.getData();
+        //   const pythPriceObj = data.productPrice.get(pythSymbol);
+        //   pythPrice = pythPriceObj!.price ?? pythPriceObj!.previousPrice;
+        //   LATEST_PYTH_PRICE.set(pythSymbol, pythPrice);
+        // }
       }
     }
 

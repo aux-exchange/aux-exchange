@@ -6,6 +6,7 @@ import {
   Maybe,
   Pool,
   PoolPositionArgs,
+  PoolPriceArgs,
   PoolQuoteExactInArgs,
   PoolQuoteExactOutArgs,
   PoolSummaryStatistics,
@@ -14,6 +15,7 @@ import {
   QuoteExactOut,
   RatingColor,
   RemoveLiquidity,
+  Scalars,
   Swap,
 } from "../generated/types";
 import { generatePythRating, LATEST_PYTH_PRICE } from "../pyth";
@@ -105,6 +107,24 @@ export const pool = {
           amountLP: position.amountLP.toNumber(),
         }
       : null;
+  },
+
+  price(parent: Pool, {coinTypeIn, amountIn}: PoolPriceArgs): Scalars['Float'] {
+    // TODO n-pool stable swap
+    const coinInfoX = parent.coinInfos[0]!;
+    const amountX = parent.amounts[0]!;
+    const amountY = parent.amounts[1]!;
+    const inReserve =
+      coinTypeIn === coinInfoX.coinType
+        ? amountX
+        : amountY;
+    const outReserve =
+      coinTypeIn === coinInfoX.coinType
+        ? amountY
+        : amountX; 
+    
+    const ratio = outReserve / inReserve;
+    return ratio * amountIn;
   },
 
   quoteExactIn(
@@ -292,6 +312,7 @@ export const pool = {
           : RatingColor.Green,
     };
   },
+  
   async summaryStatistics(parent: Pool): Promise<PoolSummaryStatistics> {
     const volume24h = await stat("volume", parent, "24h");
     const fee24h = await stat("fee", parent, "24h");

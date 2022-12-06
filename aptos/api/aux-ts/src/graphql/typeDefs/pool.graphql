@@ -26,6 +26,7 @@ type Pool {
   adds(owner: Address, first: Int, offset: Int): [AddLiquidity!]!
   removes(owner: Address, first: Int, offset: Int): [RemoveLiquidity!]!
   position(owner: Address!): Position
+  price(coinTypeIn: String!, coinTypeOut: String!, amountIn: Float!): Float!
   quoteExactIn(
     coinTypeIn: String!
     coinTypeOut: String!

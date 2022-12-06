@@ -1,17 +1,16 @@
 import { ALL_USD_STABLES, COIN_MAPPING } from "../coin";
-import { pythConnection } from "./client";
 import { PythRating, RatingColor } from "./generated/types";
 
 export const LATEST_PYTH_PRICE = new Map<string, number>();
 
-pythConnection.onPriceChange((productAccount, priceAccount) => {
-  const symbol = productAccount.symbol;
-  const price = priceAccount.price;
-  if (price !== undefined) {
-    LATEST_PYTH_PRICE.set(symbol, price);
-  }
-});
-pythConnection.start();
+// pythConnection.onPriceChange((productAccount, priceAccount) => {
+//   const symbol = productAccount.symbol;
+//   const price = priceAccount.price;
+//   if (price !== undefined) {
+//     LATEST_PYTH_PRICE.set(symbol, price);
+//   }
+// });
+// pythConnection.start();
 
 export function getRecognizedTVL(coinType: string, amount: number): number {
   if (ALL_USD_STABLES.includes(coinType)) {
