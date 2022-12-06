@@ -24,7 +24,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    return await poolClient.calcApr(parent.id);
+    return await poolClient.calcApr();
   },
   async pendingUserReward(
     parent: StakePool,
@@ -42,7 +42,6 @@ export const stakePool = {
     });
     return (
       await poolClient.calcPendingUserReward({
-        poolId: parent.id,
         userAddress: owner,
       })
     ).toNumber();
@@ -61,10 +60,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const userPosition = await poolClient.queryUserPosition({
-      poolId: parent.id,
-      userAddress: owner,
-    });
+    const userPosition = await poolClient.queryUserPosition(owner);
     return {
       amountStaked: userPosition.amountStaked.toNumber(),
       coinInfoReward: parent.coinInfoReward,
@@ -84,7 +80,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const events = await poolClient.createEvents({ poolId: parent.id });
+    const events = await poolClient.createEvents();
     return events.map((e) => {
       return {
         ...e,
@@ -110,7 +106,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const events = await poolClient.depositEvents({ poolId: parent.id });
+    const events = await poolClient.depositEvents();
     return events.map((e) => {
       return {
         ...e,
@@ -144,7 +140,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const events = await poolClient.withdrawEvents({ poolId: parent.id });
+    const events = await poolClient.withdrawEvents();
     return events.map((e) => {
       return {
         ...e,
@@ -181,7 +177,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const events = await poolClient.claimEvents({ poolId: parent.id });
+    const events = await poolClient.claimEvents();
     return events.map((e) => {
       return {
         ...e,
@@ -212,7 +208,7 @@ export const stakePool = {
       coinInfoReward,
       coinInfoStake,
     });
-    const events = await poolClient.modifyPoolEvents({ poolId: parent.id });
+    const events = await poolClient.modifyPoolEvents();
     return events.map((e) => {
       return {
         ...e,

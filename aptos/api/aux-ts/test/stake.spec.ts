@@ -155,7 +155,7 @@ describe("Stake Pool tests", function () {
         500) *
       365 *
       100;
-    const apr = await poolClient.calcApr(pool.poolId, pool, currentTime);
+    const apr = await poolClient.calcApr(pool, currentTime);
     assert.equal(apr, expectedApr);
   });
 
@@ -289,10 +289,7 @@ describe("Stake Pool tests", function () {
   });
 
   it("withdraw", async function () {
-    const userPosInit = await poolClient.queryUserPosition({
-      poolId: pool.poolId,
-      userAddress: senderAddr,
-    });
+    const userPosInit = await poolClient.queryUserPosition(senderAddr);
     assert.equal(userPosInit.amountStaked.toNumber(), 500);
     const initStakeBalance = await auxClient.getCoinBalance({
       account: sender.address(),
@@ -319,43 +316,40 @@ describe("Stake Pool tests", function () {
       finalStakeBalance.toNumber() - initStakeBalance.toNumber(),
       stakeAu
     );
-    const userPosFinal = await poolClient.queryUserPosition({
-      poolId: pool.poolId,
-      userAddress: senderAddr,
-    });
+    const userPosFinal = await poolClient.queryUserPosition(senderAddr);
     assert.equal(userPosFinal.amountStaked, 0);
   });
 
   it("createEvents", async function () {
-    const events = await poolClient.createEvents({ poolId: pool.poolId });
+    const events = await poolClient.createEvents();
     assert.equal(events.length, 1);
     const createEvent: CreatePoolEvent = events[0]!;
-    assert.equal(createEvent.poolId, pool.poolId);
+    assert.equal(createEvent.stakeCoinType, poolClient.coinInfoStake.coinType);
   });
 
   it("depositEvents", async function () {
-    const events = await poolClient.depositEvents({ poolId: pool.poolId });
+    const events = await poolClient.depositEvents();
     assert.equal(events.length, 1);
     const depositEvent: StakeDepositEvent = events[0]!;
     assert.equal(depositEvent.user, senderAddr);
   });
 
   it("withdrawEvents", async function () {
-    const events = await poolClient.withdrawEvents({ poolId: pool.poolId });
+    const events = await poolClient.withdrawEvents();
     assert.equal(events.length, 1);
     const withdrawEvent: StakeWithdrawEvent = events[0]!;
     assert.equal(withdrawEvent.user, senderAddr);
   });
 
   it("claimEvents", async function () {
-    const events = await poolClient.claimEvents({ poolId: pool.poolId });
-    assert.equal(events.length, 1);
+    const events = await poolClient.claimEvents();
+    assert.equal(events.length, 2);
     const claimEvent: ClaimEvent = events[0]!;
     assert.equal(claimEvent.user, senderAddr);
   });
 
   it("modifyPoolEvents", async function () {
-    const events = await poolClient.modifyPoolEvents({ poolId: pool.poolId });
+    const events = await poolClient.modifyPoolEvents();
     assert.equal(events.length, 4);
     let modifyPoolEvent: ModifyPoolEvent = events[0]!;
     // last event modified authority back to sender

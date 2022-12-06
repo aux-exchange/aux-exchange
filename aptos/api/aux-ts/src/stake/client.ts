@@ -224,11 +224,9 @@ export class StakePoolClient {
     ).toDecimalUnits(this.coinInfoReward.decimals);
   }
 
-  async createEvents({
-    query,
-  }: {
-    query?: { start: BN } | { limit: BN };
-  }): Promise<CreatePoolEvent[]> {
+  async createEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<CreatePoolEvent[]> {
     query = query ?? { limit: new BN(100) };
     const queryParameter = "limit" in query ? query.limit : query.start;
     const queryFunction =
@@ -248,12 +246,9 @@ export class StakePoolClient {
     return ret;
   }
 
-  async depositEvents({
-    query,
-  }: {
-    query?: { start: BN } | { limit: BN };
-    poolId?: number | undefined;
-  }): Promise<StakeDepositEvent[]> {
+  async depositEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<StakeDepositEvent[]> {
     query = query ?? { limit: new BN(100) };
     const queryParameter = "limit" in query ? query.limit : query.start;
     const queryFunction =
@@ -273,12 +268,9 @@ export class StakePoolClient {
     return ret;
   }
 
-  async withdrawEvents({
-    query,
-  }: {
-    query?: { start: BN } | { limit: BN };
-    poolId?: number | undefined;
-  }): Promise<StakeWithdrawEvent[]> {
+  async withdrawEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<StakeWithdrawEvent[]> {
     query = query ?? { limit: new BN(100) };
     const queryParameter = "limit" in query ? query.limit : query.start;
     const queryFunction =
@@ -298,12 +290,9 @@ export class StakePoolClient {
     return ret;
   }
 
-  async claimEvents({
-    query,
-  }: {
-    query?: { start: BN } | { limit: BN };
-    poolId?: number | undefined;
-  }): Promise<ClaimEvent[]> {
+  async claimEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<ClaimEvent[]> {
     query = query ?? { limit: new BN(100) };
     const queryParameter = "limit" in query ? query.limit : query.start;
     const queryFunction =
@@ -323,12 +312,9 @@ export class StakePoolClient {
     return ret;
   }
 
-  async modifyPoolEvents({
-    query,
-  }: {
-    query?: { start: BN } | { limit: BN };
-    poolId?: number | undefined;
-  }): Promise<ModifyPoolEvent[]> {
+  async modifyPoolEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<ModifyPoolEvent[]> {
     query = query ?? { limit: new BN(100) };
     const queryParameter = "limit" in query ? query.limit : query.start;
     const queryFunction =

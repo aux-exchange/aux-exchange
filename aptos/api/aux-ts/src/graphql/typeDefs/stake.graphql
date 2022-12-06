@@ -1,12 +1,10 @@
 input StakePoolInput {
   coinTypeStake: String!
   coinTypeReward: String!
-  poolId: Int!
 }
 
 type StakePool {
   type: String!
-  id: Int!
   coinInfoStake: CoinInfo!
   coinInfoReward: CoinInfo!
   authority: String!
@@ -41,11 +39,9 @@ input CreateStakePoolInput {
 
 input ModifyStakeInput {
   amount: Float!
-  poolId: Int!
 }
 
 input ModifyStakePoolInput {
-  poolId: Int!
   rewardAmount: Float
   rewardIncrease: Boolean
   timeAmountUs: Int
@@ -53,14 +49,12 @@ input ModifyStakePoolInput {
 }
 
 input ModifyStakePoolAuthorityInput {
-  poolId: Int!
   newAuthority: Address!
 }
 
 type CreateStakePoolEvent {
   version: String!
   time: Timestamp!
-  poolId: Int!
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   authority: Address!
@@ -72,7 +66,6 @@ type CreateStakePoolEvent {
 type StakeDepositEvent {
   version: String!
   time: Timestamp!
-  poolId: Int!
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   user: Address!
@@ -86,7 +79,6 @@ type StakeDepositEvent {
 type StakeWithdrawEvent {
   version: String!
   time: Timestamp!
-  poolId: Int!
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   user: Address!
@@ -101,7 +93,6 @@ type StakeWithdrawEvent {
 type ClaimEvent {
   version: String!
   time: Timestamp!
-  poolId: Int!
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   user: Address!
@@ -114,7 +105,6 @@ type ClaimEvent {
 type ModifyPoolEvent {
   version: String!
   time: Timestamp!
-  poolId: Int!
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   authority: Address!
