@@ -48,6 +48,8 @@ describe("Stake Pool tests", function () {
       coinInfoReward: await auxClient.getCoinInfo(usdcCoin),
       coinInfoStake: await auxClient.getCoinInfo(auxCoin),
     });
+    assert.ok(!!poolClient.coinInfoReward);
+    assert.ok(!!poolClient.coinInfoStake);
   });
 
   it("mintAux", async function () {
@@ -79,8 +81,7 @@ describe("Stake Pool tests", function () {
     assert.ok(createEvent.transaction.success);
     const event = createEvent.result;
     assert.ok(!!event);
-    const poolId = event.poolId;
-    pool = await poolClient.query(poolId);
+    pool = await poolClient.query();
     assert.equal(pool.accRewardPerShare, 0);
     assert.equal(pool.authority, senderAddr);
     assert.equal(
@@ -102,10 +103,7 @@ describe("Stake Pool tests", function () {
       account: sender.address(),
       coinType: pool.coinInfoStake.coinType,
     });
-    const tx = await poolClient.deposit({
-      amount: DU(500),
-      poolId: pool.poolId,
-    });
+    const tx = await poolClient.deposit(DU(500));
     assert.ok(tx.transaction.success, JSON.stringify(tx, undefined, "  "));
     const depositAu = DU(500)
       .toAtomicUnits(pool.coinInfoStake.decimals)
@@ -114,11 +112,10 @@ describe("Stake Pool tests", function () {
     assert.ok(!!event);
     assert.equal(event.depositAmount.toNumber(), depositAu);
     assert.equal(event.user, senderAddr);
-    assert.equal(event.poolId, pool.poolId);
     assert.equal(event.userAmountStaked, depositAu);
     assert.equal(event.userRewardAmount, 0);
 
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
     assert.equal(pool.amountStaked.toNumber(), 500);
     const finalStakeCoin = await auxClient.getCoinBalanceDecimals({
       account: sender.address(),
@@ -139,11 +136,11 @@ describe("Stake Pool tests", function () {
     });
     console.log("Sleeping for 2 seconds");
     await new Promise((r) => setTimeout(r, 2000));
-    const tx = await poolClient.claim(pool.poolId);
+    const tx = await poolClient.claim();
     assert.ok(tx.transaction.success);
     const event = tx.result;
     assert.ok(!!event);
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
     assert.equal(
       event.accRewardPerShare.toNumber(),
       pool.accRewardPerShare.toNumber()
@@ -192,7 +189,6 @@ describe("Stake Pool tests", function () {
     const rewardAmount = DU(1000);
     const timeAmount = new BN(1_000_000 * 3600 * 24);
     const modifyPoolResult = await poolClient.modifyPool({
-      poolId: pool.poolId,
       rewardAmount,
       rewardIncrease: true,
       timeAmount,
@@ -201,7 +197,7 @@ describe("Stake Pool tests", function () {
     assert.ok(modifyPoolResult.transaction.success);
     const event = modifyPoolResult.result;
     assert.ok(!!event);
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
 
     assert.equal(
       pool.amountReward.toNumber(),
@@ -218,48 +214,40 @@ describe("Stake Pool tests", function () {
   });
 
   it("modifyAuthority", async function () {
-    const tx = await poolClient.modifyAuthority({
-      poolId: pool.poolId,
-      newAuthority: moduleAuthority.address().toShortString(),
-    });
+    const tx = await poolClient.modifyAuthority(
+      moduleAuthority.address().toShortString()
+    );
     assert.ok(tx.transaction.success);
     const event = tx.result;
     assert.ok(!!event);
     assert.equal(event.authority, moduleAuthority.address().toShortString());
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
     assert.equal(pool.authority, event.authority);
 
     // Try to modify authority again (sender == sender, so this will fail)
-    const tx2 = await poolClient.modifyAuthority({
-      poolId: pool.poolId,
-      newAuthority: senderAddr,
-    });
+    const tx2 = await poolClient.modifyAuthority(senderAddr);
     assert.ok(!tx2.transaction.success);
 
-    const tx3 = await poolClient.modifyAuthority(
-      {
-        poolId: pool.poolId,
-        newAuthority: senderAddr,
-      },
-      { sender: moduleAuthority }
-    );
+    const tx3 = await poolClient.modifyAuthority(senderAddr, {
+      sender: moduleAuthority,
+    });
     assert.ok(tx3.transaction.success);
     const event2 = tx3.result;
     assert.ok(!!event2);
     assert.equal(event2.authority, senderAddr);
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
     assert.equal(pool.authority, event2.authority);
   });
 
   it("endRewardEarly", async function () {
     // end the reward early and claim all remaining reward
-    const tx = await poolClient.endRewardEarly(pool.poolId);
+    const tx = await poolClient.endRewardEarly();
     assert.ok(tx.transaction.success);
     const event = tx.result;
     assert.ok(!!event);
-    const tx2 = await poolClient.claim(pool.poolId);
+    const tx2 = await poolClient.claim();
     assert.ok(tx2.transaction.success);
-    pool = await poolClient.query(pool.poolId);
+    pool = await poolClient.query();
 
     assert.equal(event.endTimeUs.toNumber(), pool.endTime.toNumber());
     assert.equal(event.rewardRemaining.toNumber(), 0);
@@ -275,10 +263,7 @@ describe("Stake Pool tests", function () {
       account: sender.address(),
       coinType: pool.coinInfoStake.coinType,
     });
-    const tx = await poolClient.withdraw({
-      poolId: pool.poolId,
-      amount: DU(500),
-    });
+    const tx = await poolClient.withdraw(DU(500));
 
     assert.ok(tx.transaction.success);
     const event = tx.result;
@@ -302,13 +287,13 @@ describe("Stake Pool tests", function () {
   });
 
   it("deleteEmptyPool", async function () {
-    const tx = await poolClient.deleteEmptyPool(pool.poolId);
+    const tx = await poolClient.deleteEmptyPool();
     assert.ok(tx.success);
     let threw = false;
     try {
-      await poolClient.query(pool.poolId);
+      await poolClient.query();
     } catch (e) {
-      assert.equal((e as ApiError).errorCode, "table_item_not_found");
+      assert.equal((e as ApiError).errorCode, "resource_not_found");
       threw = true;
     }
     assert.ok(threw);

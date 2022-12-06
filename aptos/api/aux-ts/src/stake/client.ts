@@ -62,7 +62,7 @@ export class StakePoolClient {
     { coinInfoReward, coinInfoStake }: StakePoolInput
   ) {
     this.auxClient = auxClient;
-    this.type = `${auxClient.moduleAddress}::stake::Pools<${coinInfoStake.coinType}, ${coinInfoReward.coinType}>`;
+    this.type = `${auxClient.moduleAddress}::stake::Pool<${coinInfoStake.coinType}, ${coinInfoReward.coinType}>`;
     this.coinInfoStake = coinInfoStake;
     this.coinInfoReward = coinInfoReward;
   }
@@ -73,27 +73,16 @@ export class StakePoolClient {
 
   /**
    * Get the current on-chain stake pool state.
-   * @param poolId ID of the pool to query
    * @returns
    */
-  async query(poolId: number): Promise<StakePool> {
-    const resource = await this.auxClient.aptosClient.getAccountResource(
-      this.auxClient.moduleAddress,
-      this.type
-    );
-    const poolsTable = (resource.data as any).pools.handle;
-    const value_type = `${this.auxClient.moduleAddress}::stake::Pool<${this.coinInfoStake.coinType}, ${this.coinInfoReward.coinType}>`;
-    let data: Types.TableItemRequest = {
-      key_type: "u64",
-      value_type,
-      key: poolId.toString(),
-    };
-    const pool: RawStakePool = await this.auxClient.aptosClient.getTableItem(
-      poolsTable,
-      data
-    );
+  async query(): Promise<StakePool> {
+    const pool: RawStakePool = (
+      (await this.auxClient.aptosClient.getAccountResource(
+        this.auxClient.moduleAddress,
+        this.type
+      )) as any
+    ).data;
     return {
-      poolId: poolId,
       coinInfoStake: this.coinInfoStake,
       coinInfoReward: this.coinInfoReward,
       authority: pool.authority,
@@ -117,16 +106,10 @@ export class StakePoolClient {
    * Calculate the current accumulated reward per share for the given pool ID. Does not modify on-chain state.
    * @returns
    */
-  async calcAccRewardPerShare({
-    poolId,
-    lastPoolState,
-  }: {
-    poolId: number;
-    lastPoolState?: StakePool;
-  }): Promise<BN> {
+  async calcAccRewardPerShare(lastPoolState?: StakePool): Promise<BN> {
     let pool = lastPoolState;
     if (!pool) {
-      pool = await this.query(poolId);
+      pool = await this.query();
     }
     const latestInfo = await this.auxClient.aptosClient.getLedgerInfo();
     const timestamp = new BN(latestInfo.ledger_timestamp);
@@ -146,27 +129,14 @@ export class StakePoolClient {
    * Get on-chain state of a user's stake position for the given pool ID
    * @returns UserPosition
    */
-  async queryUserPosition({
-    poolId,
-    userAddress,
-  }: {
-    poolId: number;
-    userAddress: Types.Address;
-  }): Promise<UserPosition> {
-    const userPositionsType = `${this.auxClient.moduleAddress}::stake::UserPositions<${this.coinInfoStake.coinType}, ${this.coinInfoReward.coinType}>`;
-    const resource = await this.auxClient.aptosClient.getAccountResource(
-      userAddress,
-      userPositionsType
-    );
-    const userPositionsTable = (resource.data as any).positions.handle;
-    const value_type = `${this.auxClient.moduleAddress}::stake::UserPosition<${this.coinInfoStake.coinType}, ${this.coinInfoReward.coinType}>`;
-    let data: Types.TableItemRequest = {
-      key_type: "u64",
-      value_type,
-      key: poolId.toString(),
-    };
-    const position: RawUserPosition =
-      await this.auxClient.aptosClient.getTableItem(userPositionsTable, data);
+  async queryUserPosition(userAddress: Types.Address): Promise<UserPosition> {
+    const userPositionType = `${this.auxClient.moduleAddress}::stake::UserPosition<${this.coinInfoStake.coinType}, ${this.coinInfoReward.coinType}>`;
+    const position: RawUserPosition = (
+      (await this.auxClient.aptosClient.getAccountResource(
+        userAddress,
+        userPositionType
+      )) as any
+    ).data;
     return {
       owner: userAddress,
       coinInfoStake: this.coinInfoStake,
@@ -183,19 +153,17 @@ export class StakePoolClient {
    * @returns pending reward as decimal units
    */
   async calcPendingUserReward({
-    poolId,
     userAddress,
     lastUserPositionState,
   }: {
-    poolId: number;
     userAddress: Types.Address;
     lastUserPositionState?: UserPosition;
   }): Promise<DecimalUnits> {
     let userPosition = lastUserPositionState;
     if (!userPosition) {
-      userPosition = await this.queryUserPosition({ poolId, userAddress });
+      userPosition = await this.queryUserPosition(userAddress);
     }
-    const accRewardPerShare = await this.calcAccRewardPerShare({ poolId });
+    const accRewardPerShare = await this.calcAccRewardPerShare();
     return AU(
       accRewardPerShare
         .sub(userPosition.lastAccRewardPerShare)
@@ -232,8 +200,9 @@ export class StakePoolClient {
       rewardAmount: rewardAmountAu.toU64(),
       durationUs: durationUs.toString(),
     };
+    const payload = createStakePoolPayload(this.auxClient.moduleAddress, input);
     const transaction = await this.auxClient.sendOrSimulateTransaction(
-      createStakePoolPayload(this.auxClient.moduleAddress, input),
+      payload,
       options
     );
     return this.parseCreatePoolTransaction(transaction);
@@ -244,13 +213,12 @@ export class StakePoolClient {
    * All pending rewards will be transferred to `sender`.
    */
   async deposit(
-    { amount, poolId }: { amount: AnyUnits; poolId: number },
+    amount: AnyUnits,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<StakeDepositEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
       amount: toAtomicUnits(amount, this.coinInfoStake.decimals).toU64(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
@@ -265,13 +233,12 @@ export class StakePoolClient {
    * All pending rewards will be transferred to `sender`.
    **/
   async withdraw(
-    { amount, poolId }: { amount: AnyUnits; poolId: number },
+    amount: AnyUnits,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<StakeWithdrawEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
       amount: toAtomicUnits(amount, this.coinInfoStake.decimals).toU64(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
@@ -282,13 +249,11 @@ export class StakePoolClient {
   }
 
   async claim(
-    poolId: number,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<ClaimEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       claimPayload(this.auxClient.moduleAddress, input),
@@ -299,13 +264,11 @@ export class StakePoolClient {
 
   async modifyPool(
     {
-      poolId,
       rewardAmount,
       rewardIncrease,
       timeAmount,
       timeIncrease,
     }: {
-      poolId: number;
       rewardAmount?: AnyUnits;
       rewardIncrease?: boolean;
       timeAmount?: BN;
@@ -316,7 +279,6 @@ export class StakePoolClient {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
       rewardAmount:
         toAtomicUnits(rewardAmount, this.coinInfoReward.decimals).toU64() ??
         "0",
@@ -334,18 +296,17 @@ export class StakePoolClient {
   /**
    * Modify incentive pool authority.
    * Only the pool's authority can modify authority.
-   * @param input poolId: ID of the pool to modify, newAuthority: address of the new authority
+   * @param input newAuthority: address of the new authority
    * @param options transaction options
    * @returns
    */
   async modifyAuthority(
-    { poolId, newAuthority }: { poolId: number; newAuthority: Types.Address },
+    newAuthority: Types.Address,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<ModifyPoolEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
       newAuthority,
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
@@ -356,13 +317,11 @@ export class StakePoolClient {
   }
 
   async deleteEmptyPool(
-    poolId: number,
     options: Partial<AuxClientOptions> = {}
   ): Promise<Types.UserTransaction> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
     };
     return this.auxClient.sendOrSimulateTransaction(
       deleteEmptyPoolPayload(this.auxClient.moduleAddress, input),
@@ -371,13 +330,11 @@ export class StakePoolClient {
   }
 
   async endRewardEarly(
-    poolId: number,
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<ModifyPoolEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      poolId: poolId.toString(),
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(
       endRewardEarlyPayload(this.auxClient.moduleAddress, input),

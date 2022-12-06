@@ -8,7 +8,6 @@ import BN from "bn.js";
 /**********************/
 
 export interface StakePool {
-  poolId: number;
   coinInfoStake: CoinInfo;
   coinInfoReward: CoinInfo;
   authority: Types.Address;
@@ -60,7 +59,6 @@ export interface StakePoolEvent {
   sequenceNumber: BN;
   timestamp: BN;
   version: string;
-  poolId: number;
   stakeCoinType: Types.MoveStructTag;
   rewardCoinType: Types.MoveStructTag;
 }
@@ -208,7 +206,6 @@ export function parseRawCreatePoolEvent(
     version: event.version,
     timestamp: new BN(event.data.timestamp),
     authority: event.data.authority,
-    poolId: Number(event.data.pool_id),
     stakeCoinType: coinTypes.stakeCoinType,
     rewardCoinType: coinTypes.rewardCoinType,
     startTimeUs: new BN(event.data.start_time),
@@ -229,7 +226,6 @@ export function parseRawStakeDepositEvent(
     version: event.version,
     timestamp: new BN(event.data.timestamp),
     user: event.data.user,
-    poolId: Number(event.data.pool_id),
     stakeCoinType: coinTypes.stakeCoinType,
     rewardCoinType: coinTypes.rewardCoinType,
     depositAmount: new AtomicUnits(event.data.deposit_amount),
@@ -253,7 +249,6 @@ export function parseRawStakeWithdrawEvent(
     version: event.version,
     timestamp: new BN(event.data.timestamp),
     user: event.data.user,
-    poolId: Number(event.data.pool_id),
     stakeCoinType: coinTypes.stakeCoinType,
     rewardCoinType: coinTypes.rewardCoinType,
     withdrawAmount: new AtomicUnits(event.data.withdraw_amount),
@@ -277,7 +272,6 @@ export function parseRawClaimEvent(
     version: event.version,
     timestamp: new BN(event.data.timestamp),
     user: event.data.user,
-    poolId: Number(event.data.pool_id),
     stakeCoinType: coinTypes.stakeCoinType,
     rewardCoinType: coinTypes.rewardCoinType,
     userRewardAmount: new AtomicUnits(event.data.reward_amount),
@@ -299,7 +293,6 @@ export function parseRawModifyPoolEvent(
     version: event.version,
     timestamp: new BN(event.data.timestamp),
     authority: event.data.authority,
-    poolId: Number(event.data.pool_id),
     startTimeUs: new BN(event.data.start_time),
     endTimeUs: new BN(event.data.end_time),
     stakeCoinType: coinTypes.stakeCoinType,
@@ -347,7 +340,7 @@ export function createStakePoolPayload(
   input: CreateStakePoolPayloadInput
 ): Types.EntryFunctionPayload {
   return {
-    function: `${moduleAddress}::stake::create_with_signer`,
+    function: `${moduleAddress}::stake::create`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
     arguments: [input.rewardAmount, input.durationUs],
   };
@@ -360,7 +353,7 @@ export function depositPayload(
   return {
     function: `${moduleAddress}::stake::deposit`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId, input.amount],
+    arguments: [input.amount],
   };
 }
 
@@ -371,7 +364,7 @@ export function withdrawPayload(
   return {
     function: `${moduleAddress}::stake::withdraw`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId, input.amount],
+    arguments: [input.amount],
   };
 }
 
@@ -380,13 +373,12 @@ export function claimPayload(
   input: {
     coinTypeStake: Types.MoveStructTag;
     coinTypeReward: Types.MoveStructTag;
-    poolId: Types.U64;
   }
 ): Types.EntryFunctionPayload {
   return {
     function: `${moduleAddress}::stake::claim`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId],
+    arguments: [],
   };
 }
 
@@ -395,14 +387,13 @@ export function modifyAuthorityPayload(
   input: {
     coinTypeStake: Types.MoveStructTag;
     coinTypeReward: Types.MoveStructTag;
-    poolId: Types.U64;
     newAuthority: Types.Address;
   }
 ): Types.EntryFunctionPayload {
   return {
     function: `${moduleAddress}::stake::modify_authority`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId, input.newAuthority],
+    arguments: [input.newAuthority],
   };
 }
 
@@ -411,7 +402,6 @@ export function modifyPoolPayload(
   input: {
     coinTypeStake: Types.MoveStructTag;
     coinTypeReward: Types.MoveStructTag;
-    poolId: Types.U64;
     rewardAmount: Types.U64;
     rewardIncrease: boolean;
     timeAmountUs: Types.U64;
@@ -422,7 +412,6 @@ export function modifyPoolPayload(
     function: `${moduleAddress}::stake::modify_pool`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
     arguments: [
-      input.poolId,
       input.rewardAmount,
       input.rewardIncrease,
       input.timeAmountUs,
@@ -436,13 +425,12 @@ export function deleteEmptyPoolPayload(
   input: {
     coinTypeStake: Types.MoveStructTag;
     coinTypeReward: Types.MoveStructTag;
-    poolId: Types.U64;
   }
 ): Types.EntryFunctionPayload {
   return {
     function: `${moduleAddress}::stake::delete_empty_pool`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId],
+    arguments: [],
   };
 }
 
@@ -451,13 +439,12 @@ export function endRewardEarlyPayload(
   input: {
     coinTypeStake: Types.MoveStructTag;
     coinTypeReward: Types.MoveStructTag;
-    poolId: Types.U64;
   }
 ): Types.EntryFunctionPayload {
   return {
     function: `${moduleAddress}::stake::end_reward_early`,
     type_arguments: [input.coinTypeStake, input.coinTypeReward],
-    arguments: [input.poolId],
+    arguments: [],
   };
 }
 
@@ -475,6 +462,5 @@ export interface CreateStakePoolPayloadInput {
 export interface DepositWithdrawPayloadInput {
   coinTypeStake: Types.MoveStructTag;
   coinTypeReward: Types.MoveStructTag;
-  poolId: Types.U64;
   amount: Types.U64;
 }
