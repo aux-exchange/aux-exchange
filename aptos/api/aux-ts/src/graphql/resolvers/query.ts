@@ -4,6 +4,7 @@ import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
 import { ConstantProductClient } from "../../pool/constant-product/client";
+import { StableSwapClient } from "../../pool/stable-swap/client";
 import type { ConstantProduct } from "../../pool/constant-product/schema";
 import { auxClient, redisClient } from "../client";
 import {
@@ -148,10 +149,14 @@ export const query = {
   async pool(_parent: any, { poolInput }: QueryPoolArgs): Promise<Maybe<Pool>> {
     const coinTypeX = poolInput.coinTypes[0]!;
     const coinTypeY = poolInput.coinTypes[1]!;
-    const poolClient = await new ConstantProductClient(auxClient, {
-      coinTypeX,
-      coinTypeY,
-    }).transpose();
+
+    const poolClient =
+      poolInput.coinTypes.length <= 2 // TODO - use curve type instead
+        ? await new ConstantProductClient(auxClient, {
+            coinTypeX,
+            coinTypeY,
+          }).transpose()
+        : await new StableSwapClient(auxClient, poolInput.coinTypes);
     const pool = await poolClient.query();
     const coins = await coinsWithoutLiquidity();
     const coinTypeToHippoNameSymbol = Object.fromEntries(
