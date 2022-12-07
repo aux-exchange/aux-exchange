@@ -14,6 +14,7 @@ import type {
   StakeDepositEvent,
   StakePool,
   StakeWithdrawEvent,
+  UserPosition,
 } from "../src/stake/schema";
 import BN from "bn.js";
 
@@ -29,6 +30,8 @@ describe("Stake Pool tests", function () {
   const moduleAuthority = auxClient.moduleAuthority!;
   const sender = new AptosAccount();
   const senderAddr = sender.address().toShortString();
+  let lastUserPosition: UserPosition;
+  let lastPoolState: StakePool;
   let lastPoolUpdateTime = 0;
   let lastAccRewardPerShare = 0;
   let lastRewardRemaining = 0;
@@ -136,11 +139,13 @@ describe("Stake Pool tests", function () {
       coinType: pool.coinInfoStake.coinType,
     });
     assert.equal(initStakeCoin.toNumber() - finalStakeCoin.toNumber(), 500);
+    lastPoolState = pool;
     lastPoolUpdateTime = pool.lastUpdateTime.toNumber();
     lastAccRewardPerShare = pool.accRewardPerShare.toNumber();
     lastRewardRemaining = pool.rewardRemaining
       .toAtomicUnits(pool.coinInfoReward.decimals)
       .toNumber();
+    lastUserPosition = await poolClient.queryUserPosition(senderAddr);
 
     const currentTime = new BN(
       (await poolClient.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
@@ -197,15 +202,33 @@ describe("Stake Pool tests", function () {
       .toAtomicUnits(pool.coinInfoStake.decimals)
       .toNumber();
     const accRewardPerShare = Math.floor((durationReward * 1e12) / stakeAu);
+    const calcAccRewardPerShare = await poolClient.calcAccRewardPerShare({
+      lastPoolState,
+      currentTimeUs: pool.lastUpdateTime,
+    });
     assert.equal(
       pool.accRewardPerShare.toNumber() - lastAccRewardPerShare,
       accRewardPerShare
+    );
+    assert.equal(
+      calcAccRewardPerShare.toNumber(),
+      pool.accRewardPerShare.toNumber()
     );
     const finalRewardBalance = await auxClient.getCoinBalance({
       account: sender.address(),
       coinType: pool.coinInfoReward.coinType,
     });
     const expectedReward = Math.floor((accRewardPerShare * stakeAu) / 1e12);
+    const calcReward = await poolClient.calcPendingUserReward({
+      userAddress: senderAddr,
+      userPosition: lastUserPosition,
+      lastPoolState,
+      currentTimeUs: pool.lastUpdateTime,
+    });
+    assert.equal(
+      calcReward.toAtomicUnits(pool.coinInfoReward.decimals).toNumber(),
+      expectedReward
+    );
     assert.equal(event.userRewardAmount.toNumber(), expectedReward);
     assert.equal(
       finalRewardBalance.toNumber() - initRewardBalance.toNumber(),

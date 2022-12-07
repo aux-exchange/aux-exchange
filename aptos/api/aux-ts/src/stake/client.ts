@@ -49,7 +49,7 @@ import {
   withdrawPayload,
 } from "./schema";
 
-const REWARD_PER_SHARE_MUL = new BN(1e12);
+const REWARD_PER_SHARE_MUL = 1e12;
 
 /**
  * Client for interfacing with the staking reward pools (stake.move).
@@ -113,23 +113,47 @@ export class StakePoolClient {
    * Calculate the current accumulated reward per share for the given pool ID. Does not modify on-chain state.
    * @returns
    */
-  async calcAccRewardPerShare(lastPoolState?: StakePool): Promise<BN> {
+  async calcAccRewardPerShare({
+    lastPoolState,
+    currentTimeUs,
+  }: {
+    lastPoolState?: StakePool | undefined;
+    currentTimeUs?: BN | undefined;
+  }): Promise<BN> {
     let pool = lastPoolState;
     if (!pool) {
       pool = await this.query();
     }
-    const latestInfo = await this.auxClient.aptosClient.getLedgerInfo();
-    const timestamp = new BN(latestInfo.ledger_timestamp);
+    let timestamp = currentTimeUs;
+    if (!timestamp) {
+      const latestInfo = await this.auxClient.aptosClient.getLedgerInfo();
+      timestamp = new BN(latestInfo.ledger_timestamp);
+    }
     const timeSinceUpdate = timestamp.sub(pool.lastUpdateTime);
-    const durationReward = timeSinceUpdate
-      .mul(
-        pool.rewardRemaining.toAtomicUnits(this.coinInfoReward.decimals).toBN()
-      )
-      .divRound(pool.endTime.sub(pool.lastUpdateTime));
+
+    // Pool is expired
+    if (pool.endTime.lte(timestamp)) {
+      return pool.accRewardPerShare;
+    }
+
+    const durationReward = Math.floor(
+      (timeSinceUpdate.toNumber() *
+        pool.rewardRemaining
+          .toAtomicUnits(this.coinInfoReward.decimals)
+          .toNumber()) /
+        pool.endTime.sub(pool.lastUpdateTime).toNumber()
+    );
     const stakeAu = pool.amountStaked
       .toAtomicUnits(this.coinInfoStake.decimals)
       .toBN();
-    return durationReward.mul(REWARD_PER_SHARE_MUL).divRound(stakeAu);
+
+    if (stakeAu.toNumber() == 0) {
+      return pool.accRewardPerShare;
+    }
+    const accRewardPerShare = Math.floor(
+      (durationReward * REWARD_PER_SHARE_MUL) / stakeAu.toNumber()
+    );
+    return pool.accRewardPerShare.add(new BN(accRewardPerShare));
   }
 
   /**
@@ -209,24 +233,32 @@ export class StakePoolClient {
   async calcPendingUserReward({
     userAddress,
     userPosition,
+    currentTimeUs,
+    lastPoolState,
   }: {
     userAddress: Types.Address;
     userPosition?: UserPosition;
+    currentTimeUs?: BN;
+    lastPoolState?: StakePool;
   }): Promise<DecimalUnits> {
     let userPositionState = userPosition;
     if (!userPositionState) {
       userPositionState = await this.queryUserPosition(userAddress);
     }
-    const accRewardPerShare = await this.calcAccRewardPerShare();
+    const accRewardPerShare = await this.calcAccRewardPerShare({
+      currentTimeUs,
+      lastPoolState,
+    });
+    const stakeAu = userPositionState.amountStaked
+      .toAtomicUnits(this.coinInfoStake.decimals)
+      .toNumber();
     return AU(
-      accRewardPerShare
-        .sub(userPositionState.lastAccRewardPerShare)
-        .mul(
-          userPositionState.amountStaked
-            .toAtomicUnits(this.coinInfoStake.decimals)
-            .toBN()
-        )
-        .div(REWARD_PER_SHARE_MUL)
+      Math.floor(
+        ((accRewardPerShare.toNumber() -
+          userPositionState.lastAccRewardPerShare.toNumber()) *
+          stakeAu) /
+          1e12
+      )
     ).toDecimalUnits(this.coinInfoReward.decimals);
   }
 
