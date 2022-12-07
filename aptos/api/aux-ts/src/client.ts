@@ -167,6 +167,18 @@ export class AuxClient {
       .map(parsePoolType);
   }
 
+  async stakePools(): Promise<ConstantProductInput[]> {
+    const resources = await this.aptosClient.getAccountResources(
+      this.moduleAddress
+    );
+    return resources
+      .filter((resource) =>
+        resource.type.startsWith(`${this.moduleAddress}::stake::Pool`)
+      )
+      .map((resource) => resource.type)
+      .map(parsePoolType);
+  }
+
   /**
    * Queries for the account resource. Returns undefined if it doesn't exist.
    */

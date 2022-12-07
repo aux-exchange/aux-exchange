@@ -152,6 +152,9 @@ export class StakePoolClient {
         (await this.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
       );
     }
+    if (pool.endTime < currentTime) {
+      return 0;
+    }
     const rewardUsdPrice = await getUsdPrice(
       this.auxClient,
       this.coinInfoReward.coinType
@@ -166,7 +169,10 @@ export class StakePoolClient {
       const remainingDays =
         pool.endTime.sub(currentTime).toNumber() / (24 * 3600 * 1_000_000);
       const dailyReward = remainingRewardUSD / remainingDays;
-      const dailyRewardPerShare = dailyReward / pool.amountStaked.toNumber();
+      const dailyRewardPerShare =
+        pool.amountStaked.toNumber() == 0
+          ? dailyReward
+          : dailyReward / pool.amountStaked.toNumber();
       const dailyReturn = dailyRewardPerShare / stakeUsdPrice;
       return dailyReturn * 365 * 100;
     }

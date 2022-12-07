@@ -84,11 +84,11 @@ export const stakePool = {
     return events.map((e) => {
       return {
         ...e,
-        startTimeUs: e.startTimeUs.toNumber(),
-        endTimeUs: e.endTimeUs.toNumber(),
+        startTime: e.startTimeUs.divn(1000).toString(),
+        endTime: e.endTimeUs.divn(1000).toString(),
         rewardCoinInfo: coinInfoReward,
         stakeCoinInfo: coinInfoStake,
-        time: e.timestamp.toNumber(),
+        time: e.timestamp.divn(1000).toString(),
         rewardAmount: e.rewardAmount
           .toDecimalUnits(coinInfoReward.decimals)
           .toNumber(),
@@ -113,7 +113,7 @@ export const stakePool = {
         accRewardPerShare: e.accRewardPerShare.toNumber(),
         rewardCoinInfo: coinInfoReward,
         stakeCoinInfo: coinInfoStake,
-        time: e.timestamp.toNumber(),
+        time: e.timestamp.divn(1000).toString(),
         rewardRemaining: e.rewardRemaining
           .toDecimalUnits(coinInfoReward.decimals)
           .toNumber(),
@@ -147,7 +147,7 @@ export const stakePool = {
         accRewardPerShare: e.accRewardPerShare.toNumber(),
         rewardCoinInfo: coinInfoReward,
         stakeCoinInfo: coinInfoStake,
-        time: e.timestamp.toNumber(),
+        time: e.timestamp.divn(1000).toString(),
         rewardRemaining: e.rewardRemaining
           .toDecimalUnits(coinInfoReward.decimals)
           .toNumber(),
@@ -184,7 +184,7 @@ export const stakePool = {
         accRewardPerShare: e.accRewardPerShare.toNumber(),
         rewardCoinInfo: coinInfoReward,
         stakeCoinInfo: coinInfoStake,
-        time: e.timestamp.toNumber(),
+        time: e.timestamp.divn(1000).toString(),
         rewardRemaining: e.rewardRemaining
           .toDecimalUnits(coinInfoReward.decimals)
           .toNumber(),
@@ -212,11 +212,11 @@ export const stakePool = {
     return events.map((e) => {
       return {
         ...e,
-        startTimeUs: e.startTimeUs.toNumber(),
-        endTimeUs: e.endTimeUs.toNumber(),
+        startTime: e.startTimeUs.divn(1000).toString(),
+        endTime: e.endTimeUs.divn(1000).toString(),
         rewardCoinInfo: coinInfoReward,
         stakeCoinInfo: coinInfoStake,
-        time: e.timestamp.toNumber(),
+        time: e.timestamp.divn(1000).toString(),
         accRewardPerShare: e.accRewardPerShare.toNumber(),
         rewardRemaining: e.rewardRemaining
           .toDecimalUnits(coinInfoReward.decimals)

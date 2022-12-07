@@ -8,13 +8,13 @@ type StakePool {
   coinInfoStake: CoinInfo!
   coinInfoReward: CoinInfo!
   authority: String!
-  startTimeUs: Int!
-  endTimeUs: Int!
+  startTime: Timestamp!
+  endTime: Timestamp!
   amountStake: Float!
   rewardRemaining: Float!
-  lastUpdateTime: Int!
-  accRewardPerShare: Int!
-  apr: Float!
+  lastUpdateTime: Timestamp!
+  accRewardPerShare: Float!
+  apr: Float
   pendingUserReward(owner: Address!, lastAccRewardPerShare: Float): Float!
   userPosition(owner: Address!): UserPosition!
   createEvents(start: Int, limit: Int): [CreateStakePoolEvent]!
@@ -34,7 +34,7 @@ type UserPosition {
 
 input CreateStakePoolInput {
   rewardAmount: Float!
-  durationUs: Int!
+  duration: Int!
 }
 
 input ModifyStakeInput {
@@ -44,7 +44,7 @@ input ModifyStakeInput {
 input ModifyStakePoolInput {
   rewardAmount: Float
   rewardIncrease: Boolean
-  timeAmountUs: Int
+  timeAmount: Int
   timeIncrease: Boolean
 }
 
@@ -58,8 +58,8 @@ type CreateStakePoolEvent {
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   authority: Address!
-  startTimeUs: Int!
-  endTimeUs: Int!
+  startTime: Timestamp!
+  endTime: Timestamp!
   rewardAmount: Float!
 }
 
@@ -108,8 +108,8 @@ type ModifyPoolEvent {
   stakeCoinInfo: CoinInfo!
   rewardCoinInfo: CoinInfo!
   authority: Address!
-  startTimeUs: Int!
-  endTimeUs: Int!
+  startTime: Timestamp!
+  endTime: Timestamp!
   totalAmountStaked: Float!
   rewardRemaining: Float!
   accRewardPerShare: Float!

@@ -130,17 +130,17 @@ export type CreatePoolInput = {
 export type CreateStakePoolEvent = {
   __typename?: 'CreateStakePoolEvent';
   authority: Scalars['Address'];
-  endTimeUs: Scalars['Int'];
+  endTime: Scalars['Timestamp'];
   rewardAmount: Scalars['Float'];
   rewardCoinInfo: CoinInfo;
   stakeCoinInfo: CoinInfo;
-  startTimeUs: Scalars['Int'];
+  startTime: Scalars['Timestamp'];
   time: Scalars['Timestamp'];
   version: Scalars['String'];
 };
 
 export type CreateStakePoolInput = {
-  durationUs: Scalars['Int'];
+  duration: Scalars['Int'];
   rewardAmount: Scalars['Float'];
 };
 
@@ -271,11 +271,11 @@ export type ModifyPoolEvent = {
   __typename?: 'ModifyPoolEvent';
   accRewardPerShare: Scalars['Float'];
   authority: Scalars['Address'];
-  endTimeUs: Scalars['Int'];
+  endTime: Scalars['Timestamp'];
   rewardCoinInfo: CoinInfo;
   rewardRemaining: Scalars['Float'];
   stakeCoinInfo: CoinInfo;
-  startTimeUs: Scalars['Int'];
+  startTime: Scalars['Timestamp'];
   time: Scalars['Timestamp'];
   totalAmountStaked: Scalars['Float'];
   version: Scalars['String'];
@@ -292,7 +292,7 @@ export type ModifyStakePoolAuthorityInput = {
 export type ModifyStakePoolInput = {
   rewardAmount?: InputMaybe<Scalars['Float']>;
   rewardIncrease?: InputMaybe<Scalars['Boolean']>;
-  timeAmountUs?: InputMaybe<Scalars['Int']>;
+  timeAmount?: InputMaybe<Scalars['Int']>;
   timeIncrease?: InputMaybe<Scalars['Boolean']>;
 };
 
@@ -726,21 +726,21 @@ export type StakeDepositEvent = {
 
 export type StakePool = {
   __typename?: 'StakePool';
-  accRewardPerShare: Scalars['Int'];
+  accRewardPerShare: Scalars['Float'];
   amountStake: Scalars['Float'];
-  apr: Scalars['Float'];
+  apr?: Maybe<Scalars['Float']>;
   authority: Scalars['String'];
   claimEvents: Array<Maybe<ClaimEvent>>;
   coinInfoReward: CoinInfo;
   coinInfoStake: CoinInfo;
   createEvents: Array<Maybe<CreateStakePoolEvent>>;
   depositEvents: Array<Maybe<StakeDepositEvent>>;
-  endTimeUs: Scalars['Int'];
-  lastUpdateTime: Scalars['Int'];
+  endTime: Scalars['Timestamp'];
+  lastUpdateTime: Scalars['Timestamp'];
   modifyPoolEvents: Array<Maybe<ModifyPoolEvent>>;
   pendingUserReward: Scalars['Float'];
   rewardRemaining: Scalars['Float'];
-  startTimeUs: Scalars['Int'];
+  startTime: Scalars['Timestamp'];
   type: Scalars['String'];
   userPosition: UserPosition;
   withdrawEvents: Array<Maybe<StakeWithdrawEvent>>;
@@ -1242,11 +1242,11 @@ export type CoinInfoResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type CreateStakePoolEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateStakePoolEvent'] = ResolversParentTypes['CreateStakePoolEvent']> = {
   authority?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
-  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   rewardAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1323,11 +1323,11 @@ export type MarketResolvers<ContextType = any, ParentType extends ResolversParen
 export type ModifyPoolEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ModifyPoolEvent'] = ResolversParentTypes['ModifyPoolEvent']> = {
   accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   authority?: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
-  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   rewardCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   stakeCoinInfo?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
-  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   time?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   totalAmountStaked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1509,21 +1509,21 @@ export type StakeDepositEventResolvers<ContextType = any, ParentType extends Res
 };
 
 export type StakePoolResolvers<ContextType = any, ParentType extends ResolversParentTypes['StakePool'] = ResolversParentTypes['StakePool']> = {
-  accRewardPerShare?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  accRewardPerShare?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   amountStake?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  apr?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  apr?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   authority?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   claimEvents?: Resolver<Array<Maybe<ResolversTypes['ClaimEvent']>>, ParentType, ContextType, Partial<StakePoolClaimEventsArgs>>;
   coinInfoReward?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   coinInfoStake?: Resolver<ResolversTypes['CoinInfo'], ParentType, ContextType>;
   createEvents?: Resolver<Array<Maybe<ResolversTypes['CreateStakePoolEvent']>>, ParentType, ContextType, Partial<StakePoolCreateEventsArgs>>;
   depositEvents?: Resolver<Array<Maybe<ResolversTypes['StakeDepositEvent']>>, ParentType, ContextType, Partial<StakePoolDepositEventsArgs>>;
-  endTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  lastUpdateTime?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  lastUpdateTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   modifyPoolEvents?: Resolver<Array<Maybe<ResolversTypes['ModifyPoolEvent']>>, ParentType, ContextType, Partial<StakePoolModifyPoolEventsArgs>>;
   pendingUserReward?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<StakePoolPendingUserRewardArgs, 'owner'>>;
   rewardRemaining?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  startTimeUs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userPosition?: Resolver<ResolversTypes['UserPosition'], ParentType, ContextType, RequireFields<StakePoolUserPositionArgs, 'owner'>>;
   withdrawEvents?: Resolver<Array<Maybe<ResolversTypes['StakeWithdrawEvent']>>, ParentType, ContextType, Partial<StakePoolWithdrawEventsArgs>>;

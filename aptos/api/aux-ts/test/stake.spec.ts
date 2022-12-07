@@ -1,4 +1,5 @@
 import { ApiError, AptosAccount } from "aptos";
+ApiError;
 import * as assert from "assert";
 import { describe, it } from "mocha";
 import { AuxClient } from "../src/client";
