@@ -177,7 +177,7 @@ $$
 
 $p_l$ and $p_h$ are the parameters of the pool, and $C$ is an indication of how much reserves there are in the pool
 
-### Initialization of the pool
+### Pool Initialization without Predefined Price
 
 For a given $p_l$ and $p_h$, and $x'$ and $y'$ are added to an empty pool, a $C$ needs to be calculated, which will also establish the pool indicative price $p$, we have
 
@@ -229,7 +229,7 @@ $$
 \sqrt{C} = \frac{1}{-\frac{\sqrt{p_l}}{2}-\frac{x'}{2y'\sqrt{p_h}}+\frac{1}{2}\sqrt{\frac{x'^2}{y'^2p_h}+p_l-\frac{2x'}{y'}\sqrt\frac{p_l}{p_h} + \frac{4x'}{y'}}}x' =\frac{2x'y'\sqrt{p_h}}{-y'\sqrt{p_lp_h}-x'+\sqrt{x'^2+p_lp_hy'^2-2x'y'\sqrt{p_lp_h}+4x'y'p_h}}
 $$
 
-Notice that if we set $p_h$ to $+\infty$ and $p_l$ to 0, the form of $p$ and $C$ will devolve into vanilla constant product amm.
+Notice that if we set $p_h$ to $+\infty$ and $p_l$ to 0, the form of $p$ and $C$ will reduce to vanilla constant product amm.
 
 Since terms $C$ and $p$ showing up mostly as their squre roots $\sqrt{C}$ and $\sqrt{p}$, we will express the pool states with those instead.
 
@@ -255,9 +255,17 @@ $$
 
 Given $p$ is bounded by $p_l$ and $p_h$, binary search method can also be used.
 
+### Pool Initialization with Predefined Price
+
+If the price $p$ is already established, we have
+
+$$
+\sqrt{C} = \text{min}\left(\frac{x'}{\sqrt{p}-\sqrt{p_l}},\frac{y'}{\sqrt{1/p}-\sqrt{1/p_h}}\right)
+$$
+
 ## Swap with Concentrated Liquidity
 
-### Unchanged Virtual Reserve
+### Unchanged Virtual Reserve with Fee
 
 If the swap doesn't push the price out of $\left(p_l, p_h\right)$, the formulation is exactly the same as constant product. Given swap quantity $\Delta x$, we have
 
@@ -303,7 +311,7 @@ $$
 \sqrt{C}=\frac{x'}{\sqrt{p_h}-\sqrt{p_l}}
 $$
 
-### Readjust After Each Swap
+### Readjust After Each Swap with Fee
 
 The existence of fee makes $C$ increase, and the price range the pool will expand. Just like when the pool exhausted liquidity, $C$ and $p$ can be readjusted to restore the price band to $p_l$ and $p_h$.
 
@@ -328,3 +336,125 @@ $$
 $$
 
 And we can solve for the new $C$ and $p$.
+
+### Excluding Fee from the Pool
+
+Another way to return fee to liquidity provider is move fee into a separate tracking structure (such as the `aux::reward_dsitributor`). This way $C$ doesn't change after swap.
+
+$$
+y' = \frac{C}{\sqrt{Cp} + \Delta x} - \sqrt{C/p_h}
+$$
+
+$$
+\Delta y = \frac{C}{\sqrt{Cp}} - \frac{C}{\sqrt{Cp} + \Delta x}
+$$
+
+## Integer Math
+
+### Ticks
+
+Given price bands always appear in square root, we use square price instead of the price itself. Further we require that
+
+$$
+p\left(i\right) = 1.0001^{i}
+$$
+
+where $i$ is the tick index. So the square price is
+
+$$
+\sqrt{p\left(i\right)} = \sqrt{1.0001^i}
+$$
+
+We are going to use 128-bit unsigned integer as fixed point number. If the value is $d$, the represented fixed point value is $\frac{d}{2^{64}}$.
+
+In aptos, all coin values are 64 bit integers, and therefore 128 bit fixed point number has 64 bit after decimal point if price $p=x/y$ is the ratio between two coins. In this case, square price therefore only needs 32 bits before decimal point.
+
+Notice 128-bit fixed point number has an upper bound of $2^{64}-1/2^{64}=18446744073709551616-\frac{1}{18446744073709551616}$, and the max tick $i$ is bounded by
+
+$$
+\frac{\text{ln}\left(2^{64}-1/2^{64}\right)}{\text{ln}\left(1.0001\right)}\approx 443636.4 < 2^{19} = 524288
+$$
+
+The smallest non negative value for 128-bit fixed point number is $1/2^{64}$, and the min tick $i$ is
+
+$$
+\frac{\text{ln}\left(1/2^{64}\right)}{\text{ln}\left(1.0001\right)} \approx - 443636.4 \Rightarrow i < -2^{19} = -524288
+$$
+
+### From Tick to Square Price
+
+From a tick index $i$, the price is simply $1.0001^i$ and square price $1.0001^{i/2}$. Provided that $\left|i\right| < 19$, the exponential term can be calculate with at most 19 multiplications
+
+$$
+q^i = \prod_j q_j
+$$
+
+for $i>0$ and $i \leq 443636$
+
+$$
+q_j = \left\{\begin{matrix} 1 & 2^j \& i = 0 \\
+q^{2^j} & 2^j\& i > 0
+\end{matrix}\right.
+$$
+
+All $\sqrt{1.0001}^{2^j}$ for $j$ between 0 and 18 are precalculated.
+
+and for $i<0$ and $i \geq -443636$
+
+$$
+q_j = \left\{\begin{matrix}
+1 & 2^j \& (-i) = 0 \\
+\frac{1}{q^{2^j}} & 2^j \& (-i) > 0
+\end{matrix}\right.
+$$
+
+All $\sqrt{1.0001}^{-2^j}$ for $j$ between 0 and 18 are precalculated.
+
+Any $i$ outside $\left[-443636, 443636\right]$ will either overflow or underflow.
+
+The calculations of $\sqrt{1.0001}^{2^n}$ are provided [here](./concliq/tick.go#L7-L41)
+
+### From Square Price to Tick
+
+From a price $p$, we need to find $i$ such that $\sqrt{1.0001}^{i} \leq \sqrt{p} \leq \sqrt{1.0001}^{i+1}$. Take binary logarithm
+
+$$
+i \log_{2}\sqrt{1.0001} \leq \log_2\sqrt{p} \leq \left(i+1\right)\log_{2}\sqrt{1.0001}
+$$
+
+or
+
+$$
+i=\left\lfloor \frac{\log_2 \sqrt{p}}{\log_2 \sqrt{1.0001}}\right\rfloor
+$$
+
+The problem reduces to calculating $\log_2 \sqrt{p}$ if $\log_2\sqrt{1.0001}$ is precalculated.
+
+### Binary Logirithm
+
+We are looking for $x/2^N=\log_2 y$ where $x$ is an integer and $N$ is desired precision.
+Let $y$ be a fixed point number with 64 bits before and after decimal point, and it is stored in a 128 bit integer.
+
+The method is as follows
+
+- **Make sure** $1\leq y < 2$ - this can be checked by making sure there are exactly 63 leading zeros in $y$.
+
+  If $y$ is not within $\left[1, 2\right)$, we can shift $y$ $n_0$ bits to be within that range
+
+- Square $y$ $m$ times so that $y^{2^m}$ is within $\left[2, 4\right)$ (if this is fixed point with 128 bit integers, we will square the number - need to handle the overflow here - and right shift 64 bits). Let the result be $z=y^{2^m}$.
+
+- Notice $\log_2 z = 2^m\log_2 y$, and
+
+  $$
+  \log_2 y = \frac{1}{2^m}\left(\log_2 \frac{z}{2} + 1\right)
+  $$
+
+  where $\frac{z}{2} \in \left[1, 2\right)$. Now we can reapply the same treat with new $y=\frac{z}{2}$.
+
+Sum everything up
+
+$$
+\log_2 y = n_0 + \frac{1}{2^{m_1}}\left(1 + \frac{1}{2^{m_2}}\left(1+\frac{1}{2^{m_3}}\left(...\right)\right)\right)
+$$
+
+where $n_0\geq 0$ if $y \geq 2$ and $n_0 < 0 $ when $y<1$. However, move-lang doesn't support signed integers, and we do need special treatment when $n_0$ is added to the result.

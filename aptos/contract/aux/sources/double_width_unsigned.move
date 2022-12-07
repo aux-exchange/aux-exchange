@@ -1,8 +1,8 @@
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
-// Arguments: double-width -p aux -w 256
-// Version: v1.2.7
+// Arguments: double-width -p aux -w 256 -o ../aptos/contract/aux/sources/double_width_unsigned.move
+// Version: v1.3.0
 module aux::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
