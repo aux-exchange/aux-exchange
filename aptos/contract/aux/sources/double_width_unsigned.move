@@ -1,8 +1,8 @@
 // Auto generated from gen-move-math
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
-// Arguments: double-width -p aux -w 256
-// Version: v1.2.7
+// Arguments: double-width -p aux -w 256 -o ../aptos/contract/aux/sources/double_width_unsigned.move
+// Version: v1.4.2
 module aux::uint256 {
     struct Uint256 has store, copy, drop {
         hi: u128,
@@ -374,5 +374,23 @@ module aux::uint256 {
         );
 
         x.lo
+    }
+
+    /// sqrt returns y = floor(sqrt(x))
+    public fun sqrt(x: Uint256): Uint256 {
+        if (x.hi == 0 && x.lo == 0) {
+            Uint256 { hi: 0, lo: 0}
+        } else if (x.hi == 0 && x.lo <= 3) {
+            Uint256 { hi: 0, lo: 1}
+        } else {
+            let n = (255 - leading_zeros(x)) >> 1;
+            let z = rsh(x, n);
+            let z_next = rsh(add(z, divide(x, z)), 1);
+            while (less(z_next, z)) {
+                z = z_next;
+                z_next = rsh(add(z, divide(x, z)), 1);
+            };
+            z
+        }
     }
 }
