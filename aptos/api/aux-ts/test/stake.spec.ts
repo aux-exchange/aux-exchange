@@ -1,4 +1,5 @@
 import { ApiError, AptosAccount } from "aptos";
+ApiError;
 import * as assert from "assert";
 import { describe, it } from "mocha";
 import { AuxClient } from "../src/client";
@@ -6,7 +7,15 @@ import { FakeCoin } from "../src/coin";
 import { AuxEnv } from "../src/env";
 import { AU, DU } from "../src/units";
 import { StakePoolClient } from "../src/stake/client";
-import type { StakePool } from "../src/stake/schema";
+import type {
+  ClaimEvent,
+  CreatePoolEvent,
+  ModifyPoolEvent,
+  StakeDepositEvent,
+  StakePool,
+  StakeWithdrawEvent,
+  UserPosition,
+} from "../src/stake/schema";
 import BN from "bn.js";
 
 describe("Stake Pool tests", function () {
@@ -21,6 +30,8 @@ describe("Stake Pool tests", function () {
   const moduleAuthority = auxClient.moduleAuthority!;
   const sender = new AptosAccount();
   const senderAddr = sender.address().toShortString();
+  let lastUserPosition: UserPosition;
+  let lastPoolState: StakePool;
   let lastPoolUpdateTime = 0;
   let lastAccRewardPerShare = 0;
   let lastRewardRemaining = 0;
@@ -29,7 +40,8 @@ describe("Stake Pool tests", function () {
   auxClient.sender = sender;
 
   // STAKE COIN
-  const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
+  // const auxCoin = `${auxClient.moduleAddress}::aux_coin::AuxCoin`;
+  const usdtCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDT);
   // REWARD COIN
   const usdcCoin = auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
 
@@ -46,7 +58,7 @@ describe("Stake Pool tests", function () {
   it("createStakePoolClient", async function () {
     poolClient = new StakePoolClient(auxClient, {
       coinInfoReward: await auxClient.getCoinInfo(usdcCoin),
-      coinInfoStake: await auxClient.getCoinInfo(auxCoin),
+      coinInfoStake: await auxClient.getCoinInfo(usdtCoin),
     });
     assert.ok(!!poolClient.coinInfoReward);
     assert.ok(!!poolClient.coinInfoStake);
@@ -63,12 +75,17 @@ describe("Stake Pool tests", function () {
     assert.ok(tx.success, JSON.stringify(tx, undefined, "  "));
   });
 
-  it("mintOther", async function () {
+  it("mintCoins", async function () {
     let tx = await auxClient.registerAndMintFakeCoin(
       FakeCoin.USDC,
       AU(2_000_000_000_000)
     );
     assert.ok(tx.success, `${JSON.stringify(tx, undefined, "  ")}`);
+    let tx2 = await auxClient.registerAndMintFakeCoin(
+      FakeCoin.USDT,
+      AU(2_000_000_000_000)
+    );
+    assert.ok(tx2.success, `${JSON.stringify(tx2, undefined, "  ")}`);
   });
 
   it("createStakePool", async function () {
@@ -122,11 +139,30 @@ describe("Stake Pool tests", function () {
       coinType: pool.coinInfoStake.coinType,
     });
     assert.equal(initStakeCoin.toNumber() - finalStakeCoin.toNumber(), 500);
+    lastPoolState = pool;
     lastPoolUpdateTime = pool.lastUpdateTime.toNumber();
     lastAccRewardPerShare = pool.accRewardPerShare.toNumber();
     lastRewardRemaining = pool.rewardRemaining
       .toAtomicUnits(pool.coinInfoReward.decimals)
       .toNumber();
+    lastUserPosition = await poolClient.queryUserPosition(senderAddr);
+
+    const currentTime = new BN(
+      (await poolClient.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
+    );
+    const daysRemaining =
+      pool.endTime.sub(currentTime).toNumber() / (3600 * 1000000 * 24);
+    const rewardRemaining = event.rewardRemaining;
+    const expectedApr =
+      (rewardRemaining
+        .toDecimalUnits(poolClient.coinInfoReward.decimals)
+        .toNumber() /
+        daysRemaining /
+        500) *
+      365 *
+      100;
+    const apr = await poolClient.calcApr(pool, currentTime);
+    assert.equal(apr, expectedApr);
   });
 
   it("claim", async function () {
@@ -166,15 +202,33 @@ describe("Stake Pool tests", function () {
       .toAtomicUnits(pool.coinInfoStake.decimals)
       .toNumber();
     const accRewardPerShare = Math.floor((durationReward * 1e12) / stakeAu);
+    const calcAccRewardPerShare = await poolClient.calcAccRewardPerShare({
+      lastPoolState,
+      currentTimeUs: pool.lastUpdateTime,
+    });
     assert.equal(
       pool.accRewardPerShare.toNumber() - lastAccRewardPerShare,
       accRewardPerShare
+    );
+    assert.equal(
+      calcAccRewardPerShare.toNumber(),
+      pool.accRewardPerShare.toNumber()
     );
     const finalRewardBalance = await auxClient.getCoinBalance({
       account: sender.address(),
       coinType: pool.coinInfoReward.coinType,
     });
     const expectedReward = Math.floor((accRewardPerShare * stakeAu) / 1e12);
+    const calcReward = await poolClient.calcPendingUserReward({
+      userAddress: senderAddr,
+      userPosition: lastUserPosition,
+      lastPoolState,
+      currentTimeUs: pool.lastUpdateTime,
+    });
+    assert.equal(
+      calcReward.toAtomicUnits(pool.coinInfoReward.decimals).toNumber(),
+      expectedReward
+    );
     assert.equal(event.userRewardAmount.toNumber(), expectedReward);
     assert.equal(
       finalRewardBalance.toNumber() - initRewardBalance.toNumber(),
@@ -187,11 +241,11 @@ describe("Stake Pool tests", function () {
 
   it("modifyPool", async function () {
     const rewardAmount = DU(1000);
-    const timeAmount = new BN(1_000_000 * 3600 * 24);
+    const timeAmountUs = new BN(1_000_000 * 3600 * 24);
     const modifyPoolResult = await poolClient.modifyPool({
       rewardAmount,
       rewardIncrease: true,
-      timeAmount,
+      timeAmountUs,
       timeIncrease: true,
     });
     assert.ok(modifyPoolResult.transaction.success);
@@ -209,7 +263,7 @@ describe("Stake Pool tests", function () {
         .toAtomicUnits(poolClient.coinInfoReward.decimals)
         .toNumber()
     );
-    assert.equal(pool.endTime, lastEndTime + timeAmount.toNumber());
+    assert.equal(pool.endTime, lastEndTime + timeAmountUs.toNumber());
     assert.equal(event.endTimeUs.toNumber(), pool.endTime.toNumber());
   });
 
@@ -259,6 +313,8 @@ describe("Stake Pool tests", function () {
   });
 
   it("withdraw", async function () {
+    const userPosInit = await poolClient.queryUserPosition(senderAddr);
+    assert.equal(userPosInit.amountStaked.toNumber(), 500);
     const initStakeBalance = await auxClient.getCoinBalance({
       account: sender.address(),
       coinType: pool.coinInfoStake.coinType,
@@ -284,6 +340,53 @@ describe("Stake Pool tests", function () {
       finalStakeBalance.toNumber() - initStakeBalance.toNumber(),
       stakeAu
     );
+    const userPosFinal = await poolClient.queryUserPosition(senderAddr);
+    assert.equal(userPosFinal.amountStaked, 0);
+  });
+
+  it("createEvents", async function () {
+    const events = await poolClient.createEvents();
+    assert.equal(events.length, 1);
+    const createEvent: CreatePoolEvent = events[0]!;
+    assert.equal(createEvent.stakeCoinType, poolClient.coinInfoStake.coinType);
+  });
+
+  it("depositEvents", async function () {
+    const events = await poolClient.depositEvents();
+    assert.equal(events.length, 1);
+    const depositEvent: StakeDepositEvent = events[0]!;
+    assert.equal(depositEvent.user, senderAddr);
+  });
+
+  it("withdrawEvents", async function () {
+    const events = await poolClient.withdrawEvents();
+    assert.equal(events.length, 1);
+    const withdrawEvent: StakeWithdrawEvent = events[0]!;
+    assert.equal(withdrawEvent.user, senderAddr);
+  });
+
+  it("claimEvents", async function () {
+    const events = await poolClient.claimEvents();
+    assert.equal(events.length, 2);
+    const claimEvent: ClaimEvent = events[0]!;
+    assert.equal(claimEvent.user, senderAddr);
+  });
+
+  it("modifyPoolEvents", async function () {
+    const events = await poolClient.modifyPoolEvents();
+    assert.equal(events.length, 4);
+    let modifyPoolEvent: ModifyPoolEvent = events[0]!;
+    // last event modified authority back to sender
+    assert.equal(modifyPoolEvent.authority, senderAddr);
+    modifyPoolEvent = events[1]!;
+    assert.equal(
+      modifyPoolEvent.authority,
+      moduleAuthority.address().toShortString()
+    );
+    modifyPoolEvent = events[2]!;
+    assert.equal(modifyPoolEvent.authority, senderAddr);
+    modifyPoolEvent = events[3]!;
+    assert.equal(modifyPoolEvent.authority, senderAddr);
   });
 
   it("deleteEmptyPool", async function () {

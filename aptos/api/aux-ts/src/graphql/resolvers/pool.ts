@@ -135,22 +135,14 @@ export const pool = {
     const coinInfoY = parent.coinInfos[1]!;
     const amountX = parent.amounts[0]!;
     const amountY = parent.amounts[1]!;
-    const inReserve =
-      coinTypeIn === coinInfoX.coinType
-        ? amountX
-        : amountY;
-    const outReserve =
-      coinTypeIn === coinInfoX.coinType
-        ? amountY
-        : amountX;
+    const inReserve = coinTypeIn === coinInfoX.coinType ? amountX : amountY;
+    const outReserve = coinTypeIn === coinInfoX.coinType ? amountY : amountX;
     const coinTypeOut =
       coinTypeIn === coinInfoX.coinType
         ? coinInfoY.coinType
         : coinInfoX.coinType;
     const coinInfoIn =
-      coinTypeIn === coinInfoX.coinType
-        ? coinInfoX
-        : coinInfoY;
+      coinTypeIn === coinInfoX.coinType ? coinInfoX : coinInfoY;
 
     if (inReserve === 0 || outReserve === 0) {
       throw new Error("Pool is empty");
@@ -227,19 +219,11 @@ export const pool = {
     const coinInfoY = parent.coinInfos[1]!;
     const amountX = parent.amounts[0]!;
     const amountY = parent.amounts[1]!;
-    const inReserve =
-      coinTypeOut == coinInfoY.coinType
-        ? amountX
-        : amountY;
-    const outReserve =
-      coinTypeOut == coinInfoY.coinType
-        ? amountY
-        : amountX;
+    const inReserve = coinTypeOut == coinInfoY.coinType ? amountX : amountY;
+    const outReserve = coinTypeOut == coinInfoY.coinType ? amountY : amountX;
 
     const coinInfoIn =
-      coinTypeOut === coinInfoX.coinType
-        ? coinInfoY
-        : coinInfoX;
+      coinTypeOut === coinInfoX.coinType ? coinInfoY : coinInfoX;
 
     const coinTypeIn = coinInfoIn.coinType;
 
@@ -344,12 +328,16 @@ async function stat(
 ): Promise<Maybe<number>> {
   if (name === "tvl") {
     const value = await redisClient.get(
-      `amm-${pool.coinInfos[0]!.coinType}-${pool.coinInfos[1]!.coinType}-${name}`
+      `amm-${pool.coinInfos[0]!.coinType}-${
+        pool.coinInfos[1]!.coinType
+      }-${name}`
     );
     return value ? Number(value) : null;
   } else {
     const value = await redisClient.get(
-      `amm-${pool.coinInfos[0]!.coinType}-${pool.coinInfos[1]!.coinType}-${name}-${period}`
+      `amm-${pool.coinInfos[0]!.coinType}-${
+        pool.coinInfos[1]!.coinType
+      }-${name}-${period}`
     );
     return value ? Number(value) : null;
   }

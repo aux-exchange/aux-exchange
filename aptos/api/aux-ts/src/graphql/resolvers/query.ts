@@ -5,6 +5,7 @@ import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
 import { ConstantProductClient } from "../../pool/constant-product/client";
 import type { ConstantProduct } from "../../pool/constant-product/schema";
+import { StakePoolClient } from "../../stake/client";
 import { auxClient, redisClient } from "../client";
 import {
   Account,
@@ -19,6 +20,9 @@ import {
   QueryPoolArgs,
   QueryPoolsArgs,
   PoolSummaryStatistics,
+  QueryStakePoolArgs,
+  StakePool,
+  QueryStakePoolsArgs,
 } from "../generated/types";
 import { getRecognizedTVL } from "../pyth";
 
@@ -328,7 +332,72 @@ export const query = {
       hasAuxAccount: auxAccount !== undefined,
     };
   },
+  async stakePool(
+    _parent: any,
+    { stakePoolInput }: QueryStakePoolArgs
+  ): Promise<Maybe<StakePool>> {
+    const coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    const coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const poolClient = await new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    const pool = await poolClient.query();
+
+    // @ts-ignore
+    return {
+      accRewardPerShare: pool.accRewardPerShare.toNumber(),
+      amountStake: pool.amountStaked.toNumber(),
+      authority: pool.authority,
+      coinInfoReward: pool.coinInfoReward,
+      coinInfoStake: pool.coinInfoStake,
+      startTime: pool.startTime.divn(1000).toString(),
+      endTime: pool.endTime.divn(1000).toString(),
+      rewardRemaining: pool.rewardRemaining.toNumber(),
+      lastUpdateTime: pool.lastUpdateTime.divn(1000).toString(),
+      type: poolClient.type,
+    };
+  },
+  async stakePools(
+    _parent: any,
+    args: QueryStakePoolsArgs
+  ): Promise<Maybe<StakePool>> {
+    const poolInputs = args.stakePoolInputs
+      ? args.stakePoolInputs
+      : (await auxClient.stakePools()).map((input) => ({
+          coinTypeStake: input.coinTypeX,
+          coinTypeReward: input.coinTypeY,
+        }));
+    const pools = await Promise.all(
+      poolInputs.map(async (poolInput) => {
+        let poolClient = new StakePoolClient(auxClient, {
+          coinInfoStake: await auxClient.getCoinInfo(poolInput.coinTypeStake),
+          coinInfoReward: await auxClient.getCoinInfo(poolInput.coinTypeReward),
+        });
+        let pool = await poolClient.query();
+        return {
+          accRewardPerShare: pool.accRewardPerShare.toNumber(),
+          amountStake: pool.amountStaked.toNumber(),
+          authority: pool.authority,
+          coinInfoReward: pool.coinInfoReward,
+          coinInfoStake: pool.coinInfoStake,
+          startTime: pool.startTime.divn(1000).toString(),
+          endTime: pool.endTime.divn(1000).toString(),
+          rewardRemaining: pool.rewardRemaining.toNumber(),
+          lastUpdateTime: pool.lastUpdateTime.divn(1000).toString(),
+          type: poolClient.type,
+        };
+      })
+    );
+    // @ts-ignore
+    return pools;
+  },
 };
+
 function getFeaturedPriority(status: FeaturedStatus): number {
   switch (status) {
     case FeaturedStatus.None:

@@ -1,0 +1,116 @@
+input StakePoolInput {
+  coinTypeStake: String!
+  coinTypeReward: String!
+}
+
+type StakePool {
+  type: String!
+  coinInfoStake: CoinInfo!
+  coinInfoReward: CoinInfo!
+  authority: String!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  amountStake: Float!
+  rewardRemaining: Float!
+  lastUpdateTime: Timestamp!
+  accRewardPerShare: Float!
+  apr: Float
+  pendingUserReward(owner: Address!, lastAccRewardPerShare: Float): Float!
+  userPosition(owner: Address!): UserPosition!
+  createEvents(first: Int, offset: Int): [CreateStakePoolEvent]!
+  depositEvents(first: Int, offset: Int): [StakeDepositEvent]!
+  withdrawEvents(first: Int, offset: Int): [StakeWithdrawEvent]!
+  claimEvents(first: Int, offset: Int): [ClaimEvent]!
+  modifyPoolEvents(first: Int, offset: Int): [ModifyPoolEvent]!
+}
+
+type UserPosition {
+  owner: Address!
+  coinInfoStake: CoinInfo!
+  coinInfoReward: CoinInfo!
+  amountStaked: Float!
+  lastAccRewardPerShare: Int!
+}
+
+input CreateStakePoolInput {
+  rewardAmount: Float!
+  duration: Int!
+}
+
+input ModifyStakeInput {
+  amount: Float!
+}
+
+input ModifyStakePoolInput {
+  rewardAmount: Float
+  rewardIncrease: Boolean
+  timeAmount: Int
+  timeIncrease: Boolean
+}
+
+input ModifyStakePoolAuthorityInput {
+  newAuthority: Address!
+}
+
+type CreateStakePoolEvent {
+  version: String!
+  time: Timestamp!
+  stakeCoinInfo: CoinInfo!
+  rewardCoinInfo: CoinInfo!
+  authority: Address!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  rewardAmount: Float!
+}
+
+type StakeDepositEvent {
+  version: String!
+  time: Timestamp!
+  stakeCoinInfo: CoinInfo!
+  rewardCoinInfo: CoinInfo!
+  user: Address!
+  userRewardAmount: Float!
+  userAmountStaked: Float!
+  totalAmountStaked: Float!
+  rewardRemaining: Float!
+  accRewardPerShare: Float!
+}
+
+type StakeWithdrawEvent {
+  version: String!
+  time: Timestamp!
+  stakeCoinInfo: CoinInfo!
+  rewardCoinInfo: CoinInfo!
+  user: Address!
+  withdrawAmount: Float!
+  userRewardAmount: Float!
+  userAmountStaked: Float!
+  totalAmountStaked: Float!
+  rewardRemaining: Float!
+  accRewardPerShare: Float!
+}
+
+type ClaimEvent {
+  version: String!
+  time: Timestamp!
+  stakeCoinInfo: CoinInfo!
+  rewardCoinInfo: CoinInfo!
+  user: Address!
+  userRewardAmount: Float!
+  totalAmountStaked: Float!
+  rewardRemaining: Float!
+  accRewardPerShare: Float!
+}
+
+type ModifyPoolEvent {
+  version: String!
+  time: Timestamp!
+  stakeCoinInfo: CoinInfo!
+  rewardCoinInfo: CoinInfo!
+  authority: Address!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  totalAmountStaked: Float!
+  rewardRemaining: Float!
+  accRewardPerShare: Float!
+}

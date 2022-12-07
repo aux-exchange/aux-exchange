@@ -1,5 +1,6 @@
 import type { Types } from "aptos";
 import BN from "bn.js";
+import * as assert from "assert";
 import _ from "lodash";
 import type {
   AuxClient,
@@ -7,6 +8,7 @@ import type {
   AuxTransaction,
   CoinInfo,
 } from "../client";
+import { getUsdPrice } from "../graphql/pyth";
 import {
   AnyUnits,
   AtomicUnits,
@@ -30,8 +32,13 @@ import {
   parseRawModifyPoolEvent,
   parseRawStakeDepositEvent,
   parseRawStakeWithdrawEvent,
+  RawClaimEvent,
+  RawCreatePoolEvent,
+  RawModifyPoolEvent,
+  RawStakeDepositEvent,
   RawStakePool,
   RawStakePoolEvent,
+  RawStakeWithdrawEvent,
   RawUserPosition,
   StakeDepositEvent,
   StakePool,
@@ -42,7 +49,7 @@ import {
   withdrawPayload,
 } from "./schema";
 
-const REWARD_PER_SHARE_MUL = new BN(1e12);
+const REWARD_PER_SHARE_MUL = 1e12;
 
 /**
  * Client for interfacing with the staking reward pools (stake.move).
@@ -106,23 +113,94 @@ export class StakePoolClient {
    * Calculate the current accumulated reward per share for the given pool ID. Does not modify on-chain state.
    * @returns
    */
-  async calcAccRewardPerShare(lastPoolState?: StakePool): Promise<BN> {
+  async calcAccRewardPerShare({
+    lastPoolState,
+    currentTimeUs,
+  }: {
+    lastPoolState?: StakePool | undefined;
+    currentTimeUs?: BN | undefined;
+  }): Promise<BN> {
     let pool = lastPoolState;
     if (!pool) {
       pool = await this.query();
     }
-    const latestInfo = await this.auxClient.aptosClient.getLedgerInfo();
-    const timestamp = new BN(latestInfo.ledger_timestamp);
+    let timestamp = currentTimeUs;
+    if (!timestamp) {
+      const latestInfo = await this.auxClient.aptosClient.getLedgerInfo();
+      timestamp = new BN(latestInfo.ledger_timestamp);
+    }
     const timeSinceUpdate = timestamp.sub(pool.lastUpdateTime);
-    const durationReward = timeSinceUpdate
-      .mul(
-        pool.rewardRemaining.toAtomicUnits(this.coinInfoReward.decimals).toBN()
-      )
-      .divRound(pool.endTime.sub(pool.lastUpdateTime));
+
+    // Pool is expired
+    if (pool.endTime.lte(timestamp)) {
+      return pool.accRewardPerShare;
+    }
+
+    const durationReward = Math.floor(
+      (timeSinceUpdate.toNumber() *
+        pool.rewardRemaining
+          .toAtomicUnits(this.coinInfoReward.decimals)
+          .toNumber()) /
+        pool.endTime.sub(pool.lastUpdateTime).toNumber()
+    );
     const stakeAu = pool.amountStaked
       .toAtomicUnits(this.coinInfoStake.decimals)
       .toBN();
-    return durationReward.mul(REWARD_PER_SHARE_MUL).divRound(stakeAu);
+
+    if (stakeAu.toNumber() == 0) {
+      return pool.accRewardPerShare;
+    }
+    const accRewardPerShare = Math.floor(
+      (durationReward * REWARD_PER_SHARE_MUL) / stakeAu.toNumber()
+    );
+    return pool.accRewardPerShare.add(new BN(accRewardPerShare));
+  }
+
+  /**
+   * Returns current pool APR (dollar denominated)
+   * @param poolId
+   * @returns
+   */
+  async calcApr(
+    poolState?: StakePool,
+    currentTimeUs?: BN
+  ): Promise<number | undefined> {
+    let pool = poolState;
+    if (!pool) {
+      pool = await this.query();
+    }
+    assert.ok(!!pool);
+    let currentTime = currentTimeUs;
+    if (!currentTime) {
+      currentTime = new BN(
+        (await this.auxClient.aptosClient.getLedgerInfo()).ledger_timestamp
+      );
+    }
+    if (pool.endTime < currentTime) {
+      return 0;
+    }
+    const rewardUsdPrice = await getUsdPrice(
+      this.auxClient,
+      this.coinInfoReward.coinType
+    );
+    const stakeUsdPrice = await getUsdPrice(
+      this.auxClient,
+      this.coinInfoStake.coinType
+    );
+    if (!!rewardUsdPrice && !!stakeUsdPrice) {
+      const remainingRewardUSD =
+        pool.rewardRemaining.toNumber() * rewardUsdPrice;
+      const remainingDays =
+        pool.endTime.sub(currentTime).toNumber() / (24 * 3600 * 1_000_000);
+      const dailyReward = remainingRewardUSD / remainingDays;
+      const dailyRewardPerShare =
+        pool.amountStaked.toNumber() == 0
+          ? dailyReward
+          : dailyReward / pool.amountStaked.toNumber();
+      const dailyReturn = dailyRewardPerShare / stakeUsdPrice;
+      return dailyReturn * 365 * 100;
+    }
+    return undefined;
   }
 
   /**
@@ -154,26 +232,144 @@ export class StakePoolClient {
    */
   async calcPendingUserReward({
     userAddress,
-    lastUserPositionState,
+    userPosition,
+    currentTimeUs,
+    lastPoolState,
   }: {
     userAddress: Types.Address;
-    lastUserPositionState?: UserPosition;
+    userPosition?: UserPosition;
+    currentTimeUs?: BN;
+    lastPoolState?: StakePool;
   }): Promise<DecimalUnits> {
-    let userPosition = lastUserPositionState;
-    if (!userPosition) {
-      userPosition = await this.queryUserPosition(userAddress);
+    let userPositionState = userPosition;
+    if (!userPositionState) {
+      userPositionState = await this.queryUserPosition(userAddress);
     }
-    const accRewardPerShare = await this.calcAccRewardPerShare();
+    const accRewardPerShare = await this.calcAccRewardPerShare({
+      currentTimeUs,
+      lastPoolState,
+    });
+    const stakeAu = userPositionState.amountStaked
+      .toAtomicUnits(this.coinInfoStake.decimals)
+      .toNumber();
     return AU(
-      accRewardPerShare
-        .sub(userPosition.lastAccRewardPerShare)
-        .mul(
-          userPosition.amountStaked
-            .toAtomicUnits(this.coinInfoStake.decimals)
-            .toBN()
-        )
-        .div(REWARD_PER_SHARE_MUL)
+      Math.floor(
+        ((accRewardPerShare.toNumber() -
+          userPositionState.lastAccRewardPerShare.toNumber()) *
+          stakeAu) /
+          1e12
+      )
     ).toDecimalUnits(this.coinInfoReward.decimals);
+  }
+
+  async createEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<CreatePoolEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "create_pool_events",
+      queryParameter
+    )) as RawCreatePoolEvent[];
+    const ret = events.map((e) =>
+      parseRawCreatePoolEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async depositEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<StakeDepositEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "deposit_events",
+      queryParameter
+    )) as RawStakeDepositEvent[];
+    const ret = events.map((e) =>
+      parseRawStakeDepositEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async withdrawEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<StakeWithdrawEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "withdraw_events",
+      queryParameter
+    )) as RawStakeWithdrawEvent[];
+    const ret = events.map((e) =>
+      parseRawStakeWithdrawEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async claimEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<ClaimEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "claim_events",
+      queryParameter
+    )) as RawClaimEvent[];
+    const ret = events.map((e) =>
+      parseRawClaimEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
+  }
+
+  async modifyPoolEvents(
+    query?: { start: BN } | { limit: BN }
+  ): Promise<ModifyPoolEvent[]> {
+    query = query ?? { limit: new BN(100) };
+    const queryParameter = "limit" in query ? query.limit : query.start;
+    const queryFunction =
+      "limit" in query
+        ? this.auxClient.getEventsByEventHandleWithLookback.bind(this.auxClient)
+        : this.auxClient.getEventsByEventHandleSince.bind(this.auxClient);
+
+    const events = (await queryFunction(
+      this.auxClient.moduleAddress,
+      this.type,
+      "modify_pool_events",
+      queryParameter
+    )) as RawModifyPoolEvent[];
+    const ret = events.map((e) =>
+      parseRawModifyPoolEvent(e, this.auxClient.moduleAddress)
+    );
+    return ret;
   }
 
   /*******************/
@@ -266,12 +462,12 @@ export class StakePoolClient {
     {
       rewardAmount,
       rewardIncrease,
-      timeAmount,
+      timeAmountUs,
       timeIncrease,
     }: {
       rewardAmount?: AnyUnits;
       rewardIncrease?: boolean;
-      timeAmount?: BN;
+      timeAmountUs?: BN;
       timeIncrease?: boolean;
     },
     options: Partial<AuxClientOptions> = {}
@@ -283,7 +479,7 @@ export class StakePoolClient {
         toAtomicUnits(rewardAmount, this.coinInfoReward.decimals).toU64() ??
         "0",
       rewardIncrease: rewardIncrease ?? false,
-      timeAmountUs: timeAmount?.toString() ?? "0",
+      timeAmountUs: timeAmountUs?.toString() ?? "0",
       timeIncrease: timeIncrease ?? false,
     };
     const transaction = await this.auxClient.sendOrSimulateTransaction(

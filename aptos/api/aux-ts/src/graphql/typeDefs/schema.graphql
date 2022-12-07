@@ -7,6 +7,8 @@ type Query {
   market(marketInput: MarketInput!): Market
   markets(marketInputs: [MarketInput!]): [Market!]!
   account(owner: Address!): Account
+  stakePool(stakePoolInput: StakePoolInput!): StakePool
+  stakePools(stakePoolInputs: [StakePoolInput!]): [StakePool!]
 }
 
 input RegisterCoinInput {
@@ -15,6 +17,8 @@ input RegisterCoinInput {
 
 type Mutation {
   registerCoin(registerCoinInput: RegisterCoinInput!): EntryFunctionPayload!
+
+  # constant product pool mutations
   createPool(createPoolInput: CreatePoolInput!): EntryFunctionPayload!
   swapExactIn(swapExactInInput: SwapExactInInput!): EntryFunctionPayload!
   swapExactOut(swapExactOutInput: SwapExactOutInput!): EntryFunctionPayload!
@@ -23,14 +27,32 @@ type Mutation {
     removeLiquidityInput: RemoveLiquidityInput!
   ): EntryFunctionPayload!
 
+  # market mutations
   createMarket(createMarketInput: CreateMarketInput!): EntryFunctionPayload!
   placeOrder(placeOrderInput: PlaceOrderInput!): EntryFunctionPayload!
   cancelOrder(cancelOrderInput: CancelOrderInput!): EntryFunctionPayload!
 
+  # AUX account mutations
   createAuxAccount: EntryFunctionPayload!
   deposit(depositInput: DepositInput!): EntryFunctionPayload!
   withdraw(withdrawInput: WithdrawInput!): EntryFunctionPayload!
   transfer(transferInput: TransferInput!): EntryFunctionPayload!
+
+  # stake pool mutations
+  createStakePool(
+    createStakePoolInput: CreateStakePoolInput!
+  ): EntryFunctionPayload!
+  depositStake(depositStakeInput: ModifyStakeInput!): EntryFunctionPayload!
+  withdrawStake(withdrawStakeInput: ModifyStakeInput!): EntryFunctionPayload!
+  claimStakingReward(poolId: Int!): EntryFunctionPayload!
+  modifyStakePool(
+    modifyStakePoolInput: ModifyStakePoolInput!
+  ): EntryFunctionPayload!
+  modifyStakePoolAuthority(
+    input: ModifyStakePoolAuthorityInput!
+  ): EntryFunctionPayload!
+  deleteEmptyStakePool(poolId: Int!): EntryFunctionPayload!
+  endStakePoolEarly(poolId: Int!): EntryFunctionPayload!
 }
 
 type Subscription {

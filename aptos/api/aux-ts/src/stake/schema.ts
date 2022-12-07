@@ -79,7 +79,7 @@ export interface StakeDepositEvent extends StakePoolEvent {
   userAmountStaked: AtomicUnits;
   totalAmountStaked: AtomicUnits;
   rewardRemaining: AtomicUnits;
-  accRewardPerShare: AtomicUnits;
+  accRewardPerShare: BN;
 }
 
 export interface StakeWithdrawEvent extends StakePoolEvent {
@@ -90,7 +90,7 @@ export interface StakeWithdrawEvent extends StakePoolEvent {
   userAmountStaked: AtomicUnits;
   totalAmountStaked: AtomicUnits;
   rewardRemaining: AtomicUnits;
-  accRewardPerShare: AtomicUnits;
+  accRewardPerShare: BN;
 }
 
 export interface ClaimEvent extends StakePoolEvent {
@@ -99,7 +99,7 @@ export interface ClaimEvent extends StakePoolEvent {
   userRewardAmount: AtomicUnits;
   totalAmountStaked: AtomicUnits;
   rewardRemaining: AtomicUnits;
-  accRewardPerShare: AtomicUnits;
+  accRewardPerShare: BN;
 }
 
 export interface ModifyPoolEvent extends StakePoolEvent {
@@ -109,7 +109,7 @@ export interface ModifyPoolEvent extends StakePoolEvent {
   endTimeUs: BN;
   totalAmountStaked: AtomicUnits;
   rewardRemaining: AtomicUnits;
-  accRewardPerShare: AtomicUnits;
+  accRewardPerShare: BN;
 }
 export interface RawStakePoolEvent extends Types.Event {
   kind:
@@ -233,7 +233,7 @@ export function parseRawStakeDepositEvent(
     userAmountStaked: new AtomicUnits(event.data.user_amount_staked),
     totalAmountStaked: new AtomicUnits(event.data.total_amount_staked),
     rewardRemaining: new AtomicUnits(event.data.reward_remaining),
-    accRewardPerShare: new AtomicUnits(event.data.acc_reward_per_share),
+    accRewardPerShare: new BN(event.data.acc_reward_per_share),
   };
 }
 
@@ -256,7 +256,7 @@ export function parseRawStakeWithdrawEvent(
     userAmountStaked: new AtomicUnits(event.data.user_amount_staked),
     totalAmountStaked: new AtomicUnits(event.data.total_amount_staked),
     rewardRemaining: new AtomicUnits(event.data.reward_remaining),
-    accRewardPerShare: new AtomicUnits(event.data.acc_reward_per_share),
+    accRewardPerShare: new BN(event.data.acc_reward_per_share),
   };
 }
 
@@ -277,7 +277,7 @@ export function parseRawClaimEvent(
     userRewardAmount: new AtomicUnits(event.data.reward_amount),
     totalAmountStaked: new AtomicUnits(event.data.total_amount_staked),
     rewardRemaining: new AtomicUnits(event.data.reward_remaining),
-    accRewardPerShare: new AtomicUnits(event.data.acc_reward_per_share),
+    accRewardPerShare: new BN(event.data.acc_reward_per_share),
   };
 }
 
@@ -299,7 +299,7 @@ export function parseRawModifyPoolEvent(
     rewardCoinType: coinTypes.rewardCoinType,
     totalAmountStaked: new AtomicUnits(event.data.total_amount_staked),
     rewardRemaining: new AtomicUnits(event.data.reward_remaining),
-    accRewardPerShare: new AtomicUnits(event.data.acc_reward_per_share),
+    accRewardPerShare: new BN(event.data.acc_reward_per_share),
   };
 }
 
@@ -311,7 +311,7 @@ function parseEventType(
   rewardCoinType: Types.MoveStructTag;
 } {
   const poolRegex = new RegExp(
-    `${moduleAddress}::stake::(?<event>.*)<(?<stake>.*), (?<reward>.*)>`
+    `${moduleAddress}::stake::(?<event>[a-zA-Z]+)<(?<stake>.*), (?<reward>.*)>`
   );
   const found = type.match(poolRegex);
   let stakeCoinType = found?.groups?.["stake"]!;
