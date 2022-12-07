@@ -17,11 +17,11 @@ type StakePool {
   apr: Float
   pendingUserReward(owner: Address!, lastAccRewardPerShare: Float): Float!
   userPosition(owner: Address!): UserPosition!
-  createEvents(start: Int, limit: Int): [CreateStakePoolEvent]!
-  depositEvents(start: Int, limit: Int): [StakeDepositEvent]!
-  withdrawEvents(start: Int, limit: Int): [StakeWithdrawEvent]!
-  claimEvents(start: Int, limit: Int): [ClaimEvent]!
-  modifyPoolEvents(start: Int, limit: Int): [ModifyPoolEvent]!
+  createEvents(first: Int, offset: Int): [CreateStakePoolEvent]!
+  depositEvents(first: Int, offset: Int): [StakeDepositEvent]!
+  withdrawEvents(first: Int, offset: Int): [StakeWithdrawEvent]!
+  claimEvents(first: Int, offset: Int): [ClaimEvent]!
+  modifyPoolEvents(first: Int, offset: Int): [ModifyPoolEvent]!
 }
 
 type UserPosition {
