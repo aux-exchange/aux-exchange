@@ -83,7 +83,7 @@ export enum FakeCoin {
 export const ALL_FAKE_STABLES: FakeCoin[] = [FakeCoin.USDC, FakeCoin.USDT];
 
 export function fakeStableTypes(auxClient: AuxClient): string[] {
-  let types = [];
+  const types = [];
   for (let coin of ALL_FAKE_STABLES) {
     types.push(auxClient.getWrappedFakeCoinType(coin));
   }
