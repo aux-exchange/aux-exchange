@@ -7,7 +7,7 @@ function createPalletteValues(key, baseColor) {
 }
 
 // TV Color Palette
-window.tvColorPalette = {
+window.config.tvColorPalette = {
   primary: colors.slate,
   blue: colors.blue,
   green: colors.green,
@@ -21,8 +21,6 @@ const green = createPalletteValues('green', colors.emerald)
 const red = createPalletteValues('red', colors.red)
 const orange = createPalletteValues('orange', colors.orange)
 const brand = createPalletteValues('accent', colors.sky)
-
-document.title = "AUX"
 
 const tag = document.createElement('style')
 tag.setAttribute('type', 'text/css') 
