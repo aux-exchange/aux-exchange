@@ -16,11 +16,11 @@
     - [Details](#details)
   - [DApp Development (UI + GraphQL)](#dapp-development-ui--graphql)
     - [Deploy to devnet step-by-step](#deploy-to-devnet-step-by-step)
-    - [GraphQL](#graphql)
+    - [Update UIs (only if needed)](#update-uis-only-if-needed)
+    - [Update GraphQL (only if needed)](#update-graphql-only-if-needed)
     - [Indexer](#indexer)
     - [Deployment](#deployment-1)
     - [Hard vs. rolling restart](#hard-vs-rolling-restart)
-    - [Update the UIs (optional)](#update-the-uis-optional)
     - [Bouncing the processes](#bouncing-the-processes)
       - [Rolling restart](#rolling-restart)
       - [Hard restart](#hard-restart)
@@ -280,7 +280,17 @@ devnet  # aliases to cd ~/aux-exchange-devnet/aptos/api/aux-ts
 # You're done!
 ```
 
-### GraphQL
+### Update UIs (only if needed)
+
+If you changed the UI, then to deploy a new version of frontend (UI) you need to:
+
+- set two env vars, `AUX_EXCHANGE` and `AUX_FRONTEND` corresponding to where your local repos live
+  - e.g. `AUX_EXCHANGE=~/projects/aux-exchange`
+  - e.g. `AUX_FRONTEND=~/projects/aux-frontend`
+- in your local `aux-exchange` repo, inside `aux-ts` run `./scripts/update_uis.sh`
+
+
+### Update GraphQL (only if needed)
 
 `APTOS_NETWORK=mainnet yarn start:graphql`
 
@@ -314,12 +324,6 @@ into the `aux-ts` folder, and run this:
 This will `cd aux-exchange-mainnet`, `git checkout origin/mainnet` and restart PM2 process group named `mainnet`.
 
 Hard restart has more downtime but is cleaner.
-
-### Update the UIs (optional)
-
-If you changed the UI, then to deploy a new version of frontend (UI) you need to:
-
-- in your local `aux-exchange` repo, inside `aux-ts` run `./scripts/update_uis.sh`
 
 ### Bouncing the processes
 
@@ -356,7 +360,3 @@ To contribute a typescript example using the SDK:
   ```shell
   yarn start:my-example
   ```
-
-
-
-
