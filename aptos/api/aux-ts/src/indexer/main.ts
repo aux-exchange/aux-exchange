@@ -1,44 +1,119 @@
-import { AptosAccount } from "aptos";
-import * as redis from "redis";
-import { Account } from "..";
+import { Kafka } from "kafkajs";
+import _ from "lodash";
+
 import { AuxClient } from "../client";
-import Market from "../clob/dsl/market";
-import { FakeCoin } from "../coin";
+import { APT, USDC_ETH_WH } from "../coin";
 import { AuxEnv } from "../env";
+import { PoolClient } from "../pool/client";
+import { parseRawSwapEvent } from "../pool/schema";
 
 async function main() {
+  const kafka = new Kafka({
+    clientId: "aux-indexer",
+    brokers: ["localhost:9092"],
+  });
+  const producer = kafka.producer();
+  await producer.connect();
+
   const auxEnv = new AuxEnv();
   const auxClient = new AuxClient(auxEnv.aptosNetwork, auxEnv.aptosClient);
-  let baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.AUX);
-  const quoteCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.USDC);
-  const market = await Market.read(auxClient, { baseCoinType, quoteCoinType });
-
-  const trader = AptosAccount.fromAptosAccountObject({
-    privateKeyHex:
-      "0xe2326b7116633f8cb150e7ad56affd631e20789440317c47721862a62bcf362e",
+  const poolClient = new PoolClient(auxClient, {
+    coinTypeX: APT,
+    coinTypeY: USDC_ETH_WH,
   });
-  //   const openOrders = await market.openOrders(trader.address().hex());
-  const account = new Account(auxClient, trader.address().hex());
-  market;
-  console.log(account);
-  const trades = await account.tradeHistory({ baseCoinType, quoteCoinType });
-  console.log(trades);
-  //   console.log(openOrders[0]?.quantity.toNumber());
 
-  const redisClient = redis.createClient();
-  redisClient.on("error", (err) => console.error("[Redis]", err));
-  await redisClient.connect();
-  baseCoinType = await auxClient.getWrappedFakeCoinType(FakeCoin.ETH);
-  const bars = await redisClient.lRange(
-    `${baseCoinType}-${quoteCoinType}-bar-1m`,
-    0,
-    -1
-  );
-  console.log(bars);
-  //   bars.forEach((bar) => {
-  //     console.log(JSON.parse(bar));
-  //   });
-  await redisClient.disconnect();
+  let start = 0;
+  do {
+    const events = await auxClient.aptosClient.getEventsByEventHandle(
+      auxClient.moduleAddress,
+      poolClient.type,
+      "swap_events",
+      {
+        start,
+        limit: 100,
+      }
+    );
+    const eventsDU = await Promise.all(
+      events
+        // @ts-ignore
+        .map(parseRawSwapEvent)
+        .map(
+          async ({
+            kind,
+            type,
+            sequenceNumber,
+            timestamp,
+            senderAddr,
+            coinTypeIn,
+            coinTypeOut,
+            amountIn,
+            amountOut,
+            feeBps,
+            reserveIn,
+            reserveOut,
+          }) => ({
+            kind,
+            poolType: type,
+            sequenceNumber: sequenceNumber.toNumber(),
+            timestamp: timestamp.toNumber(),
+            sender: senderAddr.hex(),
+            coinTypeIn,
+            coinTypeOut,
+            amountIn: amountIn
+              .toDecimalUnits(
+                (
+                  await auxClient.getCoinInfo(coinTypeIn)
+                ).decimals
+              )
+              .toNumber(),
+            amountOut: amountOut
+              .toDecimalUnits(
+                (
+                  await auxClient.getCoinInfo(coinTypeOut)
+                ).decimals
+              )
+              .toNumber(),
+            feeBps,
+            reserveIn: reserveIn
+              .toDecimalUnits(
+                (
+                  await auxClient.getCoinInfo(coinTypeIn)
+                ).decimals
+              )
+              .toNumber(),
+            reserveOut: reserveOut
+              .toDecimalUnits(
+                (
+                  await auxClient.getCoinInfo(coinTypeOut)
+                ).decimals
+              )
+              .toNumber(),
+          })
+        )
+    );
+    await producer.send({
+      topic: "raw-swaps",
+      messages: events.map((event) => ({
+        key: poolClient.type,
+        value: JSON.stringify(event),
+      })),
+    });
+    await producer.send({
+      topic: "swaps",
+      messages: eventsDU.map((event) => ({
+        key: poolClient.type,
+        value: JSON.stringify(event),
+      })),
+    });
+    if (_.isEmpty(eventsDU)) {
+      break;
+    }
+    start = Number(eventsDU[eventsDU.length - 1]!.sequenceNumber);
+    console.log(start);
+    await new Promise(r => setTimeout(r, 500))
+  } while (start < 125791);
+
+  producer.disconnect();
 }
 
 main();

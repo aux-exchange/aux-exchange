@@ -248,6 +248,7 @@ __metadata:
     graphql-subscriptions: ^2.0.0
     graphql-ws: ^5.11.0
     js-sha3: ^0.8.0
+    kafkajs: ^2.2.2
     lodash: ^4.17.21
     mocha: ^10.0.0
     nodemon: ^2.0.20
@@ -5198,6 +5199,13 @@ __metadata:
     jwa: ^1.4.1
     safe-buffer: ^5.0.1
   checksum: f0213fe5b79344c56cd443428d8f65c16bf842dc8cb8f5aed693e1e91d79c20741663ad6eff07a6d2c433d1831acc9814e8d7bada6a0471fbb91d09ceb2bf5c2
+  languageName: node
+  linkType: hard
+
+"kafkajs@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "kafkajs@npm:2.2.2"
+  checksum: 3e539bd678d3d665e878f754f80cbaef358b6a06e48bc834e167db0a2edd4fc15e1894c1ff8f3f12af68ce1d020f8ec8e39b537d5d17601cbefb756e9f23717a
   languageName: node
   linkType: hard
 
