@@ -274,11 +274,12 @@ module aux::constant_product {
         let lp_supply = balance::supply_value(&self.supply_lp);
         let amount_minted_lp = if (lp_supply == 0) {
             assert!(amount_added_x > 0 && amount_added_y > 0, EInvalidArg);
-            math::sqrt(amount_added_x * amount_added_y)
+            math::sqrt(amount_added_x) * math::sqrt(amount_added_y)
         } else {
             let pool_x = coin::value(&self.reserve_x);
             let pool_y = coin::value(&self.reserve_y);
             // calc share based on ratio of existing deposits
+            // FIXME overflow (but dividing separately has integer division issue)
             let share_x = (amount_added_x * lp_supply) / pool_x;
             let share_y = (amount_added_y * lp_supply) / pool_y;
             // TODO slippage
@@ -292,6 +293,7 @@ module aux::constant_product {
                 amount_minted_lp
             }
         );
+        // FIXME abort if exceeds slippage or refund part of coin to user
         coin::join(&mut self.reserve_x, coin_x);
         coin::join(&mut self.reserve_y, coin_y);
         coin::from_balance(balance::increase_supply(&mut self.supply_lp, amount_minted_lp), ctx)
@@ -470,7 +472,7 @@ module aux::constant_product_tests {
         {
             let pool = test_scenario::take_shared<Pool<COIN_X, COIN_Y>>(&mut scenario);
             let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 100, 400);
-            assert!(coin::value(&lp) == 200, 0);
+            assert!(coin::value(&lp) == 200, ETestFailure);
             assert!(coin::value(constant_product::reserve_x(&pool)) == 100, ETestFailure);
             assert!(coin::value(constant_product::reserve_y(&pool)) == 400, ETestFailure);
             assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 200, 0);
@@ -489,7 +491,8 @@ module aux::constant_product_tests {
         {
             let pool = test_scenario::take_shared<Pool<COIN_X, COIN_Y>>(&mut scenario);
             let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 100, 400);
-            assert!(coin::value(&lp) == 200, 0);
+            std::debug::print(&coin::value(&lp));
+            assert!(coin::value(&lp) == 200, ETestFailure);
             assert!(coin::value(constant_product::reserve_x(&pool)) == 2 * 100, ETestFailure);
             assert!(coin::value(constant_product::reserve_y(&pool)) == 2 * 400, ETestFailure);
             assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 2 * 200, 0);
