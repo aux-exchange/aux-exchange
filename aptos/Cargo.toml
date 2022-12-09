@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "contract/deployer",
+    "contract/util-for-aptos",
+]
