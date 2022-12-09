@@ -59,6 +59,10 @@ module aux::constant_product {
     /* Events */
     /**********/
 
+    struct PoolsCreated has copy, drop {
+        id: ID
+    }
+
     struct PoolCreated<phantom X, phantom Y> has copy, drop {
         id: ID
     }
@@ -86,10 +90,13 @@ module aux::constant_product {
 
     /// `Pools` can only be created once on deploy
     fun init(ctx: &mut TxContext) {
+        let id = object::new(ctx);
+        let inner_id = object::uid_to_inner(&id);
         let pools = Pools {
-            id: object::new(ctx),
+            id,
             pools: vec_set::empty()
         };
+        event::emit(PoolsCreated { id: inner_id });
         transfer::share_object(pools);
     }
 
