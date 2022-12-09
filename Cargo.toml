@@ -1,6 +1,0 @@
-[workspace]
-
-members = [
-    "aptos/contract/deployer",
-    "aptos/contract/util-for-aptos",
-]

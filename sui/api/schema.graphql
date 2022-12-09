@@ -1,0 +1,120 @@
+type Query {
+  packageObjectId: ObjectId!
+  coinMetadatas: [CoinMetadata!]!
+  pool(poolInput: PoolInput!): Pool
+  pools(poolInputs: [PoolInput!]): [Pool!]!
+}
+
+type Mutation {
+  createPool(createPoolInput: CreatePoolInput!): MoveCallTransaction!
+  swap(swapInput: SwapInput!): MoveCallTransaction!
+  addLiquidity(addLiquidityInput: AddLiquidityInput!): MoveCallTransaction!
+  removeLiquidity(
+    removeLiquidityInput: RemoveLiquidityInput!
+  ): MoveCallTransaction!
+}
+
+scalar ObjectId
+scalar Percent
+scalar SequenceNumber
+scalar SuiAddress
+scalar SuiJsonValue
+scalar Timestamp
+scalar TypeTag
+
+type MoveCallTransaction {
+    packageObjectId: ObjectId!
+    module: String!
+    function: String!
+    typeArguments: [TypeTag!]!
+    arguments: [SuiJsonValue!]!
+    gasPayment: ObjectId
+    gasBudget: Float!
+}
+
+type CoinMetadata {
+  id: ObjectId!
+  decimals: Int!
+  name: String!
+  symbol: String!
+  description: String!
+  iconUrl: String
+}
+
+enum Curve {
+  CONSTANT_PRODUCT
+  STABLE_SWAP
+}
+
+enum FeeTier {
+    VERY_STABLE
+    STABLE
+    MOST
+    EXOTIC
+}
+
+type Pool {
+  type: String!
+  id: ObjectId!
+  version: SequenceNumber!
+  coinMetadatas: [CoinMetadata!]!
+  coinMetadataLP: CoinMetadata!
+  amounts: [Float!]!
+  amountLP: Float!
+  feeTier: FeeTier
+  feePercent: Float!
+  swaps(sender: SuiAddress, first: Int, offset: Int): [Swapped!]!
+  adds(sender: SuiAddress, first: Int, offset: Int): [LiquidityAdded!]!
+  removes(sender: SuiAddress, first: Int, offset: Int): [LiquidityRemoved!]!
+}
+
+type Swapped {
+  version: String!
+  coinMetadataIn: CoinMetadata!
+  coinmetadataOut: CoinMetadata!
+  amountIn: Float!
+  amountOut: Float!
+  time: Timestamp!
+}
+
+type LiquidityAdded {
+  version: String!
+  amountsAdded: [Float!]!
+  amountMintedLP: Float!
+  time: Timestamp!
+}
+
+type LiquidityRemoved {
+  version: String!
+  amountsRemoved: [Float!]!
+  amountBurnedLP: Float!
+  time: Timestamp!
+}
+
+input PoolInput {
+  coinTypes: [String!]!
+  curve: Curve
+}
+
+input CreatePoolInput {
+  poolInput: PoolInput!
+  feeTier: FeeTier!
+}
+
+input AddLiquidityInput {
+  poolInput: PoolInput!
+  amounts: [Float!]!
+}
+
+input RemoveLiquidityInput {
+  poolInput: PoolInput!
+  amountLP: Float!
+}
+
+input SwapInput {
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountIn: Float!
+  slippage: Percent
+}

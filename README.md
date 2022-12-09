@@ -31,9 +31,11 @@ features:
 
 Navigate to our [web app](https://aux.exchange) to start trading.
 
-## Typescript SDK
+## Aptos
 
-Also known as `aux-ts`.
+### Typescript SDK
+
+We provide a typescript SDK for AUX exchange on Aptos. Also known as `aux-ts`.
 
 See [`aptos/api/aux-ts/examples`](./aptos/api/aux-ts/examples) for examples of interacting
 with the AMM and CLOB through typescript.
@@ -41,7 +43,7 @@ with the AMM and CLOB through typescript.
 In particular, we recommend starting with `devnet-amm-instructions.ts`.
 
 
-## Addresses
+### Addresses
 
 | network | contract | address                                                                                                                                                                                           |
 | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -94,6 +94,8 @@ Make sure you have installed the above pre-requisites and `local` profile setup 
 1. Setup Aptos and deploy AUX to localnet:
 
    ```sh
+   cd aptos
+   # cwd: aux-exchange/aptos
    go run ./go-util/aptos/cmd/setup-aux  -f --network "local"
    ```
 
@@ -101,6 +103,7 @@ Make sure you have installed the above pre-requisites and `local` profile setup 
 
    ```sh
    cd aptos/api/aux-ts
+   # cwd: aux-exchange/aptos/api/aux-ts
    APTOS_NETWORK="local" yarn test
    ```
 
