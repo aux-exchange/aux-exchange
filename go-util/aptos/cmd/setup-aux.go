@@ -25,7 +25,7 @@ If the profile for the chosen network exists, use that. Othwerise a new key will
 
 	network := aptos.Localnet
 	genNewKey := false
-	workDir := "contract"
+	workDir := "aptos/contract"
 	skipLocalNet := false
 	seed := "aux"
 	overrideUrl := ""

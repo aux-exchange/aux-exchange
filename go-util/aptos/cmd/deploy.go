@@ -13,7 +13,7 @@ func getCargoCommand(binaryName string) (string, []string) {
 	binaryPath, err := exec.LookPath(binaryName)
 	if err != nil {
 		redWarn.Printf("cannot find %s in path, use cargo\n", binaryName)
-		return "cargo", []string{"run", "--bin", binaryName, "--"}
+		return "cargo", []string{"run", "--manifest-path", "aptos/Cargo.toml", "--bin", binaryName, "--"}
 	} else {
 		fmt.Printf("found binary %s at %s\n", binaryName, binaryPath)
 		return binaryName, []string{}
