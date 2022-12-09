@@ -1,35 +1,35 @@
 
 
     .theme-dark:root {
-        --primary-100: #f1f5f9;
---primary-200: #e2e8f0;
---primary-300: #cbd5e1;
---primary-400: #94a3b8;
---primary-500: #64748b;
---primary-600: #475569;
---primary-700: #334155;
---primary-800: #1e293b;
---primary-900: #0f172a;
+        --primary-100: #ececec;
+--primary-200: #dfdfdf;
+--primary-300: #d2d2d2;
+--primary-400: #acacac;
+--primary-500: #4d4d4d;
+--primary-600: #393939;
+--primary-700: #262626;
+--primary-800: #131313;
+--primary-900: #000;
 
-        --secondary-100: #dbeafe;
---secondary-200: #bfdbfe;
---secondary-300: #93c5fd;
---secondary-400: #60a5fa;
---secondary-500: #3b82f6;
---secondary-600: #2563eb;
---secondary-700: #1d4ed8;
---secondary-800: #1e40af;
---secondary-900: #1e3a8a;
+        --secondary-100: #d1fae5;
+--secondary-200: #a7f3d0;
+--secondary-300: #6ee7b7;
+--secondary-400: #34d399;
+--secondary-500: #10b981;
+--secondary-600: #059669;
+--secondary-700: #047857;
+--secondary-800: #065f46;
+--secondary-900: #064e3b;
 
-        --accent-100: #e0f2fe;
---accent-200: #bae6fd;
---accent-300: #7dd3fc;
---accent-400: #38bdf8;
---accent-500: #0ea5e9;
---accent-600: #0284c7;
---accent-700: #0369a1;
---accent-800: #075985;
---accent-900: #0c4a6e;
+        --accent-100: #fff;
+--accent-200: #fff;
+--accent-300: #fff;
+--accent-400: #fff;
+--accent-500: #fff;
+--accent-600: #fff;
+--accent-700: #fff;
+--accent-800: #fff;
+--accent-900: #fff;
 
         --green-100: #d1fae5;
 --green-200: #a7f3d0;
