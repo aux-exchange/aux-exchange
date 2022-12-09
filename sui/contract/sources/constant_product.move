@@ -84,11 +84,8 @@ module aux::constant_product {
     /* Module init */
     /***************/
 
-    struct WITNESS has drop {}
-
-    /// Ensures one-time creation of `Pools`
+    /// `Pools` can only be created once on deploy
     fun init(ctx: &mut TxContext) {
-        assert!(sui::types::is_one_time_witness(&WITNESS {}), EBadWitness);
         let pools = Pools {
             id: object::new(ctx),
             pools: vec_set::empty()
