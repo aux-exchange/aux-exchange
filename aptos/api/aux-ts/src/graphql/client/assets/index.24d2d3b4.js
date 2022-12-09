@@ -8827,6 +8827,52 @@ const PoolPriceInDocument = {
                 }
               }]
             }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "price"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeIn"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeOut"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeOut"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "amountIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "amount"
+                }
+              }
+            }]
           }]
         }
       }]
@@ -9095,6 +9141,52 @@ const PoolPriceOutDocument = {
                 }
               }]
             }
+          }, {
+            "kind": "Field",
+            "name": {
+              "kind": "Name",
+              "value": "price"
+            },
+            "arguments": [{
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeIn"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "coinTypeOut"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "coinTypeOut"
+                }
+              }
+            }, {
+              "kind": "Argument",
+              "name": {
+                "kind": "Name",
+                "value": "amountIn"
+              },
+              "value": {
+                "kind": "Variable",
+                "name": {
+                  "kind": "Name",
+                  "value": "amount"
+                }
+              }
+            }]
           }]
         }
       }]
@@ -14440,8 +14532,8 @@ function AddLiquidityContainer({
       coinTypes: [(_k = firstCoin == null ? void 0 : firstCoin.coinType) != null ? _k : "", (_l = secondCoin == null ? void 0 : secondCoin.coinType) != null ? _l : ""]
     }
   });
-  const conversionIn = (_n2 = (_m = firstCoinSpotPrice.data) == null ? void 0 : _m.pool) == null ? void 0 : _n2.quoteExactIn.expectedAmountOut;
-  const conversionOut = (_p = (_o = secondCoinSpotPrice.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.quoteExactIn.expectedAmountOut;
+  const conversionIn = (_n2 = (_m = firstCoinSpotPrice.data) == null ? void 0 : _m.pool) == null ? void 0 : _n2.price;
+  const conversionOut = (_p = (_o = secondCoinSpotPrice.data) == null ? void 0 : _o.pool) == null ? void 0 : _p.price;
   const notifications = Va();
   async function addLiquidityHandler() {
     var _a3, _b2;

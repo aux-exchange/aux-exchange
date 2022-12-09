@@ -1,40 +1,16 @@
 const config = {
-  appTitle: 'AUX',
-  documentTitle: 'AUX Exchange',
-  isAux: true,
+  appTitle: 'Mojito',
+  documentTitle: 'Mojito',
+  isAux: false,
   blockchainUrl: 'https://explorer.aptoslabs.com',
   environments: {
     mainnet: {
       title: 'Mainnet',
-      url: 'https://mainnet.aux.exchange',
-      rest_graphql_endpoint: 'https://mainnet.aux.exchange/graphql',
-      ws_graphql_endpoint: 'wss://mainnet.aux.exchange/graphql',
+      url: 'https://dex.mojito.markets/',
+      rest_graphql_endpoint: 'https://dex.mojito.markets/graphql',
+      ws_graphql_endpoint: 'wss://dex.mojito.markets/graphql',
       contractAddress: '0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541',
       deployerAddress: '0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c'
-    },
-    'mainnet-beta': {
-      title: 'Mainnet Beta (Unstable)',
-      url: 'https://mainnet-beta.aux.exchange',
-      rest_graphql_endpoint: 'https://mainnet-beta.aux.exchange/graphql',
-      ws_graphql_endpoint: 'wss://mainnet-beta.aux.exchange/graphql',
-      contractAddress: '0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541',
-      deployerAddress: '0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c'
-    },
-    testnet: {
-      title: 'Testnet',
-      url: 'https://testnet.aux.exchange',
-      rest_graphql_endpoint: 'https://testnet.aux.exchange/graphql',
-      ws_graphql_endpoint: 'wss://testnet.aux.exchange/graphql',
-      contractAddress: '0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53',
-      deployerAddress: '0x27a5ed998335d3b74ee2329bdb803f25095ca1137015a115e748b366c44f73be'
-    },
-    devnet: {
-      title: 'Devnet',
-      url: 'https://devnet.aux.exchange',
-      rest_graphql_endpoint: 'https://devnet.aux.exchange/graphql',
-      ws_graphql_endpoint: 'wss://devnet.aux.exchange/graphql',
-      contractAddress: '0xea383dc2819210e6e427e66b2b6aa064435bf672dc4bdc55018049f0c361d01a',
-      deployerAddress: '0x52746eee4d2ecc79f940f617d1e98f885467c185e93a444bc6231a8b1960c48a'
     },
     localnet: {
       title: 'Localnet',
@@ -57,14 +33,14 @@ const config = {
       disabled: false
     },
     {
-      title: 'Trade',
+      title: 'Trade (Coming Soon)',
       to: '/trade',
-      disabled: false
+      disabled: true
     },
     {
-      title: 'Portfolio',
+      title: 'Portfolio (Coming Soon)',
       to: '/portfolio',
-      disabled: false
+      disabled: true
     }
   ],
   socialLinks: [
@@ -106,3 +82,4 @@ function initializeConfig() {
   window.ws_graphql_endpoint = window.currentEnvironment.ws_graphql_endpoint
 }
 initializeConfig()
+  
