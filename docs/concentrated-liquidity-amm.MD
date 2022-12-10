@@ -458,3 +458,7 @@ $$
 $$
 
 where $n_0\geq 0$ if $y \geq 2$ and $n_0 < 0 $ when $y<1$. However, move-lang doesn't support signed integers, and we do need special treatment when $n_0$ is added to the result.
+
+### Tick Spacing
+
+Pool also has a parameter **tick spacing**, which requires tick $i = nt$, where $t$ is tick spacing, and $n$ is an integer. This is for widening the price band when the asset price is highly volatile. The minimal $t$ is 1.

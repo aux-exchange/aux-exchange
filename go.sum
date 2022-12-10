@@ -8,8 +8,8 @@ github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/r
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
 github.com/fardream/gen-move-container v1.0.1 h1:fZWN+524K79caRm0ondNlHyyP5AMUCat00E2IlPfals=
 github.com/fardream/gen-move-container v1.0.1/go.mod h1:fyoi1yJ8YBmMcpyhDFzr0kLypL7NDaAc+I5oef0jQaQ=
-github.com/fardream/gen-move-math v1.3.0 h1:i9EdlNbNEcohTjNJ1+U+CWCRWtNDsg4Rn+/JGLM1mu8=
-github.com/fardream/gen-move-math v1.3.0/go.mod h1:pn3yR5WznUzSEhsCKWvlrCI5AdzUYFJQkbb5PpnIo0U=
+github.com/fardream/gen-move-math v1.4.0 h1:rszmItH6AlTNRpB2Ofd5HOEj58/KJJwJJ4L+F0gybQE=
+github.com/fardream/gen-move-math v1.4.0/go.mod h1:oPEpVUBoMPlRQjVLbctL6QMdEKY8TMB9Px4bwrduVDU=
 github.com/fardream/go-aptos v0.7.2 h1:Ww19S6OyvQvZzLi+C70/OV0sbv0X8zGhh4Wnn6D72D4=
 github.com/fardream/go-aptos v0.7.2/go.mod h1:TDCcDiFMuZrWVSMPL8y4FIgKvvUSyinrjX2nqQ8KQkY=
 github.com/fardream/go-bcs v0.2.0 h1:PsxhJmL/vmt+IqVwQGT7SmswYzV45+JU3+ulDCT8bOY=
@@ -76,8 +76,8 @@ golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACk
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.4.0 h1:UVQgzMY87xqpKNgb+kDsll2Igd33HszWHFLmpaRMq/8=
 golang.org/x/crypto v0.4.0/go.mod h1:3quD/ATkf6oY+rnes5c3ExXTbLc8mueNue5/DoinL80=
-golang.org/x/exp v0.0.0-20221208152030-732eee02a75a h1:4iLhBPcpqFmylhnkbY3W0ONLUYYkDAW9xMFLfxgsvCw=
-golang.org/x/exp v0.0.0-20221208152030-732eee02a75a/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
+golang.org/x/exp v0.0.0-20221212164502-fae10dda9338 h1:OvjRkcNHnf6/W5FZXSxODbxwD+X7fspczG7Jn/xQVD4=
+golang.org/x/exp v0.0.0-20221212164502-fae10dda9338/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/mod v0.7.0 h1:LapD9S96VoQRhi/GrNTqeBJFrUjs5UHCAtTlgwA5oZA=
 golang.org/x/mod v0.7.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=

@@ -15,6 +15,7 @@ module aux::authority {
     friend aux::router;
     friend aux::fake_coin;
     friend aux::stake;
+    friend aux::concliq;
 
     const E_NOT_SELF_SIGNED: u64 = 1001;
     const E_CANNOT_SIGN_FOR_OTHER: u64 = 1002;
@@ -86,7 +87,7 @@ module aux::authority {
         auth_signer
     }
 
-    public(friend) fun is_signer_owner(user: &signer): bool acquires Authority {
+    public fun is_signer_owner(user: &signer): bool acquires Authority {
         assert!(
             exists<Authority>(@aux),
             E_NOT_SELF_SIGNED,

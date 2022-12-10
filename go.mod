@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/fardream/gen-move-container v1.0.1
-	github.com/fardream/gen-move-math v1.3.0
+	github.com/fardream/gen-move-math v1.4.0
 	github.com/fardream/go-aptos v0.7.2
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/google/go-cmp v0.5.9
@@ -12,7 +12,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.6.1
-	golang.org/x/exp v0.0.0-20221208152030-732eee02a75a
+	golang.org/x/exp v0.0.0-20221212164502-fae10dda9338
 	golang.org/x/text v0.5.0
 )
 

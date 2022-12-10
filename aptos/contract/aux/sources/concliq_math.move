@@ -9,9 +9,10 @@
 // - 64: only lower 96 bits of the u128 is used, decimal point is at index 64 of the u128 from the most significant bit.
 // - 96: all the bits of the u128 is used, decimal point is at index 32 of teh u128 from the most significant bit.
 module aux::concliq_math {
-    use aux::uint256;
-    use aux::int64::{Self, Int64};
+    use aux::int32::{Self, Int32};
     use aux::int128::{Self, Int128};
+    use aux::more_math_u256;
+    use aux::more_math_u128;
 
     /**********************/
     /* Errors             */
@@ -34,6 +35,8 @@ module aux::concliq_math {
 
     const ONE_X: u128 = 1 << 64;
     const TWO_X: u128 = 1 << (64 + 1);
+    const ONE_X_256: u256 = 1 << 64;
+    const TWO_X_256: u256 = 1 << (64 + 1);
 
     /// sqrt(1.0001) in fixed point 64
     const SQUARE_PRICE: u128 = 18447666387855959850;
@@ -45,254 +48,253 @@ module aux::concliq_math {
     const SQUARE_PRICE_NEG_LOG_2_ABS: u128 = 1330584781654116;
 
     /// get sqrt(1.0001)^i
-    public fun get_square_price_from_tick(i: Int64): u128 {
-        if (int64::is_negative(i)) {
-            get_square_price_from_tick_negative(int64::abs(i))
+    public fun get_square_price_from_tick(i: Int32): u128 {
+        if (int32::is_negative(i)) {
+            get_square_price_from_tick_negative(int32::abs(i))
         } else {
-            get_square_price_from_tick_positive(int64::raw_value(i))
+            get_square_price_from_tick_positive(int32::raw_value(i))
         }
     }
 
     /// get sqrt(1.0001)^i, where i >= 0
-    public fun get_square_price_from_tick_positive(i: u64): u128 {
+    public fun get_square_price_from_tick_positive(i: u32): u128 {
         assert!(i <= 443636, E_TICK_TOO_BIG);
-        let r = uint256::new(0, ONE_X);
+        let r = ONE_X_256;
 
         // check for 2^0
         if (i & 1 > 0) {
-            r = uint256::multiply_underlying(r, 18447666387855959850);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18447666387855959850;
+            r = r >> PRECISION;
         };
 
         // check for 2^1
         if (i & 2 > 0) {
-            r = uint256::multiply_underlying(r, 18448588748116922571);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18448588748116922571;
+            r = r >> PRECISION;
         };
 
         // check for 2^2
         if (i & 4 > 0) {
-            r = uint256::multiply_underlying(r, 18450433606991734263);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18450433606991734263;
+            r = r >> PRECISION;
         };
 
         // check for 2^3
         if (i & 8 > 0) {
-            r = uint256::multiply_underlying(r, 18454123878217468680);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18454123878217468680;
+            r = r >> PRECISION;
         };
 
         // check for 2^4
         if (i & 16 > 0) {
-            r = uint256::multiply_underlying(r, 18461506635090006701);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18461506635090006701;
+            r = r >> PRECISION;
         };
 
         // check for 2^5
         if (i & 32 > 0) {
-            r = uint256::multiply_underlying(r, 18476281010653910144);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18476281010653910144;
+            r = r >> PRECISION;
         };
 
         // check for 2^6
         if (i & 64 > 0) {
-            r = uint256::multiply_underlying(r, 18505865242158250041);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18505865242158250041;
+            r = r >> PRECISION;
         };
 
         // check for 2^7
         if (i & 128 > 0) {
-            r = uint256::multiply_underlying(r, 18565175891880433522);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18565175891880433522;
+            r = r >> PRECISION;
         };
 
         // check for 2^8
         if (i & 256 > 0) {
-            r = uint256::multiply_underlying(r, 18684368066214940582);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18684368066214940582;
+            r = r >> PRECISION;
         };
 
         // check for 2^9
         if (i & 512 > 0) {
-            r = uint256::multiply_underlying(r, 18925053041275764671);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18925053041275764671;
+            r = r >> PRECISION;
         };
 
         // check for 2^10
         if (i & 1024 > 0) {
-            r = uint256::multiply_underlying(r, 19415764168677886926);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 19415764168677886926;
+            r = r >> PRECISION;
         };
 
         // check for 2^11
         if (i & 2048 > 0) {
-            r = uint256::multiply_underlying(r, 20435687552633177494);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 20435687552633177494;
+            r = r >> PRECISION;
         };
 
         // check for 2^12
         if (i & 4096 > 0) {
-            r = uint256::multiply_underlying(r, 22639080592224303007);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 22639080592224303007;
+            r = r >> PRECISION;
         };
 
         // check for 2^13
         if (i & 8192 > 0) {
-            r = uint256::multiply_underlying(r, 27784196929998399742);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 27784196929998399742;
+            r = r >> PRECISION;
         };
 
         // check for 2^14
         if (i & 16384 > 0) {
-            r = uint256::multiply_underlying(r, 41848122137994986128);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 41848122137994986128;
+            r = r >> PRECISION;
         };
 
         // check for 2^15
         if (i & 32768 > 0) {
-            r = uint256::multiply_underlying(r, 94936283578220370716);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 94936283578220370716;
+            r = r >> PRECISION;
         };
 
         // check for 2^16
         if (i & 65536 > 0) {
-            r = uint256::multiply_underlying(r, 488590176327622479860);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 488590176327622479860;
+            r = r >> PRECISION;
         };
 
         // check for 2^17
         if (i & 131072 > 0) {
-            r = uint256::multiply_underlying(r, 12941056668319229769860);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 12941056668319229769860;
+            r = r >> PRECISION;
         };
 
         // check for 2^18
         if (i & 262144 > 0) {
-            r = uint256::multiply_underlying(r, 9078618265828848800676189);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 9078618265828848800676189;
+            r = r >> PRECISION;
         };
 
-        uint256::downcast(r)
+        (r as u128)
     }
 
     /// get sqrt(1.0001)^(-i), where i >= 0
-    public fun get_square_price_from_tick_negative(i: u64): u128 {
+    public fun get_square_price_from_tick_negative(i: u32): u128 {
         assert!(i <= 443636, E_TICK_TOO_BIG);
-        let r = uint256::new(0, ONE_X);
+        let r = (ONE_X as u256);
         if (i & 1 > 0) {
-            r = uint256::multiply_underlying(r, 18445821805675392311);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18445821805675392311;
+            r = r >> PRECISION;
         };
         if (i & 2 > 0) {
-            r = uint256::multiply_underlying(r, 18444899583751176498);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18444899583751176498;
+            r = r >> PRECISION;
         };
         if (i & 4 > 0) {
-            r = uint256::multiply_underlying(r, 18443055278223354162);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18443055278223354162;
+            r = r >> PRECISION;
         };
         if (i & 8 > 0) {
-            r = uint256::multiply_underlying(r, 18439367220385604838);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18439367220385604838;
+            r = r >> PRECISION;
         };
         if (i & 16 > 0) {
-            r = uint256::multiply_underlying(r, 18431993317065449817);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18431993317065449817;
+            r = r >> PRECISION;
         };
         if (i & 32 > 0) {
-            r = uint256::multiply_underlying(r, 18417254355718160513);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18417254355718160513;
+            r = r >> PRECISION;
         };
         if (i & 64 > 0) {
-            r = uint256::multiply_underlying(r, 18387811781193591352);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18387811781193591352;
+            r = r >> PRECISION;
         };
         if (i & 128 > 0) {
-            r = uint256::multiply_underlying(r, 18329067761203520168);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18329067761203520168;
+            r = r >> PRECISION;
         };
         if (i & 256 > 0) {
-            r = uint256::multiply_underlying(r, 18212142134806087854);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 18212142134806087854;
+            r = r >> PRECISION;
         };
         if (i & 512 > 0) {
-            r = uint256::multiply_underlying(r, 17980523815641551639);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 17980523815641551639;
+            r = r >> PRECISION;
         };
         if (i & 1024 > 0) {
-            r = uint256::multiply_underlying(r, 17526086738831147013);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 17526086738831147013;
+            r = r >> PRECISION;
         };
         if (i & 2048 > 0) {
-            r = uint256::multiply_underlying(r, 16651378430235024244);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 16651378430235024244;
+            r = r >> PRECISION;
         };
         if (i & 4096 > 0) {
-            r = uint256::multiply_underlying(r, 15030750278693429944);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 15030750278693429944;
+            r = r >> PRECISION;
         };
         if (i & 8192 > 0) {
-            r = uint256::multiply_underlying(r, 12247334978882834399);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 12247334978882834399;
+            r = r >> PRECISION;
         };
         if (i & 16384 > 0) {
-            r = uint256::multiply_underlying(r, 8131365268884726200);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 8131365268884726200;
+            r = r >> PRECISION;
         };
         if (i & 32768 > 0) {
-            r = uint256::multiply_underlying(r, 3584323654723342297);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 3584323654723342297;
+            r = r >> PRECISION;
         };
         if (i & 65536 > 0) {
-            r = uint256::multiply_underlying(r, 696457651847595233);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 696457651847595233;
+            r = r >> PRECISION;
         };
         if (i & 131072 > 0) {
-            r = uint256::multiply_underlying(r, 26294789957452057);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 26294789957452057;
+            r = r >> PRECISION;
         };
         if (i & 262144 > 0) {
-            r = uint256::multiply_underlying(r, 37481735321082);
-            r = uint256::rsh(r, PRECISION);
+            r = r * 37481735321082;
+            r = r >> PRECISION;
         };
 
-        uint256::downcast(r)
+        (r as u128)
     }
 
     /// get log_2 y where y \in [1,2)
     public fun log_2_y(y: u128): u128 {
         assert!(y >= ONE_X && y < TWO_X, E_Y_OUTSIDE_1_2);
-        let z_2: u128 = y;
-        let r: u128 = 0;
+        let z_2 = (y as u256);
+        let r: u256 = 0;
         let sum_m: u8 = 0;
         let m: u8 = 0;
 
         loop {
-            if (z_2 == ONE_X) {
+            if (z_2 == ONE_X_256) {
                 break
             };
-            let z = uint256::underlying_mul_to_uint256(z_2, z_2);
-            z = uint256::rsh(z, PRECISION);
-            let z = uint256::downcast(z);
+            let z = z_2 * z_2;
+            z = z >> PRECISION;
             sum_m = sum_m + 1;
             m = m + 1;
             if (sum_m > PRECISION) {
                 break
             };
-            if (z >= TWO_X) {
-                r = r + (ONE_X >> sum_m);
+            if (z >= TWO_X_256) {
+                r = r + (ONE_X_256 >> sum_m);
                 z_2 = z >> 1;
             } else {
                 z_2 = z;
             };
         };
 
-        r
+        (r as u128)
     }
 
     public fun log_2(y: u128): Int128 {
         assert!(y != 0, E_ZERO_FOR_LOG_2);
-        let leading_zeros = uint256::underlying_leading_zeros(y);
+        let leading_zeros = more_math_u128::leading_zeros(y);
         if (y == ONE_X) {
             int128::zero()
         } else if (y > ONE_X) {
@@ -307,7 +309,7 @@ module aux::concliq_math {
         }
     }
 
-    public fun get_tick(sqrt_p: u128): Int64 {
+    public fun get_tick(sqrt_p: u128): Int32 {
         let log_2_y = log_2(sqrt_p);
         let is_neg = int128::is_negative(log_2_y);
         let log_2_y = int128::abs(log_2_y);
@@ -319,9 +321,31 @@ module aux::concliq_math {
                 r
             }
         } else {
-            log_2_y / SQUARE_PRICE_LOG_2        
+            log_2_y / SQUARE_PRICE_LOG_2
         };
-        int64::new((ratio as u64), is_neg)
+        int32::new((ratio as u32), is_neg)
+    }
+
+    public fun get_price(x: u64, y: u64): u128 {
+        let x = (x as u128) << 64;
+        let y = (y as u128);
+        x / y
+    }
+
+    public fun get_square_price(price: u128): u128 {
+        let price = (price as u256);
+        price = price << PRECISION;
+        let sqrt_price = more_math_u256::sqrt(price);
+        (sqrt_price as u128)
+    }
+
+    public fun is_valid_tick(tick: Int32, spacing: u32): bool {
+        let abs_tick = int32::abs(tick);
+        abs_tick % spacing == 0
+    }
+
+    public fun is_valid_tick_spacing(tick_spacing: u32): bool {
+        tick_spacing > 0 && tick_spacing <= 256
     }
 
     #[test_only]
@@ -420,211 +444,211 @@ module aux::concliq_math {
         // check positive side
         let square_price_0 = 18447666387855959850u128;
         let ratio_0 = get_tick(square_price_0);
-        let abs_ratio_0 = int64::abs(ratio_0);
-        assert!(abs_ratio_0 == 1, abs_ratio_0);
+        let abs_ratio_0 = int32::abs(ratio_0);
+        assert!(abs_ratio_0 == 1, (abs_ratio_0 as u64));
 
         // check positive side
         let square_price_1 = 18448588748116922571u128;
         let ratio_1 = get_tick(square_price_1);
-        let abs_ratio_1 = int64::abs(ratio_1);
-        assert!(abs_ratio_1 == 2, abs_ratio_1);
+        let abs_ratio_1 = int32::abs(ratio_1);
+        assert!(abs_ratio_1 == 2, (abs_ratio_1 as u64));
 
         // check positive side
         let square_price_2 = 18450433606991734263u128;
         let ratio_2 = get_tick(square_price_2);
-        let abs_ratio_2 = int64::abs(ratio_2);
-        assert!(abs_ratio_2 == 4, abs_ratio_2);
+        let abs_ratio_2 = int32::abs(ratio_2);
+        assert!(abs_ratio_2 == 4, (abs_ratio_2 as u64));
 
         // check positive side
         let square_price_3 = 18454123878217468680u128;
         let ratio_3 = get_tick(square_price_3);
-        let abs_ratio_3 = int64::abs(ratio_3);
-        assert!(abs_ratio_3 == 8, abs_ratio_3);
+        let abs_ratio_3 = int32::abs(ratio_3);
+        assert!(abs_ratio_3 == 8, (abs_ratio_3 as u64));
 
         // check positive side
         let square_price_4 = 18461506635090006701u128;
         let ratio_4 = get_tick(square_price_4);
-        let abs_ratio_4 = int64::abs(ratio_4);
-        assert!(abs_ratio_4 == 16, abs_ratio_4);
+        let abs_ratio_4 = int32::abs(ratio_4);
+        assert!(abs_ratio_4 == 16, (abs_ratio_4 as u64));
 
         // check positive side
         let square_price_5 = 18476281010653910144u128;
         let ratio_5 = get_tick(square_price_5);
-        let abs_ratio_5 = int64::abs(ratio_5);
-        assert!(abs_ratio_5 == 32, abs_ratio_5);
+        let abs_ratio_5 = int32::abs(ratio_5);
+        assert!(abs_ratio_5 == 32, (abs_ratio_5 as u64));
 
         // check positive side
         let square_price_6 = 18505865242158250041u128;
         let ratio_6 = get_tick(square_price_6);
-        let abs_ratio_6 = int64::abs(ratio_6);
-        assert!(abs_ratio_6 == 64, abs_ratio_6);
+        let abs_ratio_6 = int32::abs(ratio_6);
+        assert!(abs_ratio_6 == 64, (abs_ratio_6 as u64));
 
         // check positive side
         let square_price_7 = 18565175891880433522u128;
         let ratio_7 = get_tick(square_price_7);
-        let abs_ratio_7 = int64::abs(ratio_7);
-        assert!(abs_ratio_7 == 128, abs_ratio_7);
+        let abs_ratio_7 = int32::abs(ratio_7);
+        assert!(abs_ratio_7 == 128, (abs_ratio_7 as u64));
 
         // check positive side
         let square_price_8 = 18684368066214940582u128;
         let ratio_8 = get_tick(square_price_8);
-        let abs_ratio_8 = int64::abs(ratio_8);
-        assert!(abs_ratio_8 == 256, abs_ratio_8);
+        let abs_ratio_8 = int32::abs(ratio_8);
+        assert!(abs_ratio_8 == 256, (abs_ratio_8 as u64));
 
         // check positive side
         let square_price_9 = 18925053041275764671u128;
         let ratio_9 = get_tick(square_price_9);
-        let abs_ratio_9 = int64::abs(ratio_9);
-        assert!(abs_ratio_9 == 512, abs_ratio_9);
+        let abs_ratio_9 = int32::abs(ratio_9);
+        assert!(abs_ratio_9 == 512, (abs_ratio_9 as u64));
 
         // check positive side
         let square_price_10 = 19415764168677886926u128;
         let ratio_10 = get_tick(square_price_10);
-        let abs_ratio_10 = int64::abs(ratio_10);
-        assert!(abs_ratio_10 == 1024, abs_ratio_10);
+        let abs_ratio_10 = int32::abs(ratio_10);
+        assert!(abs_ratio_10 == 1024, (abs_ratio_10 as u64));
 
         // check positive side
         let square_price_11 = 20435687552633177494u128;
         let ratio_11 = get_tick(square_price_11);
-        let abs_ratio_11 = int64::abs(ratio_11);
-        assert!(abs_ratio_11 == 2048, abs_ratio_11);
+        let abs_ratio_11 = int32::abs(ratio_11);
+        assert!(abs_ratio_11 == 2048, (abs_ratio_11 as u64));
 
         // check positive side
         let square_price_12 = 22639080592224303007u128;
         let ratio_12 = get_tick(square_price_12);
-        let abs_ratio_12 = int64::abs(ratio_12);
-        assert!(abs_ratio_12 == 4096, abs_ratio_12);
+        let abs_ratio_12 = int32::abs(ratio_12);
+        assert!(abs_ratio_12 == 4096, (abs_ratio_12 as u64));
 
         // check positive side
         let square_price_13 = 27784196929998399742u128;
         let ratio_13 = get_tick(square_price_13);
-        let abs_ratio_13 = int64::abs(ratio_13);
-        assert!(abs_ratio_13 == 8192, abs_ratio_13);
+        let abs_ratio_13 = int32::abs(ratio_13);
+        assert!(abs_ratio_13 == 8192, (abs_ratio_13 as u64));
 
         // check positive side
         let square_price_14 = 41848122137994986128u128;
         let ratio_14 = get_tick(square_price_14);
-        let abs_ratio_14 = int64::abs(ratio_14);
-        assert!(abs_ratio_14 == 16384, abs_ratio_14);
+        let abs_ratio_14 = int32::abs(ratio_14);
+        assert!(abs_ratio_14 == 16384, (abs_ratio_14 as u64));
 
         // check positive side
         let square_price_15 = 94936283578220370716u128;
         let ratio_15 = get_tick(square_price_15);
-        let abs_ratio_15 = int64::abs(ratio_15);
-        assert!(abs_ratio_15 == 32768, abs_ratio_15);
+        let abs_ratio_15 = int32::abs(ratio_15);
+        assert!(abs_ratio_15 == 32768, (abs_ratio_15 as u64));
 
         // check positive side
         let square_price_16 = 488590176327622479860u128;
         let ratio_16 = get_tick(square_price_16);
-        let abs_ratio_16 = int64::abs(ratio_16);
-        assert!(abs_ratio_16 == 65536, abs_ratio_16);
+        let abs_ratio_16 = int32::abs(ratio_16);
+        assert!(abs_ratio_16 == 65536, (abs_ratio_16 as u64));
 
         // check positive side
         let square_price_17 = 12941056668319229769860u128;
         let ratio_17 = get_tick(square_price_17);
-        let abs_ratio_17 = int64::abs(ratio_17);
-        assert!(abs_ratio_17 == 131072, abs_ratio_17);
+        let abs_ratio_17 = int32::abs(ratio_17);
+        assert!(abs_ratio_17 == 131072, (abs_ratio_17 as u64));
 
         // check positive side
         let square_price_18 = 9078618265828848800676189u128;
         let ratio_18 = get_tick(square_price_18);
-        let abs_ratio_18 = int64::abs(ratio_18);
-        assert!(abs_ratio_18 == 262144, abs_ratio_18);
+        let abs_ratio_18 = int32::abs(ratio_18);
+        assert!(abs_ratio_18 == 262144, (abs_ratio_18 as u64));
 
         // check negative side
         let square_price_0 = 18445821805675392311u128;
         let ratio_0 = get_tick(square_price_0);
-        let abs_ratio_0 = int64::abs(ratio_0);
-        assert!(abs_ratio_0 == 1, abs_ratio_0);
+        let abs_ratio_0 = int32::abs(ratio_0);
+        assert!(abs_ratio_0 == 1, (abs_ratio_0 as u64));
         // check negative side
         let square_price_1 = 18444899583751176498u128;
         let ratio_1 = get_tick(square_price_1);
-        let abs_ratio_1 = int64::abs(ratio_1);
-        assert!(abs_ratio_1 == 2, abs_ratio_1);
+        let abs_ratio_1 = int32::abs(ratio_1);
+        assert!(abs_ratio_1 == 2, (abs_ratio_1 as u64));
         // check negative side
         let square_price_2 = 18443055278223354162u128;
         let ratio_2 = get_tick(square_price_2);
-        let abs_ratio_2 = int64::abs(ratio_2);
-        assert!(abs_ratio_2 == 4, abs_ratio_2);
+        let abs_ratio_2 = int32::abs(ratio_2);
+        assert!(abs_ratio_2 == 4, (abs_ratio_2 as u64));
         // check negative side
         let square_price_3 = 18439367220385604838u128;
         let ratio_3 = get_tick(square_price_3);
-        let abs_ratio_3 = int64::abs(ratio_3);
-        assert!(abs_ratio_3 == 8, abs_ratio_3);
+        let abs_ratio_3 = int32::abs(ratio_3);
+        assert!(abs_ratio_3 == 8, (abs_ratio_3 as u64));
         // check negative side
         let square_price_4 = 18431993317065449817u128;
         let ratio_4 = get_tick(square_price_4);
-        let abs_ratio_4 = int64::abs(ratio_4);
-        assert!(abs_ratio_4 == 16, abs_ratio_4);
+        let abs_ratio_4 = int32::abs(ratio_4);
+        assert!(abs_ratio_4 == 16, (abs_ratio_4 as u64));
         // check negative side
         let square_price_5 = 18417254355718160513u128;
         let ratio_5 = get_tick(square_price_5);
-        let abs_ratio_5 = int64::abs(ratio_5);
-        assert!(abs_ratio_5 == 32, abs_ratio_5);
+        let abs_ratio_5 = int32::abs(ratio_5);
+        assert!(abs_ratio_5 == 32, (abs_ratio_5 as u64));
         // check negative side
         let square_price_6 = 18387811781193591352u128;
         let ratio_6 = get_tick(square_price_6);
-        let abs_ratio_6 = int64::abs(ratio_6);
-        assert!(abs_ratio_6 == 64, abs_ratio_6);
+        let abs_ratio_6 = int32::abs(ratio_6);
+        assert!(abs_ratio_6 == 64, (abs_ratio_6 as u64));
         // check negative side
         let square_price_7 = 18329067761203520168u128;
         let ratio_7 = get_tick(square_price_7);
-        let abs_ratio_7 = int64::abs(ratio_7);
-        assert!(abs_ratio_7 == 128, abs_ratio_7);
+        let abs_ratio_7 = int32::abs(ratio_7);
+        assert!(abs_ratio_7 == 128, (abs_ratio_7 as u64));
         // check negative side
         let square_price_8 = 18212142134806087854u128;
         let ratio_8 = get_tick(square_price_8);
-        let abs_ratio_8 = int64::abs(ratio_8);
-        assert!(abs_ratio_8 == 256, abs_ratio_8);
+        let abs_ratio_8 = int32::abs(ratio_8);
+        assert!(abs_ratio_8 == 256, (abs_ratio_8 as u64));
         // check negative side
         let square_price_9 = 17980523815641551639u128;
         let ratio_9 = get_tick(square_price_9);
-        let abs_ratio_9 = int64::abs(ratio_9);
-        assert!(abs_ratio_9 == 512, abs_ratio_9);
+        let abs_ratio_9 = int32::abs(ratio_9);
+        assert!(abs_ratio_9 == 512, (abs_ratio_9 as u64));
         // check negative side
         let square_price_10 = 17526086738831147013u128;
         let ratio_10 = get_tick(square_price_10);
-        let abs_ratio_10 = int64::abs(ratio_10);
-        assert!(abs_ratio_10 == 1024, abs_ratio_10);
+        let abs_ratio_10 = int32::abs(ratio_10);
+        assert!(abs_ratio_10 == 1024, (abs_ratio_10 as u64));
         // check negative side
         let square_price_11 = 16651378430235024244u128;
         let ratio_11 = get_tick(square_price_11);
-        let abs_ratio_11 = int64::abs(ratio_11);
-        assert!(abs_ratio_11 == 2048, abs_ratio_11);
+        let abs_ratio_11 = int32::abs(ratio_11);
+        assert!(abs_ratio_11 == 2048, (abs_ratio_11 as u64));
         // check negative side
         let square_price_12 = 15030750278693429944u128;
         let ratio_12 = get_tick(square_price_12);
-        let abs_ratio_12 = int64::abs(ratio_12);
-        assert!(abs_ratio_12 == 4096, abs_ratio_12);
+        let abs_ratio_12 = int32::abs(ratio_12);
+        assert!(abs_ratio_12 == 4096, (abs_ratio_12 as u64));
         // check negative side
         let square_price_13 = 12247334978882834399u128;
         let ratio_13 = get_tick(square_price_13);
-        let abs_ratio_13 = int64::abs(ratio_13);
-        assert!(abs_ratio_13 == 8192, abs_ratio_13);
+        let abs_ratio_13 = int32::abs(ratio_13);
+        assert!(abs_ratio_13 == 8192, (abs_ratio_13 as u64));
         // check negative side
         let square_price_14 = 8131365268884726200u128;
         let ratio_14 = get_tick(square_price_14);
-        let abs_ratio_14 = int64::abs(ratio_14);
-        assert!(abs_ratio_14 == 16384, abs_ratio_14);
+        let abs_ratio_14 = int32::abs(ratio_14);
+        assert!(abs_ratio_14 == 16384, (abs_ratio_14 as u64));
         // check negative side
         let square_price_15 = 3584323654723342297u128;
         let ratio_15 = get_tick(square_price_15);
-        let abs_ratio_15 = int64::abs(ratio_15);
-        assert!(abs_ratio_15 == 32768, abs_ratio_15);
+        let abs_ratio_15 = int32::abs(ratio_15);
+        assert!(abs_ratio_15 == 32768, (abs_ratio_15 as u64));
         // check negative side
         let square_price_16 = 696457651847595233u128;
         let ratio_16 = get_tick(square_price_16);
-        let abs_ratio_16 = int64::abs(ratio_16);
-        assert!(abs_ratio_16 == 65536, abs_ratio_16);
+        let abs_ratio_16 = int32::abs(ratio_16);
+        assert!(abs_ratio_16 == 65536, (abs_ratio_16 as u64));
         // check negative side
         let square_price_17 = 26294789957452057u128;
         let ratio_17 = get_tick(square_price_17);
-        let abs_ratio_17 = int64::abs(ratio_17);
-        assert!(abs_ratio_17 == 131072, abs_ratio_17);
+        let abs_ratio_17 = int32::abs(ratio_17);
+        assert!(abs_ratio_17 == 131072, (abs_ratio_17 as u64));
         // check negative side
         let square_price_18 = 37481735321082u128;
         let ratio_18 = get_tick(square_price_18);
-        let abs_ratio_18 = int64::abs(ratio_18);
-        assert!(abs_ratio_18 == 262144, abs_ratio_18);
+        let abs_ratio_18 = int32::abs(ratio_18);
+        assert!(abs_ratio_18 == 262144, (abs_ratio_18 as u64));
     }
 }
