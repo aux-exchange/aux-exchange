@@ -1927,7 +1927,7 @@ module aux::clob_market {
     }
 
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
-    #[expected_failure(abort_code = 35)]
+    #[expected_failure(abort_code = E_NO_OPEN_ORDERS_ACCOUNT)]
     fun test_shouldnot_cancel_others_order(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) acquires Market, OpenOrderAccount {
         let (alice_addr, bob_addr) = setup_for_test<BaseCoin, QuoteCoin>(sender, aux, alice, bob, aptos_framework, 2, 3, 10, 100);
 
@@ -3199,7 +3199,7 @@ module aux::clob_market {
     }
 
 
-    #[expected_failure(abort_code = 23)]
+    #[expected_failure(abort_code = E_INVALID_PRICE)]
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
     fun test_tick_size_enforced(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) acquires Market, OpenOrderAccount {
         let (alice_addr, bob_addr) = setup_for_test<BaseCoin, QuoteCoin>(sender, aux, alice, bob, aptos_framework, 2, 3, 10, 100);
@@ -3213,7 +3213,7 @@ module aux::clob_market {
         let (_, _) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1001, /*quantity=*/200, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
     }
 
-    #[expected_failure(abort_code = 22)]
+    #[expected_failure(abort_code = E_INVALID_QUANTITY)]
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
     fun test_lot_size_enforced(sender: &signer, aux: &signer, alice: &signer, bob: &signer, aptos_framework: &signer) acquires Market, OpenOrderAccount {
         let (alice_addr, bob_addr) = setup_for_test<BaseCoin, QuoteCoin>(sender, aux, alice, bob, aptos_framework, 2, 3, 10, 100);
@@ -3227,7 +3227,7 @@ module aux::clob_market {
         let (_, _) = new_order(market, bob_addr, /*is_bid=*/true, /*price=*/1000, /*quantity=*/201, 0, LIMIT_ORDER, 1001, 0, true, 1000000, CANCEL_PASSIVE);
     }
 
-    #[expected_failure(abort_code = 26)]
+    #[expected_failure(abort_code = E_INVALID_TICK_OR_LOT_SIZE)]
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
     fun test_min_quote_qty_enforced(sender: &signer, aux: &signer, aptos_framework: &signer) {
         let lot_size = 10;

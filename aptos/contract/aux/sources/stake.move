@@ -734,7 +734,7 @@ module aux::stake {
         timestamp::fast_forward_seconds(1000);
     }
 
-    #[expected_failure(abort_code = 9)]
+    #[expected_failure(abort_code = E_INVALID_REWARD)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_remove_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, UserPosition, StInfo {
         setup_module_for_test(sender, aptos_framework);
@@ -761,7 +761,7 @@ module aux::stake {
         modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(sender, 2000000 * 1000000, false, 0, false);
     }
 
-    #[expected_failure(abort_code = 8)]
+    #[expected_failure(abort_code = E_NOT_AUTHORIZED)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_modify_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires Pool, StInfo {
         setup_module_for_test(sender, aptos_framework);
@@ -808,7 +808,7 @@ module aux::stake {
         modify_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice, 2000000 * 1000000, false, 0, false);
     }
 
-    #[expected_failure(abort_code = 8)]
+    #[expected_failure(abort_code = E_NOT_AUTHORIZED)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_modify_authority_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool {
         setup_module_for_test(sender, aptos_framework);
@@ -836,7 +836,7 @@ module aux::stake {
     }
 
 
-    #[expected_failure(abort_code = 8)]
+    #[expected_failure(abort_code = E_NOT_AUTHORIZED)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_delete_pool_if_not_authority(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool {
         setup_module_for_test(sender, aptos_framework);
@@ -863,7 +863,7 @@ module aux::stake {
         delete_empty_pool<FakeCoin<ETH>, FakeCoin<USDC>>(alice);
     }
 
-    #[expected_failure(abort_code = 11)]
+    #[expected_failure(abort_code = E_CANNOT_DELETE_POOL)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_delete_pool_with_pending_rewards(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
@@ -930,7 +930,7 @@ module aux::stake {
     }
 
 
-    #[expected_failure(abort_code = 12)]
+    #[expected_failure(abort_code = E_POOL_ALREADY_EXISTS)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_create_duplicate_pool(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo {
         setup_module_for_test(sender, aptos_framework);
@@ -1341,7 +1341,7 @@ module aux::stake {
         };
 
     }
-    #[expected_failure(abort_code = 9)]
+    #[expected_failure(abort_code = E_INVALID_REWARD)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_remove_excess_reward(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);
@@ -1740,7 +1740,7 @@ module aux::stake {
         };
     }
 
-    #[expected_failure(abort_code = 1)]
+    #[expected_failure(abort_code = E_INVALID_DURATION)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1, alice = @0x123)]
     fun test_cannot_end_pool_before_now(sender: &signer, aptos_framework: &signer, alice: &signer) acquires StInfo, Pool, UserPosition {
         setup_module_for_test(sender, aptos_framework);

@@ -9,3 +9,6 @@ target/
 .DS_Store
 .gitconfig
 .env
+
+# user specific
+user.sh
