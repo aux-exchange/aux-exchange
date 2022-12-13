@@ -10,6 +10,7 @@
 module aux::fee {
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
+    use sui::object::{Self, UID};
 
     const FEE_ALREADY_INITIALIZED: u64 = 0;
     const E_TEST_FAILURE: u64 = 1;
@@ -18,6 +19,7 @@ module aux::fee {
     const DEFAULT_TAKER_FEE_BPS: u8 = 0;
 
     struct Fee has key {
+        id: UID,
         owner: address,
         maker_rebate_bps: u8,
         taker_fee_bps: u8
@@ -36,6 +38,7 @@ module aux::fee {
         let sender = tx_context::sender(ctx);
         transfer::transfer<Fee>(
             Fee {
+                id: object::new(ctx),
                 owner: sender,
                 maker_rebate_bps: DEFAULT_MAKER_REBATE_BPS,
                 taker_fee_bps: DEFAULT_TAKER_FEE_BPS
@@ -87,8 +90,9 @@ module aux::fee {
     }
 
     #[test_only]
-    public fun create_zero_fee(user: address): Fee {
+    public fun create_zero_fee(user: address, ctx: &mut TxContext): Fee {
         Fee {
+            id: object::new(ctx),
             owner: user,
             maker_rebate_bps: 0,
             taker_fee_bps: 0
@@ -96,23 +100,42 @@ module aux::fee {
     }
 
     #[test_only]
-    public fun init_fees_for_test(user: address, taker_fee_bps: u8, maker_rebate_bps: u8): Fee {
+    use sui::test_scenario;
+
+    #[test_only]
+    public fun init_fees_for_test(user: address, taker_fee_bps: u8, maker_rebate_bps: u8, ctx: &mut TxContext): Fee {
         Fee {
+            id: object::new(ctx),
             owner: user,
             maker_rebate_bps,
             taker_fee_bps
         }
     }
 
+    public fun destroy_for_test(fee: Fee) {
+        let Fee {
+            id,
+            owner: _,
+            maker_rebate_bps: _,
+            taker_fee_bps: _
+        } = fee;
+        object::delete(id)
+    }
+
     #[test(alice = @0x123, bob = @0x456)]
     fun test_fees(alice_addr: address, bob_addr: address) {
-        let alice_fee = init_fees_for_test(alice_addr, 2, 1);
-        let bob_fee = init_fees_for_test(bob_addr, 2, 1);
+        let scenario = test_scenario::begin(alice_addr);
+        let alice_fee = init_fees_for_test(alice_addr, 2, 1, test_scenario::ctx(&mut scenario));
+        let bob_fee = init_fees_for_test(bob_addr, 2, 1, test_scenario::ctx(&mut scenario));
 
         assert!(add_fee(&alice_fee, 10000, true) == 10002, E_TEST_FAILURE);
         assert!(subtract_fee(&alice_fee, 10000, true) == 9998, E_TEST_FAILURE);
         assert!(add_fee(&bob_fee, 10000, false) == 9999, E_TEST_FAILURE);
         assert!(subtract_fee(&bob_fee, 10000, false) == 10001, E_TEST_FAILURE);
+
+        test_scenario::end(scenario);
+        destroy_for_test(alice_fee);
+        destroy_for_test(bob_fee);
     }
 
 }

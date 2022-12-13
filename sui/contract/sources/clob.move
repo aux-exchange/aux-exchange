@@ -55,30 +55,21 @@ module aux::clob {
     // use std::signer;
     use std::vector;
     use std::option::{Self, Option};
-    use std::string::String;
     use std::type_name::TypeName;
 
-    // use aptos_framework::account;
-    // use aptos_framework::event;
-    // use aptos_framework::type_info;
-    // use aptos_framework::coin;
-    // use aptos_framework::timestamp;
     use sui::event;
     use sui::tx_context::{Self, TxContext};
     use sui::coin::{Self};
     use sui::vec_set::{Self, VecSet};
-    use sui::object::{Self, UID};
+    use sui::object::{Self, UID, ID};
     use sui::transfer;
 
     use aux::vault::{Self, Vault};
-    use aux::aux_coin::AUX;
-    use aux::authority;
-    // use aux::volume_tracker;
+    use aux::aux::AUX;
     use aux::fee::{Self, Fee};
     use aux::critbit::{Self, CritbitTree};
     use aux::critbit_v::{Self, CritbitTree as CritbitTreeV};
     use aux::util::{Self, exp};
-    // use aux::onchain_signer;
 
     // Config
     const CANCEL_EXPIRATION_TIME: u64 = 100000000; // 100 s
@@ -171,6 +162,7 @@ module aux::clob {
     const E_UNAUTHORIZED_FOR_MARKET_UPDATE: u64 = 36;
     const E_UNAUTHORIZED_FOR_MARKET_CREATION: u64 = 37;
     const E_MARKET_NOT_UPDATING: u64 = 38;
+    const E_EXPIRED_OPEN_ORDERS: u64 = 39;
 
     /*********/
     /* ORDER */
@@ -209,7 +201,6 @@ module aux::clob {
         is_bid: bool,
         owner: address,
         order_type: u64,
-        seq: u128,
     ): Order {
         Order {
             id,
@@ -250,11 +241,11 @@ module aux::clob {
     /* MARKET */
     /**********/
 
-    struct MarketAuthority has key {}
+    struct ModuleAuthority has key { id: UID }
 
     struct Markets has key {
         id: UID,
-        markets: VecSet<TypeName>
+        markets: VecSet<TypeName>,
     }
 
     struct Market<phantom B, phantom Q> has key {
@@ -268,7 +259,7 @@ module aux::clob {
         base_decimals: u8,
         quote_decimals: u8,
         lot_size: u64,
-        tick_size: u64,
+        tick_size: u64
 
         // Events
         // fill_events: event::EventHandle<OrderFillEvent>,
@@ -311,20 +302,54 @@ module aux::clob {
     }
 
     // Stored in user's address
-    struct OpenOrderInfo has store {
+    struct OpenOrderInfo has store, drop {
         price: u64,
         is_bid: bool,
     }
 
     struct OpenOrders<phantom B, phantom Q> has key {
         id: UID,
+        market_id: ID,
         owner: address,
         open_orders: CritbitTree<OpenOrderInfo>,
     }
 
-    /*******************/
-    /* ENTRY FUNCTIONS */
-    /*******************/
+
+    struct L2Event has copy, store, drop {
+        bids: vector<L2Quote>,
+        asks: vector<L2Quote>,
+    }
+
+    struct L2Quote has copy, store, drop {
+        price: u64,
+        quantity: u128,
+    }
+
+    struct AllOrdersEvent has copy, store, drop {
+        bids: vector<vector<OpenOrderEventInfo>>,
+        asks: vector<vector<OpenOrderEventInfo>>,
+    }
+
+    // we don't want to add drop to type Order
+    // so we create a copy of Order here for the event.
+    struct OpenOrderEventInfo has copy, store, drop {
+        id: u128,
+        client_order_id: u128,
+        price: u64,
+        quantity: u64,
+        aux_au_to_burn_per_lot: u64,
+        is_bid: bool,
+        owner: address,
+        order_type: u64,
+    }
+
+    struct OpenOrdersEvent has copy, store, drop {
+        open_orders: vector<OpenOrderEventInfo>,
+    }
+
+    /***************/
+    /* MODULE INIT */
+    /***************/
 
     fun init(ctx: &mut TxContext) {
         let markets = Markets {
@@ -334,29 +359,26 @@ module aux::clob {
         // share the markets registry
         transfer::share_object(markets);
         // transfer authority to module creator
-        transfer::transfer(MarketAuthority{}, tx_context::sender(ctx))
+        transfer::transfer(ModuleAuthority{ id: object::new(ctx) }, tx_context::sender(ctx))
     }
 
+    /*******************/
+    /* ENTRY FUNCTIONS */
+    /*******************/
+
     /// Create market, and move it to authority's resource account
-    public entry fun create_market<B, Q>(
+    /// TODO: add versions to accept both base witness and quote witness
+    public entry fun create_market_with_authority<B, Q>(
         registry: &Markets,
         lot_size: u64,
         tick_size: u64,
-        base_witness: Option<B>,
-        quote_witness: Option<Q>,
+        // base_witness: &Option<B>,
+        // quote_witness: &Option<Q>,
+        _authority: &ModuleAuthority,
         base_decimals: u8, // TODO: replace with CoinMetadata once getters are merged
         quote_decimals: u8, // TODO: replace with CoinMetadata once getters are merged
         ctx: &mut TxContext,
     ) {
-        // The signer must own one of the coins or be the aux authority.
-        if (option::is_none(&base_witness) && option::is_none(&quote_witness)) {
-            // Asserts that sender has the authority for @aux.
-            assert!(
-                authority::is_signer_owner(ctx),
-                E_UNAUTHORIZED_FOR_MARKET_CREATION,
-            );
-        };
-
         let base_exp = exp(10, (base_decimals as u128));
         // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
         assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
@@ -385,26 +407,64 @@ module aux::clob {
             quote_decimals,
             lot_size,
             tick_size,
-            bids: critbit::new(),
-            asks: critbit::new(),
+            bids: critbit::new(ctx),
+            asks: critbit::new(ctx),
             next_order_id: 0,
-            // fill_events: account::new_event_handle<OrderFillEvent>(&clob_signer),
-            // cancel_events: account::new_event_handle<OrderCancelEvent>(&clob_signer),
-            // placed_events: account::new_event_handle<OrderPlacedEvent>(&clob_signer)
         });
     }
 
-    /// Returns value of order in quote AU
-    fun quote_qty(price: u64, quantity: u64, base_decimals: u8): u64 {
-        ((price as u128) * (quantity as u128) / exp(10, (base_decimals as u128)) as u64)
+    /// Create open orders account and transfer to sender
+    public entry fun create_open_orders<B, Q>(
+        market: &Market<B, Q>,
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        transfer::transfer(OpenOrders<B, Q> {
+            id: object::new(ctx),
+            market_id: object::uid_to_inner(&market.id),
+            owner: sender,
+            open_orders: critbit::new(ctx)
+        }, sender)
     }
+
+    /// Delete an open orders account for a deleted market
+    public entry fun delete_expired_open_orders<B, Q>(
+        market: &Market<B, Q>,
+        expired_open_orders: OpenOrders<B, Q>
+    ) {
+        assert!(object::uid_to_inner(&market.id) != expired_open_orders.market_id, E_INVALID_ARGUMENT);
+        let OpenOrders {
+            id,
+            market_id: _,
+            owner: _,
+            open_orders,
+        } = expired_open_orders;
+        critbit::drop(open_orders);
+        object::delete(id);
+    }
+
+    /// Delete an empty open orders account
+    /// Can be used if multiple accounts are accidentally created
+    public entry fun delete_empty_open_orders<B, Q>(
+        open_orders: OpenOrders<B, Q>
+    ) {
+        let OpenOrders {
+            id,
+            market_id: _,
+            owner: _,
+            open_orders,
+        } = open_orders;
+        critbit::destroy_empty(open_orders);
+        object::delete(id);
+    }
+
 
     /// Place a limit order. Returns order ID of new order. Emits events on order placement and fills.
     public entry fun place_order<B, Q>(
         vault: &mut Vault,
         market: &mut Market<B, Q>,
         open_orders: &mut OpenOrders<B, Q>,
-        fee: Option<Fee>,
+        fee: &Fee,
         // TODO: refactor to simply pass in vault account object
         vault_account_owner: address, // vault_account_owner is, from the module's internal perspective, the address that actually makes the trade. It will be the actual account that has changes in balance (fee, volume tracker, etc is all associated with vault_account_owner, and independent of sender (i.e. delegatee))
         is_bid: bool,
@@ -415,9 +475,7 @@ module aux::clob {
         order_type: u64,
         ticks_to_slide: u64, // # of ticks to slide for post only
         direction_aggressive: bool, // only used in passive join order
-        timeout_timestamp: u64, // if by the timeout_timestamp the submitted order is not filled, then it would be cancelled automatically, if the timeout_timestamp <= current_timestamp, the order would not be placed and cancelled immediately
-        stp_action_type: u64, // STP action type
-        ctx: &mut TxContext
+        stp_action_type: u64 // STP action type
     ) {
         // TODO: move these checks into new_order
         // First confirm the sender is allowed to trade on behalf of vault_account_owner
@@ -431,9 +489,7 @@ module aux::clob {
         // Confirm the vault_account_owner has volume tracker registered
         // assert!(volume_tracker::global_volume_tracker_registered(vault_account_owner), E_VOLUME_TRACKER_UNREGISTERED);
 
-        // Confirm that market exists
-        let resource_addr = @aux;
-        assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
+        assert!(object::uid_to_inner(&market.id) == open_orders.market_id, E_EXPIRED_OPEN_ORDERS);
         // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
 
         let(base_au, quote_au) = new_order(
@@ -450,9 +506,7 @@ module aux::clob {
             client_order_id,
             ticks_to_slide,
             direction_aggressive,
-            timeout_timestamp,
-            stp_action_type,
-            ctx
+            stp_action_type
         );
         if (base_au != 0 && quote_au != 0) {
             assert!(order_type != POST_ONLY && order_type != PASSIVE_JOIN, E_INVALID_STATE);
@@ -474,29 +528,590 @@ module aux::clob {
     }
 
 
+
+    public entry fun fast_cancel_order<B, Q>(
+        vault: &mut Vault,
+        market: &mut Market<B, Q>,
+        open_orders: &mut OpenOrders<B, Q>,
+        order_id: u128,
+        price: u64,
+        is_bid: bool
+    ) {
+        // First confirm the sender is allowed to trade on behalf of delegator
+        // vault::assert_trader_is_authorized_for_account(sender, delegator);
+
+        // Confirm that delegator has a aux account
+        // assert!(has_aux_account(open_orders.owner), E_MISSING_AUX_USER_ACCOUNT);
+
+        // Confirm that market exists
+        // let resource_addr = @aux;
+        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
+
+        // Cancel order
+        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
+        let maybe_cancelled = remove_order(market, order_id, open_orders.owner, price, is_bid);
+        if (option::is_some(&maybe_cancelled)) {
+            let cancelled = option::extract(&mut maybe_cancelled);
+            let lot_size = (market.lot_size as u128);
+            process_cancel_order<B, Q>(vault, open_orders, cancelled, lot_size, market.base_decimals);
+        };
+        option::destroy_none(maybe_cancelled)
+    }
+
+    public entry fun cancel_order<B, Q>(
+        vault: &mut Vault,
+        market: &mut Market<B, Q>,
+        open_orders: &mut OpenOrders<B, Q>,
+        order_id: u128
+    ) {
+        // First confirm the sender is allowed to trade on behalf of delegator
+        // vault::assert_trader_is_authorized_for_account(sender, delegator);
+
+        // Confirm that delegator has a aux account
+        // TODO: this invariant may be a precondition
+        // assert!(has_aux_account(open_orders.owner), E_MISSING_AUX_USER_ACCOUNT);
+
+        // Confirm that market exists
+        // let resource_addr = @aux;
+        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
+
+        // Cancel order
+        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
+        // let open_order_address = onchain_signer::get_signer_address(delegator);
+        // assert!(exists<OpenOrderAccount<B, Q>>(open_order_address), E_NO_OPEN_ORDERS_ACCOUNT);
+
+        // let open_order_account = borrow_global<OpenOrderAccount<B, Q>>(open_order_address);
+        let order_idx = critbit::find(&open_orders.open_orders, order_id);
+        assert!(order_idx != CRITBIT_NULL_INDEX, E_ORDER_NOT_FOUND);
+        let (_, OpenOrderInfo {price, is_bid}) = critbit::borrow_at_index(&open_orders.open_orders, order_idx);
+        let maybe_cancelled = remove_order(market, order_id, open_orders.owner, *price, *is_bid);
+        if (option::is_some(&maybe_cancelled)) {
+            let cancelled = option::extract(&mut maybe_cancelled);
+            let lot_size = (market.lot_size as u128);
+            process_cancel_order<B, Q>(vault, open_orders, cancelled, lot_size, market.base_decimals);
+        };
+        option::destroy_none(maybe_cancelled)
+    }
+
+    public entry fun cancel_all<B, Q>(vault: &mut Vault, market: &mut Market<B, Q>, open_orders: &mut OpenOrders<B, Q>) {
+        let n_open_order = critbit::size(&open_orders.open_orders);
+        while (n_open_order > 0) {
+            n_open_order = n_open_order - 1;
+            let (order_id, OpenOrderInfo { price, is_bid }) = critbit::remove(&mut open_orders.open_orders, n_open_order);
+            let maybe_cancelled = remove_order(market, order_id, open_orders.owner, price, is_bid);
+            if (option::is_some(&maybe_cancelled)) {
+                let lot_size = (market.lot_size as u128);
+                let cancelled = option::extract(&mut maybe_cancelled);
+                process_cancel_without_open_order_account<B, Q>(vault, cancelled, lot_size, market.base_decimals);
+            };
+            option::destroy_none(maybe_cancelled)
+        }
+    }
+
+    // TODO: are these getters necessary given Sui's RPC API?
+
+    public entry fun load_market_into_event<B, Q>(market: &Market<B, Q>) {
+        // assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
+        // if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
+        //     move_to(sender, MarketDataStore<B, Q> {
+        //         l2_events: account::new_event_handle<L2Event>(sender),
+        //         open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
+        //     });
+        // };
+
+        let l2_event = L2Event {
+            bids: vector::empty(),
+            asks: vector::empty(),
+        };
+
+        // let market = borrow_global<Market<B, Q>>(@aux);
+
+        if (critbit::size(&market.bids) > 0) {
+            let side = &market.bids;
+            let idx = critbit::get_max_index(side);
+            while (idx != CRITBIT_NULL_INDEX) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+                vector::push_back(&mut l2_event.bids, L2Quote {
+                    price: level.price,
+                    quantity: level.total_quantity,
+                });
+                idx = critbit::next_in_reverse_order(side, idx);
+            }
+        };
+
+        if (critbit::size(&market.asks) > 0) {
+            let side = &market.asks;
+            let idx = critbit::get_min_index(side);
+            while (idx != CRITBIT_NULL_INDEX) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+                vector::push_back(&mut l2_event.asks, L2Quote {
+                    price: level.price,
+                    quantity: level.total_quantity,
+                });
+                idx = critbit::next_in_order(side, idx);
+            }
+        };
+
+        event::emit<L2Event>(
+            l2_event
+        );
+    }
+
+    public entry fun load_all_orders_into_event<B,Q>(market: &Market<B, Q>) {
+        // assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
+        // if (!exists<AllOrdersStore<B, Q>>(signer::address_of(sender))) {
+        //     move_to(sender, AllOrdersStore<B, Q> {
+        //         all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
+        //     });
+        // };
+
+        let all_orders = AllOrdersEvent {
+            bids: vector::empty(),
+            asks: vector::empty(),
+        };
+
+        // let market = borrow_global<Market<B, Q>>(@aux);
+
+        if (critbit::size(&market.bids) > 0) {
+            let side = &market.bids;
+            let idx = critbit::get_max_index(side);
+            while (idx != CRITBIT_NULL_INDEX) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+
+                let order_idx = critbit_v::size(&level.orders);
+                let orders = vector::empty<OpenOrderEventInfo>();
+                while (order_idx > 0) {
+                    order_idx = order_idx - 1;
+                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                    vector::push_back(&mut orders, OpenOrderEventInfo{
+                        id: order.id,
+                        client_order_id: order.client_order_id,
+                        price: order.price,
+                        quantity: order.quantity,
+                        aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
+                        is_bid: order.is_bid,
+                        owner: order.owner,
+                        order_type: order.order_type,
+                    });
+                };
+                vector::push_back(&mut all_orders.bids, orders);
+
+                idx = critbit::next_in_reverse_order(side, idx);
+            }
+        };
+
+        if (critbit::size(&market.asks) > 0) {
+            let side = &market.asks;
+            let idx = critbit::get_min_index(side);
+            while (idx != CRITBIT_NULL_INDEX) {
+                let (_, level) = critbit::borrow_at_index(side, idx);
+
+                let order_idx = critbit_v::size(&level.orders);
+                let orders = vector::empty<OpenOrderEventInfo>();
+                while (order_idx > 0) {
+                    order_idx = order_idx - 1;
+                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                    vector::push_back(&mut orders, OpenOrderEventInfo{
+                        id: order.id,
+                        client_order_id: order.client_order_id,
+                        price: order.price,
+                        quantity: order.quantity,
+                        aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
+                        is_bid: order.is_bid,
+                        owner: order.owner,
+                        order_type: order.order_type,
+                    });
+                };
+                vector::push_back(&mut all_orders.asks, orders);
+
+                idx = critbit::next_in_order(side, idx);
+            }
+        };
+
+        event::emit<AllOrdersEvent>(
+            all_orders
+        );
+    }
+
+    public entry fun load_open_orders_into_event<B, Q>(market: &Market<B, Q>, open_orders: &OpenOrders<B, Q>) {
+        assert!(object::uid_to_inner(&market.id) == open_orders.market_id, E_INVALID_ARGUMENT);
+        let n_orders = critbit::size(&open_orders.open_orders);
+        let idx = 0;
+        let open_orders_events = OpenOrdersEvent {
+            open_orders: vector::empty(),
+        };
+
+        // let market = borrow_global<Market<B, Q>>(@aux);
+        while (idx < n_orders) {
+            let (order_id, order_info) = critbit::borrow_at_index(&open_orders.open_orders, idx);
+            let side = if (order_info.is_bid) { &market.bids } else { &market.asks };
+            let level_idx = critbit::find(side, (order_info.price as u128));
+            assert!(
+                level_idx != CRITBIT_NULL_INDEX,
+                E_ORDER_NOT_FOUND
+            );
+            let (_, level) = critbit::borrow_at_index(side, level_idx);
+            let order_idx = critbit_v::find(&level.orders, order_id);
+            assert!(
+                order_idx != CRITBIT_NULL_INDEX,
+                E_ORDER_NOT_FOUND
+            );
+            let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+            vector::push_back(
+                &mut open_orders_events.open_orders,
+                OpenOrderEventInfo {
+                    id: order.id,
+                    client_order_id: order.client_order_id,
+                    price: order.price,
+                    quantity: order.quantity,
+                    aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
+                    is_bid: order.is_bid,
+                    owner: order.owner,
+                    order_type: order.order_type,
+                }
+            );
+            idx = idx + 1;
+        };
+
+        event::emit<OpenOrdersEvent>(
+            open_orders_events,
+        );
+    }
+
+
+    /// TODO: cannot support updating market parameters due to owned open orders.
+    /// recommended path toward modifying market params is to delete existing market and
+    /// deploy a new market
+    public entry fun update_market_params<B, Q>(
+        vault: &mut Vault,
+        market: Market<B, Q>,
+        _authority: &ModuleAuthority,
+        tick_size: u64,
+        lot_size: u64,
+        ctx: &mut TxContext
+    ) {
+
+        let base_exp = exp(10, (market.base_decimals as u128));
+        // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
+        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
+        assert!((lot_size as u128) * (tick_size as u128) % base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
+
+        assert!(
+            tick_size != market.tick_size || lot_size != market.lot_size,
+            E_MARKET_NOT_UPDATING,
+        );
+
+        let Market {
+            id,
+            bids,
+            asks,
+            next_order_id,
+            base_decimals,
+            quote_decimals,
+            lot_size: old_lot_size,
+            tick_size: _
+        } = market;
+        object::delete(id);
+
+        // Cancel orders that violate new parameters
+        let new_lot_size = old_lot_size != lot_size;
+        let n_levels = critbit::size(&bids);
+        let level_idx: u64 = 0;
+        let old_lot_size_u128: u128 = (old_lot_size as u128);
+        while (level_idx < n_levels) {
+            let (_, level) = critbit::borrow_at_index(&bids, level_idx);
+            if (level.price % tick_size != 0) {
+                let (_, level) = critbit::remove(&mut bids, level_idx);
+                // cancel the whole level
+                let n_orders = critbit_v::size(&level.orders);
+                while (n_orders > 0) {
+                    n_orders = n_orders - 1;
+                    let (_, order) = critbit_v::remove(&mut level.orders, n_orders);
+                    process_cancel_without_open_order_account<B, Q>(vault, order, old_lot_size_u128, base_decimals);
+                };
+                level.total_quantity = 0;
+                destroy_empty_level(level);
+                n_levels = n_levels - 1;
+            } else {
+                let (_, level) = critbit::borrow_at_index_mut(&mut bids, level_idx);
+                let n_orders = critbit_v::size(&level.orders);
+                let order_idx = 0u64;
+                while(order_idx < n_orders) {
+                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                    if ((order.aux_au_to_burn_per_lot > 0 && new_lot_size) || order.quantity % lot_size != 0) {
+                        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
+                        level.total_quantity = level.total_quantity - (order.quantity as u128);
+                        process_cancel_without_open_order_account<B, Q>(vault, order, old_lot_size_u128, base_decimals);
+                        n_orders = n_orders - 1;
+                    } else {
+                        order_idx = order_idx + 1;
+                    };
+                };
+
+                if (level.total_quantity == 0) {
+                    let (_, level) = critbit::remove(&mut bids, level_idx);
+                    destroy_empty_level(level);
+                    n_levels = n_levels - 1;
+                } else {
+                    level_idx = level_idx + 1;
+                }
+            };
+        };
+
+        let n_levels = critbit::size(&asks);
+        let level_idx: u64 = 0;
+        let old_lot_size_u128: u128 = (old_lot_size as u128);
+        while (level_idx < n_levels) {
+            let (_, level) = critbit::borrow_at_index(&asks, level_idx);
+            if (level.price % tick_size != 0) {
+                let (_, level) = critbit::remove(&mut asks, level_idx);
+                // cancel the whole level
+                let n_orders = critbit_v::size(&level.orders);
+                while (n_orders > 0) {
+                    n_orders = n_orders - 1;
+                    let (_, order) = critbit_v::remove(&mut level.orders, n_orders);
+                    process_cancel_without_open_order_account<B, Q>(vault, order, old_lot_size_u128, base_decimals);
+                };
+                level.total_quantity = 0;
+                destroy_empty_level(level);
+                n_levels = n_levels - 1;
+            } else {
+                let (_, level) = critbit::borrow_at_index_mut(&mut asks, level_idx);
+                let n_orders = critbit_v::size(&level.orders);
+                let order_idx = 0u64;
+                while(order_idx < n_orders) {
+                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
+                    if ((order.aux_au_to_burn_per_lot > 0 && new_lot_size) || order.quantity % lot_size != 0) {
+                        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
+                        level.total_quantity = level.total_quantity - (order.quantity as u128);
+                        process_cancel_without_open_order_account<B, Q>(vault, order, old_lot_size_u128, base_decimals);
+                        n_orders = n_orders - 1;
+                    } else {
+                        order_idx = order_idx + 1;
+                    };
+                };
+
+                if (level.total_quantity == 0) {
+                    let (_, level) = critbit::remove(&mut asks, level_idx);
+                    destroy_empty_level(level);
+                    n_levels = n_levels - 1;
+                } else {
+                    level_idx = level_idx + 1;
+                }
+            };
+        };
+
+
+        // Move updated market data to a new shared object
+        transfer::share_object(Market<B, Q> {
+            id: object::new(ctx),
+            base_decimals,
+            quote_decimals,
+            lot_size,
+            tick_size,
+            bids,
+            asks,
+            next_order_id,
+        });
+
+    }
+    // TODO: create open orders
+    // public fun create_open_orders<B, Q>()
+
+    /********************/
+    /* PUBLIC FUNCTIONS */
+    /********************/
+
+    public fun n_bid_levels<B, Q>(market: &Market<B, Q>): u64 {
+        critbit::size(&market.bids)
+    }
+
+    public fun n_ask_levels<B, Q>(market: &Market<B, Q>): u64 {
+        critbit::size(&market.asks)
+    }
+
+    public fun lot_size<B, Q>(market: &Market<B, Q>): u64 {
+        market.lot_size
+    }
+
+    public fun tick_size<B, Q>(market: &Market<B, Q>): u64 {
+        market.tick_size
+    }
+
+    // TODO: consolidate these with inner functions
+    // Returns the best bid price as quote coin atomic units
+    public fun best_bid_au<B, Q>(market: &Market<B, Q>): u64 {
+        best_bid_price(market)
+    }
+
+    // Returns the best bid price as quote coin atomic units
+    public fun best_ask_au<B, Q>(market: &Market<B, Q>): u64 {
+        best_ask_price(market)
+    }
+
+
+    public fun place_market_order<B, Q>(
+        vault: &mut Vault,
+        market: &mut Market<B, Q>,
+        open_orders: &mut OpenOrders<B, Q>,
+        fee: &Fee,
+        base_coin: coin::Coin<B>,
+        quote_coin: coin::Coin<Q>,
+        is_bid: bool,
+        order_type: u64,
+        limit_price: u64,
+        quantity: u64,
+        client_order_id: u128,
+        ctx: &mut TxContext
+    ): (coin::Coin<B>, coin::Coin<Q>) {
+        place_market_order_mut(
+            vault,
+            market,
+            open_orders,
+            fee,
+            &mut base_coin,
+            &mut quote_coin,
+            is_bid,
+            order_type,
+            limit_price,
+            quantity,
+            client_order_id,
+            ctx
+        );
+        (base_coin, quote_coin)
+    }
+
+    /// Place a market order (IOC or FOK) on behalf of the router.
+    /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
+    /// Emits events on order placement and fills.
+    public fun place_market_order_mut<B, Q>(
+        vault: &mut Vault,
+        market: &mut Market<B, Q>,
+        open_orders: &mut OpenOrders<B, Q>,
+        fee: &Fee,
+        base_coin: &mut coin::Coin<B>,
+        quote_coin: &mut coin::Coin<Q>,
+        is_bid: bool,
+        order_type: u64,
+        limit_price: u64,
+        quantity: u64,
+        client_order_id: u128,
+        ctx: &mut TxContext
+    ): (u64, u64) {
+
+        // Confirm that market exists
+        // let resource_addr = @aux;
+        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
+        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
+
+        // The router may only place FOK or IOC orders
+        assert!(order_type == FILL_OR_KILL || order_type == IMMEDIATE_OR_CANCEL, E_INVALID_ROUTER_ORDER_TYPE);
+
+        // round quantity down (router may submit un-quantized quantities)
+        let lot_size = market.lot_size;
+        let tick_size = market.tick_size;
+        let rounded_quantity = quantity / lot_size * lot_size;
+        let rounded_price = limit_price / tick_size * tick_size;
+
+        let (base_au, quote_au) = new_order<B, Q>(
+            vault,
+            market,
+            open_orders,
+            fee,
+            tx_context::sender(ctx),
+            is_bid,
+            rounded_price,
+            rounded_quantity,
+            0,
+            order_type,
+            client_order_id,
+            0,
+            false,
+            CANCEL_AGGRESSIVE
+        );
+
+        // Transfer coins
+        if (base_au != 0 && quote_au != 0) {
+            if (is_bid) {
+                // taker pays quote, receives base
+                let quote = coin::split<Q>(quote_coin, (quote_au as u64), ctx);
+                vault::put_coin(vault, quote);
+                let base = vault::take_coin<B>(vault, (base_au as u64), ctx);
+                coin::join<B>(base_coin, base);
+            } else {
+                // taker receives quote, pays base
+                let base = coin::split<B>(base_coin, (base_au as u64), ctx);
+                vault::put_coin<B>(vault, base);
+                let quote = vault::take_coin<Q>(vault, (quote_au as u64), ctx);
+                coin::join<Q>(quote_coin, quote);
+
+            }
+        } else if (base_au != 0 || quote_au != 0) {
+            // abort if sender paid but did not receive and vice versa
+            abort(E_INVALID_STATE)
+        };
+        (base_au, quote_au)
+    }
+
+
+    /*********************/
+    /* PRIVATE FUNCTIONS */
+    /*********************/
+
+    // cancel_order returns (order_cancelled, cancel_success)
+    // cancel_success = false if the order_id is not found
+    fun remove_order<B, Q>(market: &mut Market<B, Q>, order_id: u128, sender_addr: address, price: u64, is_bid: bool): Option<Order> {
+        let side = if (is_bid) { &mut market.bids } else { &mut market.asks };
+
+        let level_idx = critbit::find(side, (price as u128));
+        if (level_idx == CRITBIT_NULL_INDEX) {
+            return option::none()
+        };
+        let (_, level) = critbit::borrow_at_index_mut(side, level_idx);
+        let order_idx = critbit_v::find(&level.orders, order_id);
+        if (order_idx == CRITBIT_NULL_INDEX) {
+            return option::none()
+        };
+
+        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
+
+        assert!(
+            order.owner == sender_addr,
+            E_NOT_ORDER_OWNER,
+        );
+
+        level.total_quantity = level.total_quantity - (order.quantity as u128);
+
+        if (level.total_quantity == 0) {
+            let (_, level) = critbit::remove(side, level_idx);
+            destroy_empty_level(level);
+        };
+
+        option::some(order)
+    }
+
     /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
     /// Emits OrderFill events
     fun handle_fill<B, Q>(
         vault: &mut Vault,
-        market: &mut Market<B, Q>,
         open_orders: &mut OpenOrders<B, Q>,
-        fee: &Option<Fee>,
+        fee: &Fee,
         taker_order: &Order,
         maker_order: &Order,
         base_qty: u64,
-        lot_size: u128
+        lot_size: u128,
+        base_decimals: u8
     ): (u64, u64) {
-        let resource_addr = @aux;
-
         let taker = taker_order.owner;
         let maker = maker_order.owner;
         let price = maker_order.price;
-        let quote_qty = quote_qty(price, base_qty, market.base_decimals);
+        let quote_qty = quote_qty(price, base_qty, base_decimals);
         let taker_is_bid = taker_order.is_bid;
         let (taker_fee, maker_rebate) = if (ZERO_FEES) {
             (0, 0)
         } else {
-            (fee::taker_fee(option::borrow(fee), quote_qty), fee::maker_rebate(option::borrow(fee), quote_qty))
+            (fee::taker_fee(fee, quote_qty), fee::maker_rebate(fee, quote_qty))
         };
         let total_base_quantity_owed_au = 0;
         let total_quote_quantity_owed_au = 0;
@@ -573,7 +1188,7 @@ module aux::clob {
 
             assert!(order_idx != CRITBIT_NULL_INDEX, E_ORDER_NOT_IN_OPEN_ORDER_ACCOUNT);
 
-            let (_, OpenOrderInfo { is_bid, price }) = critbit::remove(&mut open_orders.open_orders, order_idx);
+            let (_, OpenOrderInfo { is_bid: _, price: _ }) = critbit::remove(&mut open_orders.open_orders, order_idx);
         };
 
         // TODO: fix volume tracker
@@ -635,7 +1250,7 @@ module aux::clob {
             }
         );
 
-        let open_order_address = vault_account_owner;
+        // let open_order_address = vault_account_owner;
         // if (!exists<OpenOrderAccount<B, Q>>(open_order_address)) {
         //     move_to(
         //         &onchain_signer::get_signer(placed_order_owner),
@@ -660,7 +1275,7 @@ module aux::clob {
         vault: &mut Vault,
         market: &mut Market<B, Q>,
         open_orders: &mut OpenOrders<B, Q>,
-        fee: &Option<Fee>,
+        fee: &Fee,
         order_owner: address,
         is_bid: bool,
         limit_price: u64,
@@ -670,14 +1285,8 @@ module aux::clob {
         client_order_id: u128,
         ticks_to_slide: u64,
         direction_aggressive: bool,
-        timeout_timestamp: u64,
-        stp_action_type: u64,
-        ctx: &mut TxContext
+        stp_action_type: u64
     ): (u64, u64) {
-        // Confirm the order_owner has fee published
-        if (!ZERO_FEES) {
-            assert!(option::is_some(fee), E_FEE_UNINITIALIZED);
-        };
         // Check lot sizes
         let tick_size = market.tick_size;
         let lot_size = market.lot_size;
@@ -822,10 +1431,6 @@ module aux::clob {
             return (0, 0)
         };
 
-        let open_order_info = OpenOrderInfo {
-            price: limit_price,
-            is_bid
-        };
         let order = Order{
             id: order_id,
             client_order_id,
@@ -863,615 +1468,11 @@ module aux::clob {
         (base_qty_filled, quote_qty_filled)
     }
 
-    public entry fun fast_cancel_order<B, Q>(vault: &mut Vault, market: &mut Market<B, Q>, open_orders: &mut OpenOrders<B, Q>, order_id: u128, price: u64, is_bid: bool) {
-        // First confirm the sender is allowed to trade on behalf of delegator
-        // vault::assert_trader_is_authorized_for_account(sender, delegator);
-
-        // Confirm that delegator has a aux account
-        // assert!(has_aux_account(open_orders.owner), E_MISSING_AUX_USER_ACCOUNT);
-
-        // Confirm that market exists
-        // let resource_addr = @aux;
-        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-
-        // Cancel order
-        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
-        let (cancelled, success) = inner_cancel_order(market, order_id, open_orders.owner, price, is_bid);
-        if (!success){
-            destroy_order(cancelled);
-            return
-        };
-        let lot_size = (market.lot_size as u128);
-        process_cancel_order<B, Q>(vault, open_orders, cancelled, lot_size, market.base_decimals);
+    /// Returns value of order in quote AU
+    fun quote_qty(price: u64, quantity: u64, base_decimals: u8): u64 {
+        ((price as u128) * (quantity as u128) / exp(10, (base_decimals as u128)) as u64)
     }
 
-    public entry fun cancel_order<B, Q>(vault: &mut Vault, market: &mut Market<B, Q>, open_orders: &mut OpenOrders<B, Q>, order_id: u128) {
-        // First confirm the sender is allowed to trade on behalf of delegator
-        // vault::assert_trader_is_authorized_for_account(sender, delegator);
-
-        // Confirm that delegator has a aux account
-        // TODO: this invariant may be a precondition
-        // assert!(has_aux_account(open_orders.owner), E_MISSING_AUX_USER_ACCOUNT);
-
-        // Confirm that market exists
-        // let resource_addr = @aux;
-        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-
-        // Cancel order
-        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
-        // let open_order_address = onchain_signer::get_signer_address(delegator);
-        // assert!(exists<OpenOrderAccount<B, Q>>(open_order_address), E_NO_OPEN_ORDERS_ACCOUNT);
-
-        // let open_order_account = borrow_global<OpenOrderAccount<B, Q>>(open_order_address);
-        let order_idx = critbit::find(&open_orders.open_orders, order_id);
-        assert!(order_idx != CRITBIT_NULL_INDEX, E_ORDER_NOT_FOUND);
-        let (_, OpenOrderInfo {price, is_bid}) = critbit::borrow_at_index(&open_orders.open_orders, order_idx);
-        let (cancelled, success) = inner_cancel_order(market, order_id, open_orders.owner, *price, *is_bid);
-        // let timestamp = timestamp::now_microseconds();
-        if (!success){
-            destroy_order(cancelled);
-            return
-        };
-        let lot_size = (market.lot_size as u128);
-        process_cancel_order<B, Q>(vault, open_orders, cancelled, lot_size, market.base_decimals);
-    }
-
-    public entry fun cancel_all<B, Q>(vault: &mut Vault, market: &mut Market<B, Q>, open_orders: &mut OpenOrders<B, Q>) {
-        // First confirm the sender is allowed to trade on behalf of delegator
-        // vault::assert_trader_is_authorized_for_account(sender, delegator);
-
-        // Confirm that delegator has a aux account
-        // assert!(has_aux_account(delegator), E_MISSING_AUX_USER_ACCOUNT);
-
-        // Confirm that market exists
-        // let resource_addr = @aux;
-        assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-
-        // let open_order_address = onchain_signer::get_signer_address(delegator);
-        // assert!(exists<OpenOrderAccount<B, Q>>(open_order_address), E_NO_OPEN_ORDERS_ACCOUNT);
-        // Cancel order
-        // let open_order_account = borrow_global_mut<OpenOrderAccount<B, Q>>(
-        //     open_order_address,
-        // );
-
-        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
-
-        // let timestamp = timestamp::now_microseconds();
-        let n_open_order = critbit::size(&open_orders.open_orders);
-
-        let lot_size = (market.lot_size as u128);
-        while (n_open_order > 0) {
-            n_open_order = n_open_order - 1;
-            let (order_id, OpenOrderInfo { price, is_bid }) = critbit::remove(&mut open_orders.open_orders, n_open_order);
-            let (order, cancelled) = inner_cancel_order(market, order_id, open_orders.owner, price, is_bid);
-            if (cancelled) {
-                process_cancel_without_open_order_account<B, Q>(vault, order, lot_size, market.base_decimals);
-            } else {
-                destroy_order(order);
-            };
-        }
-    }
-
-
-    // TODO: are these getters necessary given Sui's RPC API?
-
-    struct L2Event has copy, store, drop {
-        bids: vector<L2Quote>,
-        asks: vector<L2Quote>,
-    }
-
-    struct L2Quote has copy, store, drop {
-        price: u64,
-        quantity: u128,
-    }
-
-    struct AllOrdersEvent has copy, store, drop {
-        bids: vector<vector<OpenOrderEventInfo>>,
-        asks: vector<vector<OpenOrderEventInfo>>,
-    }
-
-    // we don't want to add drop to type Order
-    // so we create a copy of Order here for the event.
-    struct OpenOrderEventInfo has copy, store, drop {
-        id: u128,
-        client_order_id: u128,
-        price: u64,
-        quantity: u64,
-        aux_au_to_burn_per_lot: u64,
-        is_bid: bool,
-        owner: address,
-        order_type: u64,
-    }
-
-    struct OpenOrdersEvent has copy, store, drop {
-        open_orders: vector<OpenOrderEventInfo>,
-    }
-
-    public entry fun load_market_into_event<B, Q>(market: &Market<B, Q>) {
-        // assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-        // if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
-        //     move_to(sender, MarketDataStore<B, Q> {
-        //         l2_events: account::new_event_handle<L2Event>(sender),
-        //         open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
-        //     });
-        // };
-
-        let l2_event = L2Event {
-            bids: vector::empty(),
-            asks: vector::empty(),
-        };
-
-        // let market = borrow_global<Market<B, Q>>(@aux);
-
-        if (critbit::size(&market.bids) > 0) {
-            let side = &market.bids;
-            let idx = critbit::get_max_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-                vector::push_back(&mut l2_event.bids, L2Quote {
-                    price: level.price,
-                    quantity: level.total_quantity,
-                });
-                idx = critbit::next_in_reverse_order(side, idx);
-            }
-        };
-
-        if (critbit::size(&market.asks) > 0) {
-            let side = &market.asks;
-            let idx = critbit::get_min_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-                vector::push_back(&mut l2_event.asks, L2Quote {
-                    price: level.price,
-                    quantity: level.total_quantity,
-                });
-                idx = critbit::next_in_order(side, idx);
-            }
-        };
-
-        event::emit<L2Event>(
-            l2_event
-        );
-    }
-
-    public entry fun load_all_orders_into_event<B,Q>(market: &Market<B, Q>) {
-        // assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-        // if (!exists<AllOrdersStore<B, Q>>(signer::address_of(sender))) {
-        //     move_to(sender, AllOrdersStore<B, Q> {
-        //         all_ordes_events: account::new_event_handle<AllOrdersEvent>(sender),
-        //     });
-        // };
-
-        let all_orders = AllOrdersEvent {
-            bids: vector::empty(),
-            asks: vector::empty(),
-        };
-
-        // let market = borrow_global<Market<B, Q>>(@aux);
-
-        if (critbit::size(&market.bids) > 0) {
-            let side = &market.bids;
-            let idx = critbit::get_max_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-
-                let order_idx = critbit_v::size(&level.orders);
-                let orders = vector::empty<OpenOrderEventInfo>();
-                while (order_idx > 0) {
-                    order_idx = order_idx - 1;
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
-                    vector::push_back(&mut orders, OpenOrderEventInfo{
-                        id: order.id,
-                        client_order_id: order.client_order_id,
-                        price: order.price,
-                        quantity: order.quantity,
-                        aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
-                        is_bid: order.is_bid,
-                        owner: order.owner,
-                        order_type: order.order_type,
-                    });
-                };
-                vector::push_back(&mut all_orders.bids, orders);
-
-                idx = critbit::next_in_reverse_order(side, idx);
-            }
-        };
-
-        if (critbit::size(&market.asks) > 0) {
-            let side = &market.asks;
-            let idx = critbit::get_min_index(side);
-            while (idx != CRITBIT_NULL_INDEX) {
-                let (_, level) = critbit::borrow_at_index(side, idx);
-
-                let order_idx = critbit_v::size(&level.orders);
-                let orders = vector::empty<OpenOrderEventInfo>();
-                while (order_idx > 0) {
-                    order_idx = order_idx - 1;
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
-                    vector::push_back(&mut orders, OpenOrderEventInfo{
-                        id: order.id,
-                        client_order_id: order.client_order_id,
-                        price: order.price,
-                        quantity: order.quantity,
-                        aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
-                        is_bid: order.is_bid,
-                        owner: order.owner,
-                        order_type: order.order_type,
-                    });
-                };
-                vector::push_back(&mut all_orders.asks, orders);
-
-                idx = critbit::next_in_order(side, idx);
-            }
-        };
-
-        event::emit<AllOrdersEvent>(
-            all_orders
-        );
-    }
-
-    public entry fun load_open_orders_into_event<B, Q>(market: &Market<B, Q>, open_orders: &OpenOrders<B, Q>) {
-        // assert!(market_exists<B, Q>(), E_MARKET_DOES_NOT_EXIST);
-        // if (!exists<MarketDataStore<B, Q>>(signer::address_of(sender))) {
-        //     move_to(sender, MarketDataStore<B, Q> {
-        //         l2_events: account::new_event_handle<L2Event>(sender),
-        //         open_orders_events: account::new_event_handle<OpenOrdersEvent>(sender),
-        //     });
-        // };
-
-        // let open_order_address = onchain_signer::get_signer_address(order_owner);
-        // let open_order_account = borrow_global<OpenOrderAccount<B, Q>>(open_order_address);
-        let n_orders = critbit::size(&open_orders.open_orders);
-        let idx = 0;
-        let open_orders_events = OpenOrdersEvent {
-            open_orders: vector::empty(),
-        };
-
-        // let market = borrow_global<Market<B, Q>>(@aux);
-        while (idx < n_orders) {
-            let (order_id, order_info) = critbit::borrow_at_index(&open_orders.open_orders, idx);
-            let side = if (order_info.is_bid) { &market.bids } else { &market.asks };
-            let level_idx = critbit::find(side, (order_info.price as u128));
-            assert!(
-                level_idx != CRITBIT_NULL_INDEX,
-                E_ORDER_NOT_FOUND
-            );
-            let (_, level) = critbit::borrow_at_index(side, level_idx);
-            let order_idx = critbit_v::find(&level.orders, order_id);
-            assert!(
-                order_idx != CRITBIT_NULL_INDEX,
-                E_ORDER_NOT_FOUND
-            );
-            let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
-            vector::push_back(
-                &mut open_orders_events.open_orders,
-                OpenOrderEventInfo {
-                    id: order.id,
-                    client_order_id: order.client_order_id,
-                    price: order.price,
-                    quantity: order.quantity,
-                    aux_au_to_burn_per_lot: order.aux_au_to_burn_per_lot,
-                    is_bid: order.is_bid,
-                    owner: order.owner,
-                    order_type: order.order_type,
-                }
-            );
-            idx = idx + 1;
-        };
-
-        event::emit<OpenOrdersEvent>(
-            open_orders_events,
-        );
-    }
-
-    public entry fun update_market_parameter<B,Q>(market: &mut Market<B, Q>, authority: &MarketAuthority, tick_size: u64, lot_size: u64) {
-        // if (signer::address_of(sender) != @aux) {
-        //     assert!(
-        //         authority::is_signer_owner(sender),
-        //         E_UNAUTHORIZED_FOR_MARKET_UPDATE,
-        //     );
-        // };
-
-        // assert!(
-        //     market_exists<B,Q>(),
-        //     E_MARKET_DOES_NOT_EXIST
-        // );
-        // let timestamp = timestamp::now_microseconds();
-
-        // let market = borrow_global_mut<Market<B, Q>>(@aux);
-
-        let base_exp = exp(10, (market.base_decimals as u128));
-        // This invariant ensures that the smallest possible trade value is representable with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) / base_exp > 0, E_INVALID_TICK_OR_LOT_SIZE);
-        // This invariant ensures that the smallest possible trade value has no rounding issue with quote asset decimals
-        assert!((lot_size as u128) * (tick_size as u128) % base_exp == 0, E_INVALID_TICK_OR_LOT_SIZE);
-
-        assert!(
-            tick_size != market.tick_size || lot_size != market.lot_size,
-            E_MARKET_NOT_UPDATING,
-        );
-
-        let new_lot_size = market.lot_size != lot_size;
-        let n_levels = critbit::size(&market.bids);
-        let level_idx: u64 = 0;
-        let old_lot_size_u128: u128 = (market.lot_size as u128);
-        while (level_idx < n_levels) {
-            let (_, level) = critbit::borrow_at_index(&market.bids, level_idx);
-            if (level.price % tick_size != 0) {
-                let (_, level) = critbit::remove(&mut market.bids, level_idx);
-                // cancel the whole level
-                let n_orders = critbit_v::size(&level.orders);
-                while (n_orders > 0) {
-                    n_orders = n_orders - 1;
-                    let (_, order) = critbit_v::remove(&mut level.orders, n_orders);
-                    process_cancel_order<B, Q>(order, timestamp, old_lot_size_u128, &mut market.cancel_events);
-                };
-                level.total_quantity = 0;
-                destroy_empty_level(level);
-                n_levels = n_levels - 1;
-            } else {
-                let (_, level) = critbit::borrow_at_index_mut(&mut market.bids, level_idx);
-                let n_orders = critbit_v::size(&level.orders);
-                let order_idx = 0u64;
-                while(order_idx < n_orders) {
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
-                    if ((order.aux_au_to_burn_per_lot > 0 && new_lot_size) || order.quantity % lot_size != 0) {
-                        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
-                        level.total_quantity = level.total_quantity - (order.quantity as u128);
-                        process_cancel_order<B,Q>(order, timestamp, old_lot_size_u128, &mut market.cancel_events);
-                        n_orders = n_orders - 1;
-                    } else {
-                        order_idx = order_idx + 1;
-                    };
-                };
-
-                if (level.total_quantity == 0) {
-                    let (_, level) = critbit::remove(&mut market.bids, level_idx);
-                    destroy_empty_level(level);
-                    n_levels = n_levels - 1;
-                } else {
-                    level_idx = level_idx + 1;
-                }
-            };
-        };
-
-        let n_levels = critbit::size(&market.asks);
-        let level_idx: u64 = 0;
-        let old_lot_size_u128: u128 = (market.lot_size as u128);
-        while (level_idx < n_levels) {
-            let (_, level) = critbit::borrow_at_index(&market.asks, level_idx);
-            if (level.price % tick_size != 0) {
-                let (_, level) = critbit::remove(&mut market.asks, level_idx);
-                // cancel the whole level
-                let n_orders = critbit_v::size(&level.orders);
-                while (n_orders > 0) {
-                    n_orders = n_orders - 1;
-                    let (_, order) = critbit_v::remove(&mut level.orders, n_orders);
-                    process_cancel_order<B, Q>(order, timestamp, old_lot_size_u128, &mut market.cancel_events);
-                };
-                level.total_quantity = 0;
-                destroy_empty_level(level);
-                n_levels = n_levels - 1;
-            } else {
-                let (_, level) = critbit::borrow_at_index_mut(&mut market.asks, level_idx);
-                let n_orders = critbit_v::size(&level.orders);
-                let order_idx = 0u64;
-                while(order_idx < n_orders) {
-                    let (_, order) = critbit_v::borrow_at_index(&level.orders, order_idx);
-                    if ((order.aux_au_to_burn_per_lot > 0 && new_lot_size) || order.quantity % lot_size != 0) {
-                        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
-                        level.total_quantity = level.total_quantity - (order.quantity as u128);
-                        process_cancel_order<B,Q>(order, timestamp, old_lot_size_u128, &mut market.cancel_events);
-                        n_orders = n_orders - 1;
-                    } else {
-                        order_idx = order_idx + 1;
-                    };
-                };
-
-                if (level.total_quantity == 0) {
-                    let (_, level) = critbit::remove(&mut market.asks, level_idx);
-                    destroy_empty_level(level);
-                    n_levels = n_levels - 1;
-                } else {
-                    level_idx = level_idx + 1;
-                }
-            };
-        };
-
-        market.lot_size = lot_size;
-        market.tick_size = tick_size;
-    }
-
-    /********************/
-    /* PUBLIC FUNCTIONS */
-    /********************/
-
-    public fun market_exists<B, Q>(): bool {
-        exists<Market<B, Q>>(@aux)
-    }
-
-    public fun n_bid_levels<B, Q>(): u64 acquires Market {
-        assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-        let market = borrow_global<Market<B, Q>>(@aux);
-        critbit::size(&market.bids)
-    }
-
-    public fun n_ask_levels<B, Q>(): u64 acquires Market {
-        assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-        let market = borrow_global<Market<B, Q>>(@aux);
-        critbit::size(&market.asks)
-    }
-
-    public fun lot_size<B, Q>(): u64 acquires Market {
-        assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-        let market = borrow_global<Market<B, Q>>(@aux);
-        market.lot_size
-    }
-
-    public fun tick_size<B, Q>(): u64 acquires Market {
-        assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-        let market = borrow_global<Market<B, Q>>(@aux);
-        market.tick_size
-    }
-
-    // TODO: consolidate these with inner functions
-    // Returns the best bid price as quote coin atomic units
-    public fun best_bid_au<B, Q>(): u64 acquires Market {
-        let market = borrow_global<Market<B, Q>>(@aux);
-        best_bid_price(market)
-    }
-
-    // Returns the best bid price as quote coin atomic units
-    public fun best_ask_au<B, Q>(): u64 acquires Market {
-        let market = borrow_global<Market<B, Q>>(@aux);
-        best_ask_price(market)
-    }
-
-    // cancel_order returns (order_cancelled, cancel_success)
-    // cancel_success = false if the order_id is not found
-    fun inner_cancel_order<B, Q>(market: &mut Market<B, Q>, order_id: u128, sender_addr: address, price: u64, is_bid: bool): (Order, bool) {
-        let side = if (is_bid) { &mut market.bids } else { &mut market.asks };
-
-        let level_idx = critbit::find(side, (price as u128));
-        if (level_idx == CRITBIT_NULL_INDEX) {
-            return (create_order(order_id, 0, 0, 0, 0, false, sender_addr, LIMIT_ORDER, 0), false)
-        };
-        let (_, level) = critbit::borrow_at_index_mut(side, level_idx);
-        let order_idx = critbit_v::find(&level.orders, order_id);
-        if (order_idx == CRITBIT_NULL_INDEX) {
-            return (create_order(order_id, order_id, 0, 0, 0, false, sender_addr, LIMIT_ORDER, 0), false)
-        };
-
-        let (_, order) = critbit_v::remove(&mut level.orders, order_idx);
-
-        assert!(
-            order.owner == sender_addr,
-            E_NOT_ORDER_OWNER,
-        );
-
-        level.total_quantity = level.total_quantity - (order.quantity as u128);
-
-        if (level.total_quantity == 0) {
-            let (_, level) = critbit::remove(side, level_idx);
-            destroy_empty_level(level);
-        };
-
-        return (order, true)
-    }
-
-    public fun place_market_order<B, Q>(
-        vault: &mut Vault,
-        market: &mut Market<B, Q>,
-        open_orders: &mut OpenOrders<B, Q>,
-        fee: &Option<Fee>,
-        base_coin: coin::Coin<B>,
-        quote_coin: coin::Coin<Q>,
-        is_bid: bool,
-        order_type: u64,
-        limit_price: u64,
-        quantity: u64,
-        client_order_id: u128,
-        ctx: &mut TxContext
-    ): (coin::Coin<B>, coin::Coin<Q>) {
-        place_market_order_mut(
-            vault,
-            market,
-            open_orders,
-            fee,
-            &mut base_coin,
-            &mut quote_coin,
-            is_bid,
-            order_type,
-            limit_price,
-            quantity,
-            client_order_id,
-            ctx
-        );
-        (base_coin, quote_coin)
-    }
-
-    /// Place a market order (IOC or FOK) on behalf of the router.
-    /// Returns (total_base_quantity_owed_au, quote_quantity_owed_au), the amounts that must be credited/debited to the sender.
-    /// Emits events on order placement and fills.
-    public fun place_market_order_mut<B, Q>(
-        vault: &mut Vault,
-        market: &mut Market<B, Q>,
-        open_orders: &mut OpenOrders<B, Q>,
-        fee:&Option<Fee>,
-        base_coin: &mut coin::Coin<B>,
-        quote_coin: &mut coin::Coin<Q>,
-        is_bid: bool,
-        order_type: u64,
-        limit_price: u64,
-        quantity: u64,
-        client_order_id: u128,
-        ctx: &mut TxContext
-    ): (u64, u64) {
-
-        // Confirm that market exists
-        // let resource_addr = @aux;
-        // assert!(market_exists<B, Q>(),E_MARKET_DOES_NOT_EXIST);
-        // let market = borrow_global_mut<Market<B, Q>>(resource_addr);
-
-        // The router may only place FOK or IOC orders
-        assert!(order_type == FILL_OR_KILL || order_type == IMMEDIATE_OR_CANCEL, E_INVALID_ROUTER_ORDER_TYPE);
-
-        // round quantity down (router may submit un-quantized quantities)
-        let lot_size = market.lot_size;
-        let tick_size = market.tick_size;
-        let rounded_quantity = quantity / lot_size * lot_size;
-        let rounded_price = limit_price / tick_size * tick_size;
-
-        let (base_au, quote_au) = new_order<B, Q>(
-            vault,
-            market,
-            open_orders,
-            fee,
-            tx_context::sender(ctx),
-            is_bid,
-            rounded_price,
-            rounded_quantity,
-            0,
-            order_type,
-            client_order_id,
-            0,
-            false,
-            MAX_U64,
-            CANCEL_AGGRESSIVE,
-            ctx
-        );
-
-        // Transfer coins
-        let vault_addr = @aux;
-        let module_signer = &authority::get_signer_self();
-        if (base_au != 0 && quote_au != 0) {
-            if (is_bid) {
-                // taker pays quote, receives base
-                let quote = coin::split<Q>(quote_coin, (quote_au as u64), ctx);
-                vault::put_coin(vault, quote);
-                let base = vault::take_coin<B>(vault, (base_au as u64), ctx);
-                coin::join<B>(base_coin, base);
-            } else {
-                // taker receives quote, pays base
-                let base = coin::split<B>(base_coin, (base_au as u64), ctx);
-                vault::put_coin<B>(vault, base);
-                let quote = vault::take_coin<Q>(vault, (quote_au as u64), ctx);
-                coin::join<Q>(quote_coin, quote);
-
-            }
-        } else if (base_au != 0 || quote_au != 0) {
-            // abort if sender paid but did not receive and vice versa
-            abort(E_INVALID_STATE)
-        };
-        (base_au, quote_au)
-    }
-
-    // TODO: create open orders
-    // public fun create_open_orders<B, Q>()
-
-    /*********************/
-    /* PRIVATE FUNCTIONS */
-    /*********************/
 
     fun process_cancel_without_open_order_account<B, Q>(
         vault: &mut Vault,
@@ -1526,8 +1527,8 @@ module aux::clob {
         let order_idx = critbit::find(&open_orders.open_orders, cancelled.id);
         assert!(order_idx != CRITBIT_NULL_INDEX, E_ORDER_NOT_IN_OPEN_ORDER_ACCOUNT);
         let (_, OpenOrderInfo {
-            price,
-            is_bid
+            price: _,
+            is_bid: _
         }) = critbit::remove(&mut open_orders.open_orders, order_idx);
         process_cancel_without_open_order_account<B, Q>(vault, cancelled, lot_size, base_decimals);
     }
@@ -1652,7 +1653,7 @@ module aux::clob {
         vault: &mut Vault,
         market: &mut Market<B, Q>,
         open_orders: &mut OpenOrders<B, Q>,
-        fee: &Option<Fee>,
+        fee: &Fee,
         taker_order: &mut Order,
         stp_action_type: u64
     ): (u64, u64) {
@@ -1731,7 +1732,7 @@ module aux::clob {
                     let current_maker_quantity = maker_order.quantity;
                     if (current_maker_quantity <= taker_order.quantity) {
                         // emit fill event
-                        let (base, quote) = handle_fill<B, Q>(vault, market, open_orders, fee, taker_order, maker_order, current_maker_quantity, lot_size);
+                        let (base, quote) = handle_fill<B, Q>(vault, open_orders, fee, taker_order, maker_order, current_maker_quantity, lot_size, market.base_decimals);
                         total_base_quantity_owed_au = total_base_quantity_owed_au + base;
                         total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote;
                         // update taker quantity
@@ -1743,7 +1744,7 @@ module aux::clob {
                     } else {
                         // emit fill event
                         let quantity = taker_order.quantity;
-                        let (base, quote) = handle_fill<B, Q>(vault, market, open_orders, fee, taker_order, maker_order, quantity, lot_size);
+                        let (base, quote) = handle_fill<B, Q>(vault, open_orders, fee, taker_order, maker_order, quantity, lot_size, market.base_decimals);
                         total_base_quantity_owed_au = total_base_quantity_owed_au + base;
                         total_quote_quantity_owed_au = total_quote_quantity_owed_au + quote;
 
@@ -2730,25 +2731,25 @@ module aux::clob {
 //         assert!(critbit::size(&market.bids) == 0, E_TEST_FAILURE);
 //         assert!(critbit::size(&market.asks) == 4, E_TEST_FAILURE);
 
-//         let (order3, success) = inner_cancel_order(market, get_test_order_id(0, 3), alice_addr, 4000, false);
+//         let (order3, success) = remove_order(market, get_test_order_id(0, 3), alice_addr, 4000, false);
 //         assert!(success, 0);
 //         destroy_order(order3);
 //         assert!(!contains_order(market, get_test_order_id(0, 3)), E_TEST_FAILURE);
 //         assert!(critbit::size(&market.asks) == 3, E_TEST_FAILURE);
 
-//         let (order2, success) = inner_cancel_order(market, get_test_order_id(0, 2), alice_addr, 3000, false);
+//         let (order2, success) = remove_order(market, get_test_order_id(0, 2), alice_addr, 3000, false);
 //         assert!(success, 0);
 //         destroy_order(order2);
 //         assert!(!contains_order(market, get_test_order_id(0, 2)), E_TEST_FAILURE);
 //         assert!(critbit::size(&market.asks) == 2, E_TEST_FAILURE);
 
-//         let (order1, success) = inner_cancel_order(market, get_test_order_id(0, 1), alice_addr, 2000, false);
+//         let (order1, success) = remove_order(market, get_test_order_id(0, 1), alice_addr, 2000, false);
 //         assert!(success, 0);
 //         destroy_order(order1);
 //         assert!(!contains_order(market, get_test_order_id(0, 1)), E_TEST_FAILURE);
 //         assert!(critbit::size(&market.asks) == 1, E_TEST_FAILURE);
 
-//         let (order0, success) = inner_cancel_order(market, get_test_order_id(0, 0), alice_addr, 1000, false);
+//         let (order0, success) = remove_order(market, get_test_order_id(0, 0), alice_addr, 1000, false);
 //         assert!(success, 0);
 //         destroy_order(order0);
 //         assert!(!contains_order(market, get_test_order_id(0, 0)), E_TEST_FAILURE);

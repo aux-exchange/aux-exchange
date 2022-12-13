@@ -2,18 +2,20 @@
 // Caution when editing manually.
 // critbit tree based on http://github.com/agl/critbit
 module aux::critbit {
-    use aptos_std::table_with_length::{Self as table, TableWithLength as Table};
-    fun swap<V>(table: &mut Table<u64, V>, i: u64, j: u64) {
+    use sui::table::{Self, Table};
+    use sui::tx_context::TxContext;
+
+    fun swap<V: store>(table: &mut Table<u64, V>, i: u64, j: u64) {
         let i_item = table::remove(table, i);
         let j_item = table::remove(table, j);
         table::add(table, j, i_item);
         table::add(table, i, j_item);
     }
-    fun push_back<V>(t: &mut Table<u64, V>, v: V) {
+    fun push_back<V: store>(t: &mut Table<u64, V>, v: V) {
         let i = table::length(t);
         table::add(t, i, v)
     }
-    fun pop_back<V>(t: &mut Table<u64, V>): V {
+    fun pop_back<V: store>(t: &mut Table<u64, V>): V {
         let i = table::length(t) - 1;
         table::remove(t, i)
     }
@@ -51,7 +53,7 @@ module aux::critbit {
         MAX_U64 - index
     }
 
-    struct DataNode<V> has store, copy, drop {
+    struct DataNode<V: store> has store, copy, drop {
         // mask
         key: u128,
         // parent
@@ -70,7 +72,7 @@ module aux::critbit {
         right_child: u64,
     }
 
-    struct CritbitTree<V> has store {
+    struct CritbitTree<V: store> has store {
         root: u64,
         tree: Table<u64, TreeNode>,
         min_index: u64,
@@ -78,13 +80,13 @@ module aux::critbit {
         entries: Table<u64, DataNode<V>>,
     }
 
-    public fun new<V: store>(): CritbitTree<V> {
+    public fun new<V: store>(ctx: &mut TxContext): CritbitTree<V> {
         CritbitTree<V> {
             root: NULL_INDEX,
-            tree: table::new(),
+            tree: table::new(ctx),
             min_index: NULL_INDEX,
             max_index: NULL_INDEX,
-            entries: table::new(),
+            entries: table::new(ctx),
         }
     }
 
@@ -93,7 +95,7 @@ module aux::critbit {
     ///////////////
 
     /// find returns the element index in the tree, or none if not found.
-    public fun find<V>(tree: &CritbitTree<V>, key: u128): u64 {
+    public fun find<V: store>(tree: &CritbitTree<V>, key: u128): u64 {
         let closest_key = find_closest_key(tree, key, tree.root);
 
         if (closest_key != NULL_INDEX && table::borrow(&tree.entries, closest_key).key == key) {
@@ -104,36 +106,36 @@ module aux::critbit {
     }
 
     /// borrow returns a reference to the element with its key at the given index
-    public fun borrow_at_index<V>(tree: &CritbitTree<V>, index: u64): (u128, &V) {
+    public fun borrow_at_index<V: store>(tree: &CritbitTree<V>, index: u64): (u128, &V) {
         let entry = table::borrow(&tree.entries, index);
         (entry.key, &entry.value)
     }
 
     /// borrow_mut returns a mutable reference to the element with its key at the given index
-    public fun borrow_at_index_mut<V>(tree: &mut CritbitTree<V>, index: u64): (u128, &mut V) {
+    public fun borrow_at_index_mut<V: store>(tree: &mut CritbitTree<V>, index: u64): (u128, &mut V) {
         let entry = table::borrow_mut(&mut tree.entries, index);
         (entry.key, &mut entry.value)
     }
 
     /// size returns the number of elements in the CritbitTree.
-    public fun size<V>(tree: &CritbitTree<V>): u64 {
+    public fun size<V: store>(tree: &CritbitTree<V>): u64 {
         table::length(&tree.entries)
     }
 
     /// empty returns true if the CritbitTree is empty.
-    public fun empty<V>(tree: &CritbitTree<V>): bool {
+    public fun empty<V: store>(tree: &CritbitTree<V>): bool {
         table::length(&tree.entries) == 0
     }
 
     /// get index of the min of the tree.
-    public fun get_min_index<V>(tree: &CritbitTree<V>): u64 {
+    public fun get_min_index<V: store>(tree: &CritbitTree<V>): u64 {
         let current = tree.min_index;
         assert!(current != NULL_INDEX, E_EMPTY_TREE);
         current
     }
 
     /// get index of the min of the subtree with root at index.
-    fun get_min_index_from<V>(tree: &CritbitTree<V>, index: u64): u64 {
+    fun get_min_index_from<V: store>(tree: &CritbitTree<V>, index: u64): u64 {
         let current = index;
         if (current == NULL_INDEX) {
             NULL_INDEX
@@ -146,14 +148,14 @@ module aux::critbit {
     }
 
     /// get index of the max of the tree.
-    public fun get_max_index<V>(tree: &CritbitTree<V>): u64 {
+    public fun get_max_index<V: store>(tree: &CritbitTree<V>): u64 {
         let current = tree.max_index;
         assert!(current != NULL_INDEX, E_EMPTY_TREE);
         current
     }
 
     /// get index of the max of the subtree with root at index.
-    fun get_max_index_from<V>(tree: &CritbitTree<V>, index: u64): u64 {
+    fun get_max_index_from<V: store>(tree: &CritbitTree<V>, index: u64): u64 {
         let current = index;
         if (current == NULL_INDEX) {
             NULL_INDEX
@@ -166,7 +168,7 @@ module aux::critbit {
     }
 
     /// find next value in order (the key is increasing)
-    public fun next_in_order<V>(tree: &CritbitTree<V>, index: u64): u64 {
+    public fun next_in_order<V: store>(tree: &CritbitTree<V>, index: u64): u64 {
         let current = convert_data_index(index);
         let parent = table::borrow(&tree.entries, index).parent;
         if (parent == NULL_INDEX) {
@@ -186,7 +188,7 @@ module aux::critbit {
     }
 
     /// find next value in reverse order (the key is decreasing)
-    public fun next_in_reverse_order<V>(tree: &CritbitTree<V>, index: u64): u64 {
+    public fun next_in_reverse_order<V: store>(tree: &CritbitTree<V>, index: u64): u64 {
         let current = convert_data_index(index);
         let parent = table::borrow(&tree.entries, index).parent;
         if (parent == NULL_INDEX) {
@@ -210,7 +212,7 @@ module aux::critbit {
     ///////////////
 
 
-    fun find_closest_key<V>(tree: &CritbitTree<V>, key: u128, root: u64): u64 {
+    fun find_closest_key<V: store>(tree: &CritbitTree<V>, key: u128, root: u64): u64 {
         let current = root;
 
         while (current != NULL_INDEX) {
@@ -240,7 +242,7 @@ module aux::critbit {
     /// - if the tree is not empty, try to find the key in the tree. The look up will eventually reach a data node.
     ///   - if the key of the data node equals the input key, the key already exists, the process if abort.
     ///   - otherwise, rewalk the tree and find the insertion point (which is the most significant different between the key)
-    public fun insert<V>(tree: &mut CritbitTree<V>, key: u128, value: V) {
+    public fun insert<V: store>(tree: &mut CritbitTree<V>, key: u128, value: V) {
         let data_node = DataNode<V>{
             key,
             value,
@@ -337,7 +339,7 @@ module aux::critbit {
     }
 
     /// remove deletes and returns the element from the CritbitTree.
-    public fun remove<V>(tree: &mut CritbitTree<V>, index: u64): (u128, V) {
+    public fun remove<V: store>(tree: &mut CritbitTree<V>, index: u64): (u128, V) {
         let old_length = table::length(&tree.entries);
         assert!(old_length > index, E_INDEX_OUT_OF_RANGE);
 
@@ -429,7 +431,7 @@ module aux::critbit {
     }
 
     /// destroys the tree if it's empty.
-    public fun destroy_empty<V>(tree: CritbitTree<V>) {
+    public fun destroy_empty<V: store>(tree: CritbitTree<V>) {
         assert!(table::length(&tree.entries) == 0, E_CANNOT_DESTRORY_NON_EMPTY);
 
         let CritbitTree<V> {
@@ -444,16 +446,28 @@ module aux::critbit {
         table::destroy_empty(tree);
     }
 
-    fun is_right_child<V>(tree: &CritbitTree<V>, index: u64, parent_index: u64): bool {
+    public fun drop<V: store + drop>(tree: CritbitTree<V>) {
+        let CritbitTree<V> {
+            entries,
+            tree,
+            root: _,
+            min_index: _,
+            max_index: _,
+        } = tree;
+        table::drop(entries);
+        table::drop(tree);
+    }
+
+    fun is_right_child<V: store>(tree: &CritbitTree<V>, index: u64, parent_index: u64): bool {
         table::borrow(&tree.tree, parent_index).right_child == index
     }
 
-    fun is_left_child<V>(tree: &CritbitTree<V>, index: u64, parent_index: u64): bool {
+    fun is_left_child<V: store>(tree: &CritbitTree<V>, index: u64, parent_index: u64): bool {
         table::borrow(&tree.tree, parent_index).left_child == index
     }
 
     /// Replace the child of parent if parent_index is not NULL_INDEX.
-    fun replace_child<V>(tree: &mut CritbitTree<V>, parent_index: u64, original_child: u64, new_child: u64) {
+    fun replace_child<V: store>(tree: &mut CritbitTree<V>, parent_index: u64, original_child: u64, new_child: u64) {
         if (parent_index != NULL_INDEX) {
             if (is_right_child(tree, original_child, parent_index)) {
                 replace_right_child(tree, parent_index, new_child);
@@ -463,7 +477,7 @@ module aux::critbit {
         }
     }
 
-    fun replace_left_child<V>(tree: &mut CritbitTree<V>, parent_index: u64, new_child: u64) {
+    fun replace_left_child<V: store>(tree: &mut CritbitTree<V>, parent_index: u64, new_child: u64) {
         if (parent_index == NULL_INDEX) {
             return
         };
@@ -477,7 +491,7 @@ module aux::critbit {
         };
     }
 
-    fun replace_right_child<V>(tree: &mut CritbitTree<V>, parent_index: u64, new_child: u64) {
+    fun replace_right_child<V: store>(tree: &mut CritbitTree<V>, parent_index: u64, new_child: u64) {
         if (parent_index == NULL_INDEX) {
             return
         };
@@ -491,7 +505,7 @@ module aux::critbit {
         };
     }
 
-    fun replace_parent<V>(tree: &mut CritbitTree<V>, child: u64, new_parent: u64) {
+    fun replace_parent<V: store>(tree: &mut CritbitTree<V>, child: u64, new_parent: u64) {
         if (is_data_index(child)) {
             table::borrow_mut(&mut tree.entries, convert_data_index(child)).parent = new_parent;
         } else {

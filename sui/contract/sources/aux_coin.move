@@ -1,5 +1,5 @@
 /// caller module for aux
-module aux::aux_coin {
+module aux::aux {
     use std::option;
 
     use sui::coin::{Self, TreasuryCap};
