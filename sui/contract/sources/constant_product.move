@@ -67,7 +67,9 @@ module aux::constant_product {
         id: ID
     }
 
-    struct Swapped<phantom IN, phantom OUT> has copy, drop {
+    struct Swapped<phantom X, phantom Y> has copy, drop {
+        coin_type_in: TypeName,
+        coin_type_out: TypeName,
         amount_in: u64,
         amount_out: u64 
     }
@@ -229,7 +231,9 @@ module aux::constant_product {
         );
         assert!(amount_out >= min_amount_y, EMinSwap);
 
-        event::emit<Swapped<X, Y>>(Swapped { amount_in, amount_out });
+        let coin_type_in = type_name::get<X>();
+        let coin_type_out = type_name::get<Y>();
+        event::emit<Swapped<X, Y>>(Swapped { coin_type_in, coin_type_out, amount_in, amount_out });
         coin::join(&mut self.reserve_x, coin_x);
         coin::take(coin::balance_mut(&mut self.reserve_y), amount_out, ctx)
     }
@@ -254,7 +258,9 @@ module aux::constant_product {
         );
         assert!(amount_out >= min_amount_x, EMinSwap);
 
-        event::emit<Swapped<Y, X>>(Swapped { amount_in, amount_out });
+        let coin_type_in = type_name::get<Y>();
+        let coin_type_out = type_name::get<X>();
+        event::emit<Swapped<X, Y>>(Swapped { coin_type_in, coin_type_out, amount_in, amount_out });
         coin::join(&mut self.reserve_y, coin_y);
         coin::take(coin::balance_mut(&mut self.reserve_x), amount_out, ctx)
     }
