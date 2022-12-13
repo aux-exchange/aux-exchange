@@ -37,7 +37,7 @@ async fn main() {
     let deployer_address = util_for_aptos::hex_to_account_address(deployer_addr);
     let resource_account = util_for_aptos::hex_to_account_address(resource_account_addr);
 
-    let mut build_options = framework::BuildOptions::default();
+    let mut build_options = aptos_framework::BuildOptions::default();
     build_options
         .named_addresses
         .insert(DEPLOYER_NAME.to_string(), deployer_address);
@@ -45,7 +45,7 @@ async fn main() {
         .named_addresses
         .insert(package_name, resource_account);
 
-    let built_package = framework::BuiltPackage::build(build_path, build_options).unwrap();
+    let built_package = aptos_framework::BuiltPackage::build(build_path, build_options).unwrap();
 
     let metadata = bcs::to_bytes(&built_package.extract_metadata().unwrap()).unwrap();
     let codes = built_package.extract_code();
