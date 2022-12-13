@@ -126,67 +126,7 @@ module aux::constant_product {
     /* Entry functions */
     /*******************/
 
-    entry fun create_pool_<X, Y>(
-        pools: &mut Pools,
-        fee_bps: u64,
-        ctx: &mut TxContext
-    ) {
-        create_pool<X, Y>(pools, fee_bps, ctx)
-    }
-
-    entry fun swap_exact_x_for_y_<X, Y>(
-        self: &mut Pool<X, Y>,
-        coin_x: Coin<X>,
-        min_amount_y: u64,
-        ctx: &mut TxContext
-    ) {
-        transfer::transfer(
-            swap_exact_x_for_y(self, coin_x, min_amount_y, ctx),
-            tx_context::sender(ctx)
-        )
-    }
-
-    entry fun swap_exact_y_for_x_<X, Y>(
-        self: &mut Pool<X, Y>,
-        coin_y: Coin<Y>,
-        min_base_amount: u64,
-        ctx: &mut TxContext
-    ) {
-        transfer::transfer(
-            swap_exact_y_for_x(self, coin_y, min_base_amount, ctx),
-            tx_context::sender(ctx)
-        )
-    }
-
-    entry fun add_liquidity_<X, Y>(
-        self: &mut Pool<X, Y>,
-        coin_x: Coin<X>,
-        coin_y: Coin<Y>,
-        ctx: &mut TxContext
-    ) {
-        transfer::transfer(
-            add_liquidity(self, coin_x, coin_y, ctx),
-            tx_context::sender(ctx)
-        );
-    }
-
-    entry fun remove_liquidity_<X, Y>(
-        self: &mut Pool<X, Y>,
-        lp: Coin<LP<X, Y>>,
-        ctx: &mut TxContext
-    ) {
-        let (coin_x, coin_y) = remove_liquidity(self, lp, ctx);
-        let sender = tx_context::sender(ctx);
-
-        transfer::transfer(coin_x, sender);
-        transfer::transfer(coin_y, sender);
-    }
-
-    /********************/
-    /* Public functions */
-    /********************/
-
-    public fun create_pool<X, Y>(
+    public entry fun create_pool<X, Y>(
         pools: &mut Pools,
         fee_bps: u64,
         ctx: &mut TxContext
@@ -203,11 +143,63 @@ module aux::constant_product {
             reserve_x: coin::zero(ctx),
             reserve_y: coin::zero(ctx),
             supply_lp,
-            fee_bps 
+            fee_bps
         };
         transfer::share_object(pool);
         vec_set::insert(&mut pools.pools, type_name::get<Pool<X, Y>>());
     }
+
+    public entry fun swap_exact_x_for_y_<X, Y>(
+        self: &mut Pool<X, Y>,
+        coin_x: Coin<X>,
+        min_amount_y: u64,
+        ctx: &mut TxContext
+    ) {
+        transfer::transfer(
+            swap_exact_x_for_y(self, coin_x, min_amount_y, ctx),
+            tx_context::sender(ctx)
+        )
+    }
+
+    public entry fun swap_exact_y_for_x_<X, Y>(
+        self: &mut Pool<X, Y>,
+        coin_y: Coin<Y>,
+        min_base_amount: u64,
+        ctx: &mut TxContext
+    ) {
+        transfer::transfer(
+            swap_exact_y_for_x(self, coin_y, min_base_amount, ctx),
+            tx_context::sender(ctx)
+        )
+    }
+
+    public entry fun add_liquidity_<X, Y>(
+        self: &mut Pool<X, Y>,
+        coin_x: Coin<X>,
+        coin_y: Coin<Y>,
+        ctx: &mut TxContext
+    ) {
+        transfer::transfer(
+            add_liquidity(self, coin_x, coin_y, ctx),
+            tx_context::sender(ctx)
+        );
+    }
+
+    public entry fun remove_liquidity_<X, Y>(
+        self: &mut Pool<X, Y>,
+        lp: Coin<LP<X, Y>>,
+        ctx: &mut TxContext
+    ) {
+        let (coin_x, coin_y) = remove_liquidity(self, lp, ctx);
+        let sender = tx_context::sender(ctx);
+
+        transfer::transfer(coin_x, sender);
+        transfer::transfer(coin_y, sender);
+    }
+
+    /********************/
+    /* Public functions */
+    /********************/
 
     /// Swap coin_x for coin_y (+COIN_X, -COIN_Y)
     public fun swap_exact_x_for_y<X, Y>(
@@ -293,10 +285,10 @@ module aux::constant_product {
             let pool_y = coin::value(&self.reserve_y);
             // calc share based on ratio of existing deposits
             // FIXME overflow (but dividing separately has integer division issue)
-            let share_x = (amount_added_x * lp_supply) / pool_x;
-            let share_y = (amount_added_y * lp_supply) / pool_y;
+            let share_x = ((amount_added_x as u128) * (lp_supply as u128)) / (pool_x as u128);
+            let share_y = ((amount_added_y as u128) * (lp_supply as u128)) / (pool_y as u128);
             // TODO slippage
-            math::min(share_x, share_y)  // add liquidity favorably to the pool
+            math::min((share_x as u64), (share_y as u64))  // add liquidity favorably to the pool
         };
 
         event::emit<LiquidityAdded<X, Y>>(
@@ -324,8 +316,12 @@ module aux::constant_product {
         let reserve_y = coin::value(&self.reserve_y);
         let reserve_lp = balance::supply_value(&self.supply_lp);
 
-        let amount_removed_x = (reserve_x * amount_burned_lp) / reserve_lp;
-        let amount_removed_y = (reserve_y * amount_burned_lp) / reserve_lp;
+        let amount_removed_x = (
+            (((reserve_x as u128) * (amount_burned_lp as u128))) / (reserve_lp as u128)
+            as u64);
+        let amount_removed_y = (
+            (((reserve_y as u128) * (amount_burned_lp as u128))) / (reserve_lp as u128)
+            as u64);
 
         event::emit<LiquidityRemoved<X, Y>>(
             LiquidityRemoved {
@@ -504,7 +500,6 @@ module aux::constant_product_tests {
         {
             let pool = test_scenario::take_shared<Pool<COIN_X, COIN_Y>>(&mut scenario);
             let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 100, 400);
-            std::debug::print(&coin::value(&lp));
             assert!(coin::value(&lp) == 200, ETestFailure);
             assert!(coin::value(constant_product::reserve_x(&pool)) == 2 * 100, ETestFailure);
             assert!(coin::value(constant_product::reserve_y(&pool)) == 2 * 400, ETestFailure);
