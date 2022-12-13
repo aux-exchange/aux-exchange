@@ -26,8 +26,6 @@ module aux::vault {
     use sui::event;
     use sui::coin::{Self, Coin};
 
-    use aux::util::Type;
-
     const EVAULT_ALREADY_EXISTS: u64 = 1;
     const EACCOUNT_ALREADY_EXISTS: u64 = 2;
     const EACCOUNT_NOT_FOUND: u64 = 3;
@@ -39,12 +37,12 @@ module aux::vault {
     const EINSUFFICIENT_FUNDS: u64 = 10;
     const ETRADER_NOT_AUTHORIZED: u64 = 11;
 
-    // CoinInfo provides information about a coin that can be borrowed.
-    struct CoinInfo has store {
-        coin_type: Type,
-        decimals: u8,
-        mark_price: u64,
-    }
+    // // CoinInfo provides information about a coin that can be borrowed.
+    // struct CoinInfo has store {
+    //     coin_type: TypeName,
+    //     decimals: u8,
+    //     mark_price: u64,
+    // }
 
     // struct UserBalances has store {
     //     owner: address,
