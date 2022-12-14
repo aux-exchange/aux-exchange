@@ -1,8 +1,0 @@
-schema {
-  query: Query
-}
-
-type Query {
-  helloWorld(name: String!): String! @juniper(ownership: "owned")
-  worldHello(name: String!): String! @juniper(ownership: "owned")
-}
