@@ -89,7 +89,7 @@ describe("Stake Pool tests", function () {
   });
 
   it("createStakePool", async function () {
-    const durationUs = 3600 * 24 * 1_000_000;
+    const durationUs = new BN(3600 * 24 * 1_000_000);
     const rewardAmount = DU(1_000_000);
     const createEvent = await poolClient.create({
       rewardAmount,

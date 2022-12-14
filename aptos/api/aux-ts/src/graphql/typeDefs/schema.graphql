@@ -44,15 +44,15 @@ type Mutation {
   ): EntryFunctionPayload!
   depositStake(depositStakeInput: ModifyStakeInput!): EntryFunctionPayload!
   withdrawStake(withdrawStakeInput: ModifyStakeInput!): EntryFunctionPayload!
-  claimStakingReward(poolId: Int!): EntryFunctionPayload!
+  claimStakingReward(stakePoolInput: StakePoolInput!): EntryFunctionPayload!
   modifyStakePool(
     modifyStakePoolInput: ModifyStakePoolInput!
   ): EntryFunctionPayload!
   modifyStakePoolAuthority(
     input: ModifyStakePoolAuthorityInput!
   ): EntryFunctionPayload!
-  deleteEmptyStakePool(poolId: Int!): EntryFunctionPayload!
-  endStakePoolEarly(poolId: Int!): EntryFunctionPayload!
+  deleteEmptyStakePool(stakePoolInput: StakePoolInput!): EntryFunctionPayload!
+  endStakePoolEarly(stakePoolInput: StakePoolInput!): EntryFunctionPayload!
 }
 
 type Subscription {

@@ -12,11 +12,19 @@ import { OrderType as AuxOrderType } from "../../clob/core/mutation";
 import { Bps, DU, Pct } from "../../units";
 import { auxClient } from "../client";
 import {
+  ModifyStakeInput,
   MutationAddLiquidityArgs,
   MutationCancelOrderArgs,
+  MutationClaimStakingRewardArgs,
   MutationCreateMarketArgs,
   MutationCreatePoolArgs,
+  MutationCreateStakePoolArgs,
+  MutationDeleteEmptyStakePoolArgs,
   MutationDepositArgs,
+  MutationDepositStakeArgs,
+  MutationEndStakePoolEarlyArgs,
+  MutationModifyStakePoolArgs,
+  MutationModifyStakePoolAuthorityArgs,
   MutationPlaceOrderArgs,
   MutationRegisterCoinArgs,
   MutationRemoveLiquidityArgs,
@@ -27,6 +35,8 @@ import {
   OrderType,
   Side,
 } from "../generated/types";
+import { StakePoolClient } from "../../stake/client";
+import BN from "bn.js";
 
 export const mutation = {
   registerCoin(_parent: any, { registerCoinInput }: MutationRegisterCoinArgs) {
@@ -267,6 +277,161 @@ export const mutation = {
         )
         .toString(),
     });
+  },
+
+  async createStakePool(
+    _parent: any,
+    {
+      createStakePoolInput: { stakePoolInput, rewardAmount, durationUs },
+    }: MutationCreateStakePoolArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.create({
+      rewardAmount: DU(rewardAmount),
+      durationUs: new BN(durationUs),
+    });
+  },
+
+  async depositStake(
+    _parent: any,
+    { depositStakeInput: { amount, stakePoolInput } }: MutationDepositStakeArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.deposit(DU(amount));
+  },
+
+  async withdrawStake(
+    _parent: any,
+    { amount, stakePoolInput }: ModifyStakeInput
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.withdraw(DU(amount));
+  },
+  async claimStakingReward(
+    _parent: any,
+    { stakePoolInput }: MutationClaimStakingRewardArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.claim();
+  },
+
+  async modifyStakePool(
+    _parent: any,
+    {
+      modifyStakePoolInput: {
+        stakePoolInput,
+        rewardAmount,
+        rewardIncrease,
+        timeAmountUs,
+        timeIncrease,
+      },
+    }: MutationModifyStakePoolArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.modifyPool({
+      rewardAmount: rewardAmount ? DU(rewardAmount) : null,
+      rewardIncrease: rewardIncrease ? rewardIncrease : false,
+      timeAmountUs: timeAmountUs ? new BN(timeAmountUs) : new BN(0),
+      timeIncrease: timeIncrease ? timeIncrease : false,
+    });
+  },
+
+  async modifyStakePoolAuthority(
+    _parent: any,
+    {
+      input: { stakePoolInput, newAuthority },
+    }: MutationModifyStakePoolAuthorityArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.modifyAuthority(newAuthority);
+  },
+
+  async deleteEmptyStakePool(
+    _parent: any,
+    { stakePoolInput }: MutationDeleteEmptyStakePoolArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.deleteEmptyPool();
+  },
+
+  async endStakePoolEarly(
+    _parent: any,
+    { stakePoolInput }: MutationEndStakePoolEarlyArgs
+  ) {
+    let coinInfoReward = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeReward
+    );
+    let coinInfoStake = await auxClient.getCoinInfo(
+      stakePoolInput.coinTypeStake
+    );
+    const stakePoolClient = new StakePoolClient(auxClient, {
+      coinInfoReward,
+      coinInfoStake,
+    });
+    return stakePoolClient.endRewardEarly();
   },
 };
 
