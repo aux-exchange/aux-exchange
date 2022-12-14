@@ -19,6 +19,7 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use tower_http::cors::{Any, CorsLayer};
 use color_eyre::eyre::{eyre, Result};
 use std::{net::SocketAddr, str::FromStr};
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
@@ -29,7 +30,7 @@ async fn graphql_handler(schema: State<AuxSchema>, req: Json<Request>) -> Json<R
 }
 
 async fn graphql_playground() -> impl IntoResponse {
-    Html(playground_source(GraphQLPlaygroundConfig::new("/")))
+    Html(playground_source(GraphQLPlaygroundConfig::new("/graphql")))
 }
 
 #[tokio::main]
@@ -70,6 +71,7 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/graphql", get(graphql_playground).post(graphql_handler))
+        .layer(CorsLayer::permissive())
         .with_state(schema);
 
     println!("Playground: http://devbox:4000/graphql");
