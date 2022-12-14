@@ -9,7 +9,7 @@ import _ from "lodash";
 import * as aux from "../../";
 import { ConstantProductClient } from "../../pool/constant-product/client";
 import { OrderType as AuxOrderType } from "../../clob/core/mutation";
-import { Bps, DU, Pct } from "../../units";
+import { DU, Pct } from "../../units";
 import { auxClient } from "../client";
 import {
   ModifyStakeInput,
@@ -35,8 +35,19 @@ import {
   OrderType,
   Side,
 } from "../generated/types";
-import { StakePoolClient } from "../../stake/client";
 import BN from "bn.js";
+import { createPoolPayload } from "../../pool/constant-product/schema";
+import type { Types } from "aptos";
+import {
+  claimPayload,
+  createStakePoolPayload,
+  deleteEmptyPoolPayload,
+  depositPayload as depositStakePayload,
+  endRewardEarlyPayload,
+  modifyAuthorityPayload,
+  modifyPoolPayload,
+  withdrawPayload as withdrawStakePayload,
+} from "../../stake/schema";
 
 export const mutation = {
   registerCoin(_parent: any, { registerCoinInput }: MutationRegisterCoinArgs) {
@@ -50,15 +61,13 @@ export const mutation = {
   async createPool(
     _parent: any,
     { createPoolInput: { poolInput, feeBasisPoints } }: MutationCreatePoolArgs
-  ) {
+  ): Promise<Types.EntryFunctionPayload> {
     const coinTypeX = poolInput.coinTypes[0]!;
     const coinTypeY = poolInput.coinTypes[1]!;
-    const poolClient = await new ConstantProductClient(auxClient, {
+    return createPoolPayload(auxClient.moduleAddress, {
       coinTypeX,
       coinTypeY,
-    }).transpose();
-    return poolClient.create({
-      fee: new Bps(Number(feeBasisPoints)),
+      feeBps: feeBasisPoints,
     });
   },
 
@@ -72,7 +81,7 @@ export const mutation = {
         slippagePct,
       },
     }: MutationSwapExactInArgs
-  ) {
+  ): Promise<Types.EntryFunctionPayload> {
     const coinTypeX = coinTypes[0]!;
     const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
@@ -91,7 +100,7 @@ export const mutation = {
       { coinTypeIn, exactAmountIn, parameters },
       { simulate: true }
     );
-    return tx.transaction.payload;
+    return tx.transaction.payload as Types.EntryFunctionPayload;
   },
 
   async swapExactOut(
@@ -104,7 +113,7 @@ export const mutation = {
         slippagePct,
       },
     }: MutationSwapExactOutArgs
-  ) {
+  ): Promise<Types.EntryFunctionPayload> {
     const coinTypeX = coinTypes[0]!;
     const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
@@ -119,7 +128,7 @@ export const mutation = {
       { coinTypeOut, exactAmountOut, parameters },
       { simulate: true }
     );
-    return tx.transaction.payload;
+    return tx.transaction.payload as Types.EntryFunctionPayload;
   },
 
   async addLiquidity(
@@ -131,7 +140,7 @@ export const mutation = {
         useAuxAccount,
       },
     }: MutationAddLiquidityArgs
-  ) {
+  ): Promise<Types.EntryFunctionPayload> {
     const coinTypeX = coinTypes[0]!;
     const coinTypeY = coinTypes[1]!;
     const poolClient = await new ConstantProductClient(auxClient, {
@@ -151,7 +160,7 @@ export const mutation = {
         simulate: true,
       }
     );
-    return tx.transaction.payload;
+    return tx.transaction.payload as Types.EntryFunctionPayload;
   },
 
   async removeLiquidity(
@@ -175,13 +184,13 @@ export const mutation = {
       { amountLP: DU(amountLP), useAuxAccount },
       { simulate: true }
     );
-    return tx.transaction.payload;
+    return tx.transaction.payload as Types.EntryFunctionPayload;
   },
 
   async createMarket(
     _parent: any,
     { createMarketInput }: MutationCreateMarketArgs
-  ) {
+  ): Promise<Types.EntryFunctionPayload> {
     const { baseCoinType, quoteCoinType } = createMarketInput.marketInput;
     const [baseCoinInfo, quoteCoinInfo] = await Promise.all([
       auxClient.getCoinInfo(baseCoinType),
@@ -202,7 +211,10 @@ export const mutation = {
     });
   },
 
-  async placeOrder(_parent: any, { placeOrderInput }: MutationPlaceOrderArgs) {
+  async placeOrder(
+    _parent: any,
+    { placeOrderInput }: MutationPlaceOrderArgs
+  ): Promise<Types.EntryFunctionPayload> {
     const { baseCoinType, quoteCoinType } = placeOrderInput.marketInput;
     const market = await aux.clob.core.query.market(
       auxClient,
@@ -226,7 +238,10 @@ export const mutation = {
     });
   },
 
-  cancelOrder(_parent: any, { cancelOrderInput }: MutationCancelOrderArgs) {
+  cancelOrder(
+    _parent: any,
+    { cancelOrderInput }: MutationCancelOrderArgs
+  ): Types.EntryFunctionPayload {
     const { baseCoinType, quoteCoinType } = cancelOrderInput.marketInput;
     return aux.clob.core.mutation.cancelOrderPayload(auxClient, {
       // @ts-ignore
@@ -237,7 +252,7 @@ export const mutation = {
     });
   },
 
-  createAuxAccount() {
+  createAuxAccount(): Types.EntryFunctionPayload {
     return aux.vault.core.mutation.createAuxAccountPayload(auxClient);
   },
 
@@ -254,7 +269,10 @@ export const mutation = {
     });
   },
 
-  async withdraw(_parent: any, { withdrawInput }: MutationWithdrawArgs) {
+  async withdraw(
+    _parent: any,
+    { withdrawInput }: MutationWithdrawArgs
+  ): Promise<Types.EntryFunctionPayload> {
     return aux.vault.core.mutation.withdrawPayload(auxClient, {
       coinType: withdrawInput.coinType,
       sender: withdrawInput.from,
@@ -266,7 +284,10 @@ export const mutation = {
     });
   },
 
-  async transfer(_parent: any, { transferInput }: MutationTransferArgs) {
+  async transfer(
+    _parent: any,
+    { transferInput }: MutationTransferArgs
+  ): Promise<Types.EntryFunctionPayload> {
     return aux.vault.core.mutation.transferPayload(auxClient, {
       sender: transferInput.from,
       recipient: transferInput.to,
@@ -282,101 +303,88 @@ export const mutation = {
   async createStakePool(
     _parent: any,
     {
-      createStakePoolInput: { stakePoolInput, rewardAmount, durationUs },
+      createStakePoolInput: {
+        stakePoolInput: { coinTypeStake, coinTypeReward },
+        rewardAmount,
+        durationUs,
+      },
     }: MutationCreateStakePoolArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
-    });
-    return stakePoolClient.create({
-      rewardAmount: DU(rewardAmount),
-      durationUs: new BN(durationUs),
+  ): Promise<Types.EntryFunctionPayload> {
+    let coinInfoReward = await auxClient.getCoinInfo(coinTypeReward);
+    return createStakePoolPayload(auxClient.moduleAddress, {
+      coinTypeStake,
+      coinTypeReward,
+      rewardAmount: DU(rewardAmount)
+        .toAtomicUnits(coinInfoReward.decimals)
+        .toU64(),
+      durationUs: durationUs.toString(),
     });
   },
 
   async depositStake(
     _parent: any,
-    { depositStakeInput: { amount, stakePoolInput } }: MutationDepositStakeArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
+    {
+      depositStakeInput: {
+        amount,
+        stakePoolInput: { coinTypeReward, coinTypeStake },
+      },
+    }: MutationDepositStakeArgs
+  ): Promise<Types.EntryFunctionPayload> {
+    let coinInfoStake = await auxClient.getCoinInfo(coinTypeStake);
+    return depositStakePayload(auxClient.moduleAddress, {
+      coinTypeStake,
+      coinTypeReward,
+      amount: DU(amount).toAtomicUnits(coinInfoStake.decimals).toU64(),
     });
-    return stakePoolClient.deposit(DU(amount));
   },
 
   async withdrawStake(
     _parent: any,
-    { amount, stakePoolInput }: ModifyStakeInput
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
+    {
+      amount,
+      stakePoolInput: { coinTypeReward, coinTypeStake },
+    }: ModifyStakeInput
+  ): Promise<Types.EntryFunctionPayload> {
+    let coinInfoStake = await auxClient.getCoinInfo(coinTypeStake);
+    return withdrawStakePayload(auxClient.moduleAddress, {
+      coinTypeStake,
+      coinTypeReward,
+      amount: DU(amount).toAtomicUnits(coinInfoStake.decimals).toU64(),
     });
-    return stakePoolClient.withdraw(DU(amount));
   },
   async claimStakingReward(
     _parent: any,
-    { stakePoolInput }: MutationClaimStakingRewardArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
+    {
+      stakePoolInput: { coinTypeReward, coinTypeStake },
+    }: MutationClaimStakingRewardArgs
+  ): Promise<Types.EntryFunctionPayload> {
+    return claimPayload(auxClient.moduleAddress, {
+      coinTypeReward,
+      coinTypeStake,
     });
-    return stakePoolClient.claim();
   },
 
   async modifyStakePool(
     _parent: any,
     {
       modifyStakePoolInput: {
-        stakePoolInput,
+        stakePoolInput: { coinTypeReward, coinTypeStake },
         rewardAmount,
         rewardIncrease,
         timeAmountUs,
         timeIncrease,
       },
     }: MutationModifyStakePoolArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
-    });
-    return stakePoolClient.modifyPool({
-      rewardAmount: rewardAmount ? DU(rewardAmount) : null,
+  ): Promise<Types.EntryFunctionPayload> {
+    let coinInfoReward = await auxClient.getCoinInfo(coinTypeReward);
+    return modifyPoolPayload(auxClient.moduleAddress, {
+      coinTypeStake,
+      coinTypeReward,
+      rewardAmount: rewardAmount
+        ? DU(rewardAmount).toAtomicUnits(coinInfoReward.decimals).toU64()
+        : "0",
       rewardIncrease: rewardIncrease ? rewardIncrease : false,
-      timeAmountUs: timeAmountUs ? new BN(timeAmountUs) : new BN(0),
+      timeAmountUs: timeAmountUs ? new BN(timeAmountUs).toString() : "0",
       timeIncrease: timeIncrease ? timeIncrease : false,
     });
   },
@@ -384,54 +392,31 @@ export const mutation = {
   async modifyStakePoolAuthority(
     _parent: any,
     {
-      input: { stakePoolInput, newAuthority },
+      input: {
+        stakePoolInput: { coinTypeReward, coinTypeStake },
+        newAuthority,
+      },
     }: MutationModifyStakePoolAuthorityArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
+  ): Promise<Types.EntryFunctionPayload> {
+    return modifyAuthorityPayload(auxClient.moduleAddress, {
+      coinTypeReward,
+      coinTypeStake,
+      newAuthority,
     });
-    return stakePoolClient.modifyAuthority(newAuthority);
   },
 
   async deleteEmptyStakePool(
     _parent: any,
     { stakePoolInput }: MutationDeleteEmptyStakePoolArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
-    });
-    return stakePoolClient.deleteEmptyPool();
+  ): Promise<Types.EntryFunctionPayload> {
+    return deleteEmptyPoolPayload(auxClient.moduleAddress, stakePoolInput);
   },
 
   async endStakePoolEarly(
     _parent: any,
     { stakePoolInput }: MutationEndStakePoolEarlyArgs
-  ) {
-    let coinInfoReward = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeReward
-    );
-    let coinInfoStake = await auxClient.getCoinInfo(
-      stakePoolInput.coinTypeStake
-    );
-    const stakePoolClient = new StakePoolClient(auxClient, {
-      coinInfoReward,
-      coinInfoStake,
-    });
-    return stakePoolClient.endRewardEarly();
+  ): Promise<Types.EntryFunctionPayload> {
+    return endRewardEarlyPayload(auxClient.moduleAddress, stakePoolInput);
   },
 };
 
