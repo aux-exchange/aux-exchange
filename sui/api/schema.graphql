@@ -1,0 +1,209 @@
+type Query {
+  id: ID!
+  coins: [Coin!]!
+  pool(poolInput: PoolInput!): Pool
+  pools(poolInputs: [PoolInput!]): [Pool!]!
+  summaryStatistics: SummaryStatistics!
+}
+
+type Mutation {
+  createPool(createPoolInput: CreatePoolInput!): [Int!]!
+  addLiquidity(addLiquidityInput: AddLiquidityInput!): [Int!]!
+  removeLiquidity(removeLiquidityInput: RemoveLiquidityInput!): [Int!]!
+  swapExactIn(swapExactInInput: SwapExactInInput!): [Int!]!
+  swapExactOut(swapExactOutInput: SwapExactOutInput!): [Int!]!
+}
+
+"""json string"""
+scalar Decimal
+"""json string"""
+scalar Percent
+"""json string"""
+scalar Milliseconds
+"""json number array"""
+scalar Uint8Array
+
+enum Curve {
+  CONSTANT_PRODUCT
+  STABLE_SWAP
+}
+
+enum FeeTier {
+  VERY_STABLE
+  STABLE
+  MOST
+  EXOTIC
+}
+
+enum PriceRating {
+  RED
+  YELLOW
+  GREEN
+}
+
+type Coin {
+  id: ID!
+  type: String!
+  decimals: Int!
+  name: String!
+  symbol: String!
+  description: String!
+  iconUrl: String
+}
+
+type Pool {
+  id: ID!
+  type: String!
+  version: String!
+  featured: Boolean!
+  coins: [Coin!]!
+  coinLP: Coin!
+  reserves: [Decimal!]!
+  supplyLP: Decimal!
+  feeTier: FeeTier
+  fee: Percent!
+  swaps(address: ID, first: Int, offset: Int): [Swapped!]!
+  adds(address: ID, first: Int, offset: Int): [LiquidityAdded!]!
+  removes(address: ID, first: Int, offset: Int): [LiquidityRemoved!]!
+  position(address: ID!): Position
+  quoteExactIn(quoteExactInInput: QuoteExactInInput): QuoteExactIn!
+  quoteExactOut(quoteExactOutInput: quoteExactOutInput): QuoteExactOut!
+  summaryStatistics: PoolSummaryStatistics!
+}
+
+type Position {
+  coins: [Coin!]!
+  coinLP: Coin!
+  amounts: [Decimal!]!
+  amountLP: Decimal!
+  share: Percent!
+}
+
+type QuoteExactIn {
+  expectedAmountOut: Decimal!
+  minAmountOut: Decimal!
+  feeAmount: Decimal!
+  feeCurrency: Coin!
+  feeAmountDollars: Decimal
+  priceOut: Decimal!
+  priceIn: Decimal!
+  priceImpact: Percent!
+  priceImpactRating: PriceRating!
+  pythRating: PriceRating
+}
+
+type QuoteExactOut {
+  expectedAmountIn: Decimal!
+  maxAmountIn: Decimal!
+  maxFeeAmount: Decimal!
+  feeCurrency: Coin!
+  maxFeeAmountDollars: Decimal
+  priceOut: Decimal!
+  priceIn: Decimal!
+  priceImpact: Percent!
+  priceImpactRating: PriceRating!
+  pythRating: PriceRating
+}
+
+type Swapped {
+  version: String!
+  coinIn: Coin!
+  coinOut: Coin!
+  amountIn: Decimal!
+  amountOut: Decimal!
+  timestamp: Milliseconds!
+}
+
+type LiquidityAdded {
+  version: String!
+  amountsAdded: [Decimal!]!
+  amountMintedLP: Decimal!
+  timestamp: Milliseconds!
+}
+
+type LiquidityRemoved {
+  version: String!
+  amountsRemoved: [Decimal!]!
+  amountBurnedLP: Decimal!
+  timestamp: Milliseconds!
+}
+
+type PoolSummaryStatistics {
+  tvl: Decimal!
+  volume24h: Decimal!
+  fee24h: Decimal!
+  userCount24h: Int!
+  transactionCount24h: Int!
+  volume1w: Decimal!
+  fee1w: Decimal!
+  userCount1w: Int!
+  transactionCount1w: Int!
+}
+
+type MarketSummaryStatistics {
+  high24h: Decimal!
+  low24h: Decimal!
+  volume24h: Decimal!
+}
+
+type SummaryStatistics {
+  poolSummaryStatistics: PoolSummaryStatistics!
+  marketSummaryStatistics: MarketSummaryStatistics!
+}
+
+input PoolInput {
+  coinTypes: [String!]!
+  curve: Curve
+}
+
+input CreatePoolInput {
+  signer: ID!
+  poolInput: PoolInput!
+  feeTier: FeeTier!
+}
+
+input AddLiquidityInput {
+  signer: ID!
+  poolInput: PoolInput!
+  amounts: [Decimal!]!
+}
+
+input RemoveLiquidityInput {
+  signer: ID!
+  poolInput: PoolInput!
+  amountLP: Decimal!
+}
+
+input SwapExactInInput {
+  signer: ID!
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountIn: Decimal!
+  slippage: Percent
+}
+
+input SwapExactOutInput {
+  signer: ID!
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountOut: Decimal!
+  slippage: Percent
+}
+
+input QuoteExactIn {
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountIn: Decimal!
+  slippage: Percent
+}
+
+input QuoteExactOut {
+  poolInput: PoolInput!
+  coinTypeIn: String!
+  coinTypeOut: String!
+  amountOut: Decimal!
+  slippage: Percent
+}
