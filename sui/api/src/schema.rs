@@ -21,12 +21,14 @@ use sui_sdk::{
 use sui_types::{
     balance::Supply,
     base_types::{SequenceNumber, SuiAddress},
+    event::EventID,
     id::UID,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// GraphQL schemas
+// GraphQL schema
 ////////////////////////////////////////////////////////////////////////////////
+
 pub type AuxSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 pub struct QueryRoot;
@@ -346,8 +348,71 @@ impl Pool {
         }
     }
 
-    pub async fn fee(&self) -> f64 {
-        self.fee_bps as f64 / 100f64
+    pub async fn fee(&self) -> Percent {
+        Percent(Decimal::new(self.fee_bps as i64, 3))
+    }
+
+    pub async fn price(
+        &self,
+        coin_type_in: String,
+        coin_type_out: String,
+        amount_in: Decimal,
+    ) -> Decimal {
+        let (reserves_in, reserves_out) = if coin_type_in == self.coin_types[0] {
+            (self.reserves[0], self.reserves[1])
+        } else {
+            (self.reserves[1], self.reserves[0])
+        };
+        (reserves_out / reserves_in) * amount_in
+    }
+
+    pub async fn quote_exact_in(
+        &self,
+        ctx: &Context<'_>,
+        quote_exact_in_input: QuoteExactInInput,
+    ) -> Result<QuoteExactIn> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        aux_client
+            .quote_exact_in(
+                &quote_exact_in_input.pool_input,
+                &quote_exact_in_input.coin_type_in,
+                &quote_exact_in_input.coin_type_out,
+                quote_exact_in_input.amount_in,
+                quote_exact_in_input.slippage,
+            )
+            .await
+    }
+
+    pub async fn quote_exact_out(
+        &self,
+        ctx: &Context<'_>,
+        quote_exact_out_input: QuoteExactOutInput,
+    ) -> Result<QuoteExactIn> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        aux_client
+            .quote_exact_in(
+                &quote_exact_out_input.pool_input,
+                &quote_exact_out_input.coin_type_in,
+                &quote_exact_out_input.coin_type_out,
+                quote_exact_out_input.amount_out,
+                quote_exact_out_input.slippage,
+            )
+            .await
+    }
+
+    pub async fn position(
+        &self,
+        ctx: &Context<'_>,
+        pool_input: PoolInput,
+        address: ID,
+    ) -> Result<Position> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        aux_client
+            .position(
+                &pool_input,
+                SuiAddress::from_str(&address).map_err(|err| eyre!(err))?,
+            )
+            .await
     }
 
     pub async fn swaps(
@@ -436,17 +501,36 @@ impl PoolInput {
         self.pool_event_type("LiquidityAdded", package)
     }
 
-    pub fn liquidity_removed(&self, package: ObjectID) -> String {
+    pub fn liquidity_removed_type(&self, package: ObjectID) -> String {
         self.pool_event_type("LiquidityRemoved", package)
     }
 
-    fn pool_event_type(&self, s: &str, package: ObjectID) -> String {
+    pub fn pool_event_type(&self, s: &str, package: ObjectID) -> String {
         format!(
             "{}::{}::{s}<{}>",
             package.to_hex_literal(),
             self.curve.module_name(),
             self.coin_types.join(", "),
         )
+    }
+
+    pub fn indices(&self, coin_type_in: &str, coin_type_out: &str) -> Result<(usize, usize)> {
+        let i = self
+            .coin_types
+            .iter()
+            .position(|coin_type| coin_type == coin_type_in);
+        let j = self
+            .coin_types
+            .iter()
+            .position(|coin_type| coin_type == coin_type_out);
+        i.zip(j).ok_or_else(|| {
+            eyre!(
+                "Failed to find {} {} in {:?}",
+                coin_type_in,
+                coin_type_out,
+                self.coin_types
+            )
+        })
     }
 }
 
@@ -500,6 +584,24 @@ pub struct SwapExactOutInput {
     pub slippage: Percent,
 }
 
+#[derive(InputObject)]
+pub struct QuoteExactInInput {
+    pub pool_input: PoolInput,
+    pub coin_type_in: String,
+    pub coin_type_out: String,
+    pub amount_in: Decimal,
+    pub slippage: Percent,
+}
+
+#[derive(InputObject)]
+pub struct QuoteExactOutInput {
+    pub pool_input: PoolInput,
+    pub coin_type_in: String,
+    pub coin_type_out: String,
+    pub amount_out: Decimal,
+    pub slippage: Percent,
+}
+
 #[derive(Debug, SimpleObject)]
 pub struct QuoteExactIn {
     pub expected_amount_out: Decimal,
@@ -524,6 +626,15 @@ pub struct QuoteExactOut {
     pub price_impact: Decimal,
     pub price_impact_rating: PriceRating,
     pub pyth_rating: Option<PriceRating>,
+}
+
+#[derive(Debug, SimpleObject)]
+pub struct Position {
+    pub coins: Vec<Coin>,
+    pub coin_lp: Coin,
+    pub amounts: Vec<Decimal>,
+    pub amount_lp: Decimal,
+    pub share: Percent,
 }
 
 #[derive(Debug, SimpleObject)]
@@ -576,8 +687,8 @@ pub struct MarketSummaryStatistics {
 }
 
 pub struct Coins;
+// TODO remove once `coin_metadata` is implemented
 impl Coins {
-    // TODO remove once `coin_metadata` is implemented
     pub fn btc() -> Coin {
         Coin(SuiCoinMetadata {
             id: None,
@@ -610,6 +721,7 @@ impl Coins {
             icon_url: None,
         })
     }
+
     pub fn usdc() -> Coin {
         Coin(SuiCoinMetadata {
             id: None,
@@ -622,7 +734,34 @@ impl Coins {
     }
 }
 
-/// Sui serde
+////////////////////////////////////////////////////////////////////////////////
+// Sui schema
+////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Debug, Deserialize)]
+pub struct SuiObject<T> {
+    pub id: ObjectID,
+    pub type_: String,
+    pub version: SequenceNumber,
+    pub data: T,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SuiEvent<T> {
+    pub id: EventID,
+    pub type_: String,
+    pub package: ObjectID,
+    pub module: String,
+    pub timestamp: u64,
+    pub sender: SuiAddress,
+    pub data: T,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SuiTypeName {
+    pub name: String,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct SuiConstantProductPool {
     pub id: UID,
@@ -630,29 +769,6 @@ pub struct SuiConstantProductPool {
     pub reserve_y: sui_types::coin::Coin,
     pub supply_lp: Supply,
     pub fee_bps: u64,
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Sui schemas
-////////////////////////////////////////////////////////////////////////////////
-
-#[derive(Debug, Deserialize)]
-pub struct SuiObject<T> {
-    pub id: ObjectID,
-    pub type_: String,
-    pub has_public_transfer: bool,
-    pub version: SequenceNumber,
-    pub data: T,
-}
-
-// #[derive(Debug, Deserialize)]
-// pub struct SuiEvent<T> {
-//     pub type_: String,
-// }
-
-#[derive(Debug, Deserialize)]
-pub struct SuiTypeName {
-    pub name: String
 }
 
 #[derive(Debug, Deserialize)]
@@ -663,7 +779,6 @@ pub struct SuiConstantProductSwapped {
     pub amount_out: u64,
 }
 
-/// Sui serde
 #[derive(Debug, Deserialize)]
 pub struct SuiConstantProductLiquidityAdded {
     pub amount_added_x: u64,
@@ -671,7 +786,6 @@ pub struct SuiConstantProductLiquidityAdded {
     pub amount_minted_lp: u64,
 }
 
-/// Sui serde
 #[derive(Debug, Deserialize)]
 pub struct SuiConstantProductLiquidityRemoved {
     pub amount_removed_x: u64,

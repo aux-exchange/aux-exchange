@@ -23,7 +23,10 @@ use sui_types::{
 };
 
 use crate::parse::parse_type_args;
-use crate::schema::SuiConstantProductSwapped;
+use crate::schema::{
+    Position, SuiConstantProductLiquidityAdded, SuiConstantProductLiquidityRemoved,
+    SuiConstantProductSwapped,
+};
 use crate::{
     coin_units,
     parse::parse_sui_type_tag,
@@ -40,26 +43,23 @@ pub struct AuxClient {
 
 impl AuxClient {
     pub async fn get_object<T: DeserializeOwned>(&self, id: ObjectID) -> Result<SuiObject<T>> {
-        let sui_raw_data = self
+        let sui_object_data = self
             .sui_client
             .read_api()
             .get_object(id)
             .await
             .map_err(|err| eyre!(err))?;
-        let sui_raw_move_object = sui_raw_data
+        let sui_object = sui_object_data
             .object()?
             .data
             .try_as_move()
             .ok_or(eyre!("Object was unexpected package"))?
             .to_owned();
-        let data: T = sui_raw_move_object
-            .deserialize()
-            .map_err(|err| eyre!(err))?;
+        let data: T = sui_object.deserialize().map_err(|err| eyre!(err))?;
         let object = SuiObject {
             id,
-            type_: sui_raw_move_object.type_,
-            has_public_transfer: sui_raw_move_object.has_public_transfer,
-            version: sui_raw_move_object.version,
+            type_: sui_object.type_,
+            version: sui_object.version,
             data,
         };
         Ok(object)
@@ -117,53 +117,50 @@ impl AuxClient {
             .map_err(|err| eyre!(err))
     }
 
-    async fn move_events<T: DeserializeOwned>(&self, type_: String) -> Result<Vec<T>> {
-        Ok(vec![])
-        // let raw_events = self
-        //     .sui_client
-        //     .event_api()
-        //     .get_events(
-        //         EventQuery::MoveEvent(type_),
-        //         None,
-        //         Some(QUERY_MAX_RESULT_LIMIT),
-        //         None,
-        //     )
-        //     .await
-        //     .map_err(|err| eyre!(err))?;
+    async fn move_events<T: DeserializeOwned>(
+        &self,
+        type_: String,
+    ) -> Result<Vec<crate::schema::SuiEvent<T>>> {
+        let raw_events = self
+            .sui_client
+            .event_api()
+            .get_events(
+                EventQuery::MoveEvent(type_),
+                None,
+                Some(QUERY_MAX_RESULT_LIMIT),
+                None,
+            )
+            .await
+            .map_err(|err| eyre!(err))?;
 
-        // let mut events = Vec::new();
-        // for raw_event in raw_events.data {
-        //     let fields = if let SuiEvent::MoveEvent {
-        //         fields: Some(fields),
-        //         ..
-        //     } = raw_event.event
-        //     {
-        //         fields
-        //     } else {
-        //         bail!(eyre!(
-        //             "Unable to deserialize {raw_event:?}. Expected MoveEvent {{ fields: Some(...), .. }}"
-        //         ))
-        //     };
-        //     events.push(event);
-
-        //     let event: T = serde_json::from_value(fields.to_json_value()?)?;
-
-        //     let coin_in = crate::schema::Coin(self.coin_metadata(&raw_swapped.coin_type_in.name));
-        //     let coin_out = crate::schema::Coin(self.coin_metadata(&raw_swapped.coin_type_out.name));
-        //     let decimals_in = coin_in.0.decimals;
-        //     let decimals_out = coin_out.0.decimals;
-
-        //     let swapped = Swapped {
-        //         coin_in,
-        //         coin_out,
-        //         amount_in: coin_units::decimal(raw_swapped.amount_in, decimals_in)?,
-        //         amount_out: coin_units::decimal(raw_swapped.amount_in, decimals_out)?,
-        //         timestamp: event.timestamp,
-        //     };
-        //     swaps.push(swapped)
-        // }
-
-        // Ok(swaps)
+        let mut events = Vec::new();
+        for raw_event in raw_events.data {
+            if let SuiEvent::MoveEvent {
+                package_id,
+                transaction_module,
+                sender,
+                type_,
+                fields: Some(fields),
+                bcs: _,
+            } = raw_event.event
+            {
+                let event = crate::schema::SuiEvent {
+                    package: package_id,
+                    module: transaction_module,
+                    sender,
+                    type_,
+                    timestamp: raw_event.timestamp,
+                    id: raw_event.id,
+                    data: serde_json::from_value(fields.to_json_value()?)?,
+                };
+                events.push(event);
+            } else {
+                bail!(eyre!(
+                    "Unable to deserialize {raw_event:?}. Expected MoveEvent {{ fields: Some(...), .. }}."
+                ))
+            };
+        }
+        Ok(events)
     }
 }
 
@@ -187,6 +184,8 @@ pub trait CoinClient {
         address: SuiAddress,
         coin_type: &str,
     ) -> Result<SuiObject<Coin>>;
+
+    async fn sum_coins(&self, address: SuiAddress, coin_type: &str) -> Result<u128>;
 
     async fn split_coin(
         &self,
@@ -252,6 +251,24 @@ impl CoinClient for AuxClient {
             .max_by_key(|coin| coin.data.balance.value())
             .ok_or_else(|| eyre!("{} not found in {}'s inventory", coin_type, address))?;
         Ok(coin)
+    }
+
+    async fn sum_coins(&self, address: SuiAddress, coin_type: &str) -> Result<u128> {
+        let coin_objects = self
+            .filter_objects_by_type(address, &format!("0x2::coin::Coin<{coin_type}>"))
+            .await?;
+        let mut futs = Vec::new();
+        for coin_object in coin_objects {
+            let coin_id = coin_object.object_id;
+            futs.push(self.get_object::<Coin>(coin_id));
+        }
+        let coins: Result<Vec<SuiObject<Coin>>> =
+            futures::future::join_all(futs).await.into_iter().collect();
+        let sum = coins?
+            .into_iter()
+            .map(|coin| coin.data.balance.value() as u128)
+            .sum();
+        Ok(sum)
     }
 
     async fn split_coin(
@@ -324,6 +341,14 @@ impl CoinClient for AuxClient {
 }
 
 pub trait PoolClient {
+    async fn pool(&self, id: ObjectID) -> Result<Pool>;
+
+    async fn pools(&self) -> Result<Vec<Pool>>;
+
+    async fn find_pool_id(&self, pool_input: &PoolInput) -> Result<ObjectID>;
+
+    async fn find_pool(&self, pool_input: &PoolInput) -> Result<Pool>;
+
     async fn create_pool(
         &self,
         signer: SuiAddress,
@@ -386,13 +411,7 @@ pub trait PoolClient {
         slippage: Percent,
     ) -> Result<QuoteExactOut>;
 
-    async fn pool(&self, id: ObjectID) -> Result<Pool>;
-
-    async fn pools(&self) -> Result<Vec<Pool>>;
-
-    async fn find_pool_id(&self, pool_input: &PoolInput) -> Result<ObjectID>;
-
-    async fn find_pool(&self, pool_input: &PoolInput) -> Result<Pool>;
+    async fn position(&self, pool_input: &PoolInput, address: SuiAddress) -> Result<Position>;
 
     async fn swaps(&self, pool_input: &PoolInput) -> Result<Vec<Swapped>>;
 
@@ -402,6 +421,122 @@ pub trait PoolClient {
 }
 
 impl PoolClient for AuxClient {
+    async fn pool(&self, id: ObjectID) -> Result<Pool> {
+        let object: SuiObject<SuiConstantProductPool> = self.get_object(id).await?;
+        let cp = object.data;
+        let coin_types = parse_type_args(&object.type_)?;
+        let mut reserves = Vec::new();
+        reserves.push(coin_units::decimal(
+            cp.reserve_x.balance.value(),
+            self.coin_metadata(&coin_types[0]).decimals,
+        )?);
+        reserves.push(coin_units::decimal(
+            cp.reserve_y.balance.value(),
+            self.coin_metadata(&coin_types[1]).decimals,
+        )?);
+        let pool = Pool {
+            type_: object.type_,
+            version: object.version,
+            id: cp.id,
+            coin_types,
+            curve: Curve::ConstantProduct,
+            reserves,
+            supply_lp: cp.supply_lp.value, // FIXME
+            fee_bps: cp.fee_bps as u16,
+        };
+        Ok(pool)
+    }
+
+    async fn pools(&self) -> Result<Vec<Pool>> {
+        // FIXME instead of parsing PoolCreated<X, Y> events by the prefix `PoolCreated`,
+        // query the `Pools` vec_set
+        // and parse out the TypeNames
+        let events = self
+            .sui_client
+            .event_api()
+            .get_events(
+                EventQuery::MoveModule {
+                    package: self.package,
+                    module: "constant_product".to_string(),
+                },
+                None,
+                Some(QUERY_MAX_RESULT_LIMIT),
+                None,
+            )
+            .await
+            .map_err(|err| eyre!(err))?;
+
+        let pool_ids: std::result::Result<Vec<_>, _> = events
+            .data
+            .into_iter()
+            .filter_map(|event| {
+                let cursor = serde_json::to_value(event).ok();
+                let move_event = cursor
+                    .as_ref()
+                    .and_then(|c| c.get("event"))
+                    .and_then(|c| c.get("moveEvent"));
+
+                move_event
+                    .and_then(|c| c.get("type"))
+                    .and_then(|type_| type_.as_str())
+                    .filter(|type_| type_.contains("PoolCreated"))
+                    .and_then(|_| {
+                        move_event
+                            .and_then(|c| c.get("fields"))
+                            .and_then(|c| c.get("id"))
+                            .and_then(|id| id.as_str())
+                            .map(|id| id.to_string())
+                    })
+            })
+            .map(|pool_id| ObjectID::from_str(&pool_id))
+            .collect();
+
+        let err = format!("Failed to deserialize pools {pool_ids:?}");
+        let pools: Result<Vec<Pool>> =
+            futures::future::join_all(pool_ids?.into_iter().map(|pool_id| self.pool(pool_id)))
+                .await
+                .into_iter()
+                .collect();
+        pools.context(err)
+    }
+
+    async fn find_pool_id(&self, pool_input: &PoolInput) -> Result<ObjectID> {
+        let pool_created_type = pool_input.pool_created_type(self.package);
+
+        let events = self
+            .sui_client
+            .event_api()
+            .get_events(
+                EventQuery::MoveEvent(pool_created_type.clone()),
+                None,
+                Some(QUERY_MAX_RESULT_LIMIT),
+                None,
+            )
+            .await
+            .map_err(|err| eyre!(err))?;
+
+        let pool_created = events
+            .data
+            .first()
+            .ok_or(eyre!("{} not found", pool_created_type))?;
+
+        let cursor = serde_json::to_value(pool_created)?;
+        let pool_id: &str = cursor
+            .get("event")
+            .and_then(|c| c.get("moveEvent"))
+            .and_then(|c| c.get("fields"))
+            .and_then(|c| c.get("id"))
+            .and_then(|c| c.as_str())
+            .ok_or(eyre!("Unable to parse PoolCreated event"))?;
+        let pool_id = ObjectID::from_str(pool_id)?;
+        Ok(pool_id)
+    }
+
+    async fn find_pool(&self, pool_input: &PoolInput) -> Result<Pool> {
+        let id = self.find_pool_id(pool_input).await?;
+        self.pool(id).await
+    }
+
     async fn create_pool(
         &self,
         signer: SuiAddress,
@@ -555,6 +690,7 @@ impl PoolClient for AuxClient {
         } else {
             "swap_exact_y_for_x_"
         };
+
         self.sui_client
             .transaction_builder()
             .move_call(
@@ -592,12 +728,8 @@ impl PoolClient for AuxClient {
         slippage: Percent,
     ) -> Result<QuoteExactIn> {
         let pool = self.find_pool(pool_input).await?;
-        // TODO n-pool
-        let (reserves_in, reserves_out) = if coin_type_in == pool_input.coin_types[0] {
-            (pool.reserves[0], pool.reserves[1])
-        } else {
-            (pool.reserves[1], pool.reserves[0])
-        };
+        let (i, j) = pool_input.indices(coin_type_in, coin_type_out)?;
+        let (reserves_in, reserves_out) = (pool.reserves[i], pool.reserves[j]);
 
         let fee_percent = Decimal::new(pool.fee_bps as i64, 3).round_dp(2);
         let amount_in_with_fee = amount_in * (dec!(1) - fee_percent); // TODO
@@ -652,140 +784,67 @@ impl PoolClient for AuxClient {
         unimplemented!()
     }
 
-    async fn pool(&self, id: ObjectID) -> Result<Pool> {
-        let object: SuiObject<SuiConstantProductPool> = self.get_object(id).await?;
-        let cp = object.data;
-        let coin_types = parse_type_args(&object.type_)?;
-        let mut reserves = Vec::new();
-        reserves.push(coin_units::decimal(
-            cp.reserve_x.balance.value(),
-            self.coin_metadata(&coin_types[0]).decimals,
-        )?);
-        reserves.push(coin_units::decimal(
-            cp.reserve_y.balance.value(),
-            self.coin_metadata(&coin_types[1]).decimals,
-        )?);
-        let pool = Pool {
-            type_: object.type_,
-            version: object.version,
-            id: cp.id,
-            coin_types,
-            curve: Curve::ConstantProduct,
-            reserves,
-            supply_lp: cp.supply_lp.value, // FIXME
-            fee_bps: cp.fee_bps as u16,
+    async fn position(&self, pool_input: &PoolInput, address: SuiAddress) -> Result<Position> {
+        let pool = self.find_pool(pool_input).await?;
+        let lp_sum = self
+            .sum_coins(address, &pool_input.lp_coin_type(self.package))
+            .await?;
+
+        let mut part = coin_units::decimal(lp_sum as u64, 0)?;
+        part.rescale(2);
+        let mut whole = coin_units::decimal(pool.supply_lp, 0)?;
+        whole.rescale(2);
+        let share = part / whole;
+
+        let position = Position {
+            coins: pool
+                .coin_types
+                .iter()
+                .map(|coin_type| {
+                    if coin_type.ends_with("BTC>") {
+                        Coins::btc()
+                    } else if coin_type.ends_with("ETH>") {
+                        Coins::eth()
+                    } else if coin_type.ends_with("USDC>") {
+                        Coins::usdc()
+                    } else {
+                        Coins::sui()
+                    }
+                })
+                .collect(),
+            coin_lp: crate::schema::Coin(
+                self.coin_metadata(&pool_input.lp_coin_type(self.package)),
+            ),
+            amounts: pool
+                .reserves
+                .iter()
+                .map(|reserve| share * reserve)
+                .collect(),
+            amount_lp: share * coin_units::decimal(lp_sum as u64, 0)?,
+            share: Percent(share),
         };
-        Ok(pool)
-    }
-
-    async fn pools(&self) -> Result<Vec<Pool>> {
-        // FIXME instead of parsing PoolCreated<X, Y> events by the prefix `PoolCreated`,
-        // query the `Pools` vec_set
-        // and parse out the TypeNames
-        let events = self
-            .sui_client
-            .event_api()
-            .get_events(
-                EventQuery::MoveModule {
-                    package: self.package,
-                    module: "constant_product".to_string(),
-                },
-                None,
-                Some(QUERY_MAX_RESULT_LIMIT),
-                None,
-            )
-            .await
-            .map_err(|err| eyre!(err))?;
-
-        let pool_ids: std::result::Result<Vec<_>, _> = events
-            .data
-            .into_iter()
-            .filter_map(|event| {
-                let cursor = serde_json::to_value(event).ok();
-                let move_event = cursor
-                    .as_ref()
-                    .and_then(|c| c.get("event"))
-                    .and_then(|c| c.get("moveEvent"));
-
-                move_event
-                    .and_then(|c| c.get("type"))
-                    .and_then(|type_| type_.as_str())
-                    .filter(|type_| type_.contains("PoolCreated"))
-                    .and_then(|_| {
-                        move_event
-                            .and_then(|c| c.get("fields"))
-                            .and_then(|c| c.get("id"))
-                            .and_then(|id| id.as_str())
-                            .map(|id| id.to_string())
-                    })
-            })
-            .map(|pool_id| ObjectID::from_str(&pool_id))
-            .collect();
-
-        let err = format!("Failed to deserialize pools {pool_ids:?}");
-        let pools: Result<Vec<Pool>> =
-            futures::future::join_all(pool_ids?.into_iter().map(|pool_id| self.pool(pool_id)))
-                .await
-                .into_iter()
-                .collect();
-        pools.context(err)
-    }
-
-    async fn find_pool_id(&self, pool_input: &PoolInput) -> Result<ObjectID> {
-        let pool_created_type = pool_input.pool_created_type(self.package);
-
-        let events = self
-            .sui_client
-            .event_api()
-            .get_events(
-                EventQuery::MoveEvent(pool_created_type.clone()),
-                None,
-                Some(QUERY_MAX_RESULT_LIMIT),
-                None,
-            )
-            .await
-            .map_err(|err| eyre!(err))?;
-
-        let pool_created = events
-            .data
-            .first()
-            .ok_or(eyre!("{} not found", pool_created_type))?;
-
-        let cursor = serde_json::to_value(pool_created)?;
-        let pool_id: &str = cursor
-            .get("event")
-            .and_then(|c| c.get("moveEvent"))
-            .and_then(|c| c.get("fields"))
-            .and_then(|c| c.get("id"))
-            .and_then(|c| c.as_str())
-            .ok_or(eyre!("Unable to parse PoolCreated event"))?;
-        let pool_id = ObjectID::from_str(pool_id)?;
-        Ok(pool_id)
-    }
-
-    async fn find_pool(&self, pool_input: &PoolInput) -> Result<Pool> {
-        let id = self.find_pool_id(pool_input).await?;
-        self.pool(id).await
+        Ok(position)
     }
 
     async fn swaps(&self, pool_input: &PoolInput) -> Result<Vec<Swapped>> {
-        let raw_swaps: Vec<SuiConstantProductSwapped> = self
+        let raw_swaps: Vec<crate::schema::SuiEvent<SuiConstantProductSwapped>> = self
             .move_events(pool_input.swapped_type(self.package))
             .await?;
         let mut swaps = Vec::new();
         for raw_swapped in raw_swaps {
-            let coin_in = crate::schema::Coin(self.coin_metadata(&raw_swapped.coin_type_in.name));
-            let coin_out = crate::schema::Coin(self.coin_metadata(&raw_swapped.coin_type_out.name));
+            let coin_in =
+                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_in.name));
+            let coin_out =
+                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_out.name));
             let decimals_in = coin_in.0.decimals;
             let decimals_out = coin_out.0.decimals;
 
             let swapped = Swapped {
                 coin_in,
                 coin_out,
-                amount_in: coin_units::decimal(raw_swapped.amount_in, decimals_in)?,
-                amount_out: coin_units::decimal(raw_swapped.amount_in, decimals_out)?,
-                // timestamp: raw_swapped.timestamp,
-                timestamp: 0,
+                amount_in: coin_units::decimal(raw_swapped.data.amount_in, decimals_in)?,
+                amount_out: coin_units::decimal(raw_swapped.data.amount_in, decimals_out)?,
+                timestamp: raw_swapped.timestamp,
             };
             swaps.push(swapped)
         }
@@ -793,34 +852,46 @@ impl PoolClient for AuxClient {
     }
 
     async fn adds(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityAdded>> {
-        let events = self
-            .sui_client
-            .event_api()
-            .get_events(
-                EventQuery::MoveEvent(pool_input.pool_created_type(self.package)),
-                None,
-                Some(QUERY_MAX_RESULT_LIMIT),
-                None,
-            )
-            .await
-            .map_err(|err| eyre!(err))?;
-        println!("{events:?}");
-        Ok(vec![])
+        let raw_adds: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityAdded>> = self
+            .move_events(pool_input.liquidity_added_type(self.package))
+            .await?;
+        let mut adds = Vec::new();
+
+        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
+        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
+
+        for raw_add in raw_adds {
+            adds.push(LiquidityAdded {
+                amounts_added: vec![
+                    coin_units::decimal(raw_add.data.amount_added_x, decimals_x)?,
+                    coin_units::decimal(raw_add.data.amount_added_y, decimals_y)?,
+                ],
+                amount_minted_lp: coin_units::decimal(raw_add.data.amount_minted_lp, 0)?,
+                timestamp: raw_add.timestamp,
+            });
+        }
+        Ok(adds)
     }
 
     async fn removes(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityRemoved>> {
-        let events = self
-            .sui_client
-            .event_api()
-            .get_events(
-                EventQuery::MoveEvent(pool_input.pool_created_type(self.package)),
-                None,
-                Some(QUERY_MAX_RESULT_LIMIT),
-                None,
-            )
-            .await
-            .map_err(|err| eyre!(err))?;
-        println!("{events:?}");
-        Ok(vec![])
+        let raw_removes: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityRemoved>> = self
+            .move_events(pool_input.liquidity_removed_type(self.package))
+            .await?;
+        let mut removes = Vec::new();
+
+        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
+        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
+
+        for raw_remove in raw_removes {
+            removes.push(LiquidityRemoved {
+                amounts_removed: vec![
+                    coin_units::decimal(raw_remove.data.amount_removed_x, decimals_x)?,
+                    coin_units::decimal(raw_remove.data.amount_removed_y, decimals_y)?,
+                ],
+                amount_burned_lp: coin_units::decimal(raw_remove.data.amount_burned_lp, 0)?,
+                timestamp: raw_remove.timestamp,
+            });
+        }
+        Ok(removes)
     }
 }

@@ -1,12 +1,13 @@
 use aux_rs::client::{AuxClient, CoinClient, PoolClient};
 use aux_rs::coin_units;
 use aux_rs::schema::{Coin, Coins, Curve, FeeTier, Percent, PoolInput};
+use aux_rs::server::create_server;
 use color_eyre::eyre::{eyre, Result};
-use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 use serde::Deserialize;
 use serde_json::json;
 use std::path::Path;
+use std::time::Duration;
 use sui_framework_build::compiled_package::BuildConfig;
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
 use sui_sdk::{types::base_types::ObjectID, SuiClient};
@@ -130,19 +131,27 @@ async fn test_graphql() -> Result<()> {
             Percent(dec!(0.5)),
         )
         .await?;
-    let tx = aux_client.sign_and_execute(&keystore, tx).await?;
-    println!("{tx:?}");
+    aux_client.sign_and_execute(&keystore, tx).await?;
 
     let swaps = aux_client.swaps(&pool_input).await?;
+    println!("{swaps:?}");
+
+    let adds = aux_client.adds(&pool_input).await?;
+    println!("{adds:?}");
+
+    let task = tokio::spawn(async move { create_server(package).await });
+    tokio::time::sleep(Duration::from_millis(1000)).await;
 
     let client = reqwest::Client::new();
-    let mut res: GraphQLResponse<serde_json::Value> = client
+    let res: GraphQLResponse<serde_json::Value> = client
         .post("http://devbox:4000/graphql")
         .json(&json!({"query": "
             {
                 pools {
                     id
                     type
+                    version
+                    featured
                     coins {
                         id
                         decimals
@@ -151,7 +160,11 @@ async fn test_graphql() -> Result<()> {
                         description
                         iconUrl
                     }
+                    curve
                     reserves
+                    supplyLP
+                    feeTier
+                    fee
                 }
             }
         "}))
@@ -160,7 +173,27 @@ async fn test_graphql() -> Result<()> {
         .json()
         .await?;
     assert!(res.errors.is_none(), "{:?}", res.errors);
-    println!("{res:#?}");
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&res.data.unwrap()).unwrap()
+    );
+
+    // let tx = aux_client
+    //     .remove_liquidity(
+    //         signer,
+    //         &pool_input,
+    //         &sui,
+    //         &usdc,
+    //         coin_units::decimal(100_000_000_000, Coins::sui().0.decimals)?,
+    //         Percent(dec!(0.5)),
+    //     )
+    //     .await?;
+    // aux_client.sign_and_execute(&keystore, tx).await?;
+
+    // let removes = aux_client.removes(&pool_input).await?;
+    // println!("{removes:?}");
+
+    task.abort();
 
     Ok(())
 }

@@ -20,8 +20,6 @@ scalar Decimal
 scalar Percent
 """json string"""
 scalar Milliseconds
-"""json number array"""
-scalar Uint8Array
 
 enum Curve {
   CONSTANT_PRODUCT
@@ -57,23 +55,24 @@ type Pool {
   version: String!
   featured: Boolean!
   coins: [Coin!]!
-  coinLP: Coin!
+  coinLp: Coin!
   reserves: [Decimal!]!
-  supplyLP: Decimal!
+  supplyLp: Decimal!
   feeTier: FeeTier
   fee: Percent!
+  price(coinTypeIn: String!, coinTypeOut: String!, amountIn: Decimal!): Decimal!
+  quoteExactIn(quoteExactInInput: QuoteExactInInput): QuoteExactIn!
+  quoteExactOut(quoteExactOutInput: quoteExactOutInput): QuoteExactOut!
+  position(address: ID!): Position
   swaps(address: ID, first: Int, offset: Int): [Swapped!]!
   adds(address: ID, first: Int, offset: Int): [LiquidityAdded!]!
   removes(address: ID, first: Int, offset: Int): [LiquidityRemoved!]!
-  position(address: ID!): Position
-  quoteExactIn(quoteExactInInput: QuoteExactInInput): QuoteExactIn!
-  quoteExactOut(quoteExactOutInput: quoteExactOutInput): QuoteExactOut!
   summaryStatistics: PoolSummaryStatistics!
 }
 
 type Position {
   coins: [Coin!]!
-  coinLP: Coin!
+  coinLp: Coin!
   amounts: [Decimal!]!
   amountLP: Decimal!
   share: Percent!
@@ -84,7 +83,7 @@ type QuoteExactIn {
   minAmountOut: Decimal!
   feeAmount: Decimal!
   feeCurrency: Coin!
-  feeAmountDollars: Decimal
+  feeAmountUsd: Decimal
   priceOut: Decimal!
   priceIn: Decimal!
   priceImpact: Percent!
@@ -97,7 +96,7 @@ type QuoteExactOut {
   maxAmountIn: Decimal!
   maxFeeAmount: Decimal!
   feeCurrency: Coin!
-  maxFeeAmountDollars: Decimal
+  maxFeeAmountUsd: Decimal
   priceOut: Decimal!
   priceIn: Decimal!
   priceImpact: Percent!

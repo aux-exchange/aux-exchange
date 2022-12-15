@@ -3,6 +3,7 @@
 
 pub mod client;
 pub mod schema;
+pub mod server;
 
 /// Functions for using `Coin<T>` with `rust_decimal::Decimal`.
 pub mod coin_units {
@@ -35,7 +36,6 @@ pub mod coin_units {
 /// Functions for parsing Sui types out of strings.
 pub mod parse {
     use color_eyre::eyre::{bail, eyre, Result};
-    use serde::de::DeserializeOwned;
     use sui_sdk::rpc_types::SuiTypeTag;
 
     // FIXME remove and replace with Sui SDK
