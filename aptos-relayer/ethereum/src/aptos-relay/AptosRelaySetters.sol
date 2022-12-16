@@ -19,8 +19,4 @@ contract AptosRelaySetters is AptosRelayState {
     function setTargetContractAddress(bytes32 targetContractAddress_) internal {
         _state.targetContractAddress = targetContractAddress_;
     }
-
-    function setTokenRegistry(address tokenAddress, bool flag) internal {
-        _state.registeredTokens[tokenAddress] = flag;
-    }
 }

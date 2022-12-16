@@ -1,4 +1,4 @@
-module aptos_relay::native_swap {
+module aux_eth_relay::native_swap {
     use wormhole::deserialize::{
         deserialize_u64,
         deserialize_vector

@@ -45,7 +45,7 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 			"--package-dir", deployerDir,
 			"--url", account.RestUrl,
 			"--included-artifacts", "none",
-			"--named-addresses", fmt.Sprintf("deployer=%s", account.Account),
+			"--named-addresses", fmt.Sprintf("aux_deployer=%s", account.Account),
 			"--private-key", account.PrivateKey,
 			"--assume-yes",
 			"--max-gas", "10000",

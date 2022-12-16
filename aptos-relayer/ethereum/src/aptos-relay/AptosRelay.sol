@@ -8,6 +8,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract AptosRelay is AptosRelayGetters {
+    event Deposit(address indexed sender, address indexed tokenAddress, uint256 tokenAmount, uint256 relayerFee, bytes32 receiverAddress, uint64 nativeSwapAmount, uint32 nonce);
     using SafeERC20 for IERC20;
 
     constructor(
@@ -31,10 +32,8 @@ contract AptosRelay is AptosRelayGetters {
             tokenAmount >= relayerFee,
             "insufficient tokenAmount to pay relayer"
         );
-        require(
-            isTokenRegistered(tokenAddress),
-            "token is not registered"
-        );
+
+        emit Deposit(msg.sender, tokenAddress, tokenAmount, relayerFee, receiverAddress, nativeSwapAmount, nonce);
 
         (,bytes memory queriedDecimals) = tokenAddress.staticcall(abi.encodeWithSignature("decimals()"));
         uint8 decimals = abi.decode(queriedDecimals, (uint8));
@@ -70,7 +69,7 @@ contract AptosRelay is AptosRelayGetters {
         );
     }
 
-    function normalizeAmount(uint256 amount, uint8 decimals) internal pure returns(uint256){
+    function normalizeAmount(uint256 amount, uint8 decimals) internal pure returns(uint256) {
         if (decimals > 8) {
             amount /= 10 ** (decimals - 8);
         }
@@ -83,18 +82,11 @@ contract AptosRelay is AptosRelayGetters {
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "newOwner is the zero address");
         setOwner(newOwner);
     }
 
     function changeContractAddress(bytes32 newTargetContractAddress) external onlyOwner {
         setTargetContractAddress(newTargetContractAddress);
-    }
-
-    function registerToken(address tokenAddress) external onlyOwner {
-        setTokenRegistry(tokenAddress, true);
-    }
-
-    function unregisterToken(address tokenAddress) external onlyOwner {
-        setTokenRegistry(tokenAddress, false);
     }
 }

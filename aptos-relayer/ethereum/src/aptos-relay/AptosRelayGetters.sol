@@ -19,8 +19,4 @@ contract AptosRelayGetters is AptosRelaySetters {
     function targetContractAddress() public view returns (bytes32) {
         return _state.targetContractAddress;
     }
-
-    function isTokenRegistered(address tokenAddress) public view returns (bool) {
-        return _state.registeredTokens[tokenAddress];
-    }
 }

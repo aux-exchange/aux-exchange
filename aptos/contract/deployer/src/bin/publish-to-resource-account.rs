@@ -21,7 +21,7 @@ pub struct Args {
     pub target_address: String,
 }
 
-const DEPLOYER_NAME: &str = "deployer";
+const DEPLOYER_PACKAGE_NAME: &str = "aux_deployer";
 
 #[tokio::main]
 async fn main() {
@@ -40,7 +40,7 @@ async fn main() {
     let mut build_options = framework::BuildOptions::default();
     build_options
         .named_addresses
-        .insert(DEPLOYER_NAME.to_string(), deployer_address);
+        .insert(DEPLOYER_PACKAGE_NAME.to_string(), deployer_address);
     build_options
         .named_addresses
         .insert(package_name, resource_account);

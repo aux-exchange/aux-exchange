@@ -20,8 +20,9 @@ contract ContractScript is Script {
     uint16 immutable APTOS_CHAIN_ID = 22;
 
     function setUp() public {
-        aptosContractAddress = vm.envBytes32("APTOS_CONTRACT_ADDRESS");
+        aptosContractAddress = vm.envBytes32("TEST_RELAY_APTOS_CONTRACT_ADDRESS");
         tokenBridgeAddress = vm.envAddress("TEST_TOKEN_BRIDGE_ADDRESS");
+        console.logBytes32(aptosContractAddress);
     }
 
     function deployAptosRelay() public {
@@ -31,7 +32,6 @@ contract ContractScript is Script {
             APTOS_CHAIN_ID
         );
         aptosRelay.changeContractAddress(aptosContractAddress);
-        aptosRelay.registerToken(address(testToken));
     }
 
     function run() public {

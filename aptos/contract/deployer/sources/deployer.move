@@ -1,6 +1,6 @@
 // deployer is for creating resource account and deploy the package.
 // When creating the resource account, it stores the owner address to allow the created package to save the owner information.
-module deployer::deployer {
+module aux_deployer::deployer {
     use std::signer;
     use std::vector;
 

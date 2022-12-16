@@ -34,8 +34,8 @@ module aux::fake_coin {
 
     #[test_only]
     public fun init_module_for_testing(sender: &signer) {
-        deployer::deployer::create_resource_account(sender, b"amm");
-        authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
+        aux_deployer::deployer::create_resource_account(sender, b"amm");
+        authority::init_module_for_test(&aux_deployer::deployer::get_signer_for_address(sender, @aux));
         initialize_for_test(&authority::get_signer(sender));
     }
 

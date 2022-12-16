@@ -8,7 +8,7 @@ use aptos_sdk::{
 use clap::Parser;
 use url::Url;
 
-const DEPLOYER_NAME: &str = "deployer";
+const DEPLOYER_PACKAGE_NAME: &str = "aux_deployer";
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -47,7 +47,7 @@ async fn main() {
     let mut build_options = util_for_aptos::get_none_artifact_build_options();
     build_options
         .named_addresses
-        .insert(DEPLOYER_NAME.to_string(), deployer_address);
+        .insert(DEPLOYER_PACKAGE_NAME.to_string(), deployer_address);
     build_options
         .named_addresses
         .insert(package_name.to_owned(), resource_account_address);

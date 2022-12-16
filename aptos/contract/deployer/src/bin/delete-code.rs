@@ -19,7 +19,7 @@ pub struct Args {
     pub node_url: String,
 }
 
-const DEPLOYER_NAME: &str = "deployer";
+const DEPLOYER_MODULE_NAME: &str = "deployer";
 
 #[tokio::main]
 async fn main() {
@@ -32,7 +32,7 @@ async fn main() {
     let deployer_address = util_for_aptos::hex_to_account_address(deployer_addr);
 
     let entry_function_call = EntryFunction::new(
-        ModuleId::new(deployer_address, ident_str!(DEPLOYER_NAME).to_owned()),
+        ModuleId::new(deployer_address, ident_str!(DEPLOYER_MODULE_NAME).to_owned()),
         ident_str!("delete_code").to_owned(),
         vec![],
         vec![bcs::to_bytes("abc").unwrap()],

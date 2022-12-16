@@ -466,7 +466,7 @@ module aux::vault {
     const ETEST_FAILURE: u64 = 8;
 
     #[test_only]
-    use deployer::deployer::create_resource_account;
+    use aux_deployer::deployer::create_resource_account;
 
     #[test_only]
     public fun create_vault_for_test(sender: &signer) {

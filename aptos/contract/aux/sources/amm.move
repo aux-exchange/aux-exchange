@@ -1482,8 +1482,8 @@ module aux::amm {
 
     #[test_only]
     public fun setup_module_for_test(sender: &signer) {
-        deployer::deployer::create_resource_account(sender, b"amm");
-        authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
+        aux_deployer::deployer::create_resource_account(sender, b"amm");
+        authority::init_module_for_test(&aux_deployer::deployer::get_signer_for_address(sender, @aux));
     }
 
 

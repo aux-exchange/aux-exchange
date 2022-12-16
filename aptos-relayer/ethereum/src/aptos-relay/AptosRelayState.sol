@@ -14,9 +14,6 @@ contract AptosRelayStorage {
 
         // target Aptos contract address
         bytes32 targetContractAddress;
-
-        // Returns true, if a registered token type for relaying
-        mapping(address => bool) registeredTokens;
     }
 }
 

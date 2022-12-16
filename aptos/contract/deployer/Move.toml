@@ -1,13 +1,13 @@
 [package]
-name = 'deployer'
+name = 'AuxDeployer'
 version = '1.0.0'
 
 [addresses]
 AptosFramework = "0x1"
-deployer = "_"
+aux_deployer = "_"
 
 [dev-addresses]
-deployer = "0x12345"
+aux_deployer = "0x12345"
 
 [dependencies.AptosFramework]
 git = 'https://github.com/aptos-labs/aptos-core.git'

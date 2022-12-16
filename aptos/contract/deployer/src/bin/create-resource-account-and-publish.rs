@@ -25,7 +25,8 @@ pub struct Args {
     pub seed: String,
 }
 
-const DEPLOYER_NAME: &str = "deployer";
+const DEPLOYER_PACKAGE_NAME: &str = "aux_deployer";
+const DEPLOYER_MODULE_NAME: &str = "deployer";
 
 #[tokio::main]
 async fn main() {
@@ -50,7 +51,7 @@ async fn main() {
 
     build_options
         .named_addresses
-        .insert(DEPLOYER_NAME.to_string(), deployer_address);
+        .insert(DEPLOYER_PACKAGE_NAME.to_string(), deployer_address);
     build_options
         .named_addresses
         .insert(package_name, resource_account_address);
@@ -61,7 +62,7 @@ async fn main() {
     let codes = built_package.extract_code();
 
     let entry_function_call = EntryFunction::new(
-        ModuleId::new(deployer_address, ident_str!(DEPLOYER_NAME).to_owned()),
+        ModuleId::new(deployer_address, ident_str!(DEPLOYER_MODULE_NAME).to_owned()),
         ident_str!("create_resource_account").to_owned(),
         vec![],
         vec![bcs::to_bytes(seed).unwrap()],

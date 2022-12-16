@@ -8,7 +8,7 @@ use aptos_sdk::{
     },
 };
 
-const DEPLOYER_NAME: &str = "deployer";
+const DEPLOYER_MODULE_NAME: &str = "deployer";
 
 pub async fn upload_code(
     rest_client: &Client,
@@ -28,7 +28,7 @@ pub async fn upload_code(
         let entry_function_call = EntryFunction::new(
             ModuleId::new(
                 human_account.address(),
-                ident_str!(DEPLOYER_NAME).to_owned(),
+                ident_str!(DEPLOYER_MODULE_NAME).to_owned(),
             ),
             ident_str!("upload_code").to_owned(),
             vec![],
@@ -61,7 +61,7 @@ pub async fn publish_to_resource_account(
     let entry_function_call = EntryFunction::new(
         ModuleId::new(
             human_account.address(),
-            ident_str!(DEPLOYER_NAME).to_owned(),
+            ident_str!(DEPLOYER_MODULE_NAME).to_owned(),
         ),
         ident_str!("publish_from_repo_to_resource_account").to_owned(),
         vec![],
@@ -104,7 +104,7 @@ pub async fn delete_code(rest_client: &Client, human_account: &mut LocalAccount,
     let entry_function_call = EntryFunction::new(
         ModuleId::new(
             human_account.address(),
-            ident_str!(DEPLOYER_NAME).to_owned(),
+            ident_str!(DEPLOYER_MODULE_NAME).to_owned(),
         ),
         ident_str!("delete_code").to_owned(),
         vec![],
