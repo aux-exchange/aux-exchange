@@ -135,6 +135,15 @@ module aux::int32 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u32, y: u32): Int32 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int32, y: Int32): Int32 {
         let xv = abs(x);
@@ -169,7 +178,7 @@ module aux::int32 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int32, y: Int32): Int32 {
         Int32 {
             value: x.value & y.value,
@@ -342,6 +351,15 @@ module aux::int128 {
         }
     }
 
+    /// calculate x - y for the unsigned type.
+    public fun unsigned_subtract(x: u128, y: u128): Int128 {
+        if (x > y) {
+            new(x - y, false)
+        } else {
+            new(y - x, true)
+        }
+    }
+
     /// multiply x and y, abort if overflows
     public fun multiply(x: Int128, y: Int128): Int128 {
         let xv = abs(x);
@@ -376,7 +394,7 @@ module aux::int128 {
         x.value
     }
 
-    /// bitwise and 
+    /// bitwise and
     public fun bitwise_and(x: Int128, y: Int128): Int128 {
         Int128 {
             value: x.value & y.value,

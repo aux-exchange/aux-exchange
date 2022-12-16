@@ -5,6 +5,9 @@
 // Version: v1.4.0
 module aux::more_math_u256 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
+    const E_LOG_2_OUT_OF_RANGE: u64 = 2;
+    const E_ZERO_FOR_LOG_2: u64 = 3;
+
     const HALF_SIZE: u8 = 128;
     const MAX_SHIFT_SIZE: u8 = 255;
 
@@ -120,6 +123,42 @@ module aux::more_math_u256 {
             z
         }
     }
+
+    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    public fun log_2(x: u256, n: u8): u256 {
+        assert!(x != 0, E_ZERO_FOR_LOG_2);
+
+        let one: u256 = 1 << n;
+        let two: u256 = one << 1;
+
+        assert!(x >= one && x < two, E_LOG_2_OUT_OF_RANGE);
+
+        let z_2 = x;
+        let r: u256 = 0;
+        let sum_m: u8 = 0;
+
+        loop {
+            if (z_2 == one) {
+                break
+            };
+            let z = (z_2 * z_2) >> n;
+            sum_m = sum_m + 1;
+            if (sum_m > n) {
+                break
+            };
+            if (z >= two) {
+                r = r + (one >> sum_m);
+                z_2 = z >> 1;
+            } else {
+                z_2 = z;
+            };
+        };
+
+        r
+    }
 }
 
 // Auto generated from gen-move-math
@@ -129,6 +168,9 @@ module aux::more_math_u256 {
 // Version: v1.4.0
 module aux::more_math_u128 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
+    const E_LOG_2_OUT_OF_RANGE: u64 = 2;
+    const E_ZERO_FOR_LOG_2: u64 = 3;
+
     const HALF_SIZE: u8 = 64;
     const MAX_SHIFT_SIZE: u8 = 127;
 
@@ -238,5 +280,41 @@ module aux::more_math_u128 {
             };
             z
         }
+    }
+
+    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    public fun log_2(x: u128, n: u8): u128 {
+        assert!(x != 0, E_ZERO_FOR_LOG_2);
+
+        let one: u128 = 1 << n;
+        let two: u128 = one << 1;
+
+        assert!(x >= one && x < two, E_LOG_2_OUT_OF_RANGE);
+
+        let z_2 = x;
+        let r: u128 = 0;
+        let sum_m: u8 = 0;
+
+        loop {
+            if (z_2 == one) {
+                break
+            };
+            let z = (z_2 * z_2) >> n;
+            sum_m = sum_m + 1;
+            if (sum_m > n) {
+                break
+            };
+            if (z >= two) {
+                r = r + (one >> sum_m);
+                z_2 = z >> 1;
+            } else {
+                z_2 = z;
+            };
+        };
+
+        r
     }
 }

@@ -22,9 +22,9 @@ func main() {
 	}
 
 	outputFile := ""
-	precision := 32
+	var precision uint = 32
 	cmd.Flags().StringVarP(&outputFile, "output", "o", outputFile, "output file location")
-	cmd.Flags().IntVarP(&precision, "precision", "p", precision, "precision, must be 32, 64, or 96")
+	cmd.Flags().UintVarP(&precision, "precision", "p", precision, "precision, must be 64, or 96")
 	cmd.MarkFlagFilename("output")
 	cmd.MarkFlagRequired("output")
 

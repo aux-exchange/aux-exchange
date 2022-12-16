@@ -365,17 +365,15 @@ $$
 \sqrt{p\left(i\right)} = \sqrt{1.0001^i}
 $$
 
-We are going to use 128-bit unsigned integer as fixed point number. If the value is $d$, the represented fixed point value is $\frac{d}{2^{64}}$.
+We are going to use 128-bit unsigned integer as fixed point number for square price and liquidity $\sqrt{C}$. If the value is $d$, the represented fixed point value is $\frac{d}{2^{64}}$. And because square price has 64 bit after decimal point, price will have 128 bit after the point and must be stored in `u256`;
 
-In aptos, all coin values are 64 bit integers, and therefore 128 bit fixed point number has 64 bit after decimal point if price $p=x/y$ is the ratio between two coins. In this case, square price therefore only needs 32 bits before decimal point.
-
-Notice 128-bit fixed point number has an upper bound of $2^{64}-1/2^{64}=18446744073709551616-\frac{1}{18446744073709551616}$, and the max tick $i$ is bounded by
+All coins in aptos or sui are bounded by `u64`, the max price is therefore $2^{64}-1=18446744073709551615$, and the max tick $i$ is bounded by
 
 $$
-\frac{\text{ln}\left(2^{64}-1/2^{64}\right)}{\text{ln}\left(1.0001\right)}\approx 443636.4 < 2^{19} = 524288
+\frac{\text{ln}\left(2^{64}-1\right)}{\text{ln}\left(1.0001\right)}\approx 443636.4 < 2^{19} = 524288
 $$
 
-The smallest non negative value for 128-bit fixed point number is $1/2^{64}$, and the min tick $i$ is
+The smallest price possible is $1/2^{64}$, and the min tick $i$ is
 
 $$
 \frac{\text{ln}\left(1/2^{64}\right)}{\text{ln}\left(1.0001\right)} \approx - 443636.4 \Rightarrow i < -2^{19} = -524288
@@ -462,3 +460,71 @@ where $n_0\geq 0$ if $y \geq 2$ and $n_0 < 0 $ when $y<1$. However, move-lang do
 ### Tick Spacing
 
 Pool also has a parameter **tick spacing**, which requires tick $i = nt$, where $t$ is tick spacing, and $n$ is an integer. This is for widening the price band when the asset price is highly volatile. The minimal $t$ is 1.
+
+## Implementation
+
+### Price Band
+
+The pool is implemented as a linked list, with a pointer to the current active tick. Each node of the price band contains
+
+- the lower tick
+- tick spacing
+- square root of lower price limit $\sqrt{p_l}$ and its inverse $1/\sqrt{p_l}$. Note the sqrt price is obtained from the tick, and its inverse is obtained from the negative of the tick.
+- square root of upper price limit $\sqrt{p_h}$ and its inverse $1/\sqrt{p_h}$. Similarly, the square price and its inverse are obtained directly from tick and negative tick.
+- total liquidity $\sqrt{C}$.
+
+If the current reference sqrt price is $\sqrt{p}$, we require that if $\sqrt{p} \in \left[\sqrt{p_l},\sqrt{p_h}\right]$
+
+$$
+\sqrt{C}\left(\sqrt{p} -\sqrt{p_l}\right) \leq x'
+$$
+
+$$
+\sqrt{C}\left(1/\sqrt{p} - 1/\sqrt{p_h}\right) \leq y'
+$$
+
+Therefore
+
+$$
+\sqrt{C} = \text{min}\left(\frac{x'}{\sqrt{p}-\sqrt{p_l}},\frac{y'}{1/\sqrt{p}-1/\sqrt{p_h}}\right)
+$$
+
+Since $\sqrt{C}$ and $\sqrt{p}$ both have 64 bits after decimal point, $x'$ and $y'$ must be raised to have 128 bits after decimal point.
+
+**The above is used to calculate lp token amount for the adding liquidity to the band.**
+
+### Adding liquidity
+
+If the pool doesn't have a reference price, or the reference price is in a region that the pool cannot represent (for example, the pool liquidity is exhausted on one side, but the next tick is empty, and the swap user didn't cross the tick), the user must specify a reference price, together with the lower tick $t-$ and upper tick $t+$. The added liquidity will be
+
+$$
+\sqrt{C} = \text{min}\left(\frac{x'}{\sqrt{p}-\sqrt{p_{l_{t-}}}},\frac{y'}{1/\sqrt{p}-1/\sqrt{p_{h_{t+}}}}\right)
+$$
+
+### Removing liquidity
+
+The removal amount is
+
+$$
+\Delta x' = \frac{\Delta \sqrt{C} x'}{\sqrt{C}}
+$$
+
+$$
+\Delta y' = \frac{\Delta \sqrt{C} y'}{\sqrt{C}}
+$$
+
+Integer division always round down.
+
+### Swap with specified input amount
+
+If the input amount is specified
+
+$$
+\sqrt{p^\ast} = \left\lceil\frac{x'+\Delta x}{\sqrt{C}}\right\rceil + \sqrt{p_l}
+$$
+
+$$
+\Delta y' = \sqrt{C}\left(\left\lfloor 1/\sqrt{p^\ast}\right\rfloor - \sqrt{1/p}\right)
+$$
+
+We also need to make sure $\sqrt{p^\ast} \leq \sqrt{p_h}$ and $1/\sqrt{p^\ast}\geq 1/\sqrt{p_h}$

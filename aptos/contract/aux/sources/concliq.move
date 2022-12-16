@@ -6,7 +6,7 @@ module aux::concliq {
 
     use aux::int32::{Self, Int32};
     use aux::concliq_math;
-    use aux::reward_distributor::{Self, RewardDistributor};
+    use aux::reward_distributor::{Self, RewardDistributor, RedeemToken};
     use aux::linked_list::{Self, LinkedList};
     use aux::authority;
 
@@ -33,15 +33,22 @@ module aux::concliq {
     const E_ZERO_TICK_SPACING: u64 = 24;
 
     /// LP for a price band.
+    /// This is empty because LP needs to include RedeemToken.
     struct LP<phantom X, phantom Y> has store {
+    }
+
+    /// LPBundle, includes the lp amount and the redeem tokens
+    struct LPBundle<phantom X, phantom Y> has store {
         lower_tick: Int32,
         tick_spacing: u32,
         value: u64,
+
+        redeem_token_x: RedeemToken<X, LP<X, Y>>,
+        redeem_token_y: RedeemToken<Y, LP<X, Y>>,
     }
 
     /// PriceBand is a price band in concentrated liquidity.
-    /// It is defined by the lower tick and upper tick.
-    /// The difference must be one tick spacing.
+    /// It is defined by the lower tick and tick_spacing.
     struct PriceBand<phantom X, phantom Y> has store {
         reserve_x: Coin<X>,
         fee_x: Coin<X>,
@@ -55,6 +62,15 @@ module aux::concliq {
         tick_spacing: u32,
 
         lp_supply: u128,
+
+        // price
+        sqrt_lower_price: u128,
+        sqrt_1_over_lower_price: u128,
+        sqrt_upper_price: u128,
+        sqrt_1_over_upper_price: u128,
+
+        // liquidity
+        liquidity: u128,
     }
 
     /// Pool contains the price bands
@@ -103,6 +119,7 @@ module aux::concliq {
     }
 
     fun new_price_band<X, Y>(owner: &signer, tick_lower: Int32, tick_spacing: u32): PriceBand<X, Y> {
+        let tick_upper = int32::add(tick_lower, int32::new(tick_spacing, false));
         PriceBand {
             reserve_x: coin::zero(),
             fee_x: coin::zero(),
@@ -115,11 +132,17 @@ module aux::concliq {
             lower_tick: tick_lower,
             tick_spacing: tick_spacing,
             lp_supply: 0,
+
+            liquidity: 0,
+            sqrt_lower_price: concliq_math::get_square_price_from_tick(tick_lower),
+            sqrt_1_over_lower_price: concliq_math::get_square_price_from_tick(int32::negative(tick_lower)),
+            sqrt_upper_price: concliq_math::get_square_price_from_tick(tick_upper),
+            sqrt_1_over_upper_price: concliq_math::get_square_price_from_tick(int32::negative(tick_upper)),
         }
     }
 
     // add liquidity to the pool
-    fun add_liquidity<X, Y>(pool: &mut Pool<X, Y>, tick_lower: Int32, tick_upper: Int32, coin_x: Coin<X>, coin_y: Coin<Y>):(LP<X, Y>, Coin<X>, Coin<Y>) {
+    fun add_liquidity<X, Y>(pool: &mut Pool<X, Y>, tick_lower: Int32, tick_upper: Int32, coin_x: Coin<X>, coin_y: Coin<Y>): (LPBundle<X, Y>, Coin<X>, Coin<Y>) {
         assert!(
             concliq_math::is_valid_tick(tick_lower, pool.tick_spacing),
             E_INVALID_TICK,
@@ -132,10 +155,16 @@ module aux::concliq {
         assert!(!int32::is_negative(abs_spacing), E_UPPER_TICK_LOWER_THAN_LOWER);
         let abs_spacing = int32::abs(abs_spacing);
         assert!(abs_spacing > 0, E_ZERO_TICK_SPACING);
-        (LP{
+        let lp_amount: u64 = 0;
+        let price_band = new_price_band<X, Y>(&authority::get_signer_self(), tick_lower, pool.tick_spacing);
+        let lp_bundle = LPBundle {
             lower_tick: tick_lower,
             tick_spacing: pool.tick_spacing,
-            value: 0
-        }, coin_x, coin_y)
+            value: lp_amount,
+            redeem_token_x: reward_distributor::mint(&mut price_band.fee_distributor_x, lp_amount),
+            redeem_token_y: reward_distributor::mint(&mut price_band.fee_distributor_y, lp_amount),
+        };
+        linked_list::insert(&mut pool.price_bands, price_band);
+        (lp_bundle, coin_x, coin_y)
     }
 }

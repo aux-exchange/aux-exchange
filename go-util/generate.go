@@ -14,12 +14,13 @@ package aux_go_generate
 
 // linked list
 //go:generate go run github.com/fardream/gen-move-container linked-list -o ../aptos/contract/aux/sources/linked_list.move -p aux -m linked_list --use-aptos-table
+//go:generate go run github.com/fardream/gen-move-container linked-list -o ../aptos/contract/aux/sources/linked_list_v.move -p aux -m linked_list_v
 
 // reward distributor
 //go:generate go run ./aptos/cmd/gen-reward-distributor -o ../aptos/contract/aux/sources/reward_distributor.move
 //go:generate go run ./aptos/cmd/gen-reward-distributor -q -o ../aptos/contract/aux/sources/reward_quoter.move
 
-//go:generate go run ../docs/concliq/gen-math -o ../aptos/contract/aux/sources/concliq_math.move -p 64
+//go:generate go run ../docs/concliq/gen-math -o ../aptos/contract/aux/sources/concliq_math.move -p 96
 
 // abort-only-contract
 // Uncomment the below command to generate abort only contract

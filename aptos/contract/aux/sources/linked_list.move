@@ -108,7 +108,7 @@ module aux::linked_list {
         insert_after(list, index, value)
     }
 
-    /// insert after index
+    /// insert after index. If the list is empty, the index can be NULL_INDEX.
     public fun insert_after<V>(list: &mut LinkedList<V>, index: u64, value: V) {
         let new_index = table::length(&list.entries);
         assert!(
@@ -142,9 +142,11 @@ module aux::linked_list {
         } else {
             list.tail = new_index;
         };
+
         push_back(&mut list.entries, node);
     }
 
+    /// isnert before index. If the list is empty, the index can be NULL_INDEX.
     public fun insert_before<V>(list: &mut LinkedList<V>, index: u64, value: V) {
         let new_index = table::length(&list.entries);
         assert!(
@@ -182,6 +184,7 @@ module aux::linked_list {
     }
 
     /// remove deletes and returns the element from the LinkedList.
+    /// element is first swapped to the end of the container, then popped out.
     public fun remove<V>(list: &mut LinkedList<V>, index: u64): V {
         let to_remove = table::borrow(&list.entries, index);
         let prev = to_remove.prev;
@@ -196,6 +199,8 @@ module aux::linked_list {
         } else {
             list.tail = next;
         };
+
+        // swap the element to be removed with the last element
         if (index + 1 != table::length(&list.entries)) {
             let tail_index = table::length(&list.entries) - 1;
             swap(&mut list.entries, index, tail_index);
@@ -214,6 +219,7 @@ module aux::linked_list {
             };
         };
 
+        // pop
         let Node {
             value,
             next: _,
@@ -223,7 +229,7 @@ module aux::linked_list {
         value
     }
 
-    /// destroys the tree if it's empty.
+    /// destroys the linked list if it's empty.
     public fun destroy_empty<V>(tree: LinkedList<V>) {
         assert!(table::length(&tree.entries) == 0, E_CANNOT_DESTRORY_NON_EMPTY);
 

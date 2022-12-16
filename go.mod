@@ -3,9 +3,9 @@ module github.com/aux-exchange/aux-exchange
 go 1.19
 
 require (
-	github.com/fardream/gen-move-container v1.0.1
-	github.com/fardream/gen-move-math v1.4.0
-	github.com/fardream/go-aptos v0.7.2
+	github.com/fardream/gen-move-container v1.1.0
+	github.com/fardream/gen-move-math v1.4.1
+	github.com/fardream/go-aptos v0.8.0
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/websocket v1.5.0

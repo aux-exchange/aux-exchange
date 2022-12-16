@@ -7,7 +7,7 @@ import (
 
 // GetSquarePricePow2N calculate (sqrt(1.0001))^(2^n) with precision.
 // precision is the number of bits after the decimal points
-func GetSquarePricePow2N(n int, precision int) *big.Int {
+func GetSquarePricePow2N(n int, precision uint) *big.Int {
 	numerator := big.NewInt(10001)
 	denominator := big.NewInt(100)
 
@@ -15,16 +15,27 @@ func GetSquarePricePow2N(n int, precision int) *big.Int {
 		numerator.Mul(numerator, numerator)
 		denominator.Mul(denominator, denominator)
 	}
-	numerator.Mul(numerator, big.NewInt(1).Lsh(big.NewInt(1), uint(precision)*2))
+	numerator.Mul(numerator, big.NewInt(1).Lsh(big.NewInt(1), precision*2))
 	numerator.Sqrt(numerator)
 	numerator.Div(numerator, denominator)
 
 	return numerator
 }
 
+func IntInverse(bigInt *big.Int, precision uint, roundUp bool) *big.Int {
+	one := big.NewInt(0).Lsh(big.NewInt(1), precision*2)
+	r := big.NewInt(0).Div(one, bigInt)
+	tmp := big.NewInt(0).Mul(r, bigInt)
+	if roundUp && tmp.Cmp(one) < 0 {
+		r = r.Add(r, big.NewInt(1))
+	}
+
+	return r
+}
+
 // GetSquarePricePow2N calculate (sqrt(1.0001))^(-2^n) with precision.
 // precision is the number of bits after the decimal points
-func GetSquarePriceNegPow2N(n int, precision int) *big.Int {
+func GetSquarePriceNegPow2N(n int, precision uint) *big.Int {
 	numerator := big.NewInt(10000)
 	denominator := big.NewInt(10001)
 
@@ -33,7 +44,7 @@ func GetSquarePriceNegPow2N(n int, precision int) *big.Int {
 		denominator.Mul(denominator, denominator)
 	}
 
-	numerator.Mul(numerator, big.NewInt(1).Lsh(big.NewInt(1), uint(precision)*2))
+	numerator.Mul(numerator, big.NewInt(1).Lsh(big.NewInt(1), precision*2))
 	numerator.Div(numerator, denominator)
 	numerator.Sqrt(numerator)
 
@@ -56,7 +67,7 @@ type TwoPowerPrice struct {
 	IsNeg         bool
 }
 
-func NewTwoPowerPrice(i int, bigInt *big.Int, precision int) *TwoPowerPrice {
+func NewTwoPowerPrice(i int, bigInt *big.Int, precision uint) *TwoPowerPrice {
 	r := &TwoPowerPrice{
 		I:       i,
 		BigInt:  bigInt,
@@ -64,7 +75,7 @@ func NewTwoPowerPrice(i int, bigInt *big.Int, precision int) *TwoPowerPrice {
 		TwoP:    1 << i,
 	}
 
-	log2, err := GetLog2(bigInt, uint(precision))
+	log2, err := GetLog2(bigInt, precision)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +92,7 @@ type SquarePriceList struct {
 	NegativeIndices  []*TwoPowerPrice
 	MaxPositiveIndex int
 	MinNegativeIndex int
-	Precision        int
+	Precision        uint
 
 	// SquarePrice1 is sqrt(1.0001)
 	SquarePrice1 string
@@ -94,7 +105,7 @@ type SquarePriceList struct {
 	SquarePriceNeg1Log2 string
 }
 
-func NewSquarePriceList(precision int) *SquarePriceList {
+func NewSquarePriceList(precision uint) *SquarePriceList {
 	if precision <= 0 || precision%32 != 0 || precision > 96 {
 		log.Fatalf("%d is not valid precision, must be 32, 64, or 96", precision)
 	}
@@ -106,8 +117,16 @@ func NewSquarePriceList(precision int) *SquarePriceList {
 	}
 
 	for i := 0; i < 19; i++ {
-		result.NegativeIndices = append(result.NegativeIndices, NewTwoPowerPrice(i, GetSquarePriceNegPow2N(i, precision), precision))
-		result.PositiveIndices = append(result.PositiveIndices, NewTwoPowerPrice(i, GetSquarePricePow2N(i, precision), precision))
+		positivePrice := GetSquarePricePow2N(i, precision)
+		// the two ways of calculating the sqrt(1.0001)^n will generate different result
+		// for either 1/sqrt(p) or log_{sqrt(1.0001)} p
+		//
+		// using GetSquarePriceNegPow2N will get exact log, but will error when the price is obtained from inverse.
+		//
+		// negativePrice := IntInverse(positivePrice, precision, false)
+		negativePrice := GetSquarePriceNegPow2N(i, precision)
+		result.NegativeIndices = append(result.NegativeIndices, NewTwoPowerPrice(i, negativePrice, precision))
+		result.PositiveIndices = append(result.PositiveIndices, NewTwoPowerPrice(i, positivePrice, precision))
 	}
 
 	result.SquarePrice1 = result.PositiveIndices[0].StringV

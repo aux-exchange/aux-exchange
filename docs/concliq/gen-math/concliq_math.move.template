@@ -7,7 +7,7 @@
 // There are three optiosn for precision:
 // - 32: only lower 64 bits of the u128 is used, decimal point is at index 96 of the u128 from the most significant bit.
 // - 64: only lower 96 bits of the u128 is used, decimal point is at index 64 of the u128 from the most significant bit.
-// - 96: all the bits of the u128 is used, decimal point is at index 32 of teh u128 from the most significant bit.
+// - 96: all the bits of the u128 is used, decimal point is at index 32 of the u128 from the most significant bit.
 module aux::concliq_math {
     use aux::int32::{Self, Int32};
     use aux::int128::{Self, Int128};
@@ -31,12 +31,16 @@ module aux::concliq_math {
     /// Precision used in the operation.
     const PRECISION: u8 = {{.Precision}};
 
-    const OFFSET_96: u8 = 96 - {{.Precision}};
-
+    // ONE_X is 1 in fixed point number with {{.Precision}} digits after decimal point.
     const ONE_X: u128 = 1 << {{.Precision}};
+    // TWO_X is 2 in fixed point number with {{.Precision}} digits after decimal point.
     const TWO_X: u128 = 1 << ({{.Precision}} + 1);
+    // ONE_X_256 is 1 in fixed point number with {{.Precision}} digits after decimal point.
     const ONE_X_256: u256 = 1 << {{.Precision}};
+    // TWO_X_256 is 2 in fixed point number with {{.Precision}} digits after decimal point.
     const TWO_X_256: u256 = 1 << ({{.Precision}} + 1);
+    // ONE_X_TWICE_SHIFTED_256 is 1 in fixed point number with 2*{{.Precision}} digits after decimal point. It is generally acting as numerator for division.
+    const ONE_X_TWICE_SHIFTED_256: u256 = (1 << {{.Precision}}) << {{.Precision}};
 
     /// sqrt(1.0001) in fixed point {{.Precision}}
     const SQUARE_PRICE: u128 = {{.SquarePrice1}};
@@ -82,36 +86,7 @@ module aux::concliq_math {
         (r as u128)
     }
 
-    /// get log_2 y where y \in [1,2)
-    public fun log_2_y(y: u128): u128 {
-        assert!(y >= ONE_X && y < TWO_X, E_Y_OUTSIDE_1_2);
-        let z_2 = (y as u256);
-        let r: u256 = 0;
-        let sum_m: u8 = 0;
-        let m: u8 = 0;
-
-        loop {
-            if (z_2 == ONE_X_256) {
-                break
-            };
-            let z = z_2 * z_2;
-            z = z >> PRECISION;
-            sum_m = sum_m + 1;
-            m = m + 1;
-            if (sum_m > PRECISION) {
-                break
-            };
-            if (z >= TWO_X_256) {
-                r = r + (ONE_X_256 >> sum_m);
-                z_2 = z >> 1;
-            } else {
-                z_2 = z;
-            };
-        };
-
-        (r as u128)
-    }
-
+    /// log_2 for log_{sqrt{1.0001}} y
     public fun log_2(y: u128): Int128 {
         assert!(y != 0, E_ZERO_FOR_LOG_2);
         let leading_zeros = more_math_u128::leading_zeros(y);
@@ -120,15 +95,18 @@ module aux::concliq_math {
         } else if (y > ONE_X) {
             let n_0: u8 = 128 - PRECISION - leading_zeros - 1;
             let r = (n_0 as u128) << PRECISION;
-            int128::new(r + log_2_y(y >> n_0), false)
+            let d = (more_math_u256::log_2((y as u256) >> n_0, PRECISION) as u128);
+            int128::new(r + d, false)
         } else {
             let n_0: u8 = leading_zeros - (128 - PRECISION - 1);
             let r = (n_0 as u128) << PRECISION;
             let intpart = int128::new(r, true);
-            int128::add(int128::new(log_2_y(y << n_0), false), intpart)
+            let d = (more_math_u256::log_2((y as u256) << n_0, PRECISION) as u128);
+            int128::add(int128::new(d, false), intpart)
         }
     }
 
+    /// get the tick from sqrt price
     public fun get_tick(sqrt_p: u128): Int32 {
         let log_2_y = log_2(sqrt_p);
         let is_neg = int128::is_negative(log_2_y);
@@ -146,26 +124,60 @@ module aux::concliq_math {
         int32::new((ratio as u32), is_neg)
     }
 
-    public fun get_price(x: u64, y: u64): u128 {
-        let x = (x as u128) << {{.Precision}};
-        let y = (y as u128);
+    /// price
+    public fun get_price(x: u64, y: u64): u256 {
+        let x = (x as u256) << PRECISION;
+        let y = (y as u256);
         x / y
     }
 
-    public fun get_square_price(price: u128): u128 {
+    /// get the sqrt price sqrt(x/y)
+    public fun get_sqrt_price(x: u64, y: u64): u128 {
+        let x = ((x as u256) << PRECISION) << PRECISION;
+        let y = (y as u256);
+        (more_math_u256::sqrt(x / y) as u128)
+    }
+
+    /// get sqrt price for a fixed point price with the same precision.
+    public fun get_sqrt_price_from_price(price: u128): u128 {
         let price = (price as u256);
         price = price << PRECISION;
         let sqrt_price = more_math_u256::sqrt(price);
         (sqrt_price as u128)
     }
 
+    /// check if this is a valid tick
     public fun is_valid_tick(tick: Int32, spacing: u32): bool {
         let abs_tick = int32::abs(tick);
-        abs_tick % spacing == 0
+        (abs_tick % spacing) == 0
     }
 
+    /// making sure the tick spacing is between 1 and 256 inclusive.
     public fun is_valid_tick_spacing(tick_spacing: u32): bool {
         tick_spacing > 0 && tick_spacing <= 256
+    }
+
+    /// inverse returns 1/x
+    public fun inverse(x: u128, round_up: bool): u128 {
+        let x = (x as u256);
+        let r = ONE_X_TWICE_SHIFTED_256 / x;
+        if (round_up && (r * x < ONE_X_TWICE_SHIFTED_256)) {
+            ((r + 1) as u128)
+        } else {
+            (r as u128)
+        }
+    }
+
+    /// divide the fixed point number.
+    public fun divide(numerator: u128, denominator: u128, round_up: bool): u128 {
+        let numerator = (numerator as u256) << PRECISION;
+        let denominator = (denominator as u256);
+        let r = numerator / denominator;
+        if (round_up && (r * denominator < numerator)) {
+            ((r + 1) as u128)
+        } else {
+            (r as u128)
+        }
     }
 
     #[test_only]
@@ -176,6 +188,7 @@ module aux::concliq_math {
             abort((i as u64))
         }
     }
+
     #[test_only]
     public fun get_square_price_from_2_n_negative(i: u8): u128 {
 {{range .NegativeIndices}}        {{if ne .I 0}}} else {{end}}if (i == {{.I}}) {
@@ -193,12 +206,43 @@ module aux::concliq_math {
         let square_price_{{.I}} = {{.StringV}}u128;
         let ratio_{{.I}} = get_tick(square_price_{{.I}});
         let abs_ratio_{{.I}} = int32::abs(ratio_{{.I}});
-        assert!(abs_ratio_{{.I}} == {{.TwoP}}, (abs_ratio_{{.I}} as u64));
-{{end}}
-{{range .NegativeIndices}}        // check negative side
+        assert!(abs_ratio_{{.I}} == {{.TwoP}}, (abs_ratio_{{.I}} as u64)); // positive
+{{end}}{{range .NegativeIndices}}
+        // check negative side
         let square_price_{{.I}} = {{.StringV}}u128;
         let ratio_{{.I}} = get_tick(square_price_{{.I}});
         let abs_ratio_{{.I}} = int32::abs(ratio_{{.I}});
-        assert!(abs_ratio_{{.I}} == {{.TwoP}}, (abs_ratio_{{.I}} as u64));
+        assert!(abs_ratio_{{.I}} == {{.TwoP}}, (abs_ratio_{{.I}} as u64)); // negative
+{{end}}    }
+
+    #[test]
+    fun test_inverse() {
+        // check if the inverse can match back
+{{range .PositiveIndices}}
+        ////////////////////////////////////////////////////////////////
+        // check if inverse of sqrt price is from negative tick value
+        let p_{{.I}} = get_square_price_from_2_n_positive({{.I}});
+        let p_neg_{{.I}} = get_square_price_from_2_n_negative({{.I}});
+        let p_{{.I}}_inverse = inverse(p_{{.I}}, false);
+        let diff_{{.I}} = int128::unsigned_subtract(p_{{.I}}_inverse, p_neg_{{.I}});
+        if (!int128::is_zero(diff_{{.I}})) {
+            std::debug::print(&{{.I}});
+            std::debug::print(&p_neg_{{.I}});
+            std::debug::print(&p_{{.I}}_inverse);
+            std::debug::print(&diff_{{.I}});
+        };
+        let diff_{{.I}} = int128::abs(diff_{{.I}});
+        assert!(diff_{{.I}} <= 1, (diff_{{.I}} as u64)); // positive index inverse
+
+        let p_neg_{{.I}}_inverse = inverse(p_neg_{{.I}}, false);
+        let diff_{{.I}} = int128::unsigned_subtract(p_neg_{{.I}}_inverse, p_{{.I}});
+        if (!int128::is_zero(diff_{{.I}})) {
+            std::debug::print(&{{.I}});
+            std::debug::print(&p_{{.I}});
+            std::debug::print(&p_neg_{{.I}}_inverse);
+            std::debug::print(&diff_{{.I}});
+        };
+        let diff_{{.I}} = int128::abs(diff_{{.I}});
+        assert!(diff_{{.I}} <= 1, (diff_{{.I}} as u64)); // negative index inverse
 {{end}}    }
 }
