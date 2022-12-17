@@ -63,10 +63,10 @@ type Pool {
   price(coinTypeIn: String!, coinTypeOut: String!, amountIn: Decimal!): Decimal!
   quoteExactIn(quoteExactInInput: QuoteExactInInput): QuoteExactIn!
   quoteExactOut(quoteExactOutInput: quoteExactOutInput): QuoteExactOut!
-  position(address: ID!): Position
-  swaps(address: ID, first: Int, offset: Int): [Swapped!]!
-  adds(address: ID, first: Int, offset: Int): [LiquidityAdded!]!
-  removes(address: ID, first: Int, offset: Int): [LiquidityRemoved!]!
+  position(sender: ID!): Position
+  swaps(sender: ID, first: Int, offset: Int): [Swapped!]!
+  adds(sender: ID, first: Int, offset: Int): [LiquidityAdded!]!
+  removes(sender: ID, first: Int, offset: Int): [LiquidityRemoved!]!
   summaryStatistics: PoolSummaryStatistics!
 }
 
@@ -156,25 +156,25 @@ input PoolInput {
 }
 
 input CreatePoolInput {
-  signer: ID!
+  sender: ID!
   poolInput: PoolInput!
   feeTier: FeeTier!
 }
 
 input AddLiquidityInput {
-  signer: ID!
+  sender: ID!
   poolInput: PoolInput!
   amounts: [Decimal!]!
 }
 
 input RemoveLiquidityInput {
-  signer: ID!
+  sender: ID!
   poolInput: PoolInput!
   amountLP: Decimal!
 }
 
 input SwapExactInInput {
-  signer: ID!
+  sender: ID!
   poolInput: PoolInput!
   coinTypeIn: String!
   coinTypeOut: String!
@@ -183,7 +183,7 @@ input SwapExactInInput {
 }
 
 input SwapExactOutInput {
-  signer: ID!
+  sender: ID!
   poolInput: PoolInput!
   coinTypeIn: String!
   coinTypeOut: String!

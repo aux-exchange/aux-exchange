@@ -1,3 +1,4 @@
+use async_graphql::ID;
 use color_eyre::eyre::{bail, eyre, Result, WrapErr};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
@@ -15,6 +16,7 @@ use sui_sdk::{
     },
     SuiClient, TransactionExecutionResult,
 };
+use sui_types::crypto::Signature;
 use sui_types::{
     coin::Coin,
     event::BalanceChangeType,
@@ -22,19 +24,13 @@ use sui_types::{
     query::EventQuery,
 };
 
-use crate::parse::parse_type_args;
 use crate::schema::{
-    Position, SuiConstantProductLiquidityAdded, SuiConstantProductLiquidityRemoved,
-    SuiConstantProductSwapped,
+    Coins, Curve, FeeTier, LiquidityAdded, LiquidityRemoved, Percent, Pool, PoolInput,
+    PoolSummaryStatistics, Position, PriceRating, QuoteExactIn, QuoteExactOut,
+    SuiConstantProductLiquidityAdded, SuiConstantProductLiquidityRemoved, SuiConstantProductPool,
+    SuiConstantProductSwapped, SuiObject, Swapped,
 };
-use crate::{
-    coin_units,
-    parse::parse_sui_type_tag,
-    schema::{
-        Coins, Curve, FeeTier, LiquidityAdded, LiquidityRemoved, Percent, Pool, PoolInput,
-        PriceRating, QuoteExactIn, QuoteExactOut, SuiConstantProductPool, SuiObject, Swapped,
-    },
-};
+use crate::{decimal_to_sui_json, decimal_units, parse_sui_type_tag, parse_type_args};
 
 pub struct AuxClient {
     pub sui_client: SuiClient,
@@ -107,6 +103,14 @@ impl AuxClient {
             .last()
             .ok_or(eyre!("Keystore is empty."))?;
         let signature = keystore.sign(&signer, &tx.to_bytes())?;
+        self.execute(tx, signature).await
+    }
+
+    pub async fn execute(
+        &self,
+        tx: TransactionData,
+        signature: Signature,
+    ) -> Result<TransactionExecutionResult> {
         self.sui_client
             .quorum_driver()
             .execute_transaction(
@@ -120,16 +124,12 @@ impl AuxClient {
     async fn move_events<T: DeserializeOwned>(
         &self,
         type_: String,
+        limit: Option<usize>,
     ) -> Result<Vec<crate::schema::SuiEvent<T>>> {
         let raw_events = self
             .sui_client
             .event_api()
-            .get_events(
-                EventQuery::MoveEvent(type_),
-                None,
-                Some(QUERY_MAX_RESULT_LIMIT),
-                None,
-            )
+            .get_events(EventQuery::MoveEvent(type_), None, limit, None)
             .await
             .map_err(|err| eyre!(err))?;
 
@@ -349,6 +349,60 @@ pub trait PoolClient {
 
     async fn find_pool(&self, pool_input: &PoolInput) -> Result<Pool>;
 
+    async fn price(
+        &self,
+        pool_input: &PoolInput,
+        coin_type_in: &str,
+        coin_type_out: &str,
+        amount_in: Decimal,
+    ) -> Result<Decimal>;
+
+    async fn quote_exact_in(
+        &self,
+        pool_input: &PoolInput,
+        coin_type_in: &str,
+        coin_type_out: &str,
+        amount_in: Decimal,
+        slippage: Percent,
+    ) -> Result<QuoteExactIn>;
+
+    async fn quote_exact_out(
+        &self,
+        pool_input: &PoolInput,
+        coin_type_in: &str,
+        coin_type_out: &str,
+        amount_out: Decimal,
+        slippage: Percent,
+    ) -> Result<QuoteExactOut>;
+
+    async fn position(&self, pool_input: &PoolInput, sender: SuiAddress) -> Result<Position>;
+
+    async fn swaps(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<Swapped>>;
+
+    async fn adds(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<LiquidityAdded>>;
+
+    async fn removes(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<LiquidityRemoved>>;
+
+    async fn summary_statistics(&self, pool_input: &PoolInput) -> Result<PoolSummaryStatistics>;
+
     async fn create_pool(
         &self,
         signer: SuiAddress,
@@ -392,32 +446,6 @@ pub trait PoolClient {
         amount_out: Decimal,
         slippage: Percent,
     ) -> Result<TransactionData>;
-
-    async fn quote_exact_in(
-        &self,
-        pool_input: &PoolInput,
-        coin_type_in: &str,
-        coin_type_out: &str,
-        amount_in: Decimal,
-        slippage: Percent,
-    ) -> Result<QuoteExactIn>;
-
-    async fn quote_exact_out(
-        &self,
-        pool_input: &PoolInput,
-        coin_type_in: &str,
-        coin_type_out: &str,
-        amount_out: Decimal,
-        slippage: Percent,
-    ) -> Result<QuoteExactOut>;
-
-    async fn position(&self, pool_input: &PoolInput, address: SuiAddress) -> Result<Position>;
-
-    async fn swaps(&self, pool_input: &PoolInput) -> Result<Vec<Swapped>>;
-
-    async fn adds(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityAdded>>;
-
-    async fn removes(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityRemoved>>;
 }
 
 impl PoolClient for AuxClient {
@@ -426,11 +454,11 @@ impl PoolClient for AuxClient {
         let cp = object.data;
         let coin_types = parse_type_args(&object.type_)?;
         let mut reserves = Vec::new();
-        reserves.push(coin_units::decimal(
+        reserves.push(decimal_units(
             cp.reserve_x.balance.value(),
             self.coin_metadata(&coin_types[0]).decimals,
         )?);
-        reserves.push(coin_units::decimal(
+        reserves.push(decimal_units(
             cp.reserve_y.balance.value(),
             self.coin_metadata(&coin_types[1]).decimals,
         )?);
@@ -441,7 +469,7 @@ impl PoolClient for AuxClient {
             coin_types,
             curve: Curve::ConstantProduct,
             reserves,
-            supply_lp: cp.supply_lp.value, // FIXME
+            supply_lp: cp.supply_lp.value,
             fee_bps: cp.fee_bps as u16,
         };
         Ok(pool)
@@ -537,6 +565,230 @@ impl PoolClient for AuxClient {
         self.pool(id).await
     }
 
+    async fn price(
+        &self,
+        pool_input: &PoolInput,
+        coin_type_in: &str,
+        coin_type_out: &str,
+        amount_in: Decimal,
+    ) -> Result<Decimal> {
+        let pool = self.find_pool(pool_input).await?;
+        let (i, j) = pool_input.indices(&coin_type_in, &coin_type_out)?;
+        Ok((pool.reserves[j] / pool.reserves[i]) * amount_in)
+    }
+
+    async fn quote_exact_in(
+        &self,
+        pool_input: &PoolInput,
+        coin_type_in: &str,
+        coin_type_out: &str,
+        amount_in: Decimal,
+        slippage: Percent,
+    ) -> Result<QuoteExactIn> {
+        let pool = self.find_pool(pool_input).await?;
+        let (i, j) = pool_input.indices(coin_type_in, coin_type_out)?;
+        let (reserves_in, reserves_out) = (pool.reserves[i], pool.reserves[j]);
+
+        let fee_percent = Decimal::new(pool.fee_bps as i64, 3).round_dp(2);
+        let amount_in_with_fee = amount_in * (dec!(1) - fee_percent); // TODO
+        let expected_amount_out =
+            (amount_in_with_fee * reserves_out) / (reserves_in + amount_in_with_fee);
+        let min_amount_out = expected_amount_out * (dec!(1) - slippage.0 / dec!(100));
+        let fee_amount = amount_in * fee_percent;
+        let instantaneous_amount_out = (reserves_out / reserves_in) * amount_in;
+        let price = expected_amount_out / amount_in;
+        let price_impact = ((instantaneous_amount_out - expected_amount_out)
+            / instantaneous_amount_out)
+            * dec!(100);
+        let price_impact_rating = if price_impact > dec!(0.5) {
+            PriceRating::Red
+        } else if price_impact > dec!(0.2) {
+            PriceRating::Yellow
+        } else {
+            PriceRating::Green
+        };
+
+        let decimals_in = self.coin_metadata(coin_type_in).decimals as u32;
+        let decimals_out = self.coin_metadata(coin_type_out).decimals as u32;
+        let min_amount_out = min_amount_out
+            .round_dp_with_strategy(decimals_out, RoundingStrategy::ToPositiveInfinity);
+
+        let quote = QuoteExactIn {
+            expected_amount_out: expected_amount_out
+                .round_dp_with_strategy(decimals_out, RoundingStrategy::ToZero),
+            min_amount_out: min_amount_out
+                .round_dp_with_strategy(decimals_out, RoundingStrategy::ToPositiveInfinity),
+            fee_amount: fee_amount
+                .round_dp_with_strategy(decimals_in, RoundingStrategy::ToPositiveInfinity),
+            fee_currency: coin_type_in.to_string(),
+            fee_amount_usd: None, // TODO
+            price: price.round_dp_with_strategy(decimals_out, RoundingStrategy::ToZero),
+            price_impact: price_impact.round_dp(2),
+            price_impact_rating,
+            pyth_rating: None, // TODO
+        };
+        Ok(quote)
+    }
+
+    async fn quote_exact_out(
+        &self,
+        _pool_input: &PoolInput,
+        _coin_type_in: &str,
+        _coin_type_out: &str,
+        _amount_out: Decimal,
+        _slippage: Percent,
+    ) -> Result<QuoteExactOut> {
+        // TODO
+        unimplemented!()
+    }
+
+    async fn position(&self, pool_input: &PoolInput, sender: SuiAddress) -> Result<Position> {
+        let pool = self.find_pool(pool_input).await?;
+        let lp_sum = self
+            .sum_coins(sender, &pool_input.lp_coin_type(self.package))
+            .await?;
+
+        let mut part = decimal_units(lp_sum as u64, 0)?;
+        part.rescale(2);
+        let mut whole = decimal_units(pool.supply_lp, 0)?;
+        whole.rescale(2);
+        let share = part / whole;
+
+        let position = Position {
+            coins: pool
+                .coin_types
+                .iter()
+                .map(|coin_type| {
+                    if coin_type.ends_with("BTC>") {
+                        Coins::btc()
+                    } else if coin_type.ends_with("ETH>") {
+                        Coins::eth()
+                    } else if coin_type.ends_with("USDC>") {
+                        Coins::usdc()
+                    } else {
+                        Coins::sui()
+                    }
+                })
+                .collect(),
+            coin_lp: crate::schema::Coin(
+                self.coin_metadata(&pool_input.lp_coin_type(self.package)),
+            ),
+            amounts: pool
+                .reserves
+                .iter()
+                .map(|reserve| share * reserve)
+                .collect(),
+            amount_lp: share * decimal_units(lp_sum as u64, 0)?,
+            share: Percent(share),
+        };
+        Ok(position)
+    }
+
+    async fn swaps(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<Swapped>> {
+        let raw_swaps: Vec<crate::schema::SuiEvent<SuiConstantProductSwapped>> = self
+            .move_events(pool_input.swapped_type(self.package), offset)
+            .await?;
+        let mut swaps = Vec::new();
+        for raw_swapped in raw_swaps {
+            let coin_in =
+                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_in.name));
+            let coin_out =
+                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_out.name));
+            let decimals_in = coin_in.0.decimals;
+            let decimals_out = coin_out.0.decimals;
+
+            if sender.is_none() || sender.is_some_and(|sender| raw_swapped.sender == sender) {
+                let swapped = Swapped {
+                    coin_in,
+                    coin_out,
+                    amount_in: decimal_units(raw_swapped.data.amount_in, decimals_in)?,
+                    amount_out: decimal_units(raw_swapped.data.amount_in, decimals_out)?,
+                    sender: ID(raw_swapped.sender.to_string()),
+                    timestamp: raw_swapped.timestamp,
+                };
+                swaps.push(swapped)
+            }
+        }
+        Ok(swaps)
+    }
+
+    async fn adds(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<LiquidityAdded>> {
+        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
+        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
+
+        let raw_adds: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityAdded>> = self
+            .move_events(pool_input.liquidity_added_type(self.package), offset)
+            .await?;
+        let mut adds = Vec::new();
+        for raw_add in raw_adds {
+            adds.push(LiquidityAdded {
+                amounts_added: vec![
+                    decimal_units(raw_add.data.amount_added_x, decimals_x)?,
+                    decimal_units(raw_add.data.amount_added_y, decimals_y)?,
+                ],
+                amount_minted_lp: decimal_units(raw_add.data.amount_minted_lp, 0)?,
+                sender: ID(raw_add.sender.to_string()),
+                timestamp: raw_add.timestamp,
+            });
+        }
+        Ok(adds)
+    }
+
+    async fn removes(
+        &self,
+        pool_input: &PoolInput,
+        sender: Option<SuiAddress>,
+        first: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<LiquidityRemoved>> {
+        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
+        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
+
+        let raw_removes: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityRemoved>> = self
+            .move_events(pool_input.liquidity_removed_type(self.package), offset)
+            .await?;
+        let mut removes = Vec::new();
+        for raw_remove in raw_removes {
+            removes.push(LiquidityRemoved {
+                amounts_removed: vec![
+                    decimal_units(raw_remove.data.amount_removed_x, decimals_x)?,
+                    decimal_units(raw_remove.data.amount_removed_y, decimals_y)?,
+                ],
+                amount_burned_lp: decimal_units(raw_remove.data.amount_burned_lp, 0)?,
+                sender: ID(raw_remove.sender.to_string()),
+                timestamp: raw_remove.timestamp,
+            });
+        }
+        Ok(removes)
+    }
+
+    // FIXME
+    async fn summary_statistics(&self, _pool_input: &PoolInput) -> Result<PoolSummaryStatistics> {
+        Ok(PoolSummaryStatistics {
+            tvl: 4982157.90012,
+            volume_24h: 330681.72041,
+            fee_24h: 330.681509,
+            user_count_24h: 60.0,
+            transaction_count_24h: 906.0,
+            volume_1w: 4211711.834646,
+            fee_1w: 4211.709057,
+            user_count_1w: 605.0,
+            transaction_count_1w: 12147.0,
+        })
+    }
+
     async fn create_pool(
         &self,
         signer: SuiAddress,
@@ -606,7 +858,7 @@ impl PoolClient for AuxClient {
             call_args.push(SuiJsonValue::from_object_id(largest_coin.id));
         }
         for amount in amounts {
-            call_args.push(coin_units::to_sui_json(*amount)?);
+            call_args.push(decimal_to_sui_json(*amount)?);
         }
         self.sui_client
             .transaction_builder()
@@ -676,8 +928,8 @@ impl PoolClient for AuxClient {
         let call_args = vec![
             SuiJsonValue::from_object_id(self.find_pool_id(pool_input).await?),
             SuiJsonValue::from_object_id(self.find_largest_coin(signer, coin_type_in).await?.id),
-            coin_units::to_sui_json(amount_in)?,
-            coin_units::to_sui_json(
+            decimal_to_sui_json(amount_in)?,
+            decimal_to_sui_json(
                 self.quote_exact_in(pool_input, coin_type_in, coin_type_out, amount_in, slippage)
                     .await?
                     .min_amount_out,
@@ -717,181 +969,5 @@ impl PoolClient for AuxClient {
         _slippage: Percent,
     ) -> Result<TransactionData> {
         unimplemented!()
-    }
-
-    async fn quote_exact_in(
-        &self,
-        pool_input: &PoolInput,
-        coin_type_in: &str,
-        coin_type_out: &str,
-        amount_in: Decimal,
-        slippage: Percent,
-    ) -> Result<QuoteExactIn> {
-        let pool = self.find_pool(pool_input).await?;
-        let (i, j) = pool_input.indices(coin_type_in, coin_type_out)?;
-        let (reserves_in, reserves_out) = (pool.reserves[i], pool.reserves[j]);
-
-        let fee_percent = Decimal::new(pool.fee_bps as i64, 3).round_dp(2);
-        let amount_in_with_fee = amount_in * (dec!(1) - fee_percent); // TODO
-        let expected_amount_out =
-            (amount_in_with_fee * reserves_out) / (reserves_in + amount_in_with_fee);
-        let min_amount_out = expected_amount_out * (dec!(1) - slippage.0 / dec!(100));
-        let fee_amount = amount_in * fee_percent;
-        let instantaneous_amount_out = (reserves_out / reserves_in) * amount_in;
-        let price = expected_amount_out / amount_in;
-        let price_impact = ((instantaneous_amount_out - expected_amount_out)
-            / instantaneous_amount_out)
-            * dec!(100);
-        let price_impact_rating = if price_impact > dec!(0.5) {
-            PriceRating::Red
-        } else if price_impact > dec!(0.2) {
-            PriceRating::Yellow
-        } else {
-            PriceRating::Green
-        };
-
-        let decimals_in = self.coin_metadata(coin_type_in).decimals as u32;
-        let decimals_out = self.coin_metadata(coin_type_out).decimals as u32;
-        let min_amount_out = min_amount_out
-            .round_dp_with_strategy(decimals_out, RoundingStrategy::ToPositiveInfinity);
-
-        let quote = QuoteExactIn {
-            expected_amount_out: expected_amount_out
-                .round_dp_with_strategy(decimals_out, RoundingStrategy::ToZero),
-            min_amount_out: min_amount_out
-                .round_dp_with_strategy(decimals_out, RoundingStrategy::ToPositiveInfinity),
-            fee_amount: fee_amount
-                .round_dp_with_strategy(decimals_in, RoundingStrategy::ToPositiveInfinity),
-            fee_currency: coin_type_in.to_string(),
-            fee_amount_usd: None, // TODO
-            price: price.round_dp_with_strategy(decimals_out, RoundingStrategy::ToZero),
-            price_impact: price_impact.round_dp(2),
-            price_impact_rating,
-            pyth_rating: None, // TODO
-        };
-        Ok(quote)
-    }
-
-    async fn quote_exact_out(
-        &self,
-        _pool_input: &PoolInput,
-        _coin_type_in: &str,
-        _coin_type_out: &str,
-        _amount_out: Decimal,
-        _slippage: Percent,
-    ) -> Result<QuoteExactOut> {
-        // TODO
-        unimplemented!()
-    }
-
-    async fn position(&self, pool_input: &PoolInput, address: SuiAddress) -> Result<Position> {
-        let pool = self.find_pool(pool_input).await?;
-        let lp_sum = self
-            .sum_coins(address, &pool_input.lp_coin_type(self.package))
-            .await?;
-
-        let mut part = coin_units::decimal(lp_sum as u64, 0)?;
-        part.rescale(2);
-        let mut whole = coin_units::decimal(pool.supply_lp, 0)?;
-        whole.rescale(2);
-        let share = part / whole;
-
-        let position = Position {
-            coins: pool
-                .coin_types
-                .iter()
-                .map(|coin_type| {
-                    if coin_type.ends_with("BTC>") {
-                        Coins::btc()
-                    } else if coin_type.ends_with("ETH>") {
-                        Coins::eth()
-                    } else if coin_type.ends_with("USDC>") {
-                        Coins::usdc()
-                    } else {
-                        Coins::sui()
-                    }
-                })
-                .collect(),
-            coin_lp: crate::schema::Coin(
-                self.coin_metadata(&pool_input.lp_coin_type(self.package)),
-            ),
-            amounts: pool
-                .reserves
-                .iter()
-                .map(|reserve| share * reserve)
-                .collect(),
-            amount_lp: share * coin_units::decimal(lp_sum as u64, 0)?,
-            share: Percent(share),
-        };
-        Ok(position)
-    }
-
-    async fn swaps(&self, pool_input: &PoolInput) -> Result<Vec<Swapped>> {
-        let raw_swaps: Vec<crate::schema::SuiEvent<SuiConstantProductSwapped>> = self
-            .move_events(pool_input.swapped_type(self.package))
-            .await?;
-        let mut swaps = Vec::new();
-        for raw_swapped in raw_swaps {
-            let coin_in =
-                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_in.name));
-            let coin_out =
-                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_out.name));
-            let decimals_in = coin_in.0.decimals;
-            let decimals_out = coin_out.0.decimals;
-
-            let swapped = Swapped {
-                coin_in,
-                coin_out,
-                amount_in: coin_units::decimal(raw_swapped.data.amount_in, decimals_in)?,
-                amount_out: coin_units::decimal(raw_swapped.data.amount_in, decimals_out)?,
-                timestamp: raw_swapped.timestamp,
-            };
-            swaps.push(swapped)
-        }
-        Ok(swaps)
-    }
-
-    async fn adds(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityAdded>> {
-        let raw_adds: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityAdded>> = self
-            .move_events(pool_input.liquidity_added_type(self.package))
-            .await?;
-        let mut adds = Vec::new();
-
-        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
-        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
-
-        for raw_add in raw_adds {
-            adds.push(LiquidityAdded {
-                amounts_added: vec![
-                    coin_units::decimal(raw_add.data.amount_added_x, decimals_x)?,
-                    coin_units::decimal(raw_add.data.amount_added_y, decimals_y)?,
-                ],
-                amount_minted_lp: coin_units::decimal(raw_add.data.amount_minted_lp, 0)?,
-                timestamp: raw_add.timestamp,
-            });
-        }
-        Ok(adds)
-    }
-
-    async fn removes(&self, pool_input: &PoolInput) -> Result<Vec<LiquidityRemoved>> {
-        let raw_removes: Vec<crate::schema::SuiEvent<SuiConstantProductLiquidityRemoved>> = self
-            .move_events(pool_input.liquidity_removed_type(self.package))
-            .await?;
-        let mut removes = Vec::new();
-
-        let decimals_x = self.coin_metadata(&pool_input.coin_types[0]).decimals;
-        let decimals_y = self.coin_metadata(&pool_input.coin_types[1]).decimals;
-
-        for raw_remove in raw_removes {
-            removes.push(LiquidityRemoved {
-                amounts_removed: vec![
-                    coin_units::decimal(raw_remove.data.amount_removed_x, decimals_x)?,
-                    coin_units::decimal(raw_remove.data.amount_removed_y, decimals_y)?,
-                ],
-                amount_burned_lp: coin_units::decimal(raw_remove.data.amount_burned_lp, 0)?,
-                timestamp: raw_remove.timestamp,
-            });
-        }
-        Ok(removes)
     }
 }

@@ -3,17 +3,15 @@ use std::str::FromStr;
 
 use crate::{
     client::{AuxClient, PoolClient},
-    parse::parse_sui_type_tag,
+    parse_sui_type_tag,
 };
 use async_graphql::{
     Context, EmptySubscription, InputObject, InputValueError, InputValueResult, Object, Scalar,
     ScalarType, Schema, SimpleObject, Value, ID,
 };
 use color_eyre::eyre::{eyre, Result};
-
 use rust_decimal::Decimal;
 use serde::Deserialize;
-
 use sui_sdk::{
     rpc_types::{SuiCoinMetadata, SuiTypeTag},
     types::base_types::ObjectID,
@@ -54,25 +52,22 @@ impl QueryRoot {
         aux_client.pools().await
     }
 
-    async fn summary_statistics(&self) -> SummaryStatistics {
-        SummaryStatistics {
-            pool_summary_statistics: PoolSummaryStatistics {
-                tvl: 4982157.90012,
-                volume_24h: 330681.72041,
-                fee_24h: 330.681509,
-                user_count_24h: 60.0,
-                transaction_count_24h: 906.0,
-                volume_1w: 4211711.834646,
-                fee_1w: 4211.709057,
-                user_count_1w: 605.0,
-                transaction_count_1w: 12147.0,
-            },
+    async fn summary_statistics(
+        &self,
+        ctx: &Context<'_>,
+        pool_input: PoolInput,
+    ) -> Result<SummaryStatistics> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        let summary_statistics = SummaryStatistics {
+            pool_summary_statistics: aux_client.summary_statistics(&pool_input).await?,
+            // FIXME
             market_summary_statistics: MarketSummaryStatistics {
                 high_24h: 1245.42,
                 low_24h: 1267.98,
                 volume_24h: 20124901.21,
             },
-        }
+        };
+        Ok(summary_statistics)
     }
 }
 
@@ -85,11 +80,10 @@ impl MutationRoot {
         ctx: &Context<'_>,
         create_pool_input: CreatePoolInput,
     ) -> Result<Vec<u8>> {
-        let _signer = SuiAddress::from_str(&create_pool_input.signer).map_err(|err| eyre!(err))?;
         let aux_client = ctx.data_unchecked::<AuxClient>();
         let tx = aux_client
             .create_pool(
-                SuiAddress::from_str(&create_pool_input.signer).map_err(|err| eyre!(err))?,
+                SuiAddress::from_str(&create_pool_input.sender).map_err(|err| eyre!(err))?,
                 &create_pool_input.pool_input,
                 create_pool_input.fee_tier,
             )
@@ -105,7 +99,7 @@ impl MutationRoot {
         let aux_client = ctx.data_unchecked::<AuxClient>();
         let tx = aux_client
             .add_liquidity(
-                SuiAddress::from_str(&add_liquidity_input.signer).map_err(|err| eyre!(err))?,
+                SuiAddress::from_str(&add_liquidity_input.sender).map_err(|err| eyre!(err))?,
                 &add_liquidity_input.pool_input,
                 &add_liquidity_input.amounts,
             )
@@ -121,7 +115,7 @@ impl MutationRoot {
         let aux_client = ctx.data_unchecked::<AuxClient>();
         let tx = aux_client
             .remove_liquidity(
-                SuiAddress::from_str(&remove_liquidity_input.signer).map_err(|err| eyre!(err))?,
+                SuiAddress::from_str(&remove_liquidity_input.sender).map_err(|err| eyre!(err))?,
                 &remove_liquidity_input.pool_input,
                 remove_liquidity_input.amount_lp,
             )
@@ -137,7 +131,7 @@ impl MutationRoot {
         let aux_client = ctx.data_unchecked::<AuxClient>();
         let tx = aux_client
             .swap_exact_in(
-                SuiAddress::from_str(&swap_exact_in_input.signer).map_err(|err| eyre!(err))?,
+                SuiAddress::from_str(&swap_exact_in_input.sender).map_err(|err| eyre!(err))?,
                 &swap_exact_in_input.pool_input,
                 &swap_exact_in_input.coin_type_in,
                 &swap_exact_in_input.coin_type_out,
@@ -156,7 +150,7 @@ impl MutationRoot {
         let aux_client = ctx.data_unchecked::<AuxClient>();
         let tx = aux_client
             .swap_exact_out(
-                SuiAddress::from_str(&swap_exact_out_input.signer).map_err(|err| eyre!(err))?,
+                SuiAddress::from_str(&swap_exact_out_input.sender).map_err(|err| eyre!(err))?,
                 &swap_exact_out_input.pool_input,
                 &swap_exact_out_input.coin_type_in,
                 &swap_exact_out_input.coin_type_out,
@@ -254,19 +248,19 @@ impl Curve {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, async_graphql::Enum)]
 pub enum FeeTier {
-    VeryStable,
-    Stable,
-    Most,
-    Exotic,
+    VeryStable = 1,
+    Stable = 5,
+    Most = 30,
+    Exotic = 100,
 }
 
 impl FeeTier {
     pub fn to_bps(&self) -> u16 {
         match self {
-            FeeTier::VeryStable => 1,
-            FeeTier::Stable => 5,
-            FeeTier::Most => 30,
-            FeeTier::Exotic => 100,
+            FeeTier::VeryStable => FeeTier::VeryStable as u16,
+            FeeTier::Stable => FeeTier::Stable as u16,
+            FeeTier::Most => FeeTier::Most as u16,
+            FeeTier::Exotic => FeeTier::Exotic as u16,
         }
     }
 }
@@ -354,16 +348,15 @@ impl Pool {
 
     pub async fn price(
         &self,
+        ctx: &Context<'_>,
         coin_type_in: String,
         coin_type_out: String,
         amount_in: Decimal,
-    ) -> Decimal {
-        let (reserves_in, reserves_out) = if coin_type_in == self.coin_types[0] {
-            (self.reserves[0], self.reserves[1])
-        } else {
-            (self.reserves[1], self.reserves[0])
-        };
-        (reserves_out / reserves_in) * amount_in
+    ) -> Result<Decimal> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        aux_client
+            .price(&self.into(), &coin_type_in, &coin_type_out, amount_in)
+            .await
     }
 
     pub async fn quote_exact_in(
@@ -400,17 +393,12 @@ impl Pool {
             .await
     }
 
-    pub async fn position(
-        &self,
-        ctx: &Context<'_>,
-        pool_input: PoolInput,
-        address: ID,
-    ) -> Result<Position> {
+    pub async fn position(&self, ctx: &Context<'_>, sender: ID) -> Result<Position> {
         let aux_client = ctx.data_unchecked::<AuxClient>();
         aux_client
             .position(
-                &pool_input,
-                SuiAddress::from_str(&address).map_err(|err| eyre!(err))?,
+                &self.into(),
+                SuiAddress::from_str(&sender).map_err(|err| eyre!(err))?,
             )
             .await
     }
@@ -418,34 +406,53 @@ impl Pool {
     pub async fn swaps(
         &self,
         ctx: &Context<'_>,
-        _address: Option<ID>,
-        _first: Option<u64>,
-        _offset: Option<u64>,
+        sender: Option<ID>,
+        first: Option<usize>,
+        offset: Option<usize>,
     ) -> Result<Vec<Swapped>> {
         let aux_client = ctx.data_unchecked::<AuxClient>();
-        aux_client.swaps(&self.into()).await
+        let sender = sender
+            .map(|sender| SuiAddress::from_str(&sender))
+            .transpose()
+            .map_err(|err| eyre!(err))?;
+        aux_client.swaps(&self.into(), sender, first, offset).await
     }
 
     pub async fn adds(
         &self,
         ctx: &Context<'_>,
-        _address: Option<ID>,
-        _first: Option<u64>,
-        _offset: Option<u64>,
+        sender: Option<ID>,
+        first: Option<usize>,
+        offset: Option<usize>,
     ) -> Result<Vec<LiquidityAdded>> {
         let aux_client = ctx.data_unchecked::<AuxClient>();
-        aux_client.adds(&self.into()).await
+        let sender = sender
+            .map(|sender| SuiAddress::from_str(&sender))
+            .transpose()
+            .map_err(|err| eyre!(err))?;
+        aux_client.adds(&self.into(), sender, first, offset).await
     }
 
     pub async fn removes(
         &self,
         ctx: &Context<'_>,
-        _address: Option<ID>,
-        _first: Option<u64>,
-        _offset: Option<u64>,
+        sender: Option<ID>,
+        first: Option<usize>,
+        offset: Option<usize>,
     ) -> Result<Vec<LiquidityRemoved>> {
         let aux_client = ctx.data_unchecked::<AuxClient>();
-        aux_client.removes(&self.into()).await
+        let sender = sender
+            .map(|sender| SuiAddress::from_str(&sender))
+            .transpose()
+            .map_err(|err| eyre!(err))?;
+        aux_client
+            .removes(&self.into(), sender, first, offset)
+            .await
+    }
+
+    pub async fn summary_statistics(&self, ctx: &Context<'_>) -> Result<PoolSummaryStatistics> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        aux_client.summary_statistics(&self.into()).await
     }
 }
 
@@ -545,28 +552,28 @@ impl From<&Pool> for PoolInput {
 
 #[derive(InputObject)]
 pub struct CreatePoolInput {
-    pub signer: String, // FIXME deserializer for SuiAddress
+    pub sender: ID,
     pub pool_input: PoolInput,
     pub fee_tier: FeeTier,
 }
 
 #[derive(InputObject)]
 pub struct AddLiquidityInput {
-    pub signer: String, // FIXME deserializer for SuiAddress
+    pub sender: ID,
     pub pool_input: PoolInput,
     pub amounts: Vec<Decimal>,
 }
 
 #[derive(InputObject)]
 pub struct RemoveLiquidityInput {
-    pub signer: String, // FIXME deserializer for SuiAddress
+    pub sender: ID,
     pub pool_input: PoolInput,
     pub amount_lp: Decimal,
 }
 
 #[derive(InputObject)]
 pub struct SwapExactInInput {
-    pub signer: String, // FIXME deserializer for SuiAddress
+    pub sender: ID,
     pub pool_input: PoolInput,
     pub coin_type_in: String,
     pub coin_type_out: String,
@@ -576,7 +583,7 @@ pub struct SwapExactInInput {
 
 #[derive(InputObject)]
 pub struct SwapExactOutInput {
-    pub signer: String, // FIXME deserializer for SuiAddress
+    pub sender: ID,
     pub pool_input: PoolInput,
     pub coin_type_in: String,
     pub coin_type_out: String,
@@ -643,6 +650,7 @@ pub struct Swapped {
     pub coin_out: Coin,
     pub amount_in: Decimal,
     pub amount_out: Decimal,
+    pub sender: ID,
     pub timestamp: u64,
 }
 
@@ -650,6 +658,7 @@ pub struct Swapped {
 pub struct LiquidityAdded {
     pub amounts_added: Vec<Decimal>,
     pub amount_minted_lp: Decimal,
+    pub sender: ID,
     pub timestamp: u64,
 }
 
@@ -657,25 +666,28 @@ pub struct LiquidityAdded {
 pub struct LiquidityRemoved {
     pub amounts_removed: Vec<Decimal>,
     pub amount_burned_lp: Decimal,
+    pub sender: ID,
     pub timestamp: u64,
-}
-
-#[derive(Debug, SimpleObject)]
-pub struct SummaryStatistics {
-    pub pool_summary_statistics: PoolSummaryStatistics,
-    pub market_summary_statistics: MarketSummaryStatistics,
 }
 
 #[derive(Debug, SimpleObject)]
 pub struct PoolSummaryStatistics {
     pub tvl: f64,
+    #[graphql(name = "volume24h")]
     pub volume_24h: f64,
+    #[graphql(name = "fee24h")]
     pub fee_24h: f64,
+    #[graphql(name = "userCount24h")]
     pub user_count_24h: f64,
+    #[graphql(name = "transactionCount24h")]
     pub transaction_count_24h: f64,
+    #[graphql(name = "volume1w")]
     pub volume_1w: f64,
+    #[graphql(name = "fee1w")]
     pub fee_1w: f64,
+    #[graphql(name = "userCount1w")]
     pub user_count_1w: f64,
+    #[graphql(name = "transactionCount1w")]
     pub transaction_count_1w: f64,
 }
 
@@ -684,6 +696,11 @@ pub struct MarketSummaryStatistics {
     pub high_24h: f64,
     pub low_24h: f64,
     pub volume_24h: f64,
+}
+#[derive(Debug, SimpleObject)]
+pub struct SummaryStatistics {
+    pub pool_summary_statistics: PoolSummaryStatistics,
+    pub market_summary_statistics: MarketSummaryStatistics,
 }
 
 pub struct Coins;
