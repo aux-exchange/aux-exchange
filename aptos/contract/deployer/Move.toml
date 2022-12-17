@@ -4,10 +4,10 @@ version = '1.0.0'
 
 [addresses]
 AptosFramework = "0x1"
-deployer = "_"
+# deployer = "_"
 
 [dev-addresses]
-deployer = "0x12345"
+# deployer = "0x12345"
 
 [dependencies.AptosFramework]
 git = 'https://github.com/aptos-labs/aptos-core.git'

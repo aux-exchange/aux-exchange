@@ -4,13 +4,13 @@ version = '1.0.0'
 
 [addresses]
 aux = '_'
-deployer = '_'
+# deployer = '_'
 
 [dev-addresses]
 # this address is the resource account from 0x5E7C3 and seed amm
 # go run ./go-util/aptos/cmd/calculate-resource-address -a 0x5E7C3 - s amm
 aux = '0x4c8e0dc1b53b7759c9d8998685453a0e06565f054f3635a18d4928520eec676d'
-deployer = '0x8686'
+# deployer = '0x8686'
 
 [dependencies.AptosFramework]
 git = 'https://github.com/aptos-labs/aptos-core.git'

@@ -446,13 +446,13 @@ module aux::vault {
     const ETEST_FAILURE: u64 = 8;
 
     #[test_only]
-    use deployer::deployer::create_resource_account;
+    use 0x8686::deployer::create_resource_account;
 
     #[test_only]
     public fun create_vault_for_test(sender: &signer) {
         if (!account::exists_at(@aux)) {
             create_resource_account(sender, b"amm");
-            authority::init_module_for_test(&deployer::deployer::get_signer_for_address(sender, @aux));
+            authority::init_module_for_test(&0x8686::deployer::get_signer_for_address(sender, @aux));
         };
 
         let vault_signer = if (signer::address_of(sender) == @aux) {
