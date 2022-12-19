@@ -380,10 +380,7 @@ export class StakePoolClient {
    * Create a stake pool, specifying reward amount and duration.
    */
   async create(
-    {
-      rewardAmount,
-      durationUs,
-    }: { rewardAmount: AnyUnits; durationUs: number },
+    { rewardAmount, durationUs }: { rewardAmount: AnyUnits; durationUs: BN },
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<CreatePoolEvent>> {
     const rewardAmountAu = toAtomicUnits(
@@ -465,19 +462,20 @@ export class StakePoolClient {
       timeAmountUs,
       timeIncrease,
     }: {
-      rewardAmount?: AnyUnits;
-      rewardIncrease?: boolean;
-      timeAmountUs?: BN;
-      timeIncrease?: boolean;
+      rewardAmount?: AnyUnits | null;
+      rewardIncrease?: boolean | null;
+      timeAmountUs?: BN | null;
+      timeIncrease?: boolean | null;
     },
     options: Partial<AuxClientOptions> = {}
   ): Promise<AuxTransaction<ModifyPoolEvent>> {
     const input = {
       coinTypeStake: this.coinInfoStake.coinType,
       coinTypeReward: this.coinInfoReward.coinType,
-      rewardAmount:
-        toAtomicUnits(rewardAmount, this.coinInfoReward.decimals).toU64() ??
-        "0",
+      rewardAmount: rewardAmount
+        ? toAtomicUnits(rewardAmount, this.coinInfoReward.decimals).toU64() ??
+          "0"
+        : "0",
       rewardIncrease: rewardIncrease ?? false,
       timeAmountUs: timeAmountUs?.toString() ?? "0",
       timeIncrease: timeIncrease ?? false,

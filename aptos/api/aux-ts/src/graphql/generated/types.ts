@@ -140,8 +140,9 @@ export type CreateStakePoolEvent = {
 };
 
 export type CreateStakePoolInput = {
-  duration: Scalars['Int'];
+  durationUs: Scalars['String'];
   rewardAmount: Scalars['Float'];
+  stakePoolInput: StakePoolInput;
 };
 
 export enum Curve {
@@ -283,16 +284,19 @@ export type ModifyPoolEvent = {
 
 export type ModifyStakeInput = {
   amount: Scalars['Float'];
+  stakePoolInput: StakePoolInput;
 };
 
 export type ModifyStakePoolAuthorityInput = {
   newAuthority: Scalars['Address'];
+  stakePoolInput: StakePoolInput;
 };
 
 export type ModifyStakePoolInput = {
   rewardAmount?: InputMaybe<Scalars['Float']>;
   rewardIncrease?: InputMaybe<Scalars['Boolean']>;
-  timeAmount?: InputMaybe<Scalars['Int']>;
+  stakePoolInput: StakePoolInput;
+  timeAmountUs?: InputMaybe<Scalars['String']>;
   timeIncrease?: InputMaybe<Scalars['Boolean']>;
 };
 
@@ -333,7 +337,7 @@ export type MutationCancelOrderArgs = {
 
 
 export type MutationClaimStakingRewardArgs = {
-  poolId: Scalars['Int'];
+  stakePoolInput: StakePoolInput;
 };
 
 
@@ -353,7 +357,7 @@ export type MutationCreateStakePoolArgs = {
 
 
 export type MutationDeleteEmptyStakePoolArgs = {
-  poolId: Scalars['Int'];
+  stakePoolInput: StakePoolInput;
 };
 
 
@@ -368,7 +372,7 @@ export type MutationDepositStakeArgs = {
 
 
 export type MutationEndStakePoolEarlyArgs = {
-  poolId: Scalars['Int'];
+  stakePoolInput: StakePoolInput;
 };
 
 
@@ -1337,15 +1341,15 @@ export type ModifyPoolEventResolvers<ContextType = any, ParentType extends Resol
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addLiquidity?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationAddLiquidityArgs, 'addLiquidityInput'>>;
   cancelOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCancelOrderArgs, 'cancelOrderInput'>>;
-  claimStakingReward?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationClaimStakingRewardArgs, 'poolId'>>;
+  claimStakingReward?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationClaimStakingRewardArgs, 'stakePoolInput'>>;
   createAuxAccount?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType>;
   createMarket?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreateMarketArgs, 'createMarketInput'>>;
   createPool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreatePoolArgs, 'createPoolInput'>>;
   createStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationCreateStakePoolArgs, 'createStakePoolInput'>>;
-  deleteEmptyStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDeleteEmptyStakePoolArgs, 'poolId'>>;
+  deleteEmptyStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDeleteEmptyStakePoolArgs, 'stakePoolInput'>>;
   deposit?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDepositArgs, 'depositInput'>>;
   depositStake?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationDepositStakeArgs, 'depositStakeInput'>>;
-  endStakePoolEarly?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationEndStakePoolEarlyArgs, 'poolId'>>;
+  endStakePoolEarly?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationEndStakePoolEarlyArgs, 'stakePoolInput'>>;
   modifyStakePool?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationModifyStakePoolArgs, 'modifyStakePoolInput'>>;
   modifyStakePoolAuthority?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationModifyStakePoolAuthorityArgs, 'input'>>;
   placeOrder?: Resolver<ResolversTypes['EntryFunctionPayload'], ParentType, ContextType, RequireFields<MutationPlaceOrderArgs, 'placeOrderInput'>>;

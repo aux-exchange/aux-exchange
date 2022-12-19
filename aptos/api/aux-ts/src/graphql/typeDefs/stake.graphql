@@ -33,22 +33,26 @@ type UserPosition {
 }
 
 input CreateStakePoolInput {
+  stakePoolInput: StakePoolInput!
   rewardAmount: Float!
-  duration: Int!
+  durationUs: String!
 }
 
 input ModifyStakeInput {
+  stakePoolInput: StakePoolInput!
   amount: Float!
 }
 
 input ModifyStakePoolInput {
+  stakePoolInput: StakePoolInput!
   rewardAmount: Float
   rewardIncrease: Boolean
-  timeAmount: Int
+  timeAmountUs: String
   timeIncrease: Boolean
 }
 
 input ModifyStakePoolAuthorityInput {
+  stakePoolInput: StakePoolInput!
   newAuthority: Address!
 }
 
