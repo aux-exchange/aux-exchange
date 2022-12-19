@@ -140,7 +140,7 @@ export type CreateStakePoolEvent = {
 };
 
 export type CreateStakePoolInput = {
-  durationUs: Scalars['Int'];
+  durationUs: Scalars['String'];
   rewardAmount: Scalars['Float'];
   stakePoolInput: StakePoolInput;
 };
@@ -296,7 +296,7 @@ export type ModifyStakePoolInput = {
   rewardAmount?: InputMaybe<Scalars['Float']>;
   rewardIncrease?: InputMaybe<Scalars['Boolean']>;
   stakePoolInput: StakePoolInput;
-  timeAmountUs?: InputMaybe<Scalars['Int']>;
+  timeAmountUs?: InputMaybe<Scalars['String']>;
   timeIncrease?: InputMaybe<Scalars['Boolean']>;
 };
 
