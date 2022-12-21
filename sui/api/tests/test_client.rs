@@ -78,11 +78,7 @@ async fn test_client() -> Result<()> {
     aux_client.sign_and_execute(&keystore, tx).await?;
 
     let tx = aux_client
-        .remove_liquidity(
-            signer,
-            &pool_input,
-            decimal_units(200, 0)?,
-        )
+        .remove_liquidity(signer, &pool_input, decimal_units(200, 0)?)
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
 

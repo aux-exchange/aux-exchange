@@ -17,6 +17,7 @@ use sui_sdk::{
     SuiClient, TransactionExecutionResult,
 };
 use sui_types::crypto::Signature;
+use sui_types::intent::Intent;
 use sui_types::{
     coin::Coin,
     event::BalanceChangeType,
@@ -102,7 +103,7 @@ impl AuxClient {
             .addresses()
             .last()
             .ok_or(eyre!("Keystore is empty."))?;
-        let signature = keystore.sign(&signer, &tx.to_bytes())?;
+        let signature = keystore.sign_secure(&signer, &tx, Intent::default())?;
         self.execute(tx, signature).await
     }
 
@@ -114,7 +115,7 @@ impl AuxClient {
         self.sui_client
             .quorum_driver()
             .execute_transaction(
-                Transaction::from_data(tx, signature).verify()?,
+                Transaction::from_data(tx, Intent::default(), signature).verify()?,
                 Some(ExecuteTransactionRequestType::WaitForLocalExecution),
             )
             .await
@@ -802,7 +803,7 @@ impl PoolClient for AuxClient {
                 EventQuery::MoveEvent(pool_input.pools_created_type(self.package)),
                 None,
                 Some(QUERY_MAX_RESULT_LIMIT),
-                None,
+                None
             )
             .await
             .map_err(|err| eyre!(err))?;

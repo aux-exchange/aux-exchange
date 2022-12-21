@@ -2,15 +2,17 @@
 #![feature(async_fn_in_trait)]
 #![feature(is_some_and)]
 
-use std::path::Path;
+use std::{fmt::Display, path::Path};
 
 use color_eyre::eyre::{bail, eyre, Result};
 use rust_decimal::prelude::*;
+use serde::{de, Deserialize, Deserializer};
 use sui_framework_build::compiled_package::BuildConfig;
 use sui_keys::keystore::{AccountKeystore, Keystore};
 use sui_sdk::{json::SuiJsonValue, rpc_types::SuiTypeTag, SuiClient};
 use sui_types::{
     base_types::ObjectID,
+    intent::Intent,
     messages::{ExecuteTransactionRequestType, Transaction},
 };
 
@@ -29,6 +31,16 @@ pub fn decimal_units(value: u64, decimals: u8) -> Result<Decimal> {
 /// Return the "Atomic Unit" representation of the coin's value, i.e. mantissa
 pub fn atomic_units(value: Decimal) -> Result<u64> {
     Ok(u64::try_from(value.mantissa())?)
+}
+
+pub fn de_from_str<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Display + FromStr,
+    <T as FromStr>::Err: Display,
+{
+    let s = String::deserialize(deserializer)?;
+    T::from_str(&s).map_err(de::Error::custom)
 }
 
 // FIXME remove and replace with Sui SDK
@@ -83,11 +95,15 @@ pub async fn publish(sui_client: &SuiClient, keystore: &Keystore) -> ObjectID {
         .unwrap();
 
     let signer = *keystore.addresses().last().unwrap();
-    let signature = keystore.sign(&signer, &tx.to_bytes()).unwrap();
+    let signature = keystore
+        .sign_secure(&signer, &tx, Intent::default())
+        .unwrap();
     let tx = sui_client
         .quorum_driver()
         .execute_transaction(
-            Transaction::from_data(tx, signature).verify().unwrap(),
+            Transaction::from_data(tx, Intent::default(), signature)
+                .verify()
+                .unwrap(),
             Some(ExecuteTransactionRequestType::WaitForLocalExecution),
         )
         .await
@@ -107,7 +123,6 @@ pub async fn publish(sui_client: &SuiClient, keystore: &Keystore) -> ObjectID {
 }
 
 pub fn decimal_to_sui_json(value: Decimal) -> Result<SuiJsonValue> {
-    println!("{:?}", value.mantissa());
     let value = u64::try_from(value.mantissa())?;
     let json_amount = serde_json::Value::Number(serde_json::Number::from(value));
     let sui_json_amount = SuiJsonValue::new(json_amount).map_err(|err| eyre!(err))?;
