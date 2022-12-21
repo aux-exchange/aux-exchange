@@ -1,5 +1,5 @@
 use aux_rs::client::{AuxClient, CoinClient, PoolClient};
-use aux_rs::schema::{Coin, Coins, Curve, Percent, PoolInput};
+use aux_rs::schema::{Coin, Coins, Curve, FeeTier, Percent, PoolInput};
 use aux_rs::server::create_server;
 use aux_rs::{decimal_units, publish};
 use color_eyre::eyre::{eyre, Result};
@@ -9,7 +9,6 @@ use serde_json::json;
 use std::time::Duration;
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
 use sui_sdk::SuiClient;
-
 
 #[tokio::test]
 async fn test_graphql() -> Result<()> {
@@ -49,98 +48,22 @@ async fn test_graphql() -> Result<()> {
     };
 
     let tx = aux_client
-        .mint_and_transfer(signer, &usdc, 400_000_000, signer)
+        .mint_and_transfer(signer, &usdc, 400, signer)
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
 
-    // GraphQL server
-    let task = tokio::spawn(async move { create_server(package).await });
-    tokio::time::sleep(Duration::from_millis(1000)).await;
-
-    // GraphQL client
-    let client = reqwest::Client::new();
-
-    let res: GraphQLResponse<CreatePool> = client
-        .post("http://devbox:4000/graphql")
-        .json(&json!(
-            {
-                "query": "
-                    mutation ($createPoolInput: CreatePoolInput!) {
-                        createPool(createPoolInput: $createPoolInput) {
-                            packageObjectId
-                            module
-                            function
-                            typeArguments
-                            arguments
-                        }
-                    }
-                ",
-                "variables": {
-                    "createPoolInput": {
-                        "sender": signer,
-                        "feeTier": "MOST",
-                        "poolInput": {
-                            "coinTypes": [
-                                sui,
-                                usdc
-                            ],
-                            "curve": "CONSTANT_PRODUCT"
-                        }
-                    }
-                }
-            }
-        ))
-        .send()
-        .await?
-        .json()
+    let tx = aux_client
+        .create_pool(signer, &pool_input, FeeTier::Most)
         .await?;
-    assert!(res.errors.is_none(), "{:?}", res.errors);
-    println!("{res:?}");
+    aux_client.sign_and_execute(&keystore, tx).await?;
 
-    // let res: GraphQLResponse<CreatePool> = client
-    //     .post("http://devbox:4000/graphql")
-    //     .json(&json!(
-    //         {
-    //             "query": "
-    //                 mutation ($addLiquidityInput: AddLiquidityInput!) {
-    //                     createPool(addLiquidityInput: $addLiquidityInput)
-    //                 }
-    //             ",
-    //             "variables": {
-    //                 "addLiquidityInput": {
-    //                     "sender": signer,
-    //                     "feeTier": "MOST",
-    //                     "poolInput": {
-    //                         "coinTypes": [
-    //                             sui,
-    //                             usdc
-    //                         ],
-    //                         "curve": "CONSTANT_PRODUCT"
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     ))
-    //     .send()
-    //     .await?
-    //     .json()
-    //     .await?;
-    // assert!(res.errors.is_none(), "{:?}", res.errors);
-    // println!("{res:?}");
-
-    // let signature = keystore.sign(&signer, &res.data.unwrap().create_pool)?;
-    // let tx = aux_client
-    //     .create_pool(signer, &pool_input, FeeTier::Most)
-    //     .await?;
-    // assert_eq!(signature, keystore.sign(&signer, &tx.to_bytes())?);
-    // aux_client.sign_and_execute(&keystore, tx).await?;
     let tx = aux_client
         .add_liquidity(
             signer,
             &pool_input,
             &[
-                decimal_units(100_000_000_000, Coins::sui().0.decimals)?,
-                decimal_units(400_000_000, Coins::usdc().0.decimals)?,
+                decimal_units(100, Coins::sui().0.decimals)?,
+                decimal_units(400, Coins::usdc().0.decimals)?,
             ],
         )
         .await?;
@@ -152,11 +75,30 @@ async fn test_graphql() -> Result<()> {
             &pool_input,
             &sui,
             &usdc,
-            decimal_units(100_000_000_000, Coins::sui().0.decimals)?,
+            decimal_units(100, Coins::sui().0.decimals)?,
             Percent(dec!(0.5)),
         )
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
+
+    let tx = aux_client
+        .remove_liquidity(signer, &pool_input, decimal_units(200, 0)?)
+        .await?;
+    aux_client.sign_and_execute(&keystore, tx).await?;
+
+    let swaps = aux_client.swaps(&pool_input, None, None, None).await?;
+    println!("{swaps:?}");
+    let adds = aux_client.adds(&pool_input, None, None, None).await?;
+    println!("{adds:?}");
+    let removes = aux_client.removes(&pool_input, None, None, None).await?;
+    println!("{removes:?}");
+
+    // GraphQL server
+    let task = tokio::spawn(async move { create_server(package).await });
+    tokio::time::sleep(Duration::from_millis(1000)).await;
+
+    // GraphQL client
+    let client = reqwest::Client::new();
 
     let res: GraphQLResponse<serde_json::Value> = client
         .post("http://devbox:4000/graphql")
@@ -255,10 +197,4 @@ struct Pool {
     pub type_: String,
     pub coins: Vec<Coin>,
     pub amounts: Vec<u64>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CreatePool {
-    #[serde(rename = "createPool")]
-    pub create_pool: Vec<u8>,
 }
