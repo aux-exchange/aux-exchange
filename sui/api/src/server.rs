@@ -1,6 +1,6 @@
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptySubscription, Request, Response, Schema,
+    EmptySubscription, Request, Response, Schema, EmptyMutation,
 };
 use axum::{
     extract::State,
@@ -14,7 +14,7 @@ use sui_sdk::{types::base_types::ObjectID, SuiClient};
 use tower_http::cors::CorsLayer;
 
 use crate::client::AuxClient;
-use crate::schema::{AuxSchema, MutationRoot, QueryRoot};
+use crate::schema::{AuxSchema, QueryRoot};
 
 async fn graphql_handler(schema: State<AuxSchema>, req: Json<Request>) -> Json<Response> {
     schema.execute(req.0).await.into()
@@ -34,7 +34,7 @@ pub async fn create_server(package: ObjectID) -> Result<()> {
         package,
     };
 
-    let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
+    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
         .data(aux_client)
         .finish();
 

@@ -1,5 +1,5 @@
 use aux_rs::client::{AuxClient, CoinClient, PoolClient};
-use aux_rs::schema::{Coin, Coins, Curve, FeeTier, Percent, PoolInput};
+use aux_rs::schema::{Coin, Coins, Curve, Percent, PoolInput};
 use aux_rs::server::create_server;
 use aux_rs::{decimal_units, publish};
 use color_eyre::eyre::{eyre, Result};
@@ -9,7 +9,7 @@ use serde_json::json;
 use std::time::Duration;
 use sui_keys::keystore::{AccountKeystore, FileBasedKeystore, Keystore};
 use sui_sdk::SuiClient;
-use sui_types::messages::TransactionKind;
+
 
 #[tokio::test]
 async fn test_graphql() -> Result<()> {
@@ -66,7 +66,13 @@ async fn test_graphql() -> Result<()> {
             {
                 "query": "
                     mutation ($createPoolInput: CreatePoolInput!) {
-                        createPool(createPoolInput: $createPoolInput)
+                        createPool(createPoolInput: $createPoolInput) {
+                            packageObjectId
+                            module
+                            function
+                            typeArguments
+                            arguments
+                        }
                     }
                 ",
                 "variables": {
@@ -90,13 +96,6 @@ async fn test_graphql() -> Result<()> {
         .await?;
     assert!(res.errors.is_none(), "{:?}", res.errors);
     println!("{res:?}");
-
-    let signature = keystore.sign(&signer, &res.data.unwrap().create_pool)?;
-    let tx = aux_client
-        .create_pool(signer, &pool_input, FeeTier::Most)
-        .await?;
-    assert_eq!(signature, keystore.sign(&signer, &tx.to_bytes())?);
-    aux_client.sign_and_execute(&keystore, tx).await?;
 
     // let res: GraphQLResponse<CreatePool> = client
     //     .post("http://devbox:4000/graphql")

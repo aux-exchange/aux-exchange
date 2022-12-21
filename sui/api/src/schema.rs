@@ -3,11 +3,11 @@ use std::str::FromStr;
 
 use crate::{
     client::{AuxClient, PoolClient},
-    parse_sui_type_tag, de_from_str,
+    de_from_str, parse_sui_type_tag,
 };
 use async_graphql::{
-    Context, EmptySubscription, InputObject, InputValueError, InputValueResult, Object, Scalar,
-    ScalarType, Schema, SimpleObject, Value, ID,
+    Context, EmptyMutation, EmptySubscription, InputObject, InputValueError, InputValueResult,
+    Object, Scalar, ScalarType, Schema, SimpleObject, Value, ID,
 };
 use color_eyre::eyre::{eyre, Result};
 use rust_decimal::Decimal;
@@ -21,14 +21,13 @@ use sui_types::{
     base_types::{SequenceNumber, SuiAddress},
     event::EventID,
     id::UID,
-    messages::{SingleTransactionKind, TransactionData, TransactionKind},
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // GraphQL schema
 ////////////////////////////////////////////////////////////////////////////////
 
-pub type AuxSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
+pub type AuxSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
 
 pub struct QueryRoot;
 
@@ -69,92 +68,6 @@ impl QueryRoot {
             },
         };
         Ok(summary_statistics)
-    }
-}
-
-pub struct MutationRoot;
-
-#[Object]
-impl MutationRoot {
-    async fn create_pool(
-        &self,
-        ctx: &Context<'_>,
-        create_pool_input: CreatePoolInput,
-    ) -> Result<SuiMoveCall> {
-        ctx.data_unchecked::<AuxClient>()
-            .create_pool(
-                SuiAddress::from_str(&create_pool_input.sender).map_err(|err| eyre!(err))?,
-                &create_pool_input.pool_input,
-                create_pool_input.fee_tier,
-            )
-            .await?
-            .try_into()
-    }
-
-    async fn add_liquidity(
-        &self,
-        ctx: &Context<'_>,
-        add_liquidity_input: AddLiquidityInput,
-    ) -> Result<SuiMoveCall> {
-        ctx.data_unchecked::<AuxClient>()
-            .add_liquidity(
-                SuiAddress::from_str(&add_liquidity_input.sender).map_err(|err| eyre!(err))?,
-                &add_liquidity_input.pool_input,
-                &add_liquidity_input.amounts,
-            )
-            .await?
-            .try_into()
-    }
-
-    async fn remove_liquidity(
-        &self,
-        ctx: &Context<'_>,
-        remove_liquidity_input: RemoveLiquidityInput,
-    ) -> Result<SuiMoveCall> {
-        ctx.data_unchecked::<AuxClient>()
-            .remove_liquidity(
-                SuiAddress::from_str(&remove_liquidity_input.sender).map_err(|err| eyre!(err))?,
-                &remove_liquidity_input.pool_input,
-                remove_liquidity_input.amount_lp,
-            )
-            .await?
-            .try_into()
-    }
-
-    async fn swap_exact_in(
-        &self,
-        ctx: &Context<'_>,
-        swap_exact_in_input: SwapExactInInput,
-    ) -> Result<SuiMoveCall> {
-        ctx.data_unchecked::<AuxClient>()
-            .swap_exact_in(
-                SuiAddress::from_str(&swap_exact_in_input.sender).map_err(|err| eyre!(err))?,
-                &swap_exact_in_input.pool_input,
-                &swap_exact_in_input.coin_type_in,
-                &swap_exact_in_input.coin_type_out,
-                swap_exact_in_input.amount_in,
-                swap_exact_in_input.slippage,
-            )
-            .await?
-            .try_into()
-    }
-
-    async fn swap_exact_out(
-        &self,
-        ctx: &Context<'_>,
-        swap_exact_out_input: SwapExactOutInput,
-    ) -> Result<SuiMoveCall> {
-        ctx.data_unchecked::<AuxClient>()
-            .swap_exact_out(
-                SuiAddress::from_str(&swap_exact_out_input.sender).map_err(|err| eyre!(err))?,
-                &swap_exact_out_input.pool_input,
-                &swap_exact_out_input.coin_type_in,
-                &swap_exact_out_input.coin_type_out,
-                swap_exact_out_input.amount_out,
-                swap_exact_out_input.slippage,
-            )
-            .await?
-            .try_into()
     }
 }
 
@@ -744,27 +657,6 @@ impl Coins {
             description: "Test USD Coin".to_string(),
             icon_url: None,
         })
-    }
-}
-
-#[derive(Debug, Deserialize, SimpleObject)]
-pub struct SuiMoveCall {
-    pub package_object_id: String,
-    pub module: String,
-    pub function: String,
-    pub type_arguments: Vec<String>,
-    pub arguments: Vec<String>,
-}
-
-impl TryFrom<TransactionData> for SuiMoveCall {
-    type Error = color_eyre::eyre::Report;
-
-    fn try_from(value: TransactionData) -> Result<Self> {
-        if let TransactionKind::Single(SingleTransactionKind::Call(move_call)) = value.kind {
-            Ok(serde_json::from_value(serde_json::to_value(move_call)?)?)
-        } else {
-            Err(eyre!("`create_pool` failed."))
-        }
     }
 }
 
