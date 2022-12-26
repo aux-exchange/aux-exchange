@@ -2,7 +2,7 @@
 use std::str::FromStr;
 
 use crate::{
-    client::{AuxClient, PoolClient},
+    client::{AuxClient, CoinClient, PoolClient},
     de_from_str, parse_sui_type_tag,
 };
 use async_graphql::{
@@ -12,10 +12,7 @@ use async_graphql::{
 use color_eyre::eyre::{eyre, Result};
 use rust_decimal::Decimal;
 use serde::Deserialize;
-use sui_sdk::{
-    rpc_types::{SuiCoinMetadata, SuiTypeTag},
-    types::base_types::ObjectID,
-};
+use sui_sdk::{rpc_types::SuiTypeTag, types::base_types::ObjectID};
 use sui_types::{
     balance::Supply,
     base_types::{SequenceNumber, SuiAddress},
@@ -38,8 +35,10 @@ impl QueryRoot {
         aux_client.package.to_string()
     }
 
-    async fn coins(&self) -> Vec<Coin> {
-        vec![Coins::sui(), Coins::usdc(), Coins::eth()]
+    async fn coins(&self, ctx: &Context<'_>) -> Vec<Coin> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        let coins = Coins(aux_client.package);
+        vec![coins.sui(), coins.usdc(), coins.eth()]
     }
 
     async fn pool(&self, ctx: &Context<'_>, pool_input: PoolInput) -> Result<Pool> {
@@ -109,35 +108,15 @@ impl ScalarType for Milliseconds {
     }
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(transparent)]
-pub struct Coin(pub SuiCoinMetadata);
-
-#[Object]
-impl Coin {
-    pub async fn id(&self) -> Option<String> {
-        self.0.id.map(|id| id.to_hex_literal())
-    }
-
-    pub async fn decimals(&self) -> u8 {
-        self.0.decimals
-    }
-
-    pub async fn name(&self) -> &str {
-        &self.0.name
-    }
-
-    pub async fn symbol(&self) -> &str {
-        &self.0.symbol
-    }
-
-    pub async fn description(&self) -> &str {
-        &self.0.description
-    }
-
-    pub async fn icon_url(&self) -> Option<&String> {
-        self.0.icon_url.as_ref()
-    }
+#[derive(Debug, Deserialize, SimpleObject)]
+pub struct Coin {
+    pub id: Option<String>,
+    pub type_: String,
+    pub decimals: u8,
+    pub symbol: String,
+    pub name: String,
+    pub description: String,
+    pub icon_url: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, async_graphql::Enum)]
@@ -212,20 +191,12 @@ impl Pool {
         false
     }
 
-    pub async fn coins(&self) -> Vec<Coin> {
+    async fn coins(&self, ctx: &Context<'_>) -> Vec<Coin> {
+        let aux_client = ctx.data_unchecked::<AuxClient>();
+        let coins = Coins(aux_client.package);
         self.coin_types
             .iter()
-            .map(|coin_type| {
-                if coin_type.ends_with("BTC>") {
-                    Coins::btc()
-                } else if coin_type.ends_with("ETH>") {
-                    Coins::eth()
-                } else if coin_type.ends_with("USDC>") {
-                    Coins::usdc()
-                } else {
-                    Coins::sui()
-                }
-            })
+            .map(|coin_type| aux_client.coin_metadata(coin_type))
             .collect()
     }
 
@@ -431,6 +402,7 @@ impl PoolInput {
     }
 
     pub fn indices(&self, coin_type_in: &str, coin_type_out: &str) -> Result<(usize, usize)> {
+        println!("{:?} {:?} {:?}", coin_type_in, coin_type_out, self.coin_types);
         let i = self
             .coin_types
             .iter()
@@ -612,51 +584,62 @@ pub struct SummaryStatistics {
     pub market_summary_statistics: MarketSummaryStatistics,
 }
 
-pub struct Coins;
-// TODO remove once `coin_metadata` is implemented
+// TODO remove once `coin_metadata` is implemented by doing actual queries for coin metadata
+// blocked on https://github.com/MystenLabs/sui/issues/3782
+#[repr(transparent)]
+pub struct Coins(pub ObjectID);
+
 impl Coins {
-    pub fn btc() -> Coin {
-        Coin(SuiCoinMetadata {
+    pub fn btc(&self) -> Coin {
+        let symbol = "BTC".to_string();
+        Coin {
+            type_: format!("{}::test_btc::TEST_{symbol}", self.0),
             id: None,
             decimals: 8,
-            symbol: "BTC".to_string(),
+            symbol,
             name: "Bitcoin".to_string(),
             description: "Test Bitcoin".to_string(),
             icon_url: None,
-        })
+        }
     }
 
-    pub fn eth() -> Coin {
-        Coin(SuiCoinMetadata {
+    pub fn eth(&self) -> Coin {
+        let symbol = "ETH".to_string();
+        Coin {
+            type_: format!("{}::test_eth::TEST_{symbol}", self.0),
             id: None,
             decimals: 8,
-            symbol: "ETH".to_string(),
+            symbol,
             name: "Ether".to_string(),
             description: "Test Ether".to_string(),
             icon_url: None,
-        })
+        }
     }
 
-    pub fn sui() -> Coin {
-        Coin(SuiCoinMetadata {
+    pub fn sui(&self) -> Coin {
+        let symbol = "SUI".to_string();
+        Coin {
+            type_: "0x2::sui::SUI".to_string(),
             id: None,
             decimals: 9,
-            symbol: "SUI".to_string(),
+            symbol,
             name: "Sui".to_string(),
             description: "".to_string(),
             icon_url: None,
-        })
+        }
     }
 
-    pub fn usdc() -> Coin {
-        Coin(SuiCoinMetadata {
+    pub fn usdc(&self) -> Coin {
+        let symbol = "USDC".to_string();
+        Coin {
+            type_: format!("{}::test_usdc::TEST_{symbol}", self.0),
             id: None,
             decimals: 6,
-            symbol: "USDC".to_string(),
+            symbol,
             name: "USD Coin".to_string(),
             description: "Test USD Coin".to_string(),
             icon_url: None,
-        })
+        }
     }
 }
 

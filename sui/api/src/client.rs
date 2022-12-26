@@ -166,7 +166,7 @@ impl AuxClient {
 }
 
 pub trait CoinClient {
-    fn coin_metadata(&self, coin_type: &str) -> SuiCoinMetadata;
+    fn coin_metadata(&self, coin_type: &str) -> crate::schema::Coin;
 
     /// Gets the object id of a coin with `coin_type` from signer's inventory.
     ///
@@ -206,16 +206,18 @@ pub trait CoinClient {
 }
 
 impl CoinClient for AuxClient {
-    // TODO blocked on https://github.com/MystenLabs/sui/issues/3782
-    fn coin_metadata(&self, coin_type: &str) -> SuiCoinMetadata {
+    fn coin_metadata(&self, coin_type: &str) -> crate::schema::Coin {
+        let coins = Coins(self.package);
         if coin_type.ends_with("BTC") {
-            Coins::btc().0
+            coins.btc()
         } else if coin_type.ends_with("ETH") {
-            Coins::eth().0
+            coins.eth()
+        } else if coin_type.ends_with("SUI") {
+            coins.sui()
         } else if coin_type.ends_with("USDC") {
-            Coins::usdc().0
+            coins.usdc()
         } else {
-            Coins::sui().0
+            panic!("Unhandled coin_type {coin_type}")
         }
     }
 
@@ -590,16 +592,22 @@ impl PoolClient for AuxClient {
         let (i, j) = pool_input.indices(coin_type_in, coin_type_out)?;
         let (reserves_in, reserves_out) = (pool.reserves[i], pool.reserves[j]);
 
+        println!("{reserves_in:?} {reserves_out:?}");
         let fee_percent = Decimal::new(pool.fee_bps as i64, 3).round_dp(2);
         let amount_in_with_fee = amount_in * (dec!(1) - fee_percent); // TODO
-        let expected_amount_out =
-            (amount_in_with_fee * reserves_out) / (reserves_in + amount_in_with_fee);
+        let expected_amount_out = (amount_in_with_fee * reserves_out)
+            .checked_div(reserves_in + amount_in_with_fee)
+            .unwrap_or(dec!(0));
         let min_amount_out = expected_amount_out * (dec!(1) - slippage.0 / dec!(100));
         let fee_amount = amount_in * fee_percent;
-        let instantaneous_amount_out = (reserves_out / reserves_in) * amount_in;
-        let price = expected_amount_out / amount_in;
-        let price_impact = ((instantaneous_amount_out - expected_amount_out)
-            / instantaneous_amount_out)
+        let instantaneous_amount_out =
+            reserves_out.checked_div(reserves_in).unwrap_or(dec!(0)) * amount_in;
+        let price = expected_amount_out
+            .checked_div(amount_in)
+            .unwrap_or(dec!(0));
+        let price_impact = (instantaneous_amount_out - expected_amount_out)
+            .checked_div(instantaneous_amount_out)
+            .unwrap_or(dec!(0))
             * dec!(100);
         let price_impact_rating = if price_impact > dec!(0.5) {
             PriceRating::Red
@@ -659,21 +667,9 @@ impl PoolClient for AuxClient {
             coins: pool
                 .coin_types
                 .iter()
-                .map(|coin_type| {
-                    if coin_type.ends_with("BTC>") {
-                        Coins::btc()
-                    } else if coin_type.ends_with("ETH>") {
-                        Coins::eth()
-                    } else if coin_type.ends_with("USDC>") {
-                        Coins::usdc()
-                    } else {
-                        Coins::sui()
-                    }
-                })
+                .map(|coin_type| self.coin_metadata(coin_type))
                 .collect(),
-            coin_lp: crate::schema::Coin(
-                self.coin_metadata(&pool_input.lp_coin_type(self.package)),
-            ),
+            coin_lp: self.coin_metadata(&pool_input.lp_coin_type(self.package)),
             amounts: pool
                 .reserves
                 .iter()
@@ -697,12 +693,10 @@ impl PoolClient for AuxClient {
             .await?;
         let mut swaps = Vec::new();
         for raw_swapped in raw_swaps {
-            let coin_in =
-                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_in.name));
-            let coin_out =
-                crate::schema::Coin(self.coin_metadata(&raw_swapped.data.coin_type_out.name));
-            let decimals_in = coin_in.0.decimals;
-            let decimals_out = coin_out.0.decimals;
+            let coin_in = self.coin_metadata(&raw_swapped.data.coin_type_in.name);
+            let coin_out = self.coin_metadata(&raw_swapped.data.coin_type_out.name);
+            let decimals_in = coin_in.decimals;
+            let decimals_out = coin_out.decimals;
 
             if sender.is_none() || sender.is_some_and(|sender| raw_swapped.sender == sender) {
                 let swapped = Swapped {
@@ -803,7 +797,7 @@ impl PoolClient for AuxClient {
                 EventQuery::MoveEvent(pool_input.pools_created_type(self.package)),
                 None,
                 Some(QUERY_MAX_RESULT_LIMIT),
-                None
+                None,
             )
             .await
             .map_err(|err| eyre!(err))?;

@@ -123,7 +123,9 @@ pub async fn publish(sui_client: &SuiClient, keystore: &Keystore) -> ObjectID {
 }
 
 pub fn decimal_to_sui_json(value: Decimal) -> Result<SuiJsonValue> {
-    let value = u64::try_from(value.mantissa())?;
+    println!("decimal to sui json {:?}", value);
+    let value = u64::try_from(atomic_units(value)?)?;
+    println!("{:?}", value);
     let json_amount = serde_json::Value::Number(serde_json::Number::from(value));
     let sui_json_amount = SuiJsonValue::new(json_amount).map_err(|err| eyre!(err))?;
     Ok(sui_json_amount)

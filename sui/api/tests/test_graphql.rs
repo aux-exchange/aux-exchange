@@ -48,7 +48,7 @@ async fn test_graphql() -> Result<()> {
     };
 
     let tx = aux_client
-        .mint_and_transfer(signer, &usdc, 400, signer)
+        .mint_and_transfer(signer, &usdc, 400_000_000, signer)
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
 
@@ -58,14 +58,7 @@ async fn test_graphql() -> Result<()> {
     aux_client.sign_and_execute(&keystore, tx).await?;
 
     let tx = aux_client
-        .add_liquidity(
-            signer,
-            &pool_input,
-            &[
-                decimal_units(100, Coins::sui().0.decimals)?,
-                decimal_units(400, Coins::usdc().0.decimals)?,
-            ],
-        )
+        .add_liquidity(signer, &pool_input, &[dec!(100.000_000_000), dec!(400.000_000)])
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
 
@@ -75,16 +68,16 @@ async fn test_graphql() -> Result<()> {
             &pool_input,
             &sui,
             &usdc,
-            decimal_units(100, Coins::sui().0.decimals)?,
+            dec!(200.000_000_000),
             Percent(dec!(0.5)),
         )
         .await?;
     aux_client.sign_and_execute(&keystore, tx).await?;
 
-    let tx = aux_client
-        .remove_liquidity(signer, &pool_input, decimal_units(200, 0)?)
-        .await?;
-    aux_client.sign_and_execute(&keystore, tx).await?;
+    // let tx = aux_client
+    //     .remove_liquidity(signer, &pool_input, decimal_units(200, 0)?)
+    //     .await?;
+    // aux_client.sign_and_execute(&keystore, tx).await?;
 
     let swaps = aux_client.swaps(&pool_input, None, None, None).await?;
     println!("{swaps:?}");
