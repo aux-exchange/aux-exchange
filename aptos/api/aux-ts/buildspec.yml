@@ -1,0 +1,576 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  AptosmainnetfullnodeService:
+    DependsOn:
+    - AptosmainnetfullnodeTCP8080Listener
+    - AptosmainnetfullnodeTCP9101Listener
+    - AptosmainnetfullnodeTCP6180Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: aptos-mainnet-fullnode
+        ContainerPort: 8080
+        TargetGroupArn:
+          Ref: AptosmainnetfullnodeTCP8080TargetGroup
+      - ContainerName: aptos-mainnet-fullnode
+        ContainerPort: 9101
+        TargetGroupArn:
+          Ref: AptosmainnetfullnodeTCP9101TargetGroup
+      - ContainerName: aptos-mainnet-fullnode
+        ContainerPort: 6180
+        TargetGroupArn:
+          Ref: AptosmainnetfullnodeTCP6180TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0c45ee7adce1a8d26
+          - subnet-04f576cc991efc906
+          - subnet-0a5b8f2304bc9a1cb
+          - subnet-05efbe137838f6287
+          - subnet-0ea7ff7f7e4c86623
+          - subnet-0c64e9f5653df8a7a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - AptosmainnetfullnodeServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: aptos-mainnet-fullnode
+      TaskDefinition:
+        Ref: AptosmainnetfullnodeTaskDefinition
+    Type: AWS::ECS::Service
+  AptosmainnetfullnodeServiceDiscoveryEntry:
+    Properties:
+      Description: '"aptos-mainnet-fullnode" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: aptos-mainnet-fullnode
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  AptosmainnetfullnodeTCP6180Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: AptosmainnetfullnodeTCP6180TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 6180
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  AptosmainnetfullnodeTCP6180TargetGroup:
+    Properties:
+      Port: 6180
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      TargetType: ip
+      VpcId: vpc-05805786896964e0d
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  AptosmainnetfullnodeTCP8080Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: AptosmainnetfullnodeTCP8080TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 8080
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  AptosmainnetfullnodeTCP8080TargetGroup:
+    Properties:
+      Port: 8080
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      TargetType: ip
+      VpcId: vpc-05805786896964e0d
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  AptosmainnetfullnodeTCP9101Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: AptosmainnetfullnodeTCP9101TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 9101
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  AptosmainnetfullnodeTCP9101TargetGroup:
+    Properties:
+      Port: 9101
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      TargetType: ip
+      VpcId: vpc-05805786896964e0d
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  AptosmainnetfullnodeTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - aux-ts.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: Aptosmainnetfullnode_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Aptosmainnetfullnode_ResolvConf_InitContainer
+        Essential: true
+        Image: docker.io/aptoslabs/validator:mainnet@sha256:24ee3af1eca731bc71f1cce266176adeceef5acbdee11426f8a4aed3cc6384f1
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: aptos-mainnet-fullnode
+        PortMappings:
+        - ContainerPort: 8080
+          HostPort: 8080
+          Protocol: tcp
+        - ContainerPort: 9101
+          HostPort: 9101
+          Protocol: tcp
+        - ContainerPort: 6180
+          HostPort: 6180
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: AptosmainnetfullnodeTaskExecutionRole
+      Family: aux-ts-aptos-mainnet-fullnode
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  AptosmainnetfullnodeTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: aptos-mainnet-fullnode
+    Type: AWS::IAM::Role
+  CloudMap:
+    Properties:
+      Description: Service Map for Docker Compose project aux-ts
+      Name: aux-ts.local
+      Vpc: vpc-05805786896964e0d
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+  Cluster:
+    Properties:
+      ClusterName: aux-ts
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+    Type: AWS::ECS::Cluster
+  Default4000Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: web:4000/tcp on default network
+      FromPort: 4000
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 4000
+    Type: AWS::EC2::SecurityGroupIngress
+  Default6180Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: aptos-mainnet-fullnode:6180/tcp on default network
+      FromPort: 6180
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 6180
+    Type: AWS::EC2::SecurityGroupIngress
+  Default8080Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: aptos-mainnet-fullnode:8080/tcp on default network
+      FromPort: 8080
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 8080
+    Type: AWS::EC2::SecurityGroupIngress
+  Default9101Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: aptos-mainnet-fullnode:9101/tcp on default network
+      FromPort: 9101
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: TCP
+      ToPort: 9101
+    Type: AWS::EC2::SecurityGroupIngress
+  DefaultNetwork:
+    Properties:
+      GroupDescription: aux-ts Security Group for default network
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.network
+        Value: aux-ts_default
+      VpcId: vpc-05805786896964e0d
+    Type: AWS::EC2::SecurityGroup
+  DefaultNetworkIngress:
+    Properties:
+      Description: Allow communication within network default
+      GroupId:
+        Ref: DefaultNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: DefaultNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+      - Key: load_balancing.cross_zone.enabled
+        Value: "true"
+      Scheme: internet-facing
+      Subnets:
+      - subnet-0c45ee7adce1a8d26
+      - subnet-04f576cc991efc906
+      - subnet-0a5b8f2304bc9a1cb
+      - subnet-05efbe137838f6287
+      - subnet-0ea7ff7f7e4c86623
+      - subnet-0c64e9f5653df8a7a
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      Type: network
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  LogGroup:
+    Properties:
+      LogGroupName: /docker-compose/aux-ts
+    Type: AWS::Logs::LogGroup
+  RedisService:
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0c45ee7adce1a8d26
+          - subnet-04f576cc991efc906
+          - subnet-0a5b8f2304bc9a1cb
+          - subnet-05efbe137838f6287
+          - subnet-0ea7ff7f7e4c86623
+          - subnet-0c64e9f5653df8a7a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - RedisServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: redis
+      TaskDefinition:
+        Ref: RedisTaskDefinition
+    Type: AWS::ECS::Service
+  RedisServiceDiscoveryEntry:
+    Properties:
+      Description: '"redis" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: redis
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  RedisTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - aux-ts.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: Redis_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Redis_ResolvConf_InitContainer
+        Essential: true
+        Image: docker.io/library/redis:alpine@sha256:9dc2499d6c21f869a6e22b170003483d3fca8c03992f4a11f6493c0b392da40f
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: redis
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: RedisTaskExecutionRole
+      Family: aux-ts-redis
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  RedisTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: redis
+    Type: AWS::IAM::Role
+  WebService:
+    DependsOn:
+    - WebTCP4000Listener
+    - AptosmainnetfullnodeService
+    - RedisService
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: web
+        ContainerPort: 4000
+        TargetGroupArn:
+          Ref: WebTCP4000TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: DefaultNetwork
+          Subnets:
+          - subnet-0c45ee7adce1a8d26
+          - subnet-04f576cc991efc906
+          - subnet-0a5b8f2304bc9a1cb
+          - subnet-05efbe137838f6287
+          - subnet-0ea7ff7f7e4c86623
+          - subnet-0c64e9f5653df8a7a
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - WebServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: web
+      TaskDefinition:
+        Ref: WebTaskDefinition
+    Type: AWS::ECS::Service
+  WebServiceDiscoveryEntry:
+    Properties:
+      Description: '"web" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: web
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  WebTCP4000Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: WebTCP4000TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 4000
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  WebTCP4000TargetGroup:
+    Properties:
+      Port: 4000
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      TargetType: ip
+      VpcId: vpc-05805786896964e0d
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  WebTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-1.compute.internal
+        - aux-ts.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: Web_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Web_ResolvConf_InitContainer
+        Essential: true
+        Image: docker.io/lidatong/aux-aptos-graphql:latest@sha256:f5aeb89a77685fdbc9ede3e2f7cf0e866ce47cf0e19f710de9de00b1fe15d54a
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: aux-ts
+        Name: web
+        PortMappings:
+        - ContainerPort: 4000
+          HostPort: 4000
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: WebTaskExecutionRole
+      Family: aux-ts-web
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  WebTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: web
+    Type: AWS::IAM::Role
