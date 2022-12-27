@@ -1,22 +1,23 @@
 version: "3.9"
 services:
-  web:
+  graphql:
     build: .
     image: "lidatong/aux-aptos-graphql"
     ports:
       - "4000:4000"
     depends_on:
-      - aptos-mainnet-fullnode
+      - fullnode
       - redis
-  aptos-mainnet-fullnode:
-    image: "aptoslabs/validator:mainnet"
+  fullnode:
+    build: mainnet
+    image: "lidatong/fullnode"
     ports:
       - "8080:8080"
       - "9101:9101"
       - "6180:6180"
-    volumes:
-      - /home/charlieli/projects/aux-exchange/aptos/api/aux-ts/mainnet:/opt/aptos/etc
-      - /home/charlieli/projects/aux-exchange/aptos/api/aux-ts/mainnet/data:/opt/aptos/data
+  #   volumes:
+  #     - aptosmainnetfullnodeetc:/opt/aptos/etc
+  #     - aptosmainnetfullnodedata:/opt/aptos/data
     working_dir: /opt/aptos/etc
     command: ["/usr/local/bin/aptos-node", "-f", "/opt/aptos/etc/fullnode.yaml"]
   redis:

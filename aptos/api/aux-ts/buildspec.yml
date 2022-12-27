@@ -1,217 +1,77 @@
 AWSTemplateFormatVersion: 2010-09-09
 Resources:
-  AptosmainnetfullnodeService:
-    DependsOn:
-    - AptosmainnetfullnodeTCP8080Listener
-    - AptosmainnetfullnodeTCP9101Listener
-    - AptosmainnetfullnodeTCP6180Listener
+  AptosAccessPoint:
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
-      DeploymentController:
-        Type: ECS
-      DesiredCount: 1
-      LaunchType: FARGATE
-      LoadBalancers:
-      - ContainerName: aptos-mainnet-fullnode
-        ContainerPort: 8080
-        TargetGroupArn:
-          Ref: AptosmainnetfullnodeTCP8080TargetGroup
-      - ContainerName: aptos-mainnet-fullnode
-        ContainerPort: 9101
-        TargetGroupArn:
-          Ref: AptosmainnetfullnodeTCP9101TargetGroup
-      - ContainerName: aptos-mainnet-fullnode
-        ContainerPort: 6180
-        TargetGroupArn:
-          Ref: AptosmainnetfullnodeTCP6180TargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-          - Ref: DefaultNetwork
-          Subnets:
-          - subnet-0c45ee7adce1a8d26
-          - subnet-04f576cc991efc906
-          - subnet-0a5b8f2304bc9a1cb
-          - subnet-05efbe137838f6287
-          - subnet-0ea7ff7f7e4c86623
-          - subnet-0c64e9f5653df8a7a
-      PlatformVersion: 1.4.0
-      PropagateTags: SERVICE
-      SchedulingStrategy: REPLICA
-      ServiceRegistries:
-      - RegistryArn:
-          Fn::GetAtt:
-          - AptosmainnetfullnodeServiceDiscoveryEntry
-          - Arn
-      Tags:
+      AccessPointTags:
       - Key: com.docker.compose.project
         Value: aux-ts
-      - Key: com.docker.compose.service
-        Value: aptos-mainnet-fullnode
-      TaskDefinition:
-        Ref: AptosmainnetfullnodeTaskDefinition
-    Type: AWS::ECS::Service
-  AptosmainnetfullnodeServiceDiscoveryEntry:
+      - Key: com.docker.compose.volume
+        Value: aptos
+      - Key: Name
+        Value: aux-ts_aptos
+      FileSystemId:
+        Ref: AptosFilesystem
+    Type: AWS::EFS::AccessPoint
+  AptosFilesystem:
+    DeletionPolicy: Retain
     Properties:
-      Description: '"aptos-mainnet-fullnode" service discovery entry in Cloud Map'
-      DnsConfig:
-        DnsRecords:
-        - TTL: 60
-          Type: A
-        RoutingPolicy: MULTIVALUE
-      HealthCheckCustomConfig:
-        FailureThreshold: 1
-      Name: aptos-mainnet-fullnode
-      NamespaceId:
-        Ref: CloudMap
-    Type: AWS::ServiceDiscovery::Service
-  AptosmainnetfullnodeTCP6180Listener:
-    Properties:
-      DefaultActions:
-      - ForwardConfig:
-          TargetGroups:
-          - TargetGroupArn:
-              Ref: AptosmainnetfullnodeTCP6180TargetGroup
-        Type: forward
-      LoadBalancerArn:
-        Ref: LoadBalancer
-      Port: 6180
-      Protocol: TCP
-    Type: AWS::ElasticLoadBalancingV2::Listener
-  AptosmainnetfullnodeTCP6180TargetGroup:
-    Properties:
-      Port: 6180
-      Protocol: TCP
-      Tags:
+      Encrypted: true
+      FileSystemTags:
       - Key: com.docker.compose.project
         Value: aux-ts
-      TargetType: ip
-      VpcId: vpc-05805786896964e0d
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  AptosmainnetfullnodeTCP8080Listener:
+      - Key: com.docker.compose.volume
+        Value: aptos
+      - Key: Name
+        Value: aux-ts_aptos
+    Type: AWS::EFS::FileSystem
+  AptosNFSMountTargetOnSubnet04f576cc991efc906:
     Properties:
-      DefaultActions:
-      - ForwardConfig:
-          TargetGroups:
-          - TargetGroupArn:
-              Ref: AptosmainnetfullnodeTCP8080TargetGroup
-        Type: forward
-      LoadBalancerArn:
-        Ref: LoadBalancer
-      Port: 8080
-      Protocol: TCP
-    Type: AWS::ElasticLoadBalancingV2::Listener
-  AptosmainnetfullnodeTCP8080TargetGroup:
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-04f576cc991efc906
+    Type: AWS::EFS::MountTarget
+  AptosNFSMountTargetOnSubnet05efbe137838f6287:
     Properties:
-      Port: 8080
-      Protocol: TCP
-      Tags:
-      - Key: com.docker.compose.project
-        Value: aux-ts
-      TargetType: ip
-      VpcId: vpc-05805786896964e0d
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  AptosmainnetfullnodeTCP9101Listener:
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-05efbe137838f6287
+    Type: AWS::EFS::MountTarget
+  AptosNFSMountTargetOnSubnet0a5b8f2304bc9a1cb:
     Properties:
-      DefaultActions:
-      - ForwardConfig:
-          TargetGroups:
-          - TargetGroupArn:
-              Ref: AptosmainnetfullnodeTCP9101TargetGroup
-        Type: forward
-      LoadBalancerArn:
-        Ref: LoadBalancer
-      Port: 9101
-      Protocol: TCP
-    Type: AWS::ElasticLoadBalancingV2::Listener
-  AptosmainnetfullnodeTCP9101TargetGroup:
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-0a5b8f2304bc9a1cb
+    Type: AWS::EFS::MountTarget
+  AptosNFSMountTargetOnSubnet0c45ee7adce1a8d26:
     Properties:
-      Port: 9101
-      Protocol: TCP
-      Tags:
-      - Key: com.docker.compose.project
-        Value: aux-ts
-      TargetType: ip
-      VpcId: vpc-05805786896964e0d
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  AptosmainnetfullnodeTaskDefinition:
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-0c45ee7adce1a8d26
+    Type: AWS::EFS::MountTarget
+  AptosNFSMountTargetOnSubnet0c64e9f5653df8a7a:
     Properties:
-      ContainerDefinitions:
-      - Command:
-        - us-east-1.compute.internal
-        - aux-ts.local
-        Essential: false
-        Image: docker/ecs-searchdomain-sidecar:1.0
-        LogConfiguration:
-          LogDriver: awslogs
-          Options:
-            awslogs-group:
-              Ref: LogGroup
-            awslogs-region:
-              Ref: AWS::Region
-            awslogs-stream-prefix: aux-ts
-        Name: Aptosmainnetfullnode_ResolvConf_InitContainer
-      - DependsOn:
-        - Condition: SUCCESS
-          ContainerName: Aptosmainnetfullnode_ResolvConf_InitContainer
-        Essential: true
-        Image: docker.io/aptoslabs/validator:mainnet@sha256:24ee3af1eca731bc71f1cce266176adeceef5acbdee11426f8a4aed3cc6384f1
-        LinuxParameters: {}
-        LogConfiguration:
-          LogDriver: awslogs
-          Options:
-            awslogs-group:
-              Ref: LogGroup
-            awslogs-region:
-              Ref: AWS::Region
-            awslogs-stream-prefix: aux-ts
-        Name: aptos-mainnet-fullnode
-        PortMappings:
-        - ContainerPort: 8080
-          HostPort: 8080
-          Protocol: tcp
-        - ContainerPort: 9101
-          HostPort: 9101
-          Protocol: tcp
-        - ContainerPort: 6180
-          HostPort: 6180
-          Protocol: tcp
-      Cpu: "256"
-      ExecutionRoleArn:
-        Ref: AptosmainnetfullnodeTaskExecutionRole
-      Family: aux-ts-aptos-mainnet-fullnode
-      Memory: "512"
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-      - FARGATE
-    Type: AWS::ECS::TaskDefinition
-  AptosmainnetfullnodeTaskExecutionRole:
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-0c64e9f5653df8a7a
+    Type: AWS::EFS::MountTarget
+  AptosNFSMountTargetOnSubnet0ea7ff7f7e4c86623:
     Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Action:
-          - sts:AssumeRole
-          Condition: {}
-          Effect: Allow
-          Principal:
-            Service: ecs-tasks.amazonaws.com
-        Version: 2012-10-17
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
-      Tags:
-      - Key: com.docker.compose.project
-        Value: aux-ts
-      - Key: com.docker.compose.service
-        Value: aptos-mainnet-fullnode
-    Type: AWS::IAM::Role
+      FileSystemId:
+        Ref: AptosFilesystem
+      SecurityGroups:
+      - Ref: DefaultNetwork
+      SubnetId: subnet-0ea7ff7f7e4c86623
+    Type: AWS::EFS::MountTarget
   CloudMap:
     Properties:
       Description: Service Map for Docker Compose project aux-ts
@@ -234,36 +94,6 @@ Resources:
         Ref: DefaultNetwork
       IpProtocol: TCP
       ToPort: 4000
-    Type: AWS::EC2::SecurityGroupIngress
-  Default6180Ingress:
-    Properties:
-      CidrIp: 0.0.0.0/0
-      Description: aptos-mainnet-fullnode:6180/tcp on default network
-      FromPort: 6180
-      GroupId:
-        Ref: DefaultNetwork
-      IpProtocol: TCP
-      ToPort: 6180
-    Type: AWS::EC2::SecurityGroupIngress
-  Default8080Ingress:
-    Properties:
-      CidrIp: 0.0.0.0/0
-      Description: aptos-mainnet-fullnode:8080/tcp on default network
-      FromPort: 8080
-      GroupId:
-        Ref: DefaultNetwork
-      IpProtocol: TCP
-      ToPort: 8080
-    Type: AWS::EC2::SecurityGroupIngress
-  Default9101Ingress:
-    Properties:
-      CidrIp: 0.0.0.0/0
-      Description: aptos-mainnet-fullnode:9101/tcp on default network
-      FromPort: 9101
-      GroupId:
-        Ref: DefaultNetwork
-      IpProtocol: TCP
-      ToPort: 9101
     Type: AWS::EC2::SecurityGroupIngress
   DefaultNetwork:
     Properties:
@@ -425,8 +255,13 @@ Resources:
   WebService:
     DependsOn:
     - WebTCP4000Listener
-    - AptosmainnetfullnodeService
     - RedisService
+    - AptosNFSMountTargetOnSubnet0c45ee7adce1a8d26
+    - AptosNFSMountTargetOnSubnet04f576cc991efc906
+    - AptosNFSMountTargetOnSubnet0a5b8f2304bc9a1cb
+    - AptosNFSMountTargetOnSubnet05efbe137838f6287
+    - AptosNFSMountTargetOnSubnet0ea7ff7f7e4c86623
+    - AptosNFSMountTargetOnSubnet0c64e9f5653df8a7a
     Properties:
       Cluster:
         Fn::GetAtt:
@@ -540,6 +375,9 @@ Resources:
             awslogs-region:
               Ref: AWS::Region
             awslogs-stream-prefix: aux-ts
+        MountPoints:
+        - ContainerPath: /opt/aptos/etc
+          SourceVolume: aptos
         Name: web
         PortMappings:
         - ContainerPort: 4000
@@ -553,6 +391,18 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - FARGATE
+      TaskRoleArn:
+        Ref: WebTaskRole
+      Volumes:
+      - EFSVolumeConfiguration:
+          AuthorizationConfig:
+            AccessPointId:
+              Ref: AptosAccessPoint
+            IAM: ENABLED
+          FilesystemId:
+            Ref: AptosFilesystem
+          TransitEncryption: ENABLED
+        Name: aptos
     Type: AWS::ECS::TaskDefinition
   WebTaskExecutionRole:
     Properties:
@@ -568,6 +418,42 @@ Resources:
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
       - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: aux-ts
+      - Key: com.docker.compose.service
+        Value: web
+    Type: AWS::IAM::Role
+  WebTaskRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action:
+            - elasticfilesystem:ClientMount
+            - elasticfilesystem:ClientWrite
+            - elasticfilesystem:ClientRootAccess
+            Condition:
+              StringEquals:
+                elasticfilesystem:AccessPointArn:
+                  Ref: AptosAccessPoint
+            Effect: Allow
+            Principal: {}
+            Resource:
+            - Fn::GetAtt:
+              - AptosFilesystem
+              - Arn
+          Version: 2012-10-17
+        PolicyName: WebAptosVolumeMountPolicy
       Tags:
       - Key: com.docker.compose.project
         Value: aux-ts
