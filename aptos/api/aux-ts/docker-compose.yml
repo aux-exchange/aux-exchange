@@ -15,10 +15,11 @@ services:
       - "8080:8080"
       - "9101:9101"
       - "6180:6180"
-  #   volumes:
-  #     - aptosmainnetfullnodeetc:/opt/aptos/etc
-  #     - aptosmainnetfullnodedata:/opt/aptos/data
+    volumes:
+      - aptos:/opt/aptos/data
     working_dir: /opt/aptos/etc
     command: ["/usr/local/bin/aptos-node", "-f", "/opt/aptos/etc/fullnode.yaml"]
   redis:
     image: "redis:alpine"
+volumes:
+  aptos:
