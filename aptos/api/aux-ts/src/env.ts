@@ -99,6 +99,7 @@ export function getAptosProfile(
   aptosProfile: string,
   configPath: string = `${os.homedir()}/.aptos/config.yaml`
 ): AptosProfile {
+  console.log(configPath);
   const profiles = YAML.parse(
     fs.readFileSync(configPath, { encoding: "utf-8" })
   );

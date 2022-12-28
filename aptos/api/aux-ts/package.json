@@ -48,6 +48,7 @@
     "graphql-scalars": "^1.19.0",
     "graphql-subscriptions": "^2.0.0",
     "graphql-ws": "^5.11.0",
+    "ioredis": "^5.2.4",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.21",
     "redis": "^4.3.1",
