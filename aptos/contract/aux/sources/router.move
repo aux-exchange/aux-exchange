@@ -1180,7 +1180,7 @@ module aux::router {
         // std::debug::print<u128>(&amm_usdc_received);
     }
 
-    #[expected_failure(abort_code = 1)]
+    #[expected_failure(abort_code = E_UNSUPPORTED)]
     #[test(sender = @0x5e7c3, aux = @aux, alice = @0x123, bob = @0x456, aptos_framework = @0x1)]
     fun test_base_in_exact_quote_out_market_only(
         sender: &signer,

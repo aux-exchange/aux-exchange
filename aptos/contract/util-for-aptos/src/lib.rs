@@ -98,14 +98,14 @@ pub fn get_resource_address(source: AccountAddress, seed: &str) -> AccountAddres
         .expect("failed to generate resource account address")
 }
 
-pub fn get_none_artifact_build_options() -> framework::BuildOptions {
-    framework::BuildOptions {
+pub fn get_none_artifact_build_options() -> aptos_framework::BuildOptions {
+    aptos_framework::BuildOptions {
         with_srcs: false,
         with_abis: false,
         with_source_maps: false,
         with_error_map: true,
         install_dir: Option::None,
-        ..framework::BuildOptions::default()
+        ..aptos_framework::BuildOptions::default()
     }
 }
 

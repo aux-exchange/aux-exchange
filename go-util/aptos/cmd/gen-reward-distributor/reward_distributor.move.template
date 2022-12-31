@@ -1,0 +1,371 @@
+// Auto generated from "go-util/aptos/cmd/gen-reward-distributor"
+// Modify Manually with Caution
+{{if not .IsNotQuote}}// Quoter version use aux::quote_coin instead of real coin,
+// and can be used to perform calculations.
+{{end}}module aux::{{.ModuleName}} {
+{{$coinName := "Coin"}}{{$rewardParam := "<R>"}}{{$typeParam := "<R, W>"}}{{if .IsNotQuote}}    use std::signer;
+
+    use aptos_framework::{{.CoinModule}}::{Self, Coin};
+    use aptos_framework::type_info;
+    use aux::reward_quoter::{Self, RewardDistributionQuoter};
+{{else}}{{$rewardParam = ""}}{{$typeParam = ""}}{{$coinName = "u64"}}    use aux::{{.CoinModule}}::{Self};
+{{end}}
+    const E_MISMATCH_DISTRIBUTOR_ID: u64 = 1002;
+    const E_CANNOT_CREATE_DISTRIBUTOR_FOR_OTHER: u64 = 1003;
+    const E_ZERO_MINT_AMOUNT: u64 = 1004;
+    const E_CANNOT_SHUTDOWN_DISTRIBUTOR_WITH_OUTSTANDING_TOKEN: u64 = 1005;
+    const E_REDEEM_TOKEN_NOT_FUNGIBLE: u64 = 1006;
+    const E_CANNOT_DESTROY_NON_ZERO_REDEEM_TOKEN: u64 = 1007;
+    const E_CANNOT_MELT_TOKEN_FOR_DIFFERNT_DISTRIBUTOR: u64 = 1008;
+
+    const DECIMAL_MULTIPLIER: u128 = 1000000000000;
+
+    /// {{.ClassName}} is a primitive for distributing rewards to token holders.
+    ///
+    /// Reward is given out in the form of {{if .IsNotQuote}}0x1::{{.CoinModule}}::{{$coinName}}<R>{{else}}aux::quote_{{.CoinModule}}::{{$coinName}}{{end}}.
+    ///
+    /// {{.ClassName}} keeps track of acc_reward_per_share, that is,
+    /// the amount of reward per unit token if that token exists since the initialization of the distributor.
+    /// When reward is added to the RewardDistrubitor,
+    /// acc_reward_per_share is increased by the amount of added_reward / total_token_amount.
+    ///
+    /// Users' rewards are represented by {{.TokenName}}.
+    /// Users are entitled to rewards that are added after their {{.TokenName}} are mint.
+    /// This is ensured by keeping in {{.TokenName}} last_acc_reward_per_share, which is the
+    /// acc_reward_per_share when the {{.TokenName}} is minted.
+    /// When {{.TokenName}}s are burned, the returned reward will be based on
+    /// current {{.ClassName}}'s acc_reward_per_share minus {{.TokenName}}'s last_acc_reward_per_share.
+    ///
+    /// In reality, acc_reward_per_share is multiplied by 10^12 to increase the precision of calculations.
+    /// However, rounding is unavoidable, and there may still be reward left when total token amount is 0.
+    ///
+    /// When total token amount drops to 0, {{.ClassName}} can be shutdown and rewards returned to the authority
+    /// of the distributor.
+    ///
+    /// W is the witness type. Only owner of the witness type can create a {{.ClassName}} with W.
+    ///
+    /// There can be multiple {{.ClassName}}s for the same reward coin R and witness W. They are differentiated by their id.
+    /// Each {{.ClassName}} has separate authority even if they are of same reward coin R.
+    struct {{.ClassName}}{{if .IsNotQuote}}<phantom R, phantom W>{{end}} has store{{if not .IsNotQuote}}, copy, drop{{end}} {
+        id: u128,
+        /// reward coins
+        reward: {{$coinName}}{{$rewardParam}},
+        /// total_token_amount is the **current** outstanding {{.TokenName}} for this distributor.
+        total_token_amount: u128,
+        /// accumulative reward per share, if the token is held from initialization of the pool.
+        acc_reward_per_share: u128,
+    }
+
+    /// {{.TokenName}} contains the information useful for redeeming reward from {{.ClassName}}.
+    ///
+    /// It contains the number of tokens, and the `last_acc_reward_per_share`.
+    /// When {{.TokenName}} is burned, reward will be calculated based on
+    /// value * (reward_distributor.acc_reward_per_share - token.last_acc_reward_per_share) / DECIMAL_MULTIPLIER.
+    struct {{.TokenName}}{{if .IsNotQuote}}<phantom R, phantom W>{{end}} has store{{if not .IsNotQuote}}, copy, drop{{end}} {
+        // id of the distributor
+        id: u128,
+        value: u64,
+        last_acc_reward_per_share: u128,
+    }
+{{if .IsNotQuote}}
+    /// create a new {{.ClassName}}.
+    public fun create_reward_distributor{{$typeParam}}(sender: &signer, id: u128): {{.ClassName}}{{$typeParam}} {
+        assert!(
+            signer::address_of(sender) == type_info::account_address(&type_info::type_of<W>()),
+            E_CANNOT_CREATE_DISTRIBUTOR_FOR_OTHER,
+        );
+        {{.ClassName}} {
+            id,
+            reward: {{.CoinModule}}::zero(),
+            total_token_amount: 0,
+            acc_reward_per_share: 0,
+        }
+    }
+{{else}}
+    /// create a new {{.ClassName}}
+    public fun create_quoter{{$typeParam}}(id: u128, reward: u64, total_token_amount: u128, acc_reward_per_share: u128): {{.ClassName}}{{$typeParam}} {
+        {{.ClassName}} {
+            id,
+            reward: {{.CoinModule}}::new(reward),
+            total_token_amount,
+            acc_reward_per_share,
+        }
+    }
+{{end}}
+    /// Add rewards to the distributor.
+    ///
+    /// To make sure no front running, only add reward when all the current token holders are entitled to the rewards.
+    /// For example, if a liquidity pool is using {{.ClassName}} to distribute fees to its lps.
+    /// The fees should be added to the pool **BEFORE** lp tokens are minted or burned.
+    ///
+    /// Note this function permits anyone to add reward to the pool.
+    /// Once the reward is added, there is no way to retrieve the reward before all tokens are redeemed/burned.
+    ///
+    /// If the total token amount is 0, the reward will be not able to be redeemable for users.
+    public fun add_reward{{$typeParam}}(distributor: &mut {{.ClassName}}{{$typeParam}}, reward: {{$coinName}}{{$rewardParam}}) {
+        let value = ({{.CoinModule}}::value(&reward) as u128);
+
+        {{.CoinModule}}::merge(&mut distributor.reward, reward);
+
+        // only increment the acc_reward_per_share when total token amount > 0.
+        // this means the reward will stuck in the distributor if total token amount is 0.
+        // the authority of the pool can still retrieve the reward once there is no outstanding token holders.
+        if (distributor.total_token_amount > 0) {
+            distributor.acc_reward_per_share = distributor.acc_reward_per_share + (value * DECIMAL_MULTIPLIER)/distributor.total_token_amount;
+        }
+    }
+
+    /// mint new redeem tokens.
+    public fun mint{{$typeParam}}(
+        distributor: &mut {{.ClassName}}{{$typeParam}},
+        amount: u64,
+    ): {{.TokenName}}{{$typeParam}}
+    {
+        assert!(amount > 0, E_ZERO_MINT_AMOUNT);
+
+        distributor.total_token_amount = distributor.total_token_amount + (amount as u128);
+
+        {{.TokenName}} {
+            id: distributor.id,
+            value: amount,
+            last_acc_reward_per_share: distributor.acc_reward_per_share,
+        }
+    }
+
+    /// burn {{.TokenName}}s and get reward
+    public fun burn{{$typeParam}}(
+        distributor: &mut {{.ClassName}}{{$typeParam}},
+        tokens: {{.TokenName}}{{$typeParam}},
+    ): {{$coinName}}{{$rewardParam}} {
+        assert!(tokens.id == distributor.id, E_MISMATCH_DISTRIBUTOR_ID);
+
+        distributor.total_token_amount = distributor.total_token_amount - (tokens.value as u128);
+        let reward_amount = ((distributor.acc_reward_per_share - tokens.last_acc_reward_per_share) * (tokens.value as u128)) / DECIMAL_MULTIPLIER;
+        let reward_amount = (reward_amount as u64);
+
+        let rewards = {{.CoinModule}}::extract(&mut distributor.reward, reward_amount);
+
+        let {{.TokenName}} {
+            value: _,
+            id: _,
+            last_acc_reward_per_share: _,
+        } = tokens;
+
+        rewards
+    }
+
+    /// rebase will withdraw the current reward amount, and
+    /// replace the old token with new tokens.
+    public fun rebase{{$typeParam}}(
+        distributor: &mut {{.ClassName}}{{$typeParam}},
+        tokens: {{.TokenName}}{{$typeParam}},
+    ): ({{$coinName}}{{$rewardParam}}, {{.TokenName}}{{$typeParam}}) {
+        assert!(tokens.id == distributor.id, E_MISMATCH_DISTRIBUTOR_ID);
+
+        let reward_amount = ((distributor.acc_reward_per_share - tokens.last_acc_reward_per_share) * (tokens.value as u128)) / DECIMAL_MULTIPLIER;
+        let reward_amount = (reward_amount as u64);
+
+        let rewards = {{.CoinModule}}::extract(&mut distributor.reward, reward_amount);
+
+         let {{.TokenName}} {
+            value,
+            id,
+            last_acc_reward_per_share: _,
+        } = tokens;
+
+        (
+            rewards,
+            {{.TokenName}} {
+                value,
+                id,
+                last_acc_reward_per_share: distributor.acc_reward_per_share,
+            },
+        )
+    }
+
+    /// shutdown the distributor. The total outstanding token amount must be 0.
+    public fun shutdown{{$typeParam}}(distributor: {{.ClassName}}{{$typeParam}}): {{$coinName}}{{$rewardParam}} {
+        assert!(
+            distributor.total_token_amount == 0,
+            E_CANNOT_SHUTDOWN_DISTRIBUTOR_WITH_OUTSTANDING_TOKEN,
+        );
+
+        let {{.ClassName}}{{$typeParam}} {
+            reward: remaining_rewards,
+            id: _,
+            total_token_amount: _,
+            acc_reward_per_share: _,
+        } = distributor;
+
+        remaining_rewards
+    }
+
+    /*********************************/
+    /* {{.ClassName}} functions   */
+    /*********************************/
+
+    public fun acc_reward_per_share{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}): u128 {
+        distributor.acc_reward_per_share
+    }
+
+    public fun distributor_id{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}): u128 {
+        distributor.id
+    }
+
+    public fun total_token_amount{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}): u128 {
+        distributor.total_token_amount
+    }
+
+    public fun available_reward{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}): u64 {
+        {{.CoinModule}}::value(&distributor.reward)
+    }
+
+    /// check if token is for this {{.ClassName}}
+    public fun check_redeem_token{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}, token: &{{.TokenName}}{{$typeParam}}): bool {
+        distributor.id == token.id
+    }
+
+    /// compute the reward amount for the given token.
+    public fun reward_amount{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}, token: &{{.TokenName}}{{$typeParam}}): u64 {
+        assert!(
+            distributor.id == token.id,
+            E_MISMATCH_DISTRIBUTOR_ID,
+        );
+        let reward_amount = ((distributor.acc_reward_per_share - token.last_acc_reward_per_share) * (token.value as u128)) / DECIMAL_MULTIPLIER;
+        let reward_amount = (reward_amount as u64);
+
+        reward_amount
+    }
+{{if .IsNotQuote}}
+    public fun get_quoter{{$typeParam}}(distributor: &{{.ClassName}}{{$typeParam}}): RewardDistributionQuoter {
+        reward_quoter::new(distributor.id, {{.CoinModule}}::value(&distributor.reward), distributor.total_token_amount, distributor.acc_reward_per_share)
+    }
+
+    #[test_only]
+    /// destroy a distributor for for test only.
+    /// the reward will be deposit into the sender account.
+    public fun destroy_for_test{{$typeParam}}(distributor: {{.ClassName}}{{$typeParam}}): {{$coinName}}{{$rewardParam}} {
+        let {{.ClassName}} {
+            id: _,
+            total_token_amount: _,
+            reward,
+            acc_reward_per_share: _
+        } = distributor;
+
+        reward
+    }
+{{else}}
+    public fun new{{$typeParam}}(id: u128, reward: u64, total_token_amount: u128, acc_reward_per_share: u128): RewardDistributionQuoter{{$typeParam}} {
+        RewardDistributionQuoter {
+            id,
+            reward: {{.CoinModule}}::new(reward),
+            total_token_amount,
+            acc_reward_per_share,
+        }
+    }
+{{end}}
+    /*********************************/
+    /* {{.TokenName}} Related functions */
+    /*********************************/
+{{if not .IsNotQuote}}
+    // quoter allows arbitrary creation of redeem tokens.
+    public fun token_new{{$typeParam}}(id: u128, value: u64, last_acc_reward_per_share: u128): {{.TokenName}}{{$typeParam}} {
+        {{.TokenName}} {
+            id,
+            value,
+            last_acc_reward_per_share,
+        }
+    }
+
+    // quoter allows destroy of any redeem tokens.
+    public fun token_destroy{{$typeParam}}(token: {{.TokenName}}{{$typeParam}}) {
+        let {{.TokenName}} {
+            id: _,
+            value: _,
+            last_acc_reward_per_share: _,
+        } = token;
+    }
+
+{{end}}    public fun token_value{{$typeParam}}(token: &{{.TokenName}}{{$typeParam}}): u64 {
+        token.value
+    }
+
+    public fun token_id{{$typeParam}}(token: &{{.TokenName}}{{$typeParam}}): u128 {
+        token.id
+    }
+
+    public fun token_last_acc_reward_per_share{{$typeParam}}(token: &{{.TokenName}}{{$typeParam}}): u128 {
+        token.last_acc_reward_per_share
+    }
+
+    /// check if two tokens are fungible.
+    /// if they are fungible, they can be merged.
+    public fun is_fungible{{$typeParam}}(l: &{{.TokenName}}{{$typeParam}}, r: &{{.TokenName}}{{$typeParam}}): bool {
+        l.id == r.id && l.last_acc_reward_per_share == r.last_acc_reward_per_share
+    }
+
+    /// extract amount of token
+    public fun token_extract{{$typeParam}}(t: &mut {{.TokenName}}{{$typeParam}}, amount: u64): {{.TokenName}}{{$typeParam}} {
+        t.value = t.value - amount;
+        {{.TokenName}}{{$typeParam}} {
+            value: amount,
+            id: t.id,
+            last_acc_reward_per_share: t.last_acc_reward_per_share,
+        }
+    }
+
+    /// merge two tokens.
+    /// they must be fungible
+    public fun token_merge{{$typeParam}}(t: &mut {{.TokenName}}{{$typeParam}}, r: {{.TokenName}}{{$typeParam}}) {
+        assert!(
+            is_fungible(t, &r),
+            E_REDEEM_TOKEN_NOT_FUNGIBLE,
+        );
+
+        t.value = t.value + r.value;
+
+        r.value = 0;
+
+        destroy_zero_token(r);
+    }
+
+    public fun destroy_zero_token{{$typeParam}}(t: {{.TokenName}}{{$typeParam}}) {
+        assert!(
+            t.value == 0,
+            E_CANNOT_DESTROY_NON_ZERO_REDEEM_TOKEN,
+        );
+
+        let {{.TokenName}} {
+            value: _,
+            id: _,
+            last_acc_reward_per_share: _,
+        } = t;
+    }
+
+    // melt two tokens into one. there will be loss for the user due to rounding.
+    public fun token_melt{{$typeParam}}(l: &mut {{.TokenName}}{{$typeParam}}, r: {{.TokenName}}{{$typeParam}}) {
+        assert!(
+            l.id == r.id,
+            E_CANNOT_MELT_TOKEN_FOR_DIFFERNT_DISTRIBUTOR,
+        );
+
+        let {{.TokenName}} {
+            id: _,
+            value: r_value,
+            last_acc_reward_per_share: r_acc,
+        } = r;
+        let r_value = (r_value as u128);
+        let l_value = (l.value as u128);
+        let l_acc = l.last_acc_reward_per_share;
+
+        let old_acc = l_value * l_acc + r_value * r_acc;
+        let total_value = l_value + r_value;
+        let new_acc = old_acc / total_value;
+        if (new_acc * total_value < old_acc) {
+            new_acc = new_acc + 1;
+        };
+
+        l.value = (total_value as u64);
+        l.last_acc_reward_per_share = new_acc;
+    }
+}
