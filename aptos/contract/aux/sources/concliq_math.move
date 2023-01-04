@@ -29,6 +29,7 @@ module aux::concliq_math {
 
     /// Precision used in the operation.
     const PRECISION: u8 = 64;
+    const PRECISION_PLUS_32: u8 = 64 + 32;
 
     // ONE_X is 1 in fixed point number with 64 digits after decimal point.
     const ONE_X: u128 = 1 << 64;
@@ -40,15 +41,17 @@ module aux::concliq_math {
     const TWO_X_256: u256 = 1 << (64 + 1);
     // ONE_X_TWICE_SHIFTED_256 is 1 in fixed point number with 2*64 digits after decimal point. It is generally acting as numerator for division.
     const ONE_X_TWICE_SHIFTED_256: u256 = (1 << 64) << 64;
+    // ONE_32 is 1 << 32;
+    const ONE_32: u256 = 1 << 32;
 
     /// sqrt(1.0001) in fixed point 64
     const SQUARE_PRICE: u128 = 18447666387855959850;
     /// log_2 sqrt(1.0001) in fixed point 64
-    const SQUARE_PRICE_LOG_2: u128 = 1330584781654113;
+    const SQUARE_PRICE_LOG_2: u128 = 2535295485638337043275291122165;
     /// 1/sqrt(1.0001)
-    const SQUARE_PRICE_NEG: u128 = 18445821805675392311;
+    const SQUARE_PRICE_NEG: u256 = 18445821805675392311;
     /// log_2 1/sqrt(1.0001)
-    const SQUARE_PRICE_NEG_LOG_2_ABS: u128 = 1330584781654116;
+    const SQUARE_PRICE_NEG_LOG_2_ABS: u256 = 2535306915274580562721192034936;
 
     /// get sqrt(1.0001)^i
     public fun get_square_price_from_tick(i: Int32): u128 {
@@ -178,7 +181,7 @@ module aux::concliq_math {
             r = r >> PRECISION;
         };
 
-        (r as u128)
+        ((r >> 32) as u128)
     }
 
     /// get sqrt(1.0001)^(-i), where i >= 0
@@ -262,7 +265,7 @@ module aux::concliq_math {
             r = r >> PRECISION;
         };
 
-        (r as u128)
+        ((r >> 32) as u128)
     }
 
     /// log_2 for log_{sqrt{1.0001}} y

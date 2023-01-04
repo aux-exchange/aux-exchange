@@ -3,16 +3,16 @@ module github.com/aux-exchange/aux-exchange
 go 1.19
 
 require (
-	github.com/fardream/gen-move-container v1.1.0
-	github.com/fardream/gen-move-math v1.4.2
-	github.com/fardream/go-aptos v0.8.3
+	github.com/fardream/gen-move-container v1.2.0
+	github.com/fardream/gen-move-math v1.4.5
+	github.com/fardream/go-aptos v0.8.4
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/websocket v1.5.0
-	github.com/mattn/go-isatty v0.0.16
+	github.com/mattn/go-isatty v0.0.17
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.6.1
-	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
+	golang.org/x/exp v0.0.0-20221230162634-c8adb6e14cba
 	golang.org/x/text v0.5.0
 )
 

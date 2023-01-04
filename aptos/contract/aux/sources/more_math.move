@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -p aux -w 256 -w 128 -o ../aptos/contract/aux/sources/more_math.move
-// Version: v1.4.2
+// Version: v1.4.5
 module aux::more_math_u256 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -56,7 +56,7 @@ module aux::more_math_u256 {
         (lo, hi)
     }
 
-    /// count leading zeros u256
+    /// count leading zeros for u256
     public fun leading_zeros(x: u256): u8 {
         if (x == 0) {
             abort(E_WIDTH_OVERFLOW_U8)
@@ -105,6 +105,55 @@ module aux::more_math_u256 {
         }
     }
 
+    /// count trailing zeros for u256
+    public fun trailing_zeros(x: u256): u8 {
+        if (x == 0) {
+            abort(E_WIDTH_OVERFLOW_U8)
+        } else {
+            let n: u8 = 0;
+            if (x & 340282366920938463463374607431768211455 == 0) {
+                // x's lower 128 is all zero, shift the higher part over
+                x = x >> 128;
+                n = n + 128;
+            };
+            if (x & 18446744073709551615 == 0) {
+                // x's lower 64 is all zero, shift the higher part over
+                x = x >> 64;
+                n = n + 64;
+            };
+            if (x & 4294967295 == 0) {
+                // x's lower 32 is all zero, shift the higher part over
+                x = x >> 32;
+                n = n + 32;
+            };
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
     /// sqrt returns y = floor(sqrt(x))
     public fun sqrt(x: u256): u256 {
         if (x == 0) {
@@ -124,10 +173,11 @@ module aux::more_math_u256 {
         }
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// Also note the last several digits of the result may not be precise.
     public fun log_2(x: u256, n: u8): u256 {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 
@@ -160,11 +210,11 @@ module aux::more_math_u256 {
         r
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
-    // n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
+    /// n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
     public fun log_2_with_precision(x: u256, n: u8, precision: u8): u256 {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 
@@ -202,7 +252,7 @@ module aux::more_math_u256 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: more-math -p aux -w 256 -w 128 -o ../aptos/contract/aux/sources/more_math.move
-// Version: v1.4.2
+// Version: v1.4.5
 module aux::more_math_u128 {
     const E_WIDTH_OVERFLOW_U8: u64 = 1;
     const E_LOG_2_OUT_OF_RANGE: u64 = 2;
@@ -256,7 +306,7 @@ module aux::more_math_u128 {
         (lo, hi)
     }
 
-    /// count leading zeros u128
+    /// count leading zeros for u128
     public fun leading_zeros(x: u128): u8 {
         if (x == 0) {
             128
@@ -300,6 +350,50 @@ module aux::more_math_u128 {
         }
     }
 
+    /// count trailing zeros for u128
+    public fun trailing_zeros(x: u128): u8 {
+        if (x == 0) {
+            128
+        } else {
+            let n: u8 = 0;
+            if (x & 18446744073709551615 == 0) {
+                // x's lower 64 is all zero, shift the higher part over
+                x = x >> 64;
+                n = n + 64;
+            };
+            if (x & 4294967295 == 0) {
+                // x's lower 32 is all zero, shift the higher part over
+                x = x >> 32;
+                n = n + 32;
+            };
+            if (x & 65535 == 0) {
+                // x's lower 16 is all zero, shift the higher part over
+                x = x >> 16;
+                n = n + 16;
+            };
+            if (x & 255 == 0) {
+                // x's lower 8 is all zero, shift the higher part over
+                x = x >> 8;
+                n = n + 8;
+            };
+            if (x & 15 == 0) {
+                // x's lower 4 is all zero, shift the higher part over
+                x = x >> 4;
+                n = n + 4;
+            };
+            if (x & 3 == 0) {
+                // x's lower 2 is all zero, shift the higher part over
+                x = x >> 2;
+                n = n + 2;
+            };
+            if (x & 1 == 0) {
+                n = n + 1;
+            };
+
+            n
+        }
+    }
+
     /// sqrt returns y = floor(sqrt(x))
     public fun sqrt(x: u128): u128 {
         if (x == 0) {
@@ -319,10 +413,11 @@ module aux::more_math_u128 {
         }
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2)
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// Also note the last several digits of the result may not be precise.
     public fun log_2(x: u128, n: u8): u128 {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 
@@ -355,11 +450,11 @@ module aux::more_math_u128 {
         r
     }
 
-    // log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
-    // n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
-    // This can be used to calculate log_2 for any positive number by bit shifting the binary representation
-    // into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
-    // see: https://en.wikipedia.org/wiki/Binary_logarithm
+    /// log_2 calculates log_2 z, where z is assumed to be ratio of x/2^n and in [1,2). Instead of looking for same precision as
+    /// n, the precision is controlled by another parameter precision. Calculation will stop once 2^precision is reached.
+    /// This can be used to calculate log_2 for any positive number by bit shifting the binary representation
+    /// into the desired region. For float point number (1.b1b2b3...b53 * 2^n), the martissa can be directly used.
+    /// see: https://en.wikipedia.org/wiki/Binary_logarithm
     public fun log_2_with_precision(x: u128, n: u8, precision: u8): u128 {
         assert!(x != 0, E_ZERO_FOR_LOG_2);
 

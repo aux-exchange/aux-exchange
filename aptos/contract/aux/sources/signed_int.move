@@ -2,7 +2,7 @@
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -p aux -o ../aptos/contract/aux/sources/signed_int.move -p aux -w 32 -w 128
-// Version: v1.4.2
+// Version: v1.4.5
 module aux::int32 {
     /// Int32 defines a signed integer with 32 bit width from u32.
     /// Negative numbers are represented by two's complements.
@@ -218,7 +218,7 @@ module aux::int32 {
 // https://github.com/fardream/gen-move-math
 // Manual edit with caution.
 // Arguments: signed-math -p aux -o ../aptos/contract/aux/sources/signed_int.move -p aux -w 32 -w 128
-// Version: v1.4.2
+// Version: v1.4.5
 module aux::int128 {
     /// Int128 defines a signed integer with 128 bit width from u128.
     /// Negative numbers are represented by two's complements.

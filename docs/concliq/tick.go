@@ -125,8 +125,8 @@ func NewSquarePriceList(precision uint) *SquarePriceList {
 		//
 		// negativePrice := IntInverse(positivePrice, precision, false)
 		negativePrice := GetSquarePriceNegPow2N(i, precision)
-		result.NegativeIndices = append(result.NegativeIndices, NewTwoPowerPrice(i, negativePrice, precision))
-		result.PositiveIndices = append(result.PositiveIndices, NewTwoPowerPrice(i, positivePrice, precision))
+		result.NegativeIndices = append(result.NegativeIndices, NewTwoPowerPrice(i, negativePrice, precision+32))
+		result.PositiveIndices = append(result.PositiveIndices, NewTwoPowerPrice(i, positivePrice, precision+32))
 	}
 
 	result.SquarePrice1 = result.PositiveIndices[0].StringV

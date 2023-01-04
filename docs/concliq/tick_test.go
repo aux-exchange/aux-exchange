@@ -90,3 +90,72 @@ func TestGetSquarePricePow2N_96(t *testing.T) {
 		}
 	}
 }
+
+func TestGetSquarePricePow2N_96_128(t *testing.T) {
+	for i, want := range wants96 {
+		p := concliq.GetSquarePricePow2N(i, 128)
+		p = p.Rsh(p, 32)
+		wantInt, ok := big.NewInt(0).SetString(want, 10)
+		if !ok {
+			t.Fatalf("%s is not a big int", want)
+		}
+
+		if p.Cmp(wantInt) != 0 {
+			t.Errorf("line: %d\nwant: %s\ngot:  %s\n", i, wantInt.String(), p.String())
+		}
+	}
+}
+
+var wants64 = []string{
+	"18445821805675392311",
+	"18444899583751176498",
+	"18443055278223354162",
+	"18439367220385604838",
+	"18431993317065449817",
+	"18417254355718160513",
+	"18387811781193591352",
+	"18329067761203520168",
+	"18212142134806087854",
+	"17980523815641551639",
+	"17526086738831147013",
+	"16651378430235024244",
+	"15030750278693429944",
+	"12247334978882834399",
+	"8131365268884726200",
+	"3584323654723342297",
+	"696457651847595233",
+	"26294789957452057",
+	"37481735321082",
+}
+
+func TestGetSquarePriceNegPow2N_64(t *testing.T) {
+	for i, want := range wants64 {
+		p := concliq.GetSquarePriceNegPow2N(i, 64)
+		wantInt, ok := big.NewInt(0).SetString(want, 10)
+		if !ok {
+			t.Fatalf("%s is not a big int", want)
+		}
+
+		if p.Cmp(wantInt) != 0 {
+			t.Errorf("line: %d\nwant: %s\ngot:  %s\n", i, wantInt.String(), p.String())
+		}
+	}
+}
+
+func TestGetSquarePricePow2N_64_96(t *testing.T) {
+	ones := big.NewInt(1)
+	ones.Lsh(ones, 64*2+32*2)
+	for i, want := range wants64 {
+		p := concliq.GetSquarePricePow2N(i, 96)
+		p = p.Div(ones, p)
+		p = p.Rsh(p, 32)
+		wantInt, ok := big.NewInt(0).SetString(want, 10)
+		if !ok {
+			t.Fatalf("%s is not a big int", want)
+		}
+
+		if p.Cmp(wantInt) != 0 {
+			t.Errorf("line: %d\nwant: %s\ngot:  %s\n", i, wantInt.String(), p.String())
+		}
+	}
+}

@@ -264,7 +264,7 @@ module aux::critbit_v {
 
         // get the critbit and a new mask
         let n = critbit(closest_key, key);
-        let mask_new = 1u128<<n;
+        let mask_new = if (n>=128) { 0u128 } else { 1u128<<(n as u8) };
 
         let current = tree.root;
         let insertion_parent = NULL_INDEX;
@@ -485,15 +485,15 @@ module aux::critbit_v {
         }
     }
 
-    fun critbit(s1: u128, s2: u128): u8 {
+    fun critbit(s1: u128, s2: u128): u32 {
         128 - count_leading_zeros(s1^s2) - 1
     }
 
-    fun count_leading_zeros(x: u128): u8 {
+    fun count_leading_zeros(x: u128): u32 {
         if (x == 0) {
             128
         } else {
-            let n: u8 = 0;
+            let n: u32 = 0;
             if (x & 340282366920938463444927863358058659840 == 0) {
                 // x's higher 64 is all zero, shift the lower part over
                 x = x << 64;
