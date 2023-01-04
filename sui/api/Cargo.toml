@@ -1,0 +1,26 @@
+[package]
+name = "aux-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-graphql = { version = "5.0", features = ["decimal"] }
+async-graphql-axum = "5.0"
+axum = "0.6"
+color-eyre = "0.6"
+dirs = "4.0"
+futures = "0.3"
+reqwest = "0.11"
+rust_decimal = "1.27"
+rust_decimal_macros = "1.27"
+serde = "1.0.151"
+serde_json = "1.0"
+sui-framework-build = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
+sui-json-rpc = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
+sui-keys = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
+sui-types = { git = "https://github.com/MystenLabs/sui", branch = "devnet" }
+tokio = { version = "1.22", features = ["full"] }
+tower-http = { version = "0.3", features = ["trace"] }
+tracing = "0.1"
+tracing-subscriber = "0.2"
