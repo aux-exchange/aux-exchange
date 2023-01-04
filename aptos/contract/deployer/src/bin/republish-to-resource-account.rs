@@ -52,7 +52,8 @@ async fn main() {
         .named_addresses
         .insert(package_name.to_owned(), resource_account_address);
 
-    let built_package = framework::BuiltPackage::build(build_path, build_options.clone()).unwrap();
+    let built_package =
+        aptos_framework::BuiltPackage::build(build_path, build_options.clone()).unwrap();
 
     let metadata = bcs::to_bytes(&built_package.extract_metadata().unwrap()).unwrap();
     let code = built_package.extract_code();
@@ -68,7 +69,7 @@ async fn main() {
 
     deployer::upload_code(&rest_client, &mut human_account, "abc", &metadata, &code).await;
 
-    let build_script = framework::BuiltPackage::build(
+    let build_script = aptos_framework::BuiltPackage::build(
         PathBuf::from_str(redeploy_package).unwrap(),
         build_options.clone(),
     )

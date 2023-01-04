@@ -1944,7 +1944,7 @@ module aux::amm {
 
     // Test error cases
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    #[expected_failure(abort_code = 1)]
+    #[expected_failure(abort_code = EPOOL_ALREADY_EXISTS)]
     fun test_cannot_create_duplicate_pool(sender: &signer, aptos_framework: &signer) {
         timestamp::set_time_has_started_for_testing(aptos_framework);
         let signer_addr = signer::address_of(sender);
@@ -1958,7 +1958,7 @@ module aux::amm {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    #[expected_failure(abort_code = 1)]
+    #[expected_failure(abort_code = EPOOL_ALREADY_EXISTS)]
     fun test_cannot_create_duplicate_reverse_pool(sender: &signer, aptos_framework: &signer) {
         timestamp::set_time_has_started_for_testing(aptos_framework);
         let signer_addr = signer::address_of(sender);
@@ -1972,7 +1972,7 @@ module aux::amm {
     }
 
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
-    #[expected_failure(abort_code = 2)]
+    #[expected_failure(abort_code = EPOOL_NOT_FOUND)]
     fun test_pool_not_found(sender: &signer, aptos_framework: &signer) acquires Pool {
         timestamp::set_time_has_started_for_testing(aptos_framework);
         setup_pool_for_test(sender, 0, 10000, 10000);
@@ -2942,7 +2942,7 @@ module aux::amm {
         };
     }
 
-    #[expected_failure(abort_code = 21)]
+    #[expected_failure(abort_code = EINVALID_POOL)]
     #[test(sender = @0x5e7c3, aptos_framework = @0x1)]
     fun test_cannot_create_pool_with_same_asset(sender: &signer, aptos_framework: &signer) {
         timestamp::set_time_has_started_for_testing(aptos_framework);
