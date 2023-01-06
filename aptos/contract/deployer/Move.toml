@@ -1,5 +1,5 @@
 [package]
-name = 'AuxDeployer'
+name = 'deployer'
 version = '1.0.0'
 
 [addresses]

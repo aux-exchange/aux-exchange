@@ -20,6 +20,39 @@ contract AptosRelay is AptosRelayGetters {
         setOwner(msg.sender);
     }
 
+    function transferETH(
+        uint256 relayerFee,
+        bytes32 receiverAddress,
+        uint64 nativeSwapAmount,
+        uint32 nonce
+    ) external payable {
+        require(
+            msg.value >= relayerFee,
+            "insufficient msg.value to pay relayer"
+        );
+
+        IWETH WETH = TokenBridge(tokenBridgeAddress()).WETH();
+
+        emit Deposit(msg.sender, address(WETH), msg.value, relayerFee, receiverAddress, nativeSwapAmount, nonce);
+
+        uint256 _normalizedRelayerFee = normalizeAmount(relayerFee, 18);
+        require(_normalizedRelayerFee <= type(uint64).max);
+        uint64 normalizedRelayerFee = uint64(_normalizedRelayerFee);
+
+        bytes memory payload = abi.encodePacked(
+            normalizedRelayerFee,
+            receiverAddress,
+            nativeSwapAmount
+        );
+
+        TokenBridge(tokenBridgeAddress()).wrapAndTransferETHWithPayload{value:msg.value}(
+            chainId(),
+            targetContractAddress(),
+            nonce,
+            payload
+        );
+    }
+
     function transferTokens(
         address tokenAddress,
         uint256 tokenAmount,

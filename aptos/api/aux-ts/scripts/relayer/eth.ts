@@ -14,7 +14,7 @@ import { AU } from "../../src/units";
 
   const network = process.env['ETH_NETWORK'];
   if (network != "goerli" && network != "mainnet") {
-    console.error("NETWORK is invalid!");
+    console.error("ETH_NETWORK is invalid!");
     process.exit(1);
   }
   const chainId = (network === "goerli" ? 5 : 1);
@@ -34,7 +34,7 @@ import { AU } from "../../src/units";
 
   const relayAddress = process.env['RELAY_ADDRESS'];
   if (!relayAddress) {
-    console.error("APTOS_RECEIVER is required!");
+    console.error("RELAY_ADDRESS is required!");
     process.exit(1);
   }
 

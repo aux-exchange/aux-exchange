@@ -6,7 +6,7 @@ version = '1.0.0'
 aux = '_'
 aux_deployer = '_'
 
-[dependencies.AuxDeployer]
+[dependencies.deployer]
 local = "../deployer"
 
 [dependencies.aux]

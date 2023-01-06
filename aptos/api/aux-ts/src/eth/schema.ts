@@ -14,13 +14,14 @@ export interface AuxEthTransaction<AuxType> {
 
 export interface ApproveEvent {
   userAddress: string,
+  tokenAddress: string,
   spender: string,
   tokenAmount: AtomicUnits,
 }
 
 export interface NativeSwapTokenTransferEvent {
   sender: string,
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   tokenAmount: AtomicUnits,
   relayerFee: AtomicUnits,
   receiverAddress: string,
@@ -38,15 +39,14 @@ export interface ApproveInput {
   tokenAmount: AtomicUnits
 }
 
-
 export interface NativeSwapTokenTransferInput {
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   tokenAmount: AtomicUnits,
   receiverAddress: Types.Address,
 }
 
 export interface NativeSwapTokenTransferPayloadInput {
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   tokenAmount: AtomicUnits,
   relayerFee: AtomicUnits,
   receiverAddress: Types.Address,

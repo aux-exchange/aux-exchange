@@ -4,7 +4,13 @@ pragma solidity ^0.8.17;
 pragma abicoder v2;
 
 interface TokenBridge {
-  function transferTokensWithPayload(
+    function wrapAndTransferETHWithPayload(
+        uint16 recipientChain,
+        bytes32 recipient,
+        uint32 nonce,
+        bytes memory payload
+    ) external payable returns (uint64);
+    function transferTokensWithPayload(
       address token,
       uint256 amount,
       uint16 recipientChain,
@@ -24,4 +30,8 @@ interface TokenBridge {
         address tokenAddress,
         uint32 nonce
     ) external payable returns (uint64 sequence);
+    function WETH() external view returns (IWETH);
+}
+
+interface IWETH {
 }

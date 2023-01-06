@@ -43,6 +43,12 @@ contract ContractScript is Script {
             100,
             0
         );
+        aptosRelay.transferETH{value:value}(
+            0,
+            receiver,
+            100,
+            0
+        );
     }
 
     function run() public {

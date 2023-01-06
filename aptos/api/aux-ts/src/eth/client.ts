@@ -39,6 +39,9 @@ export const GOERLI_WETH = "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6";
 
 export const RELAY_WHITELIST = {
   "mainnet": {
+    "native": {
+      fee: parseUnits("0.002", 18),
+    },
     [MAINNET_WETH]: {
       fee: parseUnits("0.002", 18),
     },
@@ -50,6 +53,9 @@ export const RELAY_WHITELIST = {
     },
   },
   "goerli": {
+    "native": {
+      fee: parseUnits("2", 6),
+    },
     [GOERLI_WETH]: {
       fee: parseUnits("2", 6),
     },
@@ -89,7 +95,7 @@ export class EthClient {
   static loadABI(contractType: ETH_CONTRACTS): ContractInterface {
     switch (contractType) {
       case "RELAY": {
-        return Relay.abi;
+        return Relay;
       }
       default: {
         throw new Error("No ABI found");
@@ -118,6 +124,7 @@ export class EthClient {
       ) {
         event = {
           userAddress,
+          tokenAddress: input.tokenAddress,
           spender: this.contractAddress,
           tokenAmount: AU(new BN(EthClient.strip0x(log.data), "hex")),
         }
@@ -132,7 +139,8 @@ export class EthClient {
   
   async generateNativeSwapTokenTransferPayloadInput(input: NativeSwapTokenTransferInput, sender: string): Promise<NativeSwapTokenTransferPayloadInput> {
     const whitelist = RELAY_WHITELIST[this.network] as any;
-    const fee = whitelist["0x" + input.tokenAddress.slice(-40).toLowerCase()];
+    const tokenAddress = input.tokenAddress !== undefined ? "0x" + input.tokenAddress.slice(-40).toLowerCase() : "native";
+    const fee = whitelist[tokenAddress];
     if (fee !== undefined) {
       const nonce = await this.provider.getTransactionCount(sender);
       if (nonce === undefined) {
@@ -155,7 +163,9 @@ export class EthClient {
     const receiverBytes32 = utils.padLeft(input.receiverAddress, 64); // 64 hex characters in a 32 byte string
     const args = [input.tokenAddress, convertAU(input.tokenAmount), convertAU(input.relayerFee), receiverBytes32, convertAU(input.nativeSwapAmount), convertAU(input.nonce)];
     
-    const response = await connectedContract['transferTokens'](...args);
+    const contractFunction = input.tokenAddress != undefined ? connectedContract['transferTokens'] : connectedContract['transferETH'];
+    
+    const response = await contractFunction(...args);
     const receipt = await response.wait(1);
 
     let event;
@@ -163,8 +173,8 @@ export class EthClient {
     receipt.logs.forEach((log: ethers.providers.Log) => {
       if (
         log.topics[0]?.slice(-64).toLowerCase() === depositTopic.slice(-64).toLowerCase() &&
-        log.topics[1]?.slice(-40).toLowerCase() === userAddress.slice(-40).toLowerCase() &&
-        log.topics[2]?.slice(-40).toLowerCase() === input.tokenAddress.slice(-40).toLowerCase()
+        log.topics[1]?.slice(-40).toLowerCase() === userAddress.slice(-40).toLowerCase()
+        // log.topics[2]?.slice(-40).toLowerCase() === input.tokenAddress.slice(-40).toLowerCase()
       ) {
         let data = EthClient.strip0x(log.data);
         event = {
