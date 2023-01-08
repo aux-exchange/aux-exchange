@@ -295,7 +295,7 @@ module aux::{{.ModuleName}} {
     /// Get the quoter from the the pool's state.
     public fun get_quoter{{$typeList}}(): Quoter acquires {{$structName}} {
         let pool = borrow_global<{{$structParamName}}>(@aux);
-        let lp_supply = std::option::destroy_with_default({{$coinModule}}::supply<LP{{$typeList}}>(), 0);
+        let lp_supply = std::option::destroy_some({{$coinModule}}::supply<LP{{$typeList}}>());
 
         quoter_{{.N}}pool::new_quoter(
             pool.fee_numerator,
@@ -430,7 +430,7 @@ module aux::{{.ModuleName}} {
 {{end}}{{end}}
         // update balanced reserve and lp token supply
         let before_balanced_reserve = pool.balanced_reserve;
-        let before_lp_coins_supply = {{if $nq}}option::destroy_with_default({{$coinModule}}::supply<LP{{$typeList}}>(), 0){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
+        let before_lp_coins_supply = {{if $nq}}option::destroy_some({{$coinModule}}::supply<LP{{$typeList}}>()){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
 
         // update balanced reserve for the pool
         update_balanced_reserve(pool);
@@ -559,7 +559,7 @@ module aux::{{.ModuleName}} {
             {{$coinModule}}::zero{{if $nq}}<Coin{{.I}}>{{end}}()
         };
 {{end}}
-        let before_lp_coins_supply = {{if $nq}}option::destroy_with_default({{$coinModule}}::supply<LP{{$typeList}}>(), 0){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
+        let before_lp_coins_supply = {{if $nq}}option::destroy_some({{$coinModule}}::supply<LP{{$typeList}}>()){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
 
         update_balanced_reserve(pool);
 
@@ -642,7 +642,7 @@ module aux::{{.ModuleName}} {
 {{if $nq}}        let pool = borrow_global_mut<Pool{{$typeList}}>(@aux);
         let remove_liquidity_events = borrow_global_mut<RemoveLiquidityEventHolder{{$typeList}}>(@aux);
 {{end}}
-        let before_lp_coins_supply = {{if $nq}}option::destroy_with_default({{$coinModule}}::supply<LP{{$typeList}}>(), 0){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
+        let before_lp_coins_supply = {{if $nq}}option::destroy_some({{$coinModule}}::supply<LP{{$typeList}}>()){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
 {{if $nq}}        let before_balanced_reserve = pool.balanced_reserve;
 {{end}}{{range .Xis}}
         // remove liquidity for coin {{.I}}
@@ -666,7 +666,7 @@ module aux::{{.ModuleName}} {
         {{$coinModule}}::burn(lp, &{{if $quoter}}mut pool.lp_treasury{{else}}pool.lp_burn{{end}});
 {{if $nq}}
         let after_balanced_reserve = pool.balanced_reserve;
-        let after_lp_coins_supply = {{if $nq}}option::destroy_with_default({{$coinModule}}::supply<LP{{$typeList}}>(), 0){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
+        let after_lp_coins_supply = {{if $nq}}option::destroy_some({{$coinModule}}::supply<LP{{$typeList}}>()){{else}}quote_coin::treasury_supply(&pool.lp_treasury){{end}};
 
         event::emit_event<RemoveLiquidityEvent{{$typeList}}>(
             &mut remove_liquidity_events.remove_liquidity_events,

@@ -340,7 +340,7 @@ module aux::stable_2pool {
     /// Get the quoter from the the pool's state.
     public fun get_quoter<Coin0, Coin1>(): Quoter acquires Pool {
         let pool = borrow_global<Pool<Coin0, Coin1>>(@aux);
-        let lp_supply = std::option::destroy_with_default(coin::supply<LP<Coin0, Coin1>>(), 0);
+        let lp_supply = std::option::destroy_some(coin::supply<LP<Coin0, Coin1>>());
 
         quoter_2pool::new_quoter(
             pool.fee_numerator,
@@ -478,7 +478,7 @@ module aux::stable_2pool {
 
         // update balanced reserve and lp token supply
         let before_balanced_reserve = pool.balanced_reserve;
-        let before_lp_coins_supply = option::destroy_with_default(coin::supply<LP<Coin0, Coin1>>(), 0);
+        let before_lp_coins_supply = option::destroy_some(coin::supply<LP<Coin0, Coin1>>());
 
         // update balanced reserve for the pool
         update_balanced_reserve(pool);
@@ -638,7 +638,7 @@ module aux::stable_2pool {
             coin::zero<Coin1>()
         };
 
-        let before_lp_coins_supply = option::destroy_with_default(coin::supply<LP<Coin0, Coin1>>(), 0);
+        let before_lp_coins_supply = option::destroy_some(coin::supply<LP<Coin0, Coin1>>());
 
         update_balanced_reserve(pool);
 
@@ -733,7 +733,7 @@ module aux::stable_2pool {
         let pool = borrow_global_mut<Pool<Coin0, Coin1>>(@aux);
         let remove_liquidity_events = borrow_global_mut<RemoveLiquidityEventHolder<Coin0, Coin1>>(@aux);
 
-        let before_lp_coins_supply = option::destroy_with_default(coin::supply<LP<Coin0, Coin1>>(), 0);
+        let before_lp_coins_supply = option::destroy_some(coin::supply<LP<Coin0, Coin1>>());
         let before_balanced_reserve = pool.balanced_reserve;
 
         // remove liquidity for coin 0
@@ -772,7 +772,7 @@ module aux::stable_2pool {
         coin::burn(lp, &pool.lp_burn);
 
         let after_balanced_reserve = pool.balanced_reserve;
-        let after_lp_coins_supply = option::destroy_with_default(coin::supply<LP<Coin0, Coin1>>(), 0);
+        let after_lp_coins_supply = option::destroy_some(coin::supply<LP<Coin0, Coin1>>());
 
         event::emit_event<RemoveLiquidityEvent<Coin0, Coin1>>(
             &mut remove_liquidity_events.remove_liquidity_events,
