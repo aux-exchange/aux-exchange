@@ -11,6 +11,11 @@ package aux_go_generate
 //go:generate go run ./aptos/cmd/gen-reward-distributor -o ../aptos/contract/aux/sources/reward_distributor.move
 //go:generate go run ./aptos/cmd/gen-reward-distributor -q -o ../aptos/contract/aux/sources/reward_quoter.move
 
+//go:generate go run ../docs/stableswap/gen-pool -n 2 -o ../aptos/contract/aux/sources
+//go:generate go run ../docs/stableswap/gen-pool -n 3 -o ../aptos/contract/aux/sources
+//go:generate go run ../docs/stableswap/gen-move-test 2pool -o ../aptos/contract/aux/sources/math_2pool_test.move -n 50
+//go:generate go run ../docs/stableswap/gen-move-test 3pool -o ../aptos/contract/aux/sources/math_3pool_test.move -n 50
+
 // abort-only-contract
 // Uncomment the below command to generate abort only contract
 // //go:generate go run ./cmd/move-abort -e authority.move -i ../aptos/contract/aux/sources -o ../aptos/abort-only-contract/aux/sources
