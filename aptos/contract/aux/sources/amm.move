@@ -477,6 +477,11 @@ module aux::amm {
         let pool = borrow_global<Pool<X, Y>>(@aux);
         coin::value(&pool.y_reserve)
     }
+    
+    public fun fee_au<X, Y>(): u64 acquires Pool {
+        let pool = borrow_global<Pool<X, Y>>(@aux);
+        pool.fee_bps
+    }
 
     /// Returns au of output token received for au of input token
     public fun au_out<CoinIn, CoinOut>(au_in: u64): u64 acquires Pool {
