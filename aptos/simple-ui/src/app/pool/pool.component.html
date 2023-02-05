@@ -1,0 +1,104 @@
+<div class="container-fluid" *ngIf="pool">
+  <dl class="row">
+    <dt class="col-1"></dt>
+    <dt class="col-2">Name</dt>
+    <dt class="col-1">Symbol</dt>
+    <dt class="col-2">Reserve</dt>
+    <dt class="col-6">Type</dt>
+
+    <dt class="col-1">
+      <img [src]="pool.x_info?.coin_info?.logo_url" width="24" height="24" />
+    </dt>
+    <dd class="col-2">{{ pool.x_info?.coin_info?.name }}</dd>
+    <dd class="col-1">{{ pool.x_info?.coin_info?.symbol }}</dd>
+    <dd class="col-2">{{ pool.x_info?.number_reserve }}</dd>
+    <dd class="col-6">{{ pool.x_info?.coin_type_str }}</dd>
+
+    <dt class="col-1">
+      <img [src]="pool.y_info?.coin_info?.logo_url" width="24" height="24" />
+    </dt>
+    <dd class="col-2">{{ pool.y_info?.coin_info?.name }}</dd>
+    <dd class="col-1">{{ pool.y_info?.coin_info?.symbol }}</dd>
+    <dd class="col-2">{{ pool.y_info?.number_reserve }}</dd>
+    <dd class="col-6">{{ pool.y_info?.coin_type_str }}</dd>
+  </dl>
+  <div class="row">
+    <div class="col-12">
+      <ul class="nav nav-tabs" id="poolTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="swap-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#swap-panel"
+            type="button"
+            role="tab"
+            aria-controls="swap-panel"
+            aria-selected="true"
+          >
+            Swap
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="provide-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#provide-panel"
+            type="button"
+            role="tab"
+            aria-controls="provide-panel"
+          >
+            Add Liquidity
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="remove-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#remove-panel"
+            type="button"
+            role="tab"
+            aria-controls="remove-panel"
+          >
+            Remove Liquidity
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div
+          class="tab-pane fade show active"
+          id="swap-panel"
+          role="tabpanel"
+          aria-labelledby="swap-tab"
+        >
+          TODO: Add swap
+        </div>
+        <div
+          class="tab-pane fade"
+          id="provide-panel"
+          role="tabpanel"
+          aria-labelledby="provide-tab"
+        >
+          TODO: Add provide liquidity
+        </div>
+        <div
+          class="tab-pane fade"
+          id="remove-panel"
+          role="tabpanel"
+          aria-labelledby="remove-tab"
+        >
+          TODO: Add remove liquidity
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-1">
+      <button type="button" (click)="goBack()" class="btn btn-outline-primary">
+        Back
+      </button>
+    </div>
+  </div>
+</div>

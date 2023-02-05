@@ -1,0 +1,24 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coin of coins | async">
+            <th><img [src]="coin.logo_url" width="32" height="32" /></th>
+            <td>{{ coin.symbol }}</td>
+            <td>{{ coin.name }}</td>
+            <td>{{ coin.token_type.type }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

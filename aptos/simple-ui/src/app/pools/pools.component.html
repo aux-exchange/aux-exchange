@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <ng-container *ngFor="let pool of pools | async">
+    <div class="row">
+      <div class="col-1">
+        <img
+          [src]="pool.x_info?.coin_info?.logo_url"
+          width="32"
+          height="32"
+        /><img
+          [src]="pool.y_info?.coin_info?.logo_url"
+          width="32"
+          height="32"
+        />
+      </div>
+      <div class="col-2">
+        {{ pool.x_info?.coin_info?.symbol }} /
+        {{ pool.y_info?.coin_info?.symbol }}
+      </div>
+      <div class="col-4">
+        {{ pool.x_info?.number_reserve }} / {{ pool.y_info?.number_reserve }}
+      </div>
+      <div class="col-5">
+        <a
+          class="btn btn-outline-primary"
+          [routerLink]="['/pool']"
+          [queryParams]="{
+            coins: [
+              pool.x_info?.coin_type_str,
+              pool.y_info?.coin_type_str
+            ].join('-')
+          }"
+        >
+          Go to Pool
+        </a>
+      </div>
+    </div>
+  </ng-container>
+</div>
