@@ -1,5 +1,5 @@
 import { Pool } from "@/lib/basic";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, AvatarGroup, Avatar, Box } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { NextLinkComposed } from "./link";
 
@@ -12,18 +12,18 @@ export function PoolListing(pools: Pool[]) {
         let pool = x.row;
         return (
           <>
-            <img
-              src={pool.x_info?.coin_info?.logo_url || ""}
-              alt={pool.x_info?.coin_type_str || ""}
-              height={32}
-              width={32}
-            />
-            <img
-              src={pool.y_info?.coin_info?.logo_url || ""}
-              alt={pool.y_info?.coin_type_str || ""}
-              height={32}
-              width={32}
-            />
+            <AvatarGroup>
+              <Avatar
+                src={pool.x_info?.coin_info?.logo_url || ""}
+                alt={pool.x_info?.coin_type_str || ""}
+                sx={{ width: 32, height: 32 }}
+              />
+              <Avatar
+                src={pool.y_info?.coin_info?.logo_url || ""}
+                alt={pool.y_info?.coin_type_str || ""}
+                sx={{ width: 32, height: 32 }}
+              />
+            </AvatarGroup>
           </>
         );
       },
@@ -82,5 +82,9 @@ export function PoolListing(pools: Pool[]) {
       flex: 0.1,
     },
   ];
-  return <DataGrid rows={pools} columns={cols} autoHeight></DataGrid>;
+  return (
+    <Box sx={{ minWidth: 600, minHeight: 500, width: "100%" }}>
+      <DataGrid rows={pools} columns={cols} autoHeight></DataGrid>
+    </Box>
+  );
 }
