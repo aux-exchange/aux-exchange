@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "driven-rider-375613"
+  },
+  "targets": {
+    "driven-rider-375613": {
+      "hosting": {
+        "landing": [
+          "aux-exchange-landing"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

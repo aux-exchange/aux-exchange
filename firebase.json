@@ -1,0 +1,15 @@
+{
+  "hosting": [
+    {
+      "target": "landing",
+      "public": "aptos/api/aux-ts/src/graphql/landing-page",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
