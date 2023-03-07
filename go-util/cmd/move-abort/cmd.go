@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 )
 
 const longDescription = `add assert!(1==2, E_EMERGENCY_ABORT) to all move public functions.
@@ -70,6 +69,16 @@ func getAllFiles(files []fs.DirEntry) []string {
 	return result
 }
 
+func isFileIgnored(ignoreFiles []string, file string) bool {
+	for _, v := range ignoreFiles {
+		if v == file {
+			return true
+		}
+	}
+
+	return false
+}
+
 func Process(fromDir string, toDir string, ignoreFiles []string) {
 	files := getAllFiles(getOrPanic(os.ReadDir(fromDir)))
 
@@ -79,7 +88,7 @@ func Process(fromDir string, toDir string, ignoreFiles []string) {
 		switch {
 		case !strings.HasSuffix(f, ".move"):
 			modifiedCodeFile = string(codeFile)
-		case slices.Contains(ignoreFiles, f):
+		case isFileIgnored(ignoreFiles, f):
 			modifiedCodeFile = string(codeFile)
 		default:
 			modifiedCodeFile = ProcessFile(string(codeFile))
