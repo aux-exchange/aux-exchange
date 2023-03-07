@@ -56,7 +56,7 @@ func doDeploy(account *aptos.Config, workDir string, seed string, redeploy bool)
 
 		orPanic(deployCmd.Run())
 	}
-	auxDir := path.Join(workDir, "aux")
+	auxDir := path.Join(workDir, "auxexch")
 	checkMoveDir(auxDir)
 
 	if redeploy {

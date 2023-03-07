@@ -10,4 +10,4 @@ deployer = '_'
 local = "../deployer"
 
 [dependencies.aux]
-local = "../aux"
+local = "../auxexch"
