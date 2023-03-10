@@ -6,6 +6,18 @@ import _ from "lodash";
 import os from "os";
 import YAML from "yaml";
 
+interface urlType {
+  [key: string]: string;
+}
+
+const defaultUrls: urlType = {
+  mainnet: "https://fullnode.mainnet.aptoslabs.com/v1",
+  testnet: "https://fullnode.testnet.aptoslabs.com/v1",
+  devnet: "https://fullnode.devnet.aptoslabs.com/v1",
+  local: "http://0.0.0.0:8080/v1",
+  custom: "http://0.0.0.0:8080/v1",
+};
+
 /**
  * Bootstrap an AuxEnv by reading environment variables
  *
@@ -99,16 +111,25 @@ export function getAptosProfile(
   aptosProfile: string,
   configPath: string = `${os.homedir()}/.aptos/config.yaml`
 ): AptosProfile {
-  const profiles = YAML.parse(
-    fs.readFileSync(configPath, { encoding: "utf-8" })
-  );
-  const profile = profiles.profiles[aptosProfile];
-  if (_.isUndefined(profile)) {
-    throw new Error(
-      `Could not find profile \`${aptosProfile}\` in ~/.aptos/config.yaml`
+  if (!fs.existsSync(configPath)) {
+    if (defaultUrls[aptosProfile] !== undefined) {
+      return {
+        rest_url: defaultUrls[aptosProfile]!,
+      };
+    }
+    throw new Error(`cannot get default url`);
+  } else {
+    const profiles = YAML.parse(
+      fs.readFileSync(configPath, { encoding: "utf-8" })
     );
+    const profile = profiles.profiles[aptosProfile];
+    if (_.isUndefined(profile)) {
+      throw new Error(
+        `Could not find profile \`${aptosProfile}\` in ~/.aptos/config.yaml`
+      );
+    }
+    return profile;
   }
-  return profile;
 }
 
 export type AptosNetwork =

@@ -1,7 +1,7 @@
 import type { Types } from "aptos";
 import { withFilter } from "graphql-subscriptions";
 import _ from "lodash";
-import { redisPubSub } from "../client";
+import { pubSubClient } from "../client";
 import type {
   InputMaybe,
   MarketInput,
@@ -17,49 +17,49 @@ export const subscription = {
   swap: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["SWAP"]),
+      () => pubSubClient.asyncIterator(["SWAP"]),
       poolInputsFilterFn
     ),
   },
   addLiquidity: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["ADD_LIQUIDITY"]),
+      () => pubSubClient.asyncIterator(["ADD_LIQUIDITY"]),
       poolInputsFilterFn
     ),
   },
   removeLiquidity: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["REMOVE_LIQUIDITY"]),
+      () => pubSubClient.asyncIterator(["REMOVE_LIQUIDITY"]),
       poolInputsFilterFn
     ),
   },
   orderbook: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["ORDERBOOK"]),
+      () => pubSubClient.asyncIterator(["ORDERBOOK"]),
       marketInputsFilterFn
     ),
   },
   trade: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["TRADE"]),
+      () => pubSubClient.asyncIterator(["TRADE"]),
       marketInputsFilterFn
     ),
   },
   lastTradePrice: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["LAST_TRADE_PRICE"]),
+      () => pubSubClient.asyncIterator(["LAST_TRADE_PRICE"]),
       marketInputsFilterFn
     ),
   },
   bar: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["BAR"]),
+      () => pubSubClient.asyncIterator(["BAR"]),
       (payload: any, variables: SubscriptionBarArgs) =>
         marketInputsFilterFn(payload, variables) &&
         payload.resolution === resolutionToString(variables.resolution)
@@ -68,7 +68,7 @@ export const subscription = {
   high24h: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["HIGH_24H"]),
+      () => pubSubClient.asyncIterator(["HIGH_24H"]),
       (payload: any, variables: SubscriptionHigh24hArgs) =>
         marketInputsFilterFn(payload, variables)
     ),
@@ -76,7 +76,7 @@ export const subscription = {
   low24h: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["LOW_24H"]),
+      () => pubSubClient.asyncIterator(["LOW_24H"]),
       (payload: any, variables: SubscriptionLow24hArgs) =>
         marketInputsFilterFn(payload, variables)
     ),
@@ -84,7 +84,7 @@ export const subscription = {
   volume24h: {
     resolve: _.identity,
     subscribe: withFilter(
-      () => redisPubSub.asyncIterator(["VOLUME_24H"]),
+      () => pubSubClient.asyncIterator(["VOLUME_24H"]),
       (payload: any, variables: SubscriptionVolume24hArgs) =>
         marketInputsFilterFn(payload, variables)
     ),
