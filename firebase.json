@@ -1,8 +1,8 @@
 {
   "hosting": [
     {
-      "target": "landing",
-      "public": "aptos/api/aux-ts/src/graphql/landing-page",
+      "target": "landing-page",
+      "public": "firebase/hosting/landing-page",
       "ignore": [
         "firebase.json",
         "**/.*",
