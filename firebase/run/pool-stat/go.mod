@@ -11,7 +11,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/text v0.8.0
-	google.golang.org/api v0.111.0
+	google.golang.org/api v0.112.0
 )
 
 require (
@@ -30,7 +30,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
