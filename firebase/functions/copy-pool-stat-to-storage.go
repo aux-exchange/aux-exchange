@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	firestorage "firebase.google.com/go/v4/storage"
 )
@@ -85,15 +84,11 @@ func CopyPoolStatToStorage(ctx context.Context, e FirestoreEvent) error {
 	handle := bucket.Object("public/pool-stat.json")
 
 	w := handle.NewWriter(ctx)
-	defer func() {
-		w.Close()
-		// ACL change after writer is closed.
-		// It looks like the ACL will not be properly set if w.Close() is deferred but the ACL Set is not.
-		err = handle.ACL().Set(ctx, storage.AllUsers, storage.RoleReader)
-		if err != nil {
-			log.Printf("failed to set acl: %v", err)
-		}
-	}()
+	w.ContentType = "application/json"
+	w.PredefinedACL = "publicRead"
+	w.CacheControl = "public, max-age=300"
+
+	defer w.Close()
 
 	_, err = w.Write(bytes)
 	if err != nil {
