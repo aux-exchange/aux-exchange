@@ -6,7 +6,6 @@ import (
 
 	"github.com/fardream/go-aptos/aptos"
 	"github.com/fardream/go-aptos/aptos/known"
-	"golang.org/x/exp/maps"
 )
 
 const bpsDenominator = 10_000
@@ -24,7 +23,10 @@ func (s *Stat) Reset() {
 	s.Fee = 0
 	s.TransactionCount = 0
 	if s.Users != nil {
-		maps.Clear(s.Users)
+		// golang.org/x/exp/maps can be used here, but does look a little over kill for such simple functionality
+		for k := range s.Users {
+			delete(s.Users, k)
+		}
 	} else {
 		s.Users = make(map[string]struct{})
 	}
@@ -36,15 +38,20 @@ type SwapStat struct {
 	TVL         float64 `json:"tvl"`
 }
 
+type SwapEvent struct {
+	aptos.AuxAmm_SwapEvent
+	SequenceNumber aptos.JsonUint64 `json:"sequence_number"`
+}
+
 type PoolStat struct {
 	Pool     *aptos.AuxAmmPool             `json:"pool"`
 	CoinX    *known.HippoCoinRegistryEntry `json:"coin_x"`
 	CoinY    *known.HippoCoinRegistryEntry `json:"coin_y"`
 	CoinPair string                        `json:"coin_pair"`
 
-	AddEvents    []*aptos.AuxAmm_AddLiquidityEvent    `json:"-"`
-	RemoveEvents []*aptos.AuxAmm_RemoveLiquidityEvent `json:"-"`
-	SwapEvents   []*aptos.AuxAmm_SwapEvent            `json:"-"`
+	SwapEvents []*SwapEvent `json:"swap_events"`
+
+	MaxSequenceNumber aptos.JsonUint64 `json:"max_sequence_number"`
 
 	SwapStat
 }
@@ -53,6 +60,8 @@ type AllPools struct {
 	Pools map[string]*PoolStat `json:"pools"`
 
 	SwapStat `json:"total_stat"`
+
+	Timestamp time.Time `json:"timestamp"`
 }
 
 var allDecimals = []int64{1, 10, 100, 1000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000}
@@ -126,11 +135,10 @@ func isStableType(typeTag string) bool {
 	return ok
 }
 
-func (p *PoolStat) FillStat() {
+func (p *PoolStat) FillStat(now time.Time) {
 	p.Last24Hours.Reset()
 	p.Last7Days.Reset()
 
-	now := time.Now()
 	for _, ev := range p.SwapEvents {
 		microseconds := ev.Timestamp
 		swapTime := time.Unix(0, int64(microseconds)*1000)
@@ -173,7 +181,7 @@ func (ap *AllPools) FillStat() {
 	ap.Last24Hours.Reset()
 	ap.Last7Days.Reset()
 	for _, p := range ap.Pools {
-		p.FillStat()
+		p.FillStat(ap.Timestamp)
 
 		ap.Last7Days.Fee += p.Last7Days.Fee
 		ap.Last7Days.Volume += p.Last7Days.Volume

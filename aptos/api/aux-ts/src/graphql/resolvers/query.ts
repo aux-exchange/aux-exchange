@@ -1,12 +1,11 @@
 import type { Types } from "aptos";
-import axios from "axios";
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_FAKE_COINS } from "../../coin";
 import { ConstantProductClient } from "../../pool/constant-product/client";
 import type { ConstantProduct } from "../../pool/constant-product/schema";
 import { StakePoolClient } from "../../stake/client";
-import { auxClient, redisClient } from "../client";
+import { auxClient, axiosInstance, dataClient } from "../client";
 import {
   Account,
   CoinInfo,
@@ -59,13 +58,13 @@ export const query = {
       period: "1w" | "24h"
     ): Promise<Maybe<number>> {
       if (name === "tvl") {
-        const value = await redisClient.get(
-          `amm-all-${auxClient.moduleAddress}-${name}`
+        const value = await dataClient.get(
+          `all-${auxClient.moduleAddress}-${name}`
         );
         return value ? Number(value) : null;
       } else {
-        const value = await redisClient.get(
-          `amm-all-${auxClient.moduleAddress}-${name}-${period}`
+        const value = await dataClient.get(
+          `all-${auxClient.moduleAddress}-${name}-${period}`
         );
         return value ? Number(value) : null;
       }
@@ -488,19 +487,11 @@ async function coinsWithoutLiquidity(): Promise<CoinInfo[]> {
       ].flat()
     );
   }
-  let rawCoins = await redisClient.get("hippo-coin-list");
   let coins;
-  if (_.isNull(rawCoins)) {
-    const url =
-      "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
-    coins = (await axios.get(url)).data;
-    await Promise.all([
-      redisClient.set("hippo-coin-list", JSON.stringify(coins)),
-      redisClient.expire("hippo-coin-list", 60),
-    ]);
-  } else {
-    coins = JSON.parse(rawCoins);
-  }
+
+  const url =
+    "https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/typescript/src/defaultList.mainnet.json";
+  coins = (await axiosInstance.get(url)).data;
 
   return coins.map((coin: any) => {
     // The feature priority of a token is the max feature priority of the

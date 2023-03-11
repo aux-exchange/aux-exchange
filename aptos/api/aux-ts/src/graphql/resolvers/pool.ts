@@ -1,6 +1,6 @@
 import { ConstantProductClient } from "../../pool/constant-product/client";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
-import { auxClient, redisClient } from "../client";
+import { auxClient, dataClient } from "../client";
 import {
   AddLiquidity,
   Maybe,
@@ -109,20 +109,17 @@ export const pool = {
       : null;
   },
 
-  price(parent: Pool, {coinTypeIn, amountIn}: PoolPriceArgs): Scalars['Float'] {
+  price(
+    parent: Pool,
+    { coinTypeIn, amountIn }: PoolPriceArgs
+  ): Scalars["Float"] {
     // TODO n-pool stable swap
     const coinInfoX = parent.coinInfos[0]!;
     const amountX = parent.amounts[0]!;
     const amountY = parent.amounts[1]!;
-    const inReserve =
-      coinTypeIn === coinInfoX.coinType
-        ? amountX
-        : amountY;
-    const outReserve =
-      coinTypeIn === coinInfoX.coinType
-        ? amountY
-        : amountX; 
-    
+    const inReserve = coinTypeIn === coinInfoX.coinType ? amountX : amountY;
+    const outReserve = coinTypeIn === coinInfoX.coinType ? amountY : amountX;
+
     const ratio = outReserve / inReserve;
     return ratio * amountIn;
   },
@@ -296,7 +293,7 @@ export const pool = {
           : RatingColor.Green,
     };
   },
-  
+
   async summaryStatistics(parent: Pool): Promise<PoolSummaryStatistics> {
     const volume24h = await stat("volume", parent, "24h");
     const fee24h = await stat("fee", parent, "24h");
@@ -327,15 +324,13 @@ async function stat(
   period: "1w" | "24h"
 ): Promise<Maybe<number>> {
   if (name === "tvl") {
-    const value = await redisClient.get(
-      `amm-${pool.coinInfos[0]!.coinType}-${
-        pool.coinInfos[1]!.coinType
-      }-${name}`
+    const value = await dataClient.get(
+      `${pool.coinInfos[0]!.coinType}-${pool.coinInfos[1]!.coinType}-${name}`
     );
     return value ? Number(value) : null;
   } else {
-    const value = await redisClient.get(
-      `amm-${pool.coinInfos[0]!.coinType}-${
+    const value = await dataClient.get(
+      `${pool.coinInfos[0]!.coinType}-${
         pool.coinInfos[1]!.coinType
       }-${name}-${period}`
     );

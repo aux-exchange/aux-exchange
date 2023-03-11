@@ -3,7 +3,11 @@
     {
       "target": "landing",
       "public": "aptos/api/aux-ts/src/graphql/landing-page",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "rewrites": [
         {
           "source": "**",
@@ -11,5 +15,21 @@
         }
       ]
     }
-  ]
+  ],
+  "firestore": {
+    "rules": "firebase/firestore.rules",
+    "indexes": "firebase/firestore.indexes.json"
+  },
+  "emulators": {
+    "firestore": {
+      "port": 11000
+    },
+    "hosting": {
+      "port": 12000
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
 }

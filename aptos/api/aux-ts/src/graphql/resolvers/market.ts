@@ -1,8 +1,12 @@
 import _ from "lodash";
 import * as aux from "../../";
 import { ALL_USD_STABLES, COIN_MAPPING, fakeMapping } from "../../coin";
-import { auxClient, redisClient } from "../client";
-import { orderPlacedEventToOrder, orderFillEventToOrder, orderToOrder } from "../conversion";
+import { auxClient, dataClient } from "../client";
+import {
+  orderPlacedEventToOrder,
+  orderFillEventToOrder,
+  orderToOrder,
+} from "../conversion";
 import {
   Bar,
   Market,
@@ -84,7 +88,7 @@ export function resolutionToSeconds(resolution: Resolution): number {
 
 export const market = {
   async lastTradePrice({ baseCoinInfo, quoteCoinInfo }: Market) {
-    return redisClient.get(
+    return dataClient.get(
       `${baseCoinInfo.coinType}-${quoteCoinInfo.coinType}-last-trade-price`
     );
   },
@@ -111,7 +115,11 @@ export const market = {
     });
     const orders = await market.orderHistory(owner);
     return orders.map((order) =>
-      orderPlacedEventToOrder(order.order, market.baseCoinInfo, market.quoteCoinInfo)
+      orderPlacedEventToOrder(
+        order.order,
+        market.baseCoinInfo,
+        market.quoteCoinInfo
+      )
     );
   },
   async tradeHistory(
@@ -159,6 +167,7 @@ export const market = {
     { baseCoinInfo, quoteCoinInfo }: Market,
     { resolution, from, to, countBack, firstDataRequest }: MarketBarsArgs
   ): Promise<Bar[]> {
+    /*
     const key = `${baseCoinInfo.coinType}-${
       quoteCoinInfo.coinType
     }-bar-${resolutionToString(resolution)}`;
@@ -176,6 +185,12 @@ export const market = {
     }
 
     return _.sortedUniqBy(bars, (bar) => bar.time);
+    */
+
+    // to counter the error message
+    `${baseCoinInfo}${quoteCoinInfo}${resolution}${from}${to}${countBack}${firstDataRequest}`;
+
+    return [];
   },
 
   async pythRating(
@@ -222,7 +237,7 @@ async function analytic24h(
   name: "high" | "low" | "volume",
   market: Market
 ): Promise<Maybe<number>> {
-  const value = redisClient.get(
+  const value = dataClient.get(
     `${market.baseCoinInfo.coinType}-${market.quoteCoinInfo.coinType}-${name}-24h`
   );
   return value ? Number(value) : null;

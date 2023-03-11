@@ -18,7 +18,6 @@ import { stakePool } from "./resolvers/stake";
 import { query } from "./resolvers/query";
 import { subscription } from "./resolvers/subscription";
 import cors from "cors";
-import { redisClient } from "./client";
 
 const resolvers = {
   Query: query,
@@ -31,7 +30,6 @@ const resolvers = {
 };
 
 async function startApolloServer() {
-  await redisClient.connect();
   const typeDefs = await loadFiles("src/graphql/typeDefs/**/*.graphql");
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const app = express();
