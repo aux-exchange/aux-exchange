@@ -42,7 +42,6 @@ with the AMM and CLOB through typescript.
 
 In particular, we recommend starting with `devnet-amm-instructions.ts`.
 
-
 ### Addresses
 
 | network | contract | address                                                                                                                                                                                           |
@@ -53,7 +52,6 @@ In particular, we recommend starting with `devnet-amm-instructions.ts`.
 | testnet | aux      | [`0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53`](https://explorer.aptoslabs.com/account/0x8b7311d78d47e37d09435b8dc37c14afd977c5cfa74f974d45f0258d986eef53?network=testnet) |
 | mainnet | deployer | [`0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c`](https://explorer.aptoslabs.com/account/0x5a5e124ea1f3fc5fcfae3c198765c3b4c8d72c7236ae97ef6e5a9bc7cfda549c?network=mainnet) |
 | mainnet | aux      | [`0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541`](https://explorer.aptoslabs.com/account/0xbd35135844473187163ca197ca93b2ab014370587bb0ed3befff9e902d6bb541?network=mainnet) |
-
 
 ## Contributing to AUX
 
@@ -66,3 +64,17 @@ See [Quickstart](./CONTRIBUTING.md#Quickstart) for tutorials on how to run a loc
 ### Deployment
 
 See [deployment](./CONTRIBUTING.md#Deployment) for how to deploy the contract.
+
+## Run a local version of the UI
+
+The web app of aux.exchange is a pure client side web application, located at [firebase/hosting/swap-trading](./firebase/hosting/swap-trading).
+
+The UI can be launched by any standard web server that can serve static files. An example in golang is provided at [here](./firebase/hosting/swap-trading/serve.go).
+
+The golang example can also be run directly if golang>=1.19 is setup:
+
+```sh
+go run github.com/aux-exchange/aux-exchange/firebase/hosting/swap-trading@latest
+```
+
+The default port is 5173, which can be changed by `-port` option.

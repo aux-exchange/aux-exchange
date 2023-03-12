@@ -3,10 +3,23 @@
     {
       "target": "landing-page",
       "public": "firebase/hosting/landing-page",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "swap-trading",
+      "public": "firebase/hosting/swap-trading",
       "ignore": [
         "firebase.json",
         "**/.*",
-        "**/node_modules/**"
+        "**/node_modules/**",
+        "**/*.go",
+        "**/go.mod"
       ],
       "rewrites": [
         {
