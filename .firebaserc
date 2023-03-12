@@ -7,6 +7,9 @@
       "hosting": {
         "landing-page": [
           "aux-exchange-landing"
+        ],
+        "swap-trading": [
+          "aux-exchange-swap-trading"
         ]
       }
     }
