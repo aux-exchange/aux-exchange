@@ -3,13 +3,8 @@
     {
       "target": "landing-page",
       "public": "firebase/hosting/landing-page",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/*.sh"],
+      "rewrites": []
     },
     {
       "target": "swap-trading",
@@ -19,12 +14,24 @@
         "**/.*",
         "**/node_modules/**",
         "**/*.go",
-        "**/go.mod"
+        "**/go.mod",
+        "**/*.sh"
       ],
       "rewrites": [
         {
-          "source": "**",
+          "source": "/@(pools|trade|portfolio)",
           "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**/*",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800, immutable"
+            }
+          ]
         }
       ]
     }

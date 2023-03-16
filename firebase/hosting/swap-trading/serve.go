@@ -10,7 +10,7 @@ import (
 
 //go:embed all:charting_library
 //go:embed all:assets
-//go:embed charts.css config.js colors.js index.html logo.svg theme.js
+//go:embed charts.css config.js colors.js index.html logo.svg theme.js 404.html
 var swapTradingUi embed.FS
 
 func main() {
