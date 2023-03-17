@@ -1,5 +1,13 @@
 # AUX
 
+## 🚀🚀🚀 Status Update March 17, 2023
+
+We have decided to cease the development on [aux.exchange](https://aux.exchange). It has been a fun ride and we are honored to be part of amazing aptos community.
+
+We will leave the website up for a while, there is also instruction at the end of the README to run the website on your own. Feel free to poke around the codes, and have fun!
+
+## Table of Content
+
 - [AUX](#aux)
   - [Introduction](#introduction)
   - [Fees and Rebates](#fees-and-rebates)
