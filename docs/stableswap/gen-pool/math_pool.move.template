@@ -1,0 +1,217 @@
+{{.WarningForManualEdit}}
+module aux::math_{{.N}}pool {
+    const E_COIN_BALANCE_ZERO: u64 = 1001;
+    const E_D_OVERFLOW: u64 = 1002;
+    const E_FAIL_TO_CONVERGE: u64 = 1003;
+    const E_X_OVERFLOW: u64 = 1004;
+    const E_COIN_DECIMAL_TOO_LARGE: u64 = 1005;
+    const E_D_ZERO: u64 = 1006;
+    const E_NO_OUTPUT: u64 = 1007;
+
+    const N_COINS: u256 = {{.N}};
+    const N_COINS_U8: u8 = {{.N}};
+
+    /// calculate d based on x_i and amp.
+    /// - amp is not scaled.
+    /// - at max 256 iterations.
+    public fun calculate_d({{range .Xis}}x_{{.I}}: u128, {{end}}amp: u128): u128 {
+{{range .Xis}}        let x_{{.I}} = (x_{{.I}} as u256);
+{{end}}
+        let amp = (amp as u256);
+        if ({{range .Xis}}(x_{{.I}} == 0){{if .NotLast}} && {{end}}{{end}}) {
+            return 0
+        };
+
+{{range .Xis}}        assert!(x_{{.I}} > 0, E_COIN_BALANCE_ZERO);
+{{end}}
+        let ann: u256 = amp;
+        let sum: u256 = 0;
+
+{{range .Xis}}        {
+            ann = ann * N_COINS;
+            sum = sum + x_{{.I}};
+        };
+{{end}}
+        // initialize d to the sum of all balances
+        let d = sum;
+
+        let ann_sum = sum * ann;
+
+        // at most 256 iterations for the newton raphson method
+        let i: u64 = 0;
+        while (i < 256) {
+            // calculate d_p = D^{n+1}/n^n/\prod x_i
+            let d_p = d;
+{{range .Xis}}            {
+                // d_p = d_p * D / n / x_i
+                d_p = d_p * d;
+                d_p = d_p / (x_{{.I}} * N_COINS);
+            };
+{{end}}
+            let numerator =  (d_p * N_COINS + ann_sum) * d;
+            let denominator = (d_p * (N_COINS + 1) + d * ann) - d;
+
+            let d_prev = d;
+
+            d = numerator / denominator;
+
+            if (d_prev >= d) {
+                if (d_prev - d <= 1) {
+                    return (d as u128)
+                };
+            } else {
+                if (d - d_prev <= 1) {
+                    return (d as u128)
+                };
+            };
+
+            i = i + 1;
+        };
+
+        abort(E_FAIL_TO_CONVERGE)
+    }
+{{if .GenPermutation}}{{range .Xis}}
+    public fun calculate_x_{{.I}}({{range .Others}}x_{{.}}: u128, {{end}}amp: u128, d: u128): u128 {
+{{range .Xis}}        let x_{{.I}} = (x_{{.I}} as u256);
+{{end}}
+        let amp = (amp as u256);
+        let d = (d as u256);
+{{range .Others}}        assert!(x_{{.}} > 0, E_COIN_BALANCE_ZERO);
+{{end}}
+        assert!(d > 0, E_D_ZERO);
+        // note we only iterate N_COINS - 1, so we multiply by N_COINS here.
+        let ann: u256 = amp * N_COINS;
+        let sum_e_i: u256 = 0;
+        let c = d;
+
+        // c
+{{range .Others}}        {
+            c = c * d;
+            c = c / (x_{{.}} * N_COINS);
+            // sum_e_i
+            sum_e_i = sum_e_i + x_{{.}};
+            ann = ann * N_COINS;
+        };
+{{end}}
+        // note that N_COINS need be divided again
+        c = c * d;
+        c = c / (ann * N_COINS);
+        let b = sum_e_i + d / ann;
+
+        let i: u64 = 0;
+
+        let x_{{.I}} = d;
+        while (i < 256) {
+            let prev_x = x_{{.I}};
+            let numerator = c + x_{{.I}} * x_{{.I}};
+            let denominator = b + 2 * x_{{.I}} - d;
+            x_{{.I}} = numerator / denominator;
+            if (prev_x >= x_{{.I}}) {
+                if (prev_x - x_{{.I}} <= 1) {
+                    return x_{{.I}}
+                };
+            } else {
+                if (x_{{.I}} - prev_x <= 1) {
+                    return x_{{.I}}
+                };
+            };
+            i = i + 1;
+        };
+
+        abort(E_FAIL_TO_CONVERGE)
+    }
+
+    // calculate x_{{.I}}, but with d never decreasing.
+    public fun calculate_x_{{.I}}_non_decreasing_d({{range .Others}}x_{{.}}: u128, {{end}}amp: u128, d: u128): u128 {
+        let x_{{.I}} = calculate_x_{{.I}}({{range .Others}}x_{{.}}, {{end}}amp, d);
+        let new_d = calculate_d({{range .Befores}}x_{{.}}, {{end}}x_{{.I}}, {{range .Afters}}x_{{.}}, {{end}}amp);
+        if (new_d < d) {
+            x_{{.I}} + 1
+        } else {
+            x_{{.I}}
+        }
+    }
+{{end}}{{end}}
+
+    /// calculate x_i, which i is identified by the out_index.
+    /// the input x_i where i is out_index is not used in the calculation.
+    public fun calculate_x({{range .Xis}}x_{{.I}}: u128, {{end}}out_index: u8, amp: u128, d: u128): u128 {
+        assert!(out_index < N_COINS_U8, E_NO_OUTPUT);
+{{range .Xis}}        let x_{{.I}} = (x_{{.I}} as u256);
+{{end}}
+        let amp = (amp as u256);
+        let d = (d as u256);
+
+{{range .Xis}}        assert!(out_index == {{.I}} || x_{{.I}} > 0, E_COIN_BALANCE_ZERO);
+{{end}}
+        assert!(d > 0, E_D_ZERO);
+
+        // note we only iterate N_COINS - 1, so we multiply by N_COINS here.
+        let ann: u256 = amp * N_COINS;
+        let sum_e_i: u256 = 0;
+        let c = d;
+
+{{range .Xis}}
+        if (out_index != {{.I}}) {
+            c = c * d;
+            c = c / (x_{{.I}} * N_COINS);
+            // sum_e_i
+            sum_e_i = sum_e_i + x_{{.I}};
+            ann = ann * N_COINS;
+        };
+{{end}}
+        // note that N_COINS need be divided again
+        c = c * d;
+        c = c / (ann * N_COINS);
+        let b = sum_e_i + d / ann;
+
+        let i: u64 = 0;
+
+        let x = d;
+        while (i < 256) {
+            let prev_x = x;
+            let numerator = c + x * x;
+            let denominator = b + 2 * x - d;
+            x = numerator/ denominator;
+            if (prev_x >= x) {
+                if (prev_x - x <= 1) {
+                    return (x as u128)
+                };
+            } else {
+                if (x - prev_x <= 1) {
+                    return (x as u128)
+                };
+            };
+            i = i + 1;
+        };
+
+        abort(E_FAIL_TO_CONVERGE)
+    }
+
+    /// calculate x_i, which i is identified by the out_index, while maintaining non-decreasing d.
+    /// after calculate_x, if the resulting d is decreasing, add 1 to the result, otherwise return the result.
+    /// the input x_i where i is out_index is not used in the calculation.
+    public fun calculate_x_non_decreasing_d({{range .Xis}}x_{{.I}}: u128, {{end}}out_index: u8, amp: u128, d: u128): u128 {
+        let x = calculate_x({{range .Xis}}x_{{.I}}, {{end}}out_index, amp, d);
+{{range .Xis}}        let n_x_{{.I}} = if (out_index == {{.I}}) {
+            x
+        } else {
+            x_{{.I}}
+        };
+{{end}}
+        let new_d = calculate_d({{range .Xis}}n_x_{{.I}}, {{end}}amp);
+        if (new_d < d) {
+            x + 1
+        } else {
+            x
+        }
+    }
+
+    public fun get_scaler(decimal: u8): u128 {
+{{range $index, $v := .Decimals}}{{if ne $index 0}} else {{else}}        {{end}}if (decimal == {{$index}}) {
+            {{$v}}
+        }{{end}} else {
+            abort(E_COIN_DECIMAL_TOO_LARGE)
+        }
+    }
+}

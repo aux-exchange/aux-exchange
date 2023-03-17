@@ -19,6 +19,7 @@ module aux::fake_coin {
     struct ETH {}
     struct SOL {}
     struct AUX {}
+    struct USDCD8 {}
 
     fun init_module(source: &signer) {
         let chain = chain_id::get();
@@ -29,6 +30,7 @@ module aux::fake_coin {
             initialize<ETH>(source, 8, b"Fake Coin ETH", b"ETH");
             initialize<SOL>(source, 8, b"Fake Coin SOL", b"SOL");
             initialize<AUX>(source, 6, b"Fake Coin AUX", b"AUX");
+            initialize<USDCD8>(source, 8, b"Fake Coin USDC 8 Decimal", b"USDCD8");
         }
     }
 
@@ -107,6 +109,7 @@ module aux::fake_coin {
         initialize<ETH>(sender, 18, b"Fake Coin ETH", b"ETH");
         initialize<SOL>(sender, 9, b"Fake Coin SOL", b"SOL");
         initialize<AUX>(sender, 6, b"Fake Coin AUX", b"AUX");
+        initialize<USDCD8>(sender, 8, b"Fake Coin USDC 8 Decimal", b"USDCD8");
     }
 
     #[test(aux = @aux, user = @0x5e7c3)]
@@ -120,5 +123,21 @@ module aux::fake_coin {
         register_and_mint<BTC>(user, 100);
         let balance = coin::balance<FakeCoin<BTC>>(addr);
         assert!(balance == 100, balance);
+    }
+
+    #[test_only]
+    public fun burn_all<T>(sender: &signer) {
+        let sender_addr = signer::address_of(sender);
+        if (!coin::is_account_registered<FakeCoin<T>>(sender_addr)) {
+            return
+        };
+        let amount = coin::balance<FakeCoin<T>>(sender_addr);
+        if (amount == 0) {
+            return
+        };
+        let module_signer = &authority::get_signer_self();
+        register<T>(module_signer);
+        coin::transfer<FakeCoin<T>>(sender, signer::address_of(module_signer), amount);
+        managed_coin::burn<FakeCoin<T>>(module_signer, amount);
     }
 }
