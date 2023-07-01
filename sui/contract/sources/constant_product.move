@@ -486,11 +486,11 @@ module aux::constant_product_tests {
         test_scenario::next_tx(&mut scenario, @aux);
         {
             let pool = test_scenario::take_shared<Pool<COIN_X, COIN_Y>>(&mut scenario);
-            let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 100, 400);
-            assert!(coin::value(&lp) == 200, ETestFailure);
-            assert!(coin::value(constant_product::reserve_x(&pool)) == 100, ETestFailure);
-            assert!(coin::value(constant_product::reserve_y(&pool)) == 400, ETestFailure);
-            assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 200, 0);
+            let lp = add_liquidity_for_testing(&mut scenario, &mut pool, 1_000_000, 2_500);
+            assert!(coin::value(&lp) == 50_000, ETestFailure);
+            assert!(coin::value(constant_product::reserve_x(&pool)) == 1_000_000, ETestFailure);
+            assert!(coin::value(constant_product::reserve_y(&pool)) == 2_500, ETestFailure);
+            assert!(balance::supply_value(constant_product::supply_lp(&pool)) == 50_000, 0);
             coin::destroy_for_testing(lp);
             test_scenario::return_shared(pool);
         };
